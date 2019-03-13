@@ -12,7 +12,7 @@ import '@stencil/core';
 
 export namespace Components {
 
-  interface MyComponent {
+  interface UvAleph {
     /**
     * The first name
     */
@@ -26,7 +26,7 @@ export namespace Components {
     */
     'middle': string;
   }
-  interface MyComponentAttributes extends StencilHTMLAttributes {
+  interface UvAlephAttributes extends StencilHTMLAttributes {
     /**
     * The first name
     */
@@ -44,26 +44,26 @@ export namespace Components {
 
 declare global {
   interface StencilElementInterfaces {
-    'MyComponent': Components.MyComponent;
+    'UvAleph': Components.UvAleph;
   }
 
   interface StencilIntrinsicElements {
-    'my-component': Components.MyComponentAttributes;
+    'uv-aleph': Components.UvAlephAttributes;
   }
 
 
-  interface HTMLMyComponentElement extends Components.MyComponent, HTMLStencilElement {}
-  var HTMLMyComponentElement: {
-    prototype: HTMLMyComponentElement;
-    new (): HTMLMyComponentElement;
+  interface HTMLUvAlephElement extends Components.UvAleph, HTMLStencilElement {}
+  var HTMLUvAlephElement: {
+    prototype: HTMLUvAlephElement;
+    new (): HTMLUvAlephElement;
   };
 
   interface HTMLElementTagNameMap {
-    'my-component': HTMLMyComponentElement
+    'uv-aleph': HTMLUvAlephElement
   }
 
   interface ElementTagNameMap {
-    'my-component': HTMLMyComponentElement;
+    'uv-aleph': HTMLUvAlephElement;
   }
 
 

@@ -2,7 +2,7 @@ import { Component, Prop } from '@stencil/core';
 import { format } from '../../utils/utils';
 
 @Component({
-  tag: 'aleph',
+  tag: 'uv-aleph',
   styleUrl: 'aleph.css',
   shadow: true
 })
