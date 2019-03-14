@@ -1,3 +1,5 @@
+import { Cube } from "../Cube";
+
 export interface NullAction {
   type: TypeKeys.NULL
 }
@@ -6,16 +8,14 @@ export interface NullAction {
 export type ActionTypes =
   | NullAction
   | AppSetBoxEnabledAction
-  | AppSetSphereEnabledAction
-  | AppSetCylinderEnabledAction
+  | AppSetCubesAction
 ;
 
 export enum TypeKeys {
   NULL = 'NULL',
   ERROR = 'ERROR',
   APP_SET_BOX_ENABLED = 'APP_SET_BOX_ENABLED',
-  APP_SET_SPHERE_ENABLED = 'APP_SET_SPHERE_ENABLED',
-  APP_SET_CYLINDER_ENABLED = 'APP_SET_CYLINDER_ENABLED'
+  APP_SET_CUBES = 'APP_SET_CUBES'
 };
 
 export interface AppSetBoxEnabledAction {
@@ -30,26 +30,15 @@ export const appSetBoxEnabled = (payload: boolean) => async (dispatch, _getState
   })
 };
 
-export interface AppSetSphereEnabledAction {
-  type: TypeKeys.APP_SET_SPHERE_ENABLED,
-  payload: boolean;
+export interface AppSetCubesAction {
+  type: TypeKeys.APP_SET_CUBES,
+  payload: Cube[];
 }
 
-export const appSetSphereEnabled = (payload: boolean) => async (dispatch, _getState) => {
+export const appSetCubes = (payload: Cube[]) => async (dispatch, _getState) => {
   return dispatch({
-    type: TypeKeys.APP_SET_SPHERE_ENABLED,
+    type: TypeKeys.APP_SET_CUBES,
     payload: payload
   })
 };
 
-export interface AppSetCylinderEnabledAction {
-  type: TypeKeys.APP_SET_CYLINDER_ENABLED,
-  payload: boolean;
-}
-
-export const appSetCylinderEnabled = (payload: boolean) => async (dispatch, _getState) => {
-  return dispatch({
-    type: TypeKeys.APP_SET_CYLINDER_ENABLED,
-    payload: payload
-  })
-};

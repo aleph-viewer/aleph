@@ -1,7 +1,9 @@
 import { Component, Prop, State } from '@stencil/core';
 import { Store, Action } from '@stencil/redux';
-import { appSetBoxEnabled, appSetSphereEnabled, appSetCylinderEnabled } from '../../redux/actions';
+import { appSetBoxEnabled, appSetCubes } from '../../redux/actions';
 import { configureStore } from '../../redux/store';
+import { Utils } from '../../utils/Utlis';
+import { Cube } from '../../Cube';
 //type Entity = import('aframe').Entity;
 
 @Component({
@@ -16,12 +18,10 @@ export class Aleph {
   @Prop({ context: 'store' }) store: Store;
 
   appSetBoxEnabled: Action;
-  appSetSphereEnabled: Action;
-  appSetCylinderEnabled: Action;
+  appSetCubes: Action;
 
   @State() boxEnabled: number;
-  @State() sphereEnabled: number;
-  @State() cylinderEnabled: number;
+  @State() cubes: Cube[];
 
   componentWillLoad() {
 
@@ -31,40 +31,58 @@ export class Aleph {
       const {
         app: {
           boxEnabled,
-          sphereEnabled,
-          cylinderEnabled
+          cubes
         }
       } = state;
 
       return {
         boxEnabled,
-        sphereEnabled,
-        cylinderEnabled
+        cubes
       }
     });
 
     this.store.mapDispatchToProps(this, {
       appSetBoxEnabled,
-      appSetSphereEnabled,
-      appSetCylinderEnabled
+      appSetCubes
     });
+
+    this._updateCubes(100);
+  }
+
+  private _updateCubes(numCubes: number): void {
+    const cubes: Cube[] = [];
+
+    for (var i = 0; i < numCubes; i++) {
+      cubes.push(new Cube(Utils.getRandomPosition(), Utils.getRandomColor()));
+    }
+
+    this.appSetCubes(cubes);
   }
 
   private _renderAFrame(): JSX.Element {
     return (
       <a-scene background="color: #ECECEC">
         {
-          this.boxEnabled ? <a-entity id='box' geometry="primitive: box;" position="-1 0.5 -3" rotation="0 45 0" material="color: #4CC3D9" shadow></a-entity> : null
+          this.boxEnabled ? <a-entity geometry="primitive: box;" position="-1 0.5 -3" rotation="0 45 0" material="color: #4CC3D9" shadow></a-entity> : null
         }
         {
-          this.sphereEnabled ? <a-entity geometry="primitive: sphere;" position="0 1.25 -5" radius="1.25" material="color: #EF2D5E" shadow></a-entity> : null
-        }
-        {
-          this.cylinderEnabled ? <a-entity geometry="primitive: cylinder;" position="1 0.75 -3" radius="0.5" height="1.5" material="color: #FFC65D" shadow></a-entity> : null
+          this._renderCubes()
         }
         <a-plane position="0 0 -4" rotation="-90 0 0" width="4" height="4" color="#7BC8A4" shadow></a-plane>
       </a-scene>
     )
+  }
+
+  private _renderCubes() {
+
+    const cubes: JSX.Element[] = [];
+
+    for (var i = 0; i < this.cubes.length; i++) {
+      const cube: Cube = this.cubes[i];
+      cubes.push(<a-entity geometry="primitive: box;" position={cube.position} material={ `color: ${cube.color}; shader: flat` }></a-entity>);
+    }
+
+    return cubes;
   }
 
   private _renderControlPanel(): JSX.Element {
@@ -75,12 +93,8 @@ export class Aleph {
           <ion-toggle checked={this.boxEnabled} onIonChange={(e) => this.appSetBoxEnabled(e.detail.checked)}></ion-toggle>
         </ion-item>
         <ion-item>
-          <ion-label>sphere</ion-label>
-          <ion-toggle checked={this.sphereEnabled} onIonChange={(e) => this.appSetSphereEnabled(e.detail.checked)}></ion-toggle>
-        </ion-item>
-        <ion-item>
-          <ion-label>cylinder</ion-label>
-          <ion-toggle checked={this.cylinderEnabled} onIonChange={(e) => this.appSetCylinderEnabled(e.detail.checked)}></ion-toggle>
+          <ion-label>cubez</ion-label>
+          <ion-range pin="true" min="0" max="1000" value={this.cubes.length} onIonChange={ (e) => this._updateCubes(Number(e.detail.value)) }></ion-range>
         </ion-item>
       </ion-app>
     )

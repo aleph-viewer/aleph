@@ -1,17 +1,16 @@
 import { combineReducers } from 'redux';
 import { ActionTypes, TypeKeys } from './actions';
+import { Cube } from '../Cube';
 
 interface AppState {
   boxEnabled: boolean;
-  sphereEnabled: boolean;
-  cylinderEnabled: boolean;
+  cubes: Cube[];
 }
 
 export const getInitialState = () => {
   return {
     boxEnabled: false,
-    sphereEnabled: false,
-    cylinderEnabled: false
+    cubes: []
   }
 };
 
@@ -24,16 +23,10 @@ export const app = (state: AppState = getInitialState(), action: ActionTypes) =>
         boxEnabled: action.payload
       }
     }
-    case TypeKeys.APP_SET_SPHERE_ENABLED: {
+    case TypeKeys.APP_SET_CUBES: {
       return {
         ...state,
-        sphereEnabled: action.payload
-      }
-    }
-    case TypeKeys.APP_SET_CYLINDER_ENABLED: {
-      return {
-        ...state,
-        cylinderEnabled: action.payload
+        cubes: action.payload
       }
     }
   }
