@@ -7,39 +7,13 @@
 
 import '@stencil/core';
 
-
+import '@stencil/redux';
 
 
 export namespace Components {
 
-  interface UvAleph {
-    /**
-    * The first name
-    */
-    'first': string;
-    /**
-    * The last name
-    */
-    'last': string;
-    /**
-    * The middle name
-    */
-    'middle': string;
-  }
-  interface UvAlephAttributes extends StencilHTMLAttributes {
-    /**
-    * The first name
-    */
-    'first'?: string;
-    /**
-    * The last name
-    */
-    'last'?: string;
-    /**
-    * The middle name
-    */
-    'middle'?: string;
-  }
+  interface UvAleph {}
+  interface UvAlephAttributes extends StencilHTMLAttributes {}
 }
 
 declare global {

@@ -1,5 +1,5 @@
 {
-  "name": "aleph",
+  "name": "@universalviewer/aleph",
   "version": "0.0.1",
   "description": "Aleph",
   "module": "dist/esm/index.js",
