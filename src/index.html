@@ -5,14 +5,38 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0">
   <title>Aleph</title>
   <!-- <script src="https://unpkg.com/aframe@0.9.0/dist/aframe-master.js"></script> -->
+  <script src="https://unpkg.com/three@0.102.1/build/three.min.js"></script>
   <script src="js/aframe-master.js"></script>
   <script src="https://unpkg.com/aframe-orbit-controls@1.2.0/dist/aframe-orbit-controls.min.js"></script>
   <script src="https://unpkg.com/@ionic/core@4.1.1/dist/ionic.js"></script>
   <script src="/build/aleph.js"></script>
+  <style>
+    #container {
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+  </style>
 </head>
 <body>
 
-  <uv-aleph first="Stencil" last="'Don't call me a framework' JS"></uv-aleph>
+  <div id="container">
+    <uv-aleph></uv-aleph>
+  </div>
+
+  <!-- <script>
+    document.addEventListener('DOMContentLoaded', (evt) => {
+      const container = document.querySelector('#container');
+      const aleph = document.createElement('uv-aleph');
+      container.appendChild(aleph);
+    });
+  </script> -->
+  <!-- <uv-aleph first="Stencil" last="'Don't call me a framework' JS"></uv-aleph> -->
 
 </body>
 </html>

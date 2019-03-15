@@ -8,14 +8,16 @@ export interface NullAction {
 export type ActionTypes =
   | NullAction
   | AppSetBoxEnabledAction
-  | AppSetCubesAction
+  | AppAddCubesAction
+  | AppRemoveCubesAction
 ;
 
 export enum TypeKeys {
   NULL = 'NULL',
   ERROR = 'ERROR',
   APP_SET_BOX_ENABLED = 'APP_SET_BOX_ENABLED',
-  APP_SET_CUBES = 'APP_SET_CUBES'
+  APP_ADD_CUBES = 'APP_ADD_CUBES',
+  APP_REMOVE_CUBES = 'APP_REMOVE_CUBES'
 };
 
 export interface AppSetBoxEnabledAction {
@@ -30,15 +32,26 @@ export const appSetBoxEnabled = (payload: boolean) => async (dispatch, _getState
   })
 };
 
-export interface AppSetCubesAction {
-  type: TypeKeys.APP_SET_CUBES,
+export interface AppAddCubesAction {
+  type: TypeKeys.APP_ADD_CUBES,
   payload: Cube[];
 }
 
-export const appSetCubes = (payload: Cube[]) => async (dispatch, _getState) => {
+export const appAddCubes = (payload: Cube[]) => async (dispatch, _getState) => {
   return dispatch({
-    type: TypeKeys.APP_SET_CUBES,
+    type: TypeKeys.APP_ADD_CUBES,
     payload: payload
   })
 };
 
+export interface AppRemoveCubesAction {
+  type: TypeKeys.APP_REMOVE_CUBES,
+  payload: number;
+}
+
+export const appRemoveCubes = (payload: number) => async (dispatch, _getState) => {
+  return dispatch({
+    type: TypeKeys.APP_REMOVE_CUBES,
+    payload: payload
+  })
+};

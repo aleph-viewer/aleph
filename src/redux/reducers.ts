@@ -23,10 +23,16 @@ export const app = (state: AppState = getInitialState(), action: ActionTypes) =>
         boxEnabled: action.payload
       }
     }
-    case TypeKeys.APP_SET_CUBES: {
+    case TypeKeys.APP_ADD_CUBES: {
       return {
         ...state,
-        cubes: action.payload
+        cubes: [...state.cubes, ...action.payload]
+      }
+    }
+    case TypeKeys.APP_REMOVE_CUBES: {
+      return {
+        ...state,
+        cubes: state.cubes.splice(0, state.cubes.length - action.payload)
       }
     }
   }
