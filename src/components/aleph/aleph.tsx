@@ -4,7 +4,7 @@ import { appAddTool, appRemoveTool, appSelectTool, appSaveTools } from '../../re
 import { configureStore } from '../../redux/store';
 import { Tool } from '../../Tool';
 import { Utils } from '../../utils/Utils';
-//type Entity = import('aframe').Entity;
+type Entity = import('aframe').Entity;
 
 @Component({
   tag: 'uv-aleph',
@@ -49,9 +49,6 @@ export class Aleph {
       appSelectTool,
       appSaveTools
     });
-
-    // todo: remove
-    console.log(this._container);
   }
 
   private _renderTools() {
@@ -61,7 +58,7 @@ export class Aleph {
     for (var i = 0; i < this.tools.length; i++) {
       if (i < this.tools.length) {
         const tool: Tool = this.tools[i];
-        tools.push(<a-entity id={`tool-${tool.id}`} geometry="primitive: sphere;" position={tool.position} material={ `color: ${tool.color}; shader: flat` }></a-entity>);
+        tools.push(<a-entity id={tool.id} class="tool collidable" raycaster-listen geometry="primitive: sphere;" position={tool.position} material={ `color: ${tool.color}; shader: flat` }></a-entity>);
       }
       else {
         tools.push(null);
@@ -73,10 +70,19 @@ export class Aleph {
 
   private _renderAFrame(): JSX.Element {
     return (
-      <a-scene embedded renderer="gammaOutput: true" vr-mode-ui="enabled: false" screenshot="enabled: false">
-        {
-          this._renderTools()
-        }
+      <a-scene embedded renderer="colorManagement: true;" vr-mode-ui="enabled: false">
+        <a-entity light="type: directional; color: #ffffff; intensity: 0.75" position="1 1 1"></a-entity>
+        <a-entity light="type: directional; color: #002958; intensity: 0.5" position="-1 -1 -1"></a-entity>
+        <a-entity light="type: ambient; color: #d0d0d0; intensity: 1"></a-entity>
+        <a-camera look-control>
+          <a-entity raycaster="showLine: true; far: 200; objects: .collidable; interval: 1000"
+            position="0 0 -1"
+            scale="0.02 0.02 0.02"
+            geometry="primitive: ring"
+            material="color: black; shader: flat"
+            line="color: orange; opacity: 0.5"></a-entity>
+        </a-camera>
+        { this._renderTools() }
       </a-scene>
     )
   }
@@ -134,6 +140,33 @@ export class Aleph {
         {this._renderControlPanel()}
       </div>
     )
+  }
+
+  private _getSceneEl(): Entity {
+    return this._container.querySelector('a-scene');
+  }
+
+  private _getToolEls(): NodeListOf<Entity> {
+    return this._getSceneEl().querySelectorAll('.tool');
+  }
+
+  private _addToolClickHandlers(): void {
+    this._getToolEls().forEach((el: Entity) => {
+      el.addEventListener('click', (event: CustomEvent) => {
+        if (this.selectedTool !== Number(el.id)) {
+          this.appSelectTool(Number(el.id));
+          console.log('clicked', event.detail.position);
+        }
+      });
+    });
+  }
+
+  componentDidLoad() {
+    this._addToolClickHandlers();
+  }
+
+  componentDidUpdate() {
+    this._addToolClickHandlers();
   }
 
 }
