@@ -1,38 +1,62 @@
 import { combineReducers } from 'redux';
 import { ActionTypes, TypeKeys } from './actions';
-import { Cube } from '../Cube';
+import { Tool } from '../Tool';
 
 interface AppState {
-  boxEnabled: boolean;
-  cubes: Cube[];
+  tools: Tool[];
 }
 
 export const getInitialState = () => {
   return {
-    boxEnabled: false,
-    cubes: []
+    selectedTool: null,
+    tools: []
   }
 };
 
 export const app = (state: AppState = getInitialState(), action: ActionTypes) => {
 
   switch (action.type) {
-    case TypeKeys.APP_SET_BOX_ENABLED: {
+    case TypeKeys.APP_ADD_TOOL: {
       return {
         ...state,
-        boxEnabled: action.payload
+        tools: [...state.tools, action.payload]
       }
     }
-    case TypeKeys.APP_ADD_CUBES: {
+    case TypeKeys.APP_REMOVE_TOOL: {
       return {
         ...state,
-        cubes: [...state.cubes, ...action.payload]
+        selectedTool: null,
+        tools: [
+          ...state.tools.slice(0, action.payload),
+          ...state.tools.slice(action.payload + 1)
+        ]
       }
     }
-    case TypeKeys.APP_REMOVE_CUBES: {
+    case TypeKeys.APP_SELECT_TOOL: {
       return {
         ...state,
-        cubes: state.cubes.splice(0, state.cubes.length - action.payload)
+        selectedTool: action.payload
+      }
+    }
+    case TypeKeys.APP_UPDATE_TOOL: {
+      return {
+        ...state,
+        tools: state.tools.map((tool) => {
+          if (tool.id !== action.payload.id) {
+            return tool;
+          }
+
+          return {
+            ...tool,
+            ...action.payload
+          }
+        })
+      }
+    }
+    case TypeKeys.APP_SAVE_TOOLS: {
+      console.log(JSON.stringify(state.tools));
+      return {
+        ...state
       }
     }
   }

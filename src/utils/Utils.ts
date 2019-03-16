@@ -1,3 +1,5 @@
+import { Tool } from "../Tool";
+
 export class Utils {
 
   static getRandomPosition(): string {
@@ -13,4 +15,19 @@ export class Utils {
     return '#' + ('000000' + Math.random().toString(16).slice(2, 8).toUpperCase()).slice(-6);
   }
 
+  static getToolWithHighestId(tools: Tool[]): number {
+    if (tools.length) {
+      return Math.max.apply(Math, tools.map((tool) => { return tool.id; }))
+    }
+
+    return -1;
+  }
+
+  static createTool(tools: Tool[]): Tool {
+    return {
+      id: Utils.getToolWithHighestId(tools) + 1,
+      position: Utils.getRandomPosition(),
+      color: Utils.getRandomColor()
+    }
+  }
 }
