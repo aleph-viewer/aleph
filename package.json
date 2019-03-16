@@ -11,7 +11,7 @@
     "dist/"
   ],
   "scripts": {
-    "build:dev": "stencil build --dev && npx copyfiles ./js/** www/",
+    "build:dev": "stencil build --dev && copyfiles ./js/** www/",
     "build": "stencil build --docs",
     "start": "stencil build --dev --serve",
     "test": "stencil test --spec --e2e",
@@ -24,8 +24,8 @@
     "redux-thunk": "2.3.0"
   },
   "devDependencies": {
-    "@types/aframe": "^0.8.0",
     "@stencil/core": "0.18.0",
+    "@types/aframe": "^0.8.0",
     "@types/jest": "24.0.6",
     "@types/puppeteer": "1.12.1",
     "@types/redux": "3.6.0",
@@ -33,7 +33,8 @@
     "copyfiles": "2.1.0",
     "jest": "24.1.0",
     "jest-cli": "24.1.0",
-    "puppeteer": "1.12.2"
+    "puppeteer": "1.12.2",
+    "tslint": "^5.14.0"
   },
   "license": "MIT"
 }

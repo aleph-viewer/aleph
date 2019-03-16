@@ -3,7 +3,7 @@ import { Tool } from "../Tool";
 export class Utils {
 
   static getRandomPosition(): string {
-    const cubeDistributionWidth = 100;
+    const cubeDistributionWidth = 20;
     const x: number = Math.random() * cubeDistributionWidth - cubeDistributionWidth / 2;
     const y: number = Math.random() * cubeDistributionWidth - cubeDistributionWidth / 2;
     const z: number = Math.random() * cubeDistributionWidth - cubeDistributionWidth;
@@ -23,11 +23,18 @@ export class Utils {
     return -1;
   }
 
+  static getToolIndex(id: number, tools: Tool[]): number {
+    return tools.findIndex((tool: Tool) => {
+      return tool.id === id;
+    })
+  }
+
   static createTool(tools: Tool[]): Tool {
     return {
       id: Utils.getToolWithHighestId(tools) + 1,
       position: Utils.getRandomPosition(),
-      color: Utils.getRandomColor()
+      color: '#8cb7ff',
+      selectedColor: '#005cf2'
     }
   }
 }

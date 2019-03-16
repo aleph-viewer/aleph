@@ -33,6 +33,7 @@ export const app = (state: AppState = getInitialState(), action: ActionTypes) =>
       }
     }
     case TypeKeys.APP_SELECT_TOOL: {
+      //console.log(action.payload);
       return {
         ...state,
         selectedTool: action.payload

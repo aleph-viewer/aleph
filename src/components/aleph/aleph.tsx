@@ -14,6 +14,9 @@ type Entity = import('aframe').Entity;
 export class Aleph {
 
   private _container: HTMLElement;
+  private _scene: Entity;
+  private _raycaster: Entity;
+  private _toolIntersectedHandler: any;
 
   @Prop({ context: 'store' }) store: Store;
 
@@ -49,6 +52,11 @@ export class Aleph {
       appSelectTool,
       appSaveTools
     });
+
+    this._toolIntersectedHandler = this._toolIntersected.bind(this);
+
+    // todo: remove
+    console.log(this._container);
   }
 
   private _renderTools() {
@@ -58,7 +66,7 @@ export class Aleph {
     for (var i = 0; i < this.tools.length; i++) {
       if (i < this.tools.length) {
         const tool: Tool = this.tools[i];
-        tools.push(<a-entity id={tool.id} class="tool collidable" raycaster-listen geometry="primitive: sphere;" position={tool.position} material={ `color: ${tool.color}; shader: flat` }></a-entity>);
+        tools.push(<a-entity id={tool.id} class="tool collidable" raycaster-listen geometry="primitive: sphere;" position={tool.position} material={ `color: ${ (this.selectedTool === tool.id) ? tool.selectedColor : tool.color}; shader: flat` }></a-entity>);
       }
       else {
         tools.push(null);
@@ -70,12 +78,12 @@ export class Aleph {
 
   private _renderAFrame(): JSX.Element {
     return (
-      <a-scene embedded renderer="colorManagement: true;" vr-mode-ui="enabled: false">
+      <a-scene ref={(el: Entity) => this._scene = el} embedded renderer="colorManagement: true;" vr-mode-ui="enabled: false">
         <a-entity light="type: directional; color: #ffffff; intensity: 0.75" position="1 1 1"></a-entity>
         <a-entity light="type: directional; color: #002958; intensity: 0.5" position="-1 -1 -1"></a-entity>
         <a-entity light="type: ambient; color: #d0d0d0; intensity: 1"></a-entity>
         <a-camera look-control>
-          <a-entity raycaster="showLine: true; far: 200; objects: .collidable; interval: 1000"
+          <a-entity ref={(el: Entity) => this._raycaster = el} raycaster="showLine: true; far: 200; objects: .collidable; interval: 250; autoRefresh: true"
             position="0 0 -1"
             scale="0.02 0.02 0.02"
             geometry="primitive: ring"
@@ -121,9 +129,7 @@ export class Aleph {
               {
                 (this.selectedTool !== null) ? (
                   <ion-button onClick={ () => {
-                    this.appRemoveTool(this.tools.findIndex((tool: Tool) => {
-                      return tool.id === this.selectedTool;
-                    }))
+                    this.appRemoveTool(Utils.getToolIndex(this.selectedTool, this.tools))
                   }}>Delete</ion-button>) : null
               }
             </ion-buttons>
@@ -135,34 +141,34 @@ export class Aleph {
 
   render() {
     return (
-      <div id="container" ref={(el) => this._container = el as HTMLElement}>
+      <div id="container" ref={(el: HTMLElement) => this._container = el}>
         {this._renderAFrame()}
         {this._renderControlPanel()}
       </div>
     )
   }
 
-  private _getSceneEl(): Entity {
-    return this._container.querySelector('a-scene');
+  private _getToolEls(): NodeListOf<Entity> {
+    return this._scene.querySelectorAll('.tool');
   }
 
-  private _getToolEls(): NodeListOf<Entity> {
-    return this._getSceneEl().querySelectorAll('.tool');
+  private _toolIntersected(event: CustomEvent): void {
+    const id: number = Number(event.detail.intersection.object.el.id);
+    if (this.selectedTool !== id) {
+      this.appSelectTool(id);
+    }
   }
 
   private _addToolClickHandlers(): void {
     this._getToolEls().forEach((el: Entity) => {
-      el.addEventListener('click', (event: CustomEvent) => {
-        if (this.selectedTool !== Number(el.id)) {
-          this.appSelectTool(Number(el.id));
-          console.log('clicked', event.detail.position);
-        }
-      });
+      //el.removeEventListener('intersection', this._toolIntersectedHandler);
+      el.addEventListener('intersection', this._toolIntersectedHandler, false);
     });
   }
 
   componentDidLoad() {
     this._addToolClickHandlers();
+    this._raycaster.play();
   }
 
   componentDidUpdate() {

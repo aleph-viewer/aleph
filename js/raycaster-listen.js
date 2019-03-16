@@ -7,14 +7,16 @@ AFRAME.registerComponent('raycaster-listen', {
     });
     this.el.addEventListener('raycaster-intersected-cleared', evt => {
       this.raycaster = null;
+      this.waitingForClear = false;
     });
   },
 
   tick: function () {
     if (!this.raycaster) { return; }  // Not intersecting.
-
     let intersection = this.raycaster.components.raycaster.getIntersection(this.el);
     if (!intersection) { return; }
-    this.el.emit('click', {position: intersection.point}, false);
+    if (this.waitingForClear) { return; }
+    this.waitingForClear = true;
+    this.el.emit('intersection', { intersection: intersection }, false);
   }
 });
