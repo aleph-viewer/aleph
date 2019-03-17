@@ -16,7 +16,7 @@ a-scene {
   height: 100%;
 }
 
-#control-panel {
+aleph-control-panel {
   width: 300px;
   position: absolute;
   top: 0;

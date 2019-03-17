@@ -1,14 +1,13 @@
-import { Component, Prop, State } from '@stencil/core';
-import { Store, Action } from '@stencil/redux';
-import { appAddTool, appRemoveTool, appSelectTool, appSaveTools } from '../../redux/actions';
-import { configureStore } from '../../redux/store';
-import { Tool } from '../../Tool';
-import { Utils } from '../../utils/Utils';
-type Entity = import('aframe').Entity;
+import { Component, Prop, State } from "@stencil/core";
+import { Store, Action } from "@stencil/redux";
+import { appAddTool, appRemoveTool, appSelectTool, appSaveTools } from "../../redux/actions";
+import { configureStore } from "../../redux/store";
+import { Tool } from "../../Tool";
+type Entity = import("aframe").Entity;
 
 @Component({
-  tag: 'uv-aleph',
-  styleUrl: 'aleph.css',
+  tag: "uv-aleph",
+  styleUrl: "aleph.css",
   shadow: true
 })
 export class Aleph {
@@ -53,10 +52,12 @@ export class Aleph {
       appSaveTools
     });
 
+    // set up event handlers
     this._toolIntersectedHandler = this._toolIntersected.bind(this);
 
     // todo: remove
     console.log(this._container);
+    console.log(this._raycaster);
   }
 
   private _renderTools() {
@@ -97,49 +98,17 @@ export class Aleph {
 
   private _renderControlPanel(): JSX.Element {
     return (
-      <ion-app id="control-panel">
-        <ion-item>
-          <ion-list lines="none">
-            <ion-radio-group>
-              <ion-list-header>
-                Tools
-              </ion-list-header>
-              {
-                this.tools.map((tool: Tool) => {
-                  return (
-                    <ion-item>
-                      <ion-label>{ tool.id }</ion-label>
-                      <ion-radio checked={tool.id === this.selectedTool} onClick={() => this.appSelectTool(tool.id)}></ion-radio>
-                    </ion-item>
-                  )
-                })
-              }
-            </ion-radio-group>
-          </ion-list>
-        </ion-item>
-        <ion-footer>
-          <ion-toolbar>
-            <ion-buttons>
-              <ion-button onClick={ () => {
-                this.appAddTool(Utils.createTool(this.tools))
-              }}>Add</ion-button>
-              <ion-button onClick={ () => {
-                this.appSaveTools()
-              }}>Save</ion-button>
-              {
-                (this.selectedTool !== null) ? (
-                  <ion-button onClick={ () => {
-                    this.appRemoveTool(Utils.getToolIndex(this.selectedTool, this.tools))
-                  }}>Delete</ion-button>) : null
-              }
-            </ion-buttons>
-          </ion-toolbar>
-        </ion-footer>
-      </ion-app>
-    )
+      <aleph-control-panel
+        tools={this.tools}
+        selectedTool={this.selectedTool}
+        selectTool={this.appSelectTool}
+        addTool={this.appAddTool}
+        saveTools={this.appSaveTools}
+        removeTool={this.appRemoveTool}></aleph-control-panel>
+    );
   }
 
-  render() {
+  render(): JSX.Element {
     return (
       <div id="container" ref={(el: HTMLElement) => this._container = el}>
         {this._renderAFrame()}
@@ -168,7 +137,6 @@ export class Aleph {
 
   componentDidLoad() {
     this._addToolClickHandlers();
-    this._raycaster.play();
   }
 
   componentDidUpdate() {
