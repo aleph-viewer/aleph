@@ -166,8 +166,7 @@ export class Aleph {
     return this._scene.querySelectorAll('.tool');
   }
 
-  private _srcLoaded(event: CustomEvent): void {
-    console.log('src loaded', event);
+  private _srcLoaded(): void {
     this.appSetSrcLoaded(true);
   }
 
