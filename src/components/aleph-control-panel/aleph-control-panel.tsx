@@ -1,6 +1,6 @@
 import { Component, Prop } from "@stencil/core";
-import { Tool } from "../../Tool";
-import { Utils } from "../../utils/Utils";
+import { Tool } from "../../interfaces/interfaces";
+import { CreateUtils } from "../../utils/utils";
 
 @Component({
   tag: "aleph-control-panel",
@@ -42,7 +42,7 @@ export class ControlPanel {
           <ion-toolbar>
             <ion-buttons>
               <ion-button onClick={ () => {
-                this.addTool(Utils.createTool(this.tools));
+                this.addTool(CreateUtils.createTool(this.tools));
               }}>Add</ion-button>
               <ion-button onClick={ () => {
                 this.saveTools();

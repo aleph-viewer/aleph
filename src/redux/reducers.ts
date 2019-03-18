@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux';
 import { ActionTypes, TypeKeys } from './actions';
-import { Tool } from '../Tool';
-import { Utils } from '../utils/Utils';
+import { Tool } from '../interfaces/Tool';
+import { GetUtils } from '../utils/utils';
 
 interface AppState {
   src: string | null;
@@ -42,7 +42,7 @@ export const app = (state: AppState = getInitialState(), action: ActionTypes) =>
       }
     }
     case TypeKeys.APP_REMOVE_TOOL: {
-      const index: number = Utils.getToolIndex(action.payload, state.tools);
+      const index: number = GetUtils.getToolIndex(action.payload, state.tools);
       return {
         ...state,
         selectedTool: (state.selectedTool === action.payload) ? null : state.selectedTool,
