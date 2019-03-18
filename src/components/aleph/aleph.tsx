@@ -2,7 +2,7 @@ import { Component, Prop, State, Method } from "@stencil/core";
 import { Store, Action } from "@stencil/redux";
 import { appSetSrc, appSetSrcLoaded, appAddTool, appRemoveTool, appSelectTool, appSaveTools } from "../../redux/actions";
 import { configureStore } from "../../redux/store";
-import { Tool } from "../../Tool";
+import { Tool } from "../../interfaces/interfaces";
 type Entity = import("aframe").Entity;
 
 @Component({
@@ -40,7 +40,6 @@ export class Aleph {
   }
 
   componentWillLoad() {
-
     this.store.setStore(configureStore({}));
 
     this.store.mapStateToProps(this, (state) => {
@@ -129,8 +128,6 @@ export class Aleph {
   }
 
   private _renderScene(): JSX.Element {
-    //gltf-model={`dracoDecoderPath: ${this.dracoDecoderPath};`}>
-
     return (
       <a-scene ref={(el: Entity) => this._scene = el}
         embedded
@@ -184,7 +181,6 @@ export class Aleph {
   private _addEventListeners(): void {
     if (this._scene) {
       this._getToolEls().forEach((el: Entity) => {
-        //el.removeEventListener('intersection', this._toolIntersectedHandler);
         el.addEventListener('intersection', this._toolIntersectedHandler, false);
       });
 
@@ -194,9 +190,7 @@ export class Aleph {
     }
   }
 
-  // componentDidLoad() {
-  //   this._addEventListeners();
-  // }
+  componentDidLoad() {}
 
   componentDidUpdate() {
     this._addEventListeners();

@@ -10,7 +10,7 @@ import '@stencil/core';
 import '@stencil/redux';
 import {
   Tool,
-} from './Tool';
+} from './interfaces/interfaces';
 
 
 export namespace Components {

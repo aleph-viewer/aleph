@@ -11,7 +11,7 @@
     "dist/"
   ],
   "scripts": {
-    "build:dev": "stencil build --dev && copyfiles ./js/** www/",
+    "build:dev": "stencil build --dev",
     "build": "stencil build --docs",
     "start": "stencil build --dev --serve",
     "test": "stencil test --spec --e2e",

@@ -1,6 +1,6 @@
-import { Tool } from "../Tool";
+import { Tool } from "../interfaces/Tool";
 
-export class Utils {
+export class GetUtils {
 
   static getRandomPosition(): string {
     const cubeDistributionWidth = 20;
@@ -28,13 +28,5 @@ export class Utils {
       return tool.id === id;
     })
   }
-
-  static createTool(tools: Tool[]): Tool {
-    return {
-      id: Utils.getToolWithHighestId(tools) + 1,
-      position: Utils.getRandomPosition(),
-      color: '#8cb7ff',
-      selectedColor: '#005cf2'
-    }
-  }
+  
 }
