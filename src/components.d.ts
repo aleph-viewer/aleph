@@ -32,7 +32,9 @@ export namespace Components {
     'tools'?: Tool[];
   }
 
-  interface UvAleph {}
+  interface UvAleph {
+    'setSrc': (src: string) => Promise<void>;
+  }
   interface UvAlephAttributes extends StencilHTMLAttributes {}
 }
 

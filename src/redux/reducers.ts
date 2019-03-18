@@ -4,20 +4,37 @@ import { Tool } from '../Tool';
 import { Utils } from '../utils/Utils';
 
 interface AppState {
+  src: string | null;
+  srcLoaded: boolean;
   tools: Tool[];
   selectedTool: number | null;
 }
 
 export const getInitialState = () => {
   return {
+    src: null,
+    srcLoaded: false,
     selectedTool: null,
-    tools: [{"id":1,"position":"9.44080898451908 -2.6658874101881747 -1.3672344825947391","color":"#8cb7ff","selectedColor":"#005cf2"},{"id":3,"position":"2.024138841123051 5.502448747192732 -19.72579870356846","color":"#8cb7ff","selectedColor":"#005cf2"},{"id":5,"position":"-1.7392712095140936 -4.9028220850469895 -11.692082259474734","color":"#8cb7ff","selectedColor":"#005cf2"}]
+    tools: []
   }
 };
 
 export const app = (state: AppState = getInitialState(), action: ActionTypes) => {
 
   switch (action.type) {
+    case TypeKeys.APP_SET_SRC: {
+      return {
+        ...state,
+        src: action.payload,
+        srcLoaded: false
+      }
+    }
+    case TypeKeys.APP_SET_SRC_LOADED: {
+      return {
+        ...state,
+        srcLoaded: action.payload
+      }
+    }
     case TypeKeys.APP_ADD_TOOL: {
       return {
         ...state,

@@ -78804,6 +78804,7 @@
    * @param {string} dracoDecoderPath - Base path from which to load Draco decoder library.
    */
   module.exports.System = registerSystem('gltf-model', {
+
     schema: {
       dracoDecoderPath: {default: ''}
     },
