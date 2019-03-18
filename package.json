@@ -11,7 +11,7 @@
     "dist/"
   ],
   "scripts": {
-    "build:dev": "stencil build --dev && copyfiles ./js/** www/",
+    "build:dev": "stencil build --dev",
     "build": "stencil build --docs",
     "start": "stencil build --dev --serve",
     "test": "stencil test --spec --e2e",
@@ -21,7 +21,10 @@
     "@stencil/redux": "0.1.1",
     "redux": "4.0.1",
     "redux-logger": "3.0.6",
-    "redux-thunk": "2.3.0"
+    "redux-thunk": "2.3.0",
+    "rollup-plugin-commonjs": "^9.2.1",
+    "rollup-plugin-node-resolve": "^4.0.1",
+    "rollup-plugin-typescript2": "^0.20.1"
   },
   "devDependencies": {
     "@stencil/core": "0.18.0",

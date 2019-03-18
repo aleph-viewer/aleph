@@ -1,5 +1,5 @@
 import { Component, Prop } from "@stencil/core";
-import { Tool } from "../../Tool";
+import { Tool } from "../../interfaces/Tool";
 import { Utils } from "../../utils/Utils";
 
 @Component({

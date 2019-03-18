@@ -1,0 +1,1 @@
+AFRAME.registerComponent('raycast-listener', raycastListener);

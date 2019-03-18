@@ -1,4 +1,4 @@
-import { Tool } from "../Tool";
+import { Tool } from "../interfaces/Tool";
 
 export class Utils {
 

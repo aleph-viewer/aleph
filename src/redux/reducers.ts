@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux';
 import { ActionTypes, TypeKeys } from './actions';
-import { Tool } from '../Tool';
+import { Tool } from '../interfaces/Tool';
 import { Utils } from '../utils/Utils';
 
 interface AppState {
