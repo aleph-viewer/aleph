@@ -20,7 +20,7 @@ export class Aleph {
   private _toolIntersectedHandler: any;
 
   @Prop({ context: 'store' }) store: Store;
-  //@Prop() dracoDecoderPath: string | null;
+  @Prop() dracoDecoderPath: string | null;
 
   appSetSrc: Action;
   appSetSrcLoaded: Action;
@@ -40,11 +40,6 @@ export class Aleph {
   }
 
   componentWillLoad() {
-
-    //console.log('draco path', this.dracoDecoderPath);
-
-    // (THREE as any).DRACOLoader.setDecoderPath("js/");
-    // loader.setDRACOLoader(new (THREE as any).DRACOLoader());
 
     this.store.setStore(configureStore({}));
 
@@ -88,7 +83,7 @@ export class Aleph {
     return (
       this.src ? (
         <a-entity ref={(el: Entity) => this._gltfEntity = el}
-          aleph-gltf-model={`src: url(${this.src}); dracoDecoderPath: js/;`}
+          aleph-gltf-model={`src: url(${this.src}); dracoDecoderPath: ${this.dracoDecoderPath};`}
           position="0 -2 -10"
           scale="1 1 1">
         </a-entity>) : null

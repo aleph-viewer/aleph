@@ -1,63 +1,63 @@
 <!DOCTYPE html>
 <html dir="ltr" lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0">
-  <title>Aleph</title>
-  <!-- <script src="https://aframe.io/releases/0.9.0/aframe.min.js"></script> -->
-  <script src="https://unpkg.com/three@0.102.1/build/three.min.js"></script>
-  <script src="js/aframe-master.js"></script>
-  <!-- <script src="https://unpkg.com/aframe-orbit-controls@1.2.0/dist/aframe-orbit-controls.min.js"></script> -->
-  <script src="https://unpkg.com/@ionic/core@4.1.1/dist/ionic.js"></script>
-  <script src="/build/aleph.js"></script>
-  <script src="js/aleph-gltf-model.js"></script>
-  <script src="js/tool.js"></script>
-  <script src="js/raycaster-listen.js"></script>
-  <style>
+ <meta charset="utf-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0">
+ <title>Aleph</title>
+ <!-- <script src="https://aframe.io/releases/0.9.0/aframe.min.js"></script> -->
+ <script src="https://unpkg.com/three@0.102.1/build/three.min.js"></script>
+ <script src="js/aframe-master.js"></script>
+ <!-- <script src="https://unpkg.com/aframe-orbit-controls@1.2.0/dist/aframe-orbit-controls.min.js"></script> -->
+ <script src="https://unpkg.com/@ionic/core@4.1.1/dist/ionic.js"></script>
+ <script src="/build/aleph.js"></script>
+ <script src="js/aleph-gltf-model.js"></script>
+ <script src="js/tool.js"></script>
+ <script src="js/raycaster-listen.js"></script>
+ <style>
 
-    body {
-      font-family: sans-serif;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-    }
+   body {
+     font-family: sans-serif;
+     width: 100%;
+     height: 100%;
+     overflow: hidden;
+   }
 
-  </style>
+ </style>
 </head>
 <body>
 
-  <!--
-    https://ami-test-manifests.netlify.com/collection/dicom/brain/_brain/brain.json
-    https://www.morphosource.org/media/morphosource/dcm_sample/platypus/dcm_multi_vf300_16bit_allslices.json
-    https://www.morphosource.org/media/morphosource/dcm_sample/platypus/dcm_multi_vf300_jpegQ95_16bit_allslices.json
-    https://ami-test-manifests.netlify.com/collection/nifti/brain/_brain/brain.json
-    https://ami-test-manifests.netlify.com/collection/stl/brain/_brain/brain.json
-    https://ami-test-manifests.netlify.com/collection/gltf/fisherman/_fisherman/fisherman.json
-    https://ami-test-manifests.netlify.com/collection/gltf/bowl-draco/_bowl-draco/bowl-draco.json
-    http://files.blokdust.io/test/building-draco.glb
-    http://files.blokdust.io/test/bowl-draco.glb
-  -->
+ <!--
+   https://ami-test-manifests.netlify.com/collection/dicom/brain/_brain/brain.json
+   https://www.morphosource.org/media/morphosource/dcm_sample/platypus/dcm_multi_vf300_16bit_allslices.json
+   https://www.morphosource.org/media/morphosource/dcm_sample/platypus/dcm_multi_vf300_jpegQ95_16bit_allslices.json
+   https://ami-test-manifests.netlify.com/collection/nifti/brain/_brain/brain.json
+   https://ami-test-manifests.netlify.com/collection/stl/brain/_brain/brain.json
+   https://ami-test-manifests.netlify.com/collection/gltf/fisherman/_fisherman/fisherman.json
+   https://ami-test-manifests.netlify.com/collection/gltf/bowl-draco/_bowl-draco/bowl-draco.json
+   http://files.blokdust.io/test/building-draco.glb
+   http://files.blokdust.io/test/bowl-draco.glb
+ -->
 
-  <div id="container">
-    <uv-aleph></uv-aleph>
-  </div>
+ <div id="container">
+   <uv-aleph draco-decoder-path="js/"></uv-aleph>
+ </div>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', function(event) {
-      const aleph = document.querySelector('uv-aleph');
+ <script>
+   document.addEventListener('DOMContentLoaded', function(event) {
+     const aleph = document.querySelector('uv-aleph');
 
-      // aleph.addEventListener('onLoaded', function() {
-      //   aleph.setToolsVisible(true); // can only show them after src loaded
-      //   aleph.setOptionsVisible(true); // can only show them after src loaded
-      // }, false);
+     // aleph.addEventListener('onLoaded', function() {
+     //   aleph.setToolsVisible(true); // can only show them after src loaded
+     //   aleph.setOptionsVisible(true); // can only show them after src loaded
+     // }, false);
 
-      aleph.componentOnReady().then((component) => {
-        //component.setDisplay("slices");
-        component.setSrc("http://files.blokdust.io/test/bowl-draco.glb");
-      });
+     aleph.componentOnReady().then((component) => {
+       //component.setDisplay("slices");
+       component.setSrc("http://files.blokdust.io/test/bowl-draco.glb");
+     });
 
-    });
-  </script>
+   });
+ </script>
 
 </body>
 </html>

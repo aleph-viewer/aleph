@@ -33,9 +33,12 @@ export namespace Components {
   }
 
   interface UvAleph {
+    'dracoDecoderPath': string | null;
     'setSrc': (src: string) => Promise<void>;
   }
-  interface UvAlephAttributes extends StencilHTMLAttributes {}
+  interface UvAlephAttributes extends StencilHTMLAttributes {
+    'dracoDecoderPath'?: string | null;
+  }
 }
 
 declare global {
