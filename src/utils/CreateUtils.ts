@@ -1,5 +1,6 @@
 import { Tool } from "../interfaces/Tool";
 import { GetUtils } from "./GetUtils";
+import { AlephGltfModel } from "../aframe/aframe";
 
 export class CreateUtils {
 
@@ -10,6 +11,10 @@ export class CreateUtils {
       color: '#8cb7ff',
       selectedColor: '#005cf2'
     }
+  }
+
+  static createAframeComponents(): void {
+    AFRAME.registerComponent(AlephGltfModel.getName(), AlephGltfModel.getObject());
   }
 
 }

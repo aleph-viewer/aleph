@@ -3,6 +3,8 @@ import { Store, Action } from "@stencil/redux";
 import { appSetSrc, appSetSrcLoaded, appAddTool, appRemoveTool, appSelectTool, appSaveTools } from "../../redux/actions";
 import { configureStore } from "../../redux/store";
 import { Tool } from "../../interfaces/interfaces";
+import { CreateUtils } from '../../utils/utils';
+
 type Entity = import("aframe").Entity;
 
 @Component({
@@ -40,6 +42,8 @@ export class Aleph {
   }
 
   componentWillLoad() {
+    CreateUtils.createAframeComponents();
+
     this.store.setStore(configureStore({}));
 
     this.store.mapStateToProps(this, (state) => {
