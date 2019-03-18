@@ -4,4 +4,4 @@ import { CreateUtils } from "./CreateUtils";
 export {
     GetUtils,
     CreateUtils
-}
+};
