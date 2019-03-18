@@ -17,7 +17,7 @@ export namespace Components {
 
   interface AlephControlPanel {
     'addTool': (tool: Tool) => void;
-    'removeTool': (index: number) => void;
+    'removeTool': (id: number) => void;
     'saveTools': () => void;
     'selectTool': (id: number) => void;
     'selectedTool': number;
@@ -25,7 +25,7 @@ export namespace Components {
   }
   interface AlephControlPanelAttributes extends StencilHTMLAttributes {
     'addTool'?: (tool: Tool) => void;
-    'removeTool'?: (index: number) => void;
+    'removeTool'?: (id: number) => void;
     'saveTools'?: () => void;
     'selectTool'?: (id: number) => void;
     'selectedTool'?: number;

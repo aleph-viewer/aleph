@@ -14,7 +14,7 @@ export class ControlPanel {
   @Prop() selectTool: (id: number) => void;
   @Prop() addTool: (tool: Tool) => void;
   @Prop() saveTools: () => void;
-  @Prop() removeTool: (index: number) => void;
+  @Prop() removeTool: (id: number) => void;
 
   render(): JSX.Element {
     return (
@@ -50,7 +50,7 @@ export class ControlPanel {
               {
                 (this.selectedTool !== null) ? (
                   <ion-button onClick={ () => {
-                    this.removeTool(Utils.getToolIndex(this.selectedTool, this.tools));
+                    this.removeTool(this.selectedTool);
                   }}>Delete</ion-button>) : null
               }
             </ion-buttons>
