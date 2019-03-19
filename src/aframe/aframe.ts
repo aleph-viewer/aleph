@@ -1,3 +1,4 @@
 import { AlGltfModel } from "./AlGltfModel";
+import { AlTool } from "./AlTool";
 
-export { AlGltfModel };
+export { AlGltfModel, AlTool };
