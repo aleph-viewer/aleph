@@ -1,7 +1,7 @@
-import { combineReducers } from 'redux';
-import { ActionTypes, TypeKeys } from './actions';
-import { Tool } from '../interfaces/Tool';
-import { GetUtils } from '../utils/utils';
+import { combineReducers } from "redux";
+import { ActionTypes, TypeKeys } from "./actions";
+import { Tool } from "../interfaces/Tool";
+import { GetUtils } from "../utils/utils";
 
 interface AppState {
   src: string | null;
@@ -16,52 +16,52 @@ export const getInitialState = () => {
     srcLoaded: false,
     selectedTool: null,
     tools: []
-  }
+  };
 };
 
-export const app = (state: AppState = getInitialState(), action: ActionTypes) => {
-
+export const app = (
+  state: AppState = getInitialState(),
+  action: ActionTypes
+) => {
   switch (action.type) {
     case TypeKeys.APP_SET_SRC: {
       return {
         ...state,
         src: action.payload,
         srcLoaded: false
-      }
+      };
     }
     case TypeKeys.APP_SET_SRC_LOADED: {
       return {
         ...state,
         srcLoaded: action.payload
-      }
+      };
     }
     case TypeKeys.APP_ADD_TOOL: {
       return {
         ...state,
         tools: [...state.tools, action.payload]
-      }
+      };
     }
     case TypeKeys.APP_REMOVE_TOOL: {
       const index: number = GetUtils.getToolIndex(action.payload, state.tools);
       return {
         ...state,
-        selectedTool: (state.selectedTool === action.payload) ? null : state.selectedTool,
-        tools: [
-          ...state.tools.slice(0, index),
-          ...state.tools.slice(index + 1)
-        ]
-      }
+        selectedTool:
+          state.selectedTool === action.payload ? null : state.selectedTool,
+        tools: [...state.tools.slice(0, index), ...state.tools.slice(index + 1)]
+      };
     }
     case TypeKeys.APP_SELECT_TOOL: {
       return {
         ...state,
         selectedTool: action.payload
-      }
+      };
     }
     case TypeKeys.APP_UPDATE_TOOL: {
       return {
         ...state,
-        tools: state.tools.map((tool) => {
+        tools: state.tools.map(tool => {
           if (tool.id !== action.payload.id) {
             return tool;
           }
@@ -69,15 +69,15 @@ export const app = (state: AppState = getInitialState(), action: ActionTypes) =>
           return {
             ...tool,
             ...action.payload
-          }
+          };
         })
-      }
+      };
     }
     case TypeKeys.APP_SAVE_TOOLS: {
       console.log(JSON.stringify(state.tools));
       return {
         ...state
-      }
+      };
     }
   }
 

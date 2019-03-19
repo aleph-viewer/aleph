@@ -1,6 +1,5 @@
 export class RaycasterUtils {
-
-    static castRay(raycaster: THREE.Raycaster, focusObject: THREE.Object3D, camera: THREE.Camera, rayType: 
+  /*static castRay(raycaster: THREE.Raycaster, focusObject: THREE.Object3D, camera: THREE.Camera, rayType: 
         ): { hitPosition: THREE.Vector3, hitNormal: THREE.Vector3 | null } | null 
         {
             let hitPosition = new THREE.Vector3(0, 0, 0);
@@ -63,5 +62,5 @@ export class RaycasterUtils {
           }
         }
         return null;
-      }
+      }*/
 }

@@ -11,6 +11,7 @@
     "dist/"
   ],
   "scripts": {
+    "lint:all": "prettier --write \"./src/**/*.{js,jsx,json,css,ts,tsx}\"",
     "build:dev": "stencil build --dev",
     "build": "stencil build --docs",
     "start": "stencil build --dev --serve",
@@ -24,17 +25,20 @@
     "redux-thunk": "2.3.0"
   },
   "devDependencies": {
-    "@stencil/core": "0.18.0",
-    "@types/aframe": "^0.8.0",
-    "@types/jest": "24.0.6",
-    "@types/puppeteer": "1.12.1",
+    "@stencil/core": "0.18.1",
+    "@types/aframe": "^0.8.2",
+    "@types/jest": "24.0.11",
+    "@types/puppeteer": "1.12.3",
     "@types/redux": "3.6.0",
-    "@types/three": "0.93.22",
+    "@types/three": "0.93.27",
     "copyfiles": "2.1.0",
-    "jest": "24.1.0",
-    "jest-cli": "24.1.0",
-    "puppeteer": "1.12.2",
-    "tslint": "^5.14.0"
+    "jest": "24.5.0",
+    "jest-cli": "24.5.0",
+    "prettier": "^1.16.4",
+    "prettier-check": "^2.0.0",
+    "puppeteer": "1.13.0",
+    "typescript": "^3.3.3333",
+    "typescript-tslint-plugin": "^0.3.1"
   },
   "license": "MIT"
 }

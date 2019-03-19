@@ -1,31 +1,29 @@
 AFRAME.registerComponent("halo", {
   // halo={ `enabled: ${(this.selectedTool === tool.id)? true : false}` }
   schema: {
-      // Here we define our properties, their types and default values
-      red: { type: "number", default: 0.6 },
-      green: {type: "number", default: 1.0},
-      blue: {type: "number", default: 0.9},
-      opacity: { type: "number", default: 0.5 },
-      c: {type: "number", default: 0.3},
-      enabled: {type: "boolean", default: false}
+    // Here we define our properties, their types and default values
+    red: { type: "number", default: 0.6 },
+    green: { type: "number", default: 1.0 },
+    blue: { type: "number", default: 0.9 },
+    opacity: { type: "number", default: 0.5 },
+    c: { type: "number", default: 0.3 },
+    enabled: { type: "boolean", default: false }
   },
 
   init: function() {
-      // Get the ref of the object to which the component is attached
-      const obj = this.el.getObject3D("mesh");
+    // Get the ref of the object to which the component is attached
+    const obj = this.el.getObject3D("mesh");
 
-      // Modify the material
-      obj.material = new THREE.ShaderMaterial(
-      {
-          uniforms: {
-              "r": {value: this.data.red},
-              "g": {value: this.data.green},
-              "b": {value: this.data.blue},
-              "a": {value: this.data.opacity},
-              "c": {value: this.data.c}
-          },
-          vertexShader:
-          `
+    // Modify the material
+    obj.material = new THREE.ShaderMaterial({
+      uniforms: {
+        r: { value: this.data.red },
+        g: { value: this.data.green },
+        b: { value: this.data.blue },
+        a: { value: this.data.opacity },
+        c: { value: this.data.c }
+      },
+      vertexShader: `
           varying vec3 vNormal;
 
           void main()
@@ -34,8 +32,7 @@ AFRAME.registerComponent("halo", {
               gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
           }
           `,
-          fragmentShader:
-          `
+      fragmentShader: `
           varying vec3 vNormal;
           uniform float r;
           uniform float g;
@@ -48,12 +45,12 @@ AFRAME.registerComponent("halo", {
               float intensity = pow( c - dot( vNormal, vec3( 0.0, 0.0, 1.0 ) ), 4.0 );
               gl_FragColor = vec4(r, g, b, a) * intensity;
           }`,
-          side: THREE.BackSide,
-          blending: THREE.AdditiveBlending,
-          transparent: true
-      });
+      side: THREE.BackSide,
+      blending: THREE.AdditiveBlending,
+      transparent: true
+    });
   },
-  update: function () {
-    console.log('enabled', this.enabled);
+  update: function() {
+    console.log("enabled", this.enabled);
   }
 });

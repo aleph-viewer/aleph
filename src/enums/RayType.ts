@@ -1,4 +1,4 @@
 export enum RayType {
-    LOCK = 'LOCK',
-    MESH = 'MESH'
+  LOCK = "LOCK",
+  MESH = "MESH"
 }

@@ -8,7 +8,6 @@ import { CreateUtils } from "../../utils/utils";
   shadow: true
 })
 export class ControlPanel {
-
   @Prop() tools: Tool[];
   @Prop() selectedTool: number;
   @Prop() selectTool: (id: number) => void;
@@ -22,42 +21,51 @@ export class ControlPanel {
         <ion-item>
           <ion-list lines="none">
             <ion-radio-group>
-              <ion-list-header>
-                Tools
-              </ion-list-header>
-              {
-                this.tools.map((tool: Tool) => {
-                  return (
-                    <ion-item>
-                      <ion-label>{ tool.id }</ion-label>
-                      <ion-radio checked={tool.id === this.selectedTool} onClick={() => this.selectTool(tool.id)}></ion-radio>
-                    </ion-item>
-                  );
-                })
-              }
+              <ion-list-header>Tools</ion-list-header>
+              {this.tools.map((tool: Tool) => {
+                return (
+                  <ion-item>
+                    <ion-label>{tool.id}</ion-label>
+                    <ion-radio
+                      checked={tool.id === this.selectedTool}
+                      onClick={() => this.selectTool(tool.id)}
+                    />
+                  </ion-item>
+                );
+              })}
             </ion-radio-group>
           </ion-list>
         </ion-item>
         <ion-footer>
           <ion-toolbar>
             <ion-buttons>
-              <ion-button onClick={ () => {
-                this.addTool(CreateUtils.createTool(this.tools));
-              }}>Add</ion-button>
-              <ion-button onClick={ () => {
-                this.saveTools();
-              }}>Save</ion-button>
-              {
-                (this.selectedTool !== null) ? (
-                  <ion-button onClick={ () => {
+              <ion-button
+                onClick={() => {
+                  this.addTool(CreateUtils.createTool(this.tools));
+                }}
+              >
+                Add
+              </ion-button>
+              <ion-button
+                onClick={() => {
+                  this.saveTools();
+                }}
+              >
+                Save
+              </ion-button>
+              {this.selectedTool !== null ? (
+                <ion-button
+                  onClick={() => {
                     this.removeTool(this.selectedTool);
-                  }}>Delete</ion-button>) : null
-              }
+                  }}
+                >
+                  Delete
+                </ion-button>
+              ) : null}
             </ion-buttons>
           </ion-toolbar>
         </ion-footer>
       </ion-app>
     );
   }
-
 }

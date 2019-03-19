@@ -1,5 +1,3 @@
-import { AlephGltfModel } from "./AlephGltfModel";
+import { AlGltfModel } from "./AlGltfModel";
 
-export {
-    AlephGltfModel
-};
+export { AlGltfModel };

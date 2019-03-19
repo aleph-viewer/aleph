@@ -1,9 +1,16 @@
 import { Component, Prop, State, Method } from "@stencil/core";
 import { Store, Action } from "@stencil/redux";
-import { appSetSrc, appSetSrcLoaded, appAddTool, appRemoveTool, appSelectTool, appSaveTools } from "../../redux/actions";
+import {
+  appSetSrc,
+  appSetSrcLoaded,
+  appAddTool,
+  appRemoveTool,
+  appSelectTool,
+  appSaveTools
+} from "../../redux/actions";
 import { configureStore } from "../../redux/store";
 import { Tool } from "../../interfaces/interfaces";
-import { CreateUtils } from '../../utils/utils';
+import { CreateUtils, GetUtils } from "../../utils/utils";
 
 type Entity = import("aframe").Entity;
 
@@ -13,15 +20,13 @@ type Entity = import("aframe").Entity;
   shadow: true
 })
 export class Aleph {
-
   private _container: HTMLElement;
   private _scene: Entity;
-  private _raycaster: Entity;
-  private _gltfEntity: Entity;
+  private _focusEntity: Entity;
   private _srcLoadedHandler: any;
   private _toolIntersectedHandler: any;
 
-  @Prop({ context: 'store' }) store: Store;
+  @Prop({ context: "store" }) store: Store;
   @Prop() dracoDecoderPath: string | null;
 
   appSetSrc: Action;
@@ -32,7 +37,7 @@ export class Aleph {
   appSaveTools: Action;
 
   @State() src: string | null;
-  @State() srcLoaded: string | null;
+  @State() srcLoaded: boolean;
   @State() selectedTool: number;
   @State() tools: Tool[];
 
@@ -46,14 +51,9 @@ export class Aleph {
 
     this.store.setStore(configureStore({}));
 
-    this.store.mapStateToProps(this, (state) => {
+    this.store.mapStateToProps(this, state => {
       const {
-        app: {
-          src,
-          srcLoaded,
-          selectedTool,
-          tools
-        }
+        app: { src, srcLoaded, selectedTool, tools }
       } = state;
 
       return {
@@ -61,7 +61,7 @@ export class Aleph {
         srcLoaded,
         selectedTool,
         tools
-      }
+      };
     });
 
     this.store.mapDispatchToProps(this, {
@@ -79,67 +79,94 @@ export class Aleph {
 
     // todo: remove
     console.log(this._container);
-    console.log(this._raycaster);
   }
 
   private _renderSrc() {
-    return (
-      this.src ? (
-          <a-entity ref={(el: Entity) => this._gltfEntity = el}
-            al-gltf-model={`src: url(${this.src}); dracoDecoderPath: ${this.dracoDecoderPath};`}
-            position="0 0 0"
-            scale="1 1 1">
-          </a-entity>
-        ) : null
-    );
+    return this.src ? (
+      <a-entity
+        ref={(el: Entity) => (this._focusEntity = el)}
+        al-gltf-model={`
+            src: url(${this.src}); 
+            dracoDecoderPath: ${this.dracoDecoderPath};
+          `}
+        position="0 0 0"
+        scale="1 1 1"
+      />
+    ) : null;
   }
 
   private _renderTools(): JSX.Element {
-
     const tools: JSX.Element[] = [];
 
     for (var i = 0; i < this.tools.length; i++) {
       if (i < this.tools.length) {
         const tool: Tool = this.tools[i];
-        tools.push(<a-entity id={tool.id} class="tool collidable" raycaster-listen geometry="primitive: sphere;" position={tool.position} material={ `color: ${ (this.selectedTool === tool.id) ? tool.selectedColor : tool.color}; shader: flat` }></a-entity>);
+
+        tools.push(
+          <a-entity
+            id={tool.id}
+            class="tool collidable"
+            raycaster-listen
+            geometry="primitive: sphere;"
+            position={tool.position}
+            material={`color: ${
+              this.selectedTool === tool.id ? tool.selectedColor : tool.color
+            }; 
+            shader: flat`}
+          />
+        );
       }
     }
 
     return tools;
   }
 
-  private _renderLights(): JSX.Element  {
+  private _renderLights(): JSX.Element {
     return [
-      <a-entity light="type: directional; color: #ffffff; intensity: 0.75" position="1 1 1"></a-entity>,
-      <a-entity light="type: directional; color: #002958; intensity: 0.5" position="-1 -1 -1"></a-entity>,
-      <a-entity light="type: ambient; color: #d0d0d0; intensity: 1"></a-entity>
+      <a-entity
+        light="type: directional; color: #ffffff; intensity: 0.75"
+        position="1 1 1"
+      />,
+      <a-entity
+        light="type: directional; color: #002958; intensity: 0.5"
+        position="-1 -1 -1"
+      />,
+      <a-entity light="type: ambient; color: #d0d0d0; intensity: 1" />
     ];
   }
 
   private _renderCamera(): JSX.Element {
+    if (this.srcLoaded) {
+      let orbitData = GetUtils.getOrbitData(this._focusEntity);
+      let pos = orbitData.sceneCenter;
+      pos.z += orbitData.sceneDistance;
 
-    return (
-      <a-camera position="0 0 0" orbit-controls={`target: 0 0 0; initialPosition: 0 0 -5; enableDamping: true; zoomSpeed: 1`}>
-        <a-entity ref={(el: Entity) => this._raycaster = el} raycaster="showLine: true; far: 200; objects: .collidable; interval: 250; autoRefresh: true"
-          position="0 0 0"
-          scale="0.02 0.02 0.02"
-          geometry="primitive: ring"
-          material="color: black; shader: flat"
-          line="color: orange; opacity: 0.5"></a-entity>
-      </a-camera>
-    );
+      return (
+        <a-camera
+          orbit-controls={`
+            target: ${orbitData.sceneCenter}; 
+            initialPosition: ${pos}; 
+            enableDamping: true; 
+            zoomSpeed: 1;`}
+        />
+      );
+    } else {
+      return null;
+    }
   }
 
   private _renderScene(): JSX.Element {
     return (
-      <a-scene ref={(el: Entity) => this._scene = el}
+      <a-scene
+        ref={(el: Entity) => (this._scene = el)}
         embedded
         renderer="colorManagement: true;"
-        vr-mode-ui="enabled: false; enterVRButton: test">
-        { this._renderSrc() }
-        { this._renderTools() }
-        { this._renderLights() }
-        { this._renderCamera() }
+        vr-mode-ui="enabled: false; enterVRButton: test"
+      >
+        {this._renderSrc()}
+        {this._renderTools()}
+        {this._renderLights()}
+        {this._renderCamera()}
       </a-scene>
     );
   }
@@ -152,21 +179,22 @@ export class Aleph {
         selectTool={this.appSelectTool}
         addTool={this.appAddTool}
         saveTools={this.appSaveTools}
-        removeTool={this.appRemoveTool}></al-control-panel>
+        removeTool={this.appRemoveTool}
+      />
     );
   }
 
   render(): JSX.Element {
     return (
-      <div id="container" ref={(el: HTMLElement) => this._container = el}>
-        { this._renderScene() }
-        { this._renderControlPanel() }
+      <div id="container" ref={(el: HTMLElement) => (this._container = el)}>
+        {this._renderScene()}
+        {this._renderControlPanel()}
       </div>
-    )
+    );
   }
 
   private _getToolEls(): NodeListOf<Entity> {
-    return this._scene.querySelectorAll('.tool');
+    return this._scene.querySelectorAll(".tool");
   }
 
   private _srcLoaded(): void {
@@ -183,11 +211,19 @@ export class Aleph {
   private _addEventListeners(): void {
     if (this._scene) {
       this._getToolEls().forEach((el: Entity) => {
-        el.addEventListener('intersection', this._toolIntersectedHandler, false);
+        el.addEventListener(
+          "intersection",
+          this._toolIntersectedHandler,
+          false
+        );
       });
 
-      if (this._gltfEntity) {
-        this._gltfEntity.addEventListener('model-loaded', this._srcLoadedHandler, false);
+      if (this._focusEntity) {
+        this._focusEntity.addEventListener(
+          "model-loaded",
+          this._srcLoadedHandler,
+          false
+        );
       }
     }
   }
@@ -195,9 +231,6 @@ export class Aleph {
   componentDidLoad() {}
 
   componentDidUpdate() {
-    // this._scene.setAttribute('visible', false);
-    // this._scene.setAttribute('visible', true);
     this._addEventListeners();
   }
-
 }
