@@ -198,6 +198,7 @@ export class Aleph {
   private _renderSrc() {
     return this.src ? (
       <a-entity
+        id="focusEntity"
         ref={(el: Entity) => (this._focusEntity = el)}
         al-gltf-model={`
             src: url(${this.src});
@@ -219,8 +220,6 @@ export class Aleph {
         tools.push(
           <a-entity
             id={tool.id}
-            class="tool collidable"
-            raycaster-listen
             geometry="primitive: sphere;"
             position={tool.position}
             material={`color: ${
@@ -255,6 +254,7 @@ export class Aleph {
 
       return (
         <a-camera
+          id="main-camera"
           fov={Constants.cameraValues.fov}
           near={Constants.cameraValues.near}
           far={Constants.cameraValues.far}
@@ -263,7 +263,7 @@ export class Aleph {
           orbit-controls={`
             maxPolarAngle: 165;
             minDistance: 0;
-            screenSpacePanning: false;
+            screenSpacePanning: true;
             rotateSpeed: 0.75;
             zoomSpeed: 1.2;
             enableDamping: true;
