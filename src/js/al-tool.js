@@ -1,4 +1,4 @@
-AFRAME.registerComponent('tool', {
+AFRAME.registerComponent('al-tool', {
   schema: {
     color: {default: '#FFF'},
     position: {default: '0 0 0'}

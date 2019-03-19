@@ -1,7 +1,7 @@
 /**
  * glTF model loader.
  */
-AFRAME.registerComponent('aleph-gltf-model', {
+AFRAME.registerComponent('al-gltf-model', {
   schema: {
     src: {type: 'model', default: ''},
     dracoDecoderPath: {type: 'string', default: ''}

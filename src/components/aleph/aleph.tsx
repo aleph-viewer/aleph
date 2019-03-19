@@ -81,11 +81,12 @@ export class Aleph {
   private _renderSrc() {
     return (
       this.src ? (
-        <a-entity ref={(el: Entity) => this._gltfEntity = el}
-          aleph-gltf-model={`src: url(${this.src}); dracoDecoderPath: ${this.dracoDecoderPath};`}
-          position="0 -2 -10"
-          scale="1 1 1">
-        </a-entity>) : null
+          <a-entity ref={(el: Entity) => this._gltfEntity = el}
+            al-gltf-model={`src: url(${this.src}); dracoDecoderPath: ${this.dracoDecoderPath};`}
+            position="0 0 0"
+            scale="1 1 1">
+          </a-entity>
+        ) : null
     );
   }
 
@@ -97,9 +98,6 @@ export class Aleph {
       if (i < this.tools.length) {
         const tool: Tool = this.tools[i];
         tools.push(<a-entity id={tool.id} class="tool collidable" raycaster-listen geometry="primitive: sphere;" position={tool.position} material={ `color: ${ (this.selectedTool === tool.id) ? tool.selectedColor : tool.color}; shader: flat` }></a-entity>);
-      }
-      else {
-        tools.push(null);
       }
     }
 
@@ -115,10 +113,11 @@ export class Aleph {
   }
 
   private _renderCamera(): JSX.Element {
+
     return (
-      <a-camera look-control>
+      <a-camera position="0 0 0" orbit-controls={`target: 0 0 0; initialPosition: 0 0 -5; enableDamping: true; zoomSpeed: 1`}>
         <a-entity ref={(el: Entity) => this._raycaster = el} raycaster="showLine: true; far: 200; objects: .collidable; interval: 250; autoRefresh: true"
-          position="0 0 -1"
+          position="0 0 0"
           scale="0.02 0.02 0.02"
           geometry="primitive: ring"
           material="color: black; shader: flat"
@@ -143,13 +142,13 @@ export class Aleph {
 
   private _renderControlPanel(): JSX.Element {
     return (
-      <aleph-control-panel
+      <al-control-panel
         tools={this.tools}
         selectedTool={this.selectedTool}
         selectTool={this.appSelectTool}
         addTool={this.appAddTool}
         saveTools={this.appSaveTools}
-        removeTool={this.appRemoveTool}></aleph-control-panel>
+        removeTool={this.appRemoveTool}></al-control-panel>
     );
   }
 
@@ -192,6 +191,8 @@ export class Aleph {
   componentDidLoad() {}
 
   componentDidUpdate() {
+    // this._scene.setAttribute('visible', false);
+    // this._scene.setAttribute('visible', true);
     this._addEventListeners();
   }
 
