@@ -1,8 +1,6 @@
 import { AframeComponent, AframeObject } from "../interfaces/interfaces";
+import { GLTFUtils } from "../utils/utils";
 
-/**
- * glTF model loader.
- */
 export class AlGltfModel implements AframeComponent {
   public static getObject(): AframeObject {
     return {
@@ -32,8 +30,8 @@ export class AlGltfModel implements AframeComponent {
         this.loader.load(
           src,
           function gltfLoaded(gltfModel) {
-            self.model = gltfModel.scene || gltfModel.scenes[0];
-            self.model.animations = gltfModel.animations;
+            let res = GLTFUtils.setup(gltfModel);
+            self.model = res.mesh;
             el.setObject3D("mesh", self.model);
             el.emit("model-loaded", { format: "gltf", model: self.model });
           },

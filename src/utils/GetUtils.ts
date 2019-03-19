@@ -1,4 +1,5 @@
 import { Tool } from "../interfaces/Tool";
+import { Constants } from "../Constants";
 import { Entity } from "aframe";
 
 export class GetUtils {
@@ -61,21 +62,28 @@ export class GetUtils {
 
   static getOrbitData(
     entity: Entity
-  ): { sceneCenter: THREE.Vector3; sceneDistance: number } {
+  ): { sceneCenter: THREE.Vector3; initialPosition: THREE.Vector3 } {
     const entityMap = entity.object3DMap;
 
     let entityMesh: THREE.Mesh = entityMap.mesh as THREE.Mesh;
     let sceneCenter: THREE.Vector3;
+    let initialPosition: THREE.Vector3;
     let sceneDistance: number;
 
     if (entityMesh) {
       if (!entityMesh.geometry.boundingSphere) {
         entityMesh.geometry.computeBoundingSphere();
       }
-      sceneCenter = entityMesh.geometry.boundingSphere.center;
-      sceneDistance = entityMesh.geometry.boundingSphere.radius + 5;
+      sceneCenter = entityMesh.position;
+      sceneDistance =
+        (2.5 * entityMesh.geometry.boundingSphere.radius) /
+        Math.tan((Constants.cameraValues.fov * Math.PI) / 180);
 
-      return { sceneCenter, sceneDistance };
+      initialPosition = new THREE.Vector3();
+      initialPosition.copy(sceneCenter);
+      initialPosition.z += sceneDistance;
+
+      return { sceneCenter, initialPosition };
     } else {
       console.warn(
         "No mesh object found in object map!: " + entity.object3DMap

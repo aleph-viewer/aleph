@@ -17,4 +17,8 @@ export class ThreeUtils {
 
     return screenCoordinates;
   }
+
+  static vector3ToString(vec: THREE.Vector3): string {
+    return vec.toArray().join(" ");
+  }
 }

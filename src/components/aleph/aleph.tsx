@@ -10,7 +10,8 @@ import {
 } from "../../redux/actions";
 import { configureStore } from "../../redux/store";
 import { Tool } from "../../interfaces/interfaces";
-import { CreateUtils, GetUtils } from "../../utils/utils";
+import { CreateUtils, GetUtils, ThreeUtils } from "../../utils/utils";
+import { Constants } from "../../Constants";
 
 type Entity = import("aframe").Entity;
 
@@ -138,14 +139,24 @@ export class Aleph {
   private _renderCamera(): JSX.Element {
     if (this.srcLoaded) {
       let orbitData = GetUtils.getOrbitData(this._focusEntity);
-      let pos = orbitData.sceneCenter;
-      pos.z += orbitData.sceneDistance;
 
       return (
         <a-camera
+          fov={Constants.cameraValues.fov}
+          near={Constants.cameraValues.near}
+          far={Constants.cameraValues.far}
+          look-controls='enabled: false'
+          position='0 0 0'
           orbit-controls={`
-            target: ${orbitData.sceneCenter}; 
-            initialPosition: ${pos}; 
+            maxPolarAngle: 165;
+            minDistance: 0;
+            screenSpacePanning: false;
+            rotateSpeed: 0.75;
+            zoomSpeed: 1.2;
+            enableDamping: true;
+            dampingFactor: 0.25;
+            target: ${ThreeUtils.vector3ToString(orbitData.sceneCenter)}; 
+            initialPosition: ${ThreeUtils.vector3ToString(orbitData.initialPosition)};
             enableDamping: true; 
             zoomSpeed: 1;`}
         />
@@ -158,6 +169,7 @@ export class Aleph {
   private _renderScene(): JSX.Element {
     return (
       <a-scene
+        inspector
         ref={(el: Entity) => (this._scene = el)}
         embedded
         renderer="colorManagement: true;"
