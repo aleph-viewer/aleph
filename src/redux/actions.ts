@@ -33,8 +33,7 @@ export type ActionTypes =
   | AppSetVolumeWindowCenterAction
   | AppSetAngleToolEnabledAction
   | AppSetAnnotationToolEnabledAction
-  | AppSetRulerToolEnabledAction
-;
+  | AppSetRulerToolEnabledAction;
 
 export enum TypeKeys {
   NULL = "NULL",
@@ -62,8 +61,8 @@ export enum TypeKeys {
   APP_SET_VOLUME_WINDOW_CENTER = "APP_SET_VOLUME_WINDOW_CENTER",
   APP_SET_ANGLE_TOOL_ENABLED = "APP_SET_ANGLE_TOOL_ENABLED",
   APP_SET_ANNOTATION_TOOL_ENABLED = "APP_SET_ANNOTATION_TOOL_ENABLED",
-  APP_SET_RULER_TOOL_ENABLED = "APP_SET_RULER_TOOL_ENABLED",
-};
+  APP_SET_RULER_TOOL_ENABLED = "APP_SET_RULER_TOOL_ENABLED"
+}
 
 export interface AppSetSrcAction {
   type: TypeKeys.APP_SET_SRC;
@@ -159,11 +158,14 @@ export const appSaveTools = (payload: void) => async (dispatch, _getState) => {
 };
 
 export interface AppSetDisplayModeAction {
-  type: TypeKeys.APP_SET_DISPLAY_MODE,
+  type: TypeKeys.APP_SET_DISPLAY_MODE;
   payload: DisplayMode;
 }
 
-export const appSetDisplayMode = (payload: DisplayMode) => async (dispatch, _getState) => {
+export const appSetDisplayMode = (payload: DisplayMode) => async (
+  dispatch,
+  _getState
+) => {
   return dispatch({
     type: TypeKeys.APP_SET_DISPLAY_MODE,
     payload: payload
@@ -171,11 +173,14 @@ export const appSetDisplayMode = (payload: DisplayMode) => async (dispatch, _get
 };
 
 export interface AppSetOrientationAction {
-  type: TypeKeys.APP_SET_ORIENTATION,
+  type: TypeKeys.APP_SET_ORIENTATION;
   payload: Orientation;
 }
 
-export const appSetOrientation = (payload: Orientation) => async (dispatch, _getState) => {
+export const appSetOrientation = (payload: Orientation) => async (
+  dispatch,
+  _getState
+) => {
   return dispatch({
     type: TypeKeys.APP_SET_ORIENTATION,
     payload: payload
@@ -183,11 +188,14 @@ export const appSetOrientation = (payload: Orientation) => async (dispatch, _get
 };
 
 export interface AppSetToolsVisibleAction {
-  type: TypeKeys.APP_SET_TOOLS_VISIBLE,
+  type: TypeKeys.APP_SET_TOOLS_VISIBLE;
   payload: boolean;
 }
 
-export const appSetToolsVisible = (payload: boolean) => async (dispatch, _getState) => {
+export const appSetToolsVisible = (payload: boolean) => async (
+  dispatch,
+  _getState
+) => {
   return dispatch({
     type: TypeKeys.APP_SET_TOOLS_VISIBLE,
     payload: payload
@@ -195,11 +203,14 @@ export const appSetToolsVisible = (payload: boolean) => async (dispatch, _getSta
 };
 
 export interface AppSetToolsEnabledAction {
-  type: TypeKeys.APP_SET_TOOLS_ENABLED,
+  type: TypeKeys.APP_SET_TOOLS_ENABLED;
   payload: boolean;
 }
 
-export const appSetToolsEnabled = (payload: boolean) => async (dispatch, _getState) => {
+export const appSetToolsEnabled = (payload: boolean) => async (
+  dispatch,
+  _getState
+) => {
   return dispatch({
     type: TypeKeys.APP_SET_TOOLS_ENABLED,
     payload: payload
@@ -207,11 +218,14 @@ export const appSetToolsEnabled = (payload: boolean) => async (dispatch, _getSta
 };
 
 export interface AppSetToolTypeAction {
-  type: TypeKeys.APP_SET_TOOL_TYPE,
+  type: TypeKeys.APP_SET_TOOL_TYPE;
   payload: ToolType;
 }
 
-export const appSetToolType = (payload: ToolType) => async (dispatch, _getState) => {
+export const appSetToolType = (payload: ToolType) => async (
+  dispatch,
+  _getState
+) => {
   return dispatch({
     type: TypeKeys.APP_SET_TOOL_TYPE,
     payload: payload
@@ -219,11 +233,14 @@ export const appSetToolType = (payload: ToolType) => async (dispatch, _getState)
 };
 
 export interface AppSetOptionsVisibleAction {
-  type: TypeKeys.APP_SET_OPTIONS_VISIBLE,
+  type: TypeKeys.APP_SET_OPTIONS_VISIBLE;
   payload: boolean;
 }
 
-export const appSetOptionsVisible = (payload: boolean) => async (dispatch, _getState) => {
+export const appSetOptionsVisible = (payload: boolean) => async (
+  dispatch,
+  _getState
+) => {
   return dispatch({
     type: TypeKeys.APP_SET_OPTIONS_VISIBLE,
     payload: payload
@@ -231,11 +248,14 @@ export const appSetOptionsVisible = (payload: boolean) => async (dispatch, _getS
 };
 
 export interface AppSetOptionsEnabledAction {
-  type: TypeKeys.APP_SET_OPTIONS_ENABLED,
+  type: TypeKeys.APP_SET_OPTIONS_ENABLED;
   payload: boolean;
 }
 
-export const appSetOptionsEnabled = (payload: boolean) => async (dispatch, _getState) => {
+export const appSetOptionsEnabled = (payload: boolean) => async (
+  dispatch,
+  _getState
+) => {
   return dispatch({
     type: TypeKeys.APP_SET_OPTIONS_ENABLED,
     payload: payload
@@ -243,11 +263,14 @@ export const appSetOptionsEnabled = (payload: boolean) => async (dispatch, _getS
 };
 
 export interface AppSetBoundingBoxVisibleAction {
-  type: TypeKeys.APP_SET_BOUNDINGBOX_VISIBLE,
+  type: TypeKeys.APP_SET_BOUNDINGBOX_VISIBLE;
   payload: boolean;
 }
 
-export const appSetBoundingBoxVisible = (payload: boolean) => async (dispatch, _getState) => {
+export const appSetBoundingBoxVisible = (payload: boolean) => async (
+  dispatch,
+  _getState
+) => {
   return dispatch({
     type: TypeKeys.APP_SET_BOUNDINGBOX_VISIBLE,
     payload: payload
@@ -255,11 +278,14 @@ export const appSetBoundingBoxVisible = (payload: boolean) => async (dispatch, _
 };
 
 export interface AppSetSlicesIndexAction {
-  type: TypeKeys.APP_SET_SLICES_INDEX,
+  type: TypeKeys.APP_SET_SLICES_INDEX;
   payload: number;
 }
 
-export const appSetSlicesIndex = (payload: number) => async (dispatch, _getState) => {
+export const appSetSlicesIndex = (payload: number) => async (
+  dispatch,
+  _getState
+) => {
   return dispatch({
     type: TypeKeys.APP_SET_SLICES_INDEX,
     payload: payload
@@ -267,11 +293,14 @@ export const appSetSlicesIndex = (payload: number) => async (dispatch, _getState
 };
 
 export interface AppSetSlicesWindowWidthAction {
-  type: TypeKeys.APP_SET_SLICES_WINDOW_WIDTH,
+  type: TypeKeys.APP_SET_SLICES_WINDOW_WIDTH;
   payload: number;
 }
 
-export const appSetSlicesWindowWidth = (payload: number) => async (dispatch, _getState) => {
+export const appSetSlicesWindowWidth = (payload: number) => async (
+  dispatch,
+  _getState
+) => {
   return dispatch({
     type: TypeKeys.APP_SET_SLICES_WINDOW_WIDTH,
     payload: payload
@@ -279,11 +308,14 @@ export const appSetSlicesWindowWidth = (payload: number) => async (dispatch, _ge
 };
 
 export interface AppSetSlicesWindowCenterAction {
-  type: TypeKeys.APP_SET_SLICES_WINDOW_CENTER,
+  type: TypeKeys.APP_SET_SLICES_WINDOW_CENTER;
   payload: number;
 }
 
-export const appSetSlicesWindowCenter = (payload: number) => async (dispatch, _getState) => {
+export const appSetSlicesWindowCenter = (payload: number) => async (
+  dispatch,
+  _getState
+) => {
   return dispatch({
     type: TypeKeys.APP_SET_SLICES_WINDOW_CENTER,
     payload: payload
@@ -291,11 +323,14 @@ export const appSetSlicesWindowCenter = (payload: number) => async (dispatch, _g
 };
 
 export interface AppSetVolumeStepsAction {
-  type: TypeKeys.APP_SET_VOLUME_STEPS,
+  type: TypeKeys.APP_SET_VOLUME_STEPS;
   payload: number;
 }
 
-export const appSetVolumeSteps = (payload: number) => async (dispatch, _getState) => {
+export const appSetVolumeSteps = (payload: number) => async (
+  dispatch,
+  _getState
+) => {
   return dispatch({
     type: TypeKeys.APP_SET_VOLUME_STEPS,
     payload: payload
@@ -303,11 +338,14 @@ export const appSetVolumeSteps = (payload: number) => async (dispatch, _getState
 };
 
 export interface AppSetVolumeWindowWidthAction {
-  type: TypeKeys.APP_SET_VOLUME_WINDOW_WIDTH,
+  type: TypeKeys.APP_SET_VOLUME_WINDOW_WIDTH;
   payload: number;
 }
 
-export const appSetVolumeWindowWidth = (payload: number) => async (dispatch, _getState) => {
+export const appSetVolumeWindowWidth = (payload: number) => async (
+  dispatch,
+  _getState
+) => {
   return dispatch({
     type: TypeKeys.APP_SET_VOLUME_WINDOW_WIDTH,
     payload: payload
@@ -315,11 +353,14 @@ export const appSetVolumeWindowWidth = (payload: number) => async (dispatch, _ge
 };
 
 export interface AppSetVolumeWindowCenterAction {
-  type: TypeKeys.APP_SET_VOLUME_WINDOW_CENTER,
+  type: TypeKeys.APP_SET_VOLUME_WINDOW_CENTER;
   payload: number;
 }
 
-export const appSetVolumeWindowCenter = (payload: number) => async (dispatch, _getState) => {
+export const appSetVolumeWindowCenter = (payload: number) => async (
+  dispatch,
+  _getState
+) => {
   return dispatch({
     type: TypeKeys.APP_SET_VOLUME_WINDOW_CENTER,
     payload: payload
@@ -327,11 +368,14 @@ export const appSetVolumeWindowCenter = (payload: number) => async (dispatch, _g
 };
 
 export interface AppSetAngleToolEnabledAction {
-  type: TypeKeys.APP_SET_ANGLE_TOOL_ENABLED,
+  type: TypeKeys.APP_SET_ANGLE_TOOL_ENABLED;
   payload: boolean;
 }
 
-export const appSetAngleToolEnabled = (payload: boolean) => async (dispatch, _getState) => {
+export const appSetAngleToolEnabled = (payload: boolean) => async (
+  dispatch,
+  _getState
+) => {
   return dispatch({
     type: TypeKeys.APP_SET_ANGLE_TOOL_ENABLED,
     payload: payload
@@ -339,11 +383,14 @@ export const appSetAngleToolEnabled = (payload: boolean) => async (dispatch, _ge
 };
 
 export interface AppSetAnnotationToolEnabledAction {
-  type: TypeKeys.APP_SET_ANNOTATION_TOOL_ENABLED,
+  type: TypeKeys.APP_SET_ANNOTATION_TOOL_ENABLED;
   payload: boolean;
 }
 
-export const appSetAnnotationToolEnabled = (payload: boolean) => async (dispatch, _getState) => {
+export const appSetAnnotationToolEnabled = (payload: boolean) => async (
+  dispatch,
+  _getState
+) => {
   return dispatch({
     type: TypeKeys.APP_SET_ANNOTATION_TOOL_ENABLED,
     payload: payload
@@ -351,11 +398,14 @@ export const appSetAnnotationToolEnabled = (payload: boolean) => async (dispatch
 };
 
 export interface AppSetRulerToolEnabledAction {
-  type: TypeKeys.APP_SET_RULER_TOOL_ENABLED,
+  type: TypeKeys.APP_SET_RULER_TOOL_ENABLED;
   payload: boolean;
 }
 
-export const appSetRulerToolEnabled = (payload: boolean) => async (dispatch, _getState) => {
+export const appSetRulerToolEnabled = (payload: boolean) => async (
+  dispatch,
+  _getState
+) => {
   return dispatch({
     type: TypeKeys.APP_SET_RULER_TOOL_ENABLED,
     payload: payload
