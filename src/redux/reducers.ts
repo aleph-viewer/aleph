@@ -54,8 +54,10 @@ export const getInitialState = () => {
   };
 };
 
-export const app = (state: AppState = getInitialState(), action: ActionTypes) => {
-
+export const app = (
+  state: AppState = getInitialState(),
+  action: ActionTypes
+) => {
   switch (action.type) {
     case TypeKeys.APP_SET_SRC: {
       return {
@@ -96,7 +98,7 @@ export const app = (state: AppState = getInitialState(), action: ActionTypes) =>
     case TypeKeys.APP_UPDATE_TOOL: {
       return {
         ...state,
-        tools: state.tools.map((tool) => {
+        tools: state.tools.map(tool => {
           if (tool.id !== action.payload.id) {
             return tool;
           }

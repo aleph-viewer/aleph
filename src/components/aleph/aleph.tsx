@@ -6,6 +6,8 @@ import { Tool } from "../../interfaces/interfaces";
 import { ToolType } from "../../enums/ToolType";
 import { Orientation } from "../../enums/Orientation";
 import { DisplayMode } from "../../enums/DisplayMode";
+import { GetUtils, ThreeUtils, CreateUtils } from "../../utils/utils";
+import { Constants } from "../../Constants";
 type Entity = import("aframe").Entity;
 
 @Component({
@@ -14,11 +16,9 @@ type Entity = import("aframe").Entity;
   shadow: true
 })
 export class Aleph {
-
   private _container: HTMLElement;
   private _scene: Entity;
-  private _raycaster: Entity;
-  private _gltfEntity: Entity;
+  private _focusEntity: Entity;
   private _srcLoadedHandler: any;
   private _toolIntersectedHandler: any;
   private _stack: any;
@@ -52,7 +52,7 @@ export class Aleph {
   appSetRulerToolEnabled: Action;
 
   @State() src: string | null;
-  @State() srcLoaded: string | null;
+  @State() srcLoaded: boolean;
   @State() selectedTool: number;
   @State() tools: Tool[];
   @State() displayMode: DisplayMode;
@@ -79,9 +79,11 @@ export class Aleph {
   }
 
   componentWillLoad() {
+    CreateUtils.createAframeComponents();
+
     this.store.setStore(configureStore({}));
 
-    this.store.mapStateToProps(this, (state) => {
+    this.store.mapStateToProps(this, state => {
       const {
         app: {
           src,
@@ -167,65 +169,99 @@ export class Aleph {
 
     // todo: remove
     console.log(this._container);
-    console.log(this._raycaster);
   }
 
   private _renderSrc() {
-    return (
-      this.src ? (
-          <a-entity ref={(el: Entity) => this._gltfEntity = el}
-            al-gltf-model={`src: url(${this.src}); dracoDecoderPath: ${this.dracoDecoderPath};`}
-            position="0 0 0"
-            scale="1 1 1">
-          </a-entity>
-        ) : null
-    );
+    return this.src ? (
+      <a-entity
+        ref={(el: Entity) => (this._focusEntity = el)}
+        al-gltf-model={`
+            src: url(${this.src});
+            dracoDecoderPath: ${this.dracoDecoderPath};
+          `}
+        position="0 0 0"
+        scale="1 1 1"
+      />
+    ) : null;
   }
 
   private _renderTools(): JSX.Element {
-
     const tools: JSX.Element[] = [];
 
     for (var i = 0; i < this.tools.length; i++) {
       if (i < this.tools.length) {
         const tool: Tool = this.tools[i];
-        tools.push(<a-entity id={tool.id}
-          class="tool collidable"
-          raycaster-listen geometry="primitive: sphere;"
-          position={tool.position}
-          material={ `color: ${ (this.selectedTool === tool.id) ? tool.selectedColor : tool.color}; shader: flat` }></a-entity>);
+
+        tools.push(
+          <a-entity
+            id={tool.id}
+            class="tool collidable"
+            raycaster-listen
+            geometry="primitive: sphere;"
+            position={tool.position}
+            material={`color: ${
+              this.selectedTool === tool.id ? tool.selectedColor : tool.color
+            };
+            shader: flat`}
+          />
+        );
       }
     }
 
     return tools;
   }
 
-  private _renderLights(): JSX.Element  {
+  private _renderLights(): JSX.Element {
     return [
-      <a-entity light="type: directional; color: #ffffff; intensity: 0.75" position="1 1 1"></a-entity>,
-      <a-entity light="type: directional; color: #002958; intensity: 0.5" position="-1 -1 -1"></a-entity>,
-      <a-entity light="type: ambient; color: #d0d0d0; intensity: 1"></a-entity>
+      <a-entity
+        light="type: directional; color: #ffffff; intensity: 0.75"
+        position="1 1 1"
+      />,
+      <a-entity
+        light="type: directional; color: #002958; intensity: 0.5"
+        position="-1 -1 -1"
+      />,
+      <a-entity light="type: ambient; color: #d0d0d0; intensity: 1" />
     ];
   }
 
   private _renderCamera(): JSX.Element {
+    if (this.srcLoaded) {
+      let orbitData = GetUtils.getOrbitData(this._focusEntity);
 
-    return (
-      <a-camera position="0 0 0" orbit-controls={`target: 0 0 0; initialPosition: 0 0 -5; enableDamping: true; zoomSpeed: 1`}>
-        <a-entity ref={(el: Entity) => this._raycaster = el}
-          raycaster="showLine: true; far: 200; objects: .collidable; interval: 250; autoRefresh: true"
+      return (
+        <a-camera
+          fov={Constants.cameraValues.fov}
+          near={Constants.cameraValues.near}
+          far={Constants.cameraValues.far}
+          look-controls="enabled: false"
           position="0 0 0"
-          scale="0.02 0.02 0.02"
-          geometry="primitive: ring"
-          material="color: black; shader: flat"
-          line="color: orange; opacity: 0.5"></a-entity>
-      </a-camera>
-    );
+          orbit-controls={`
+            maxPolarAngle: 165;
+            minDistance: 0;
+            screenSpacePanning: false;
+            rotateSpeed: 0.75;
+            zoomSpeed: 1.2;
+            enableDamping: true;
+            dampingFactor: 0.25;
+            target: ${ThreeUtils.vector3ToString(orbitData.sceneCenter)};
+            initialPosition: ${ThreeUtils.vector3ToString(
+              orbitData.initialPosition
+            )};
+            enableDamping: true;
+            zoomSpeed: 1;`}
+        />
+      );
+    } else {
+      return null;
+    }
   }
 
   private _renderScene(): JSX.Element {
     return (
-      <a-scene ref={(el: Entity) => this._scene = el}
+      <a-scene
+        inspector
+        ref={(el: Entity) => (this._scene = el)}
         embedded
         renderer="colorManagement: true;"
         vr-mode-ui="enabled: false">
@@ -284,11 +320,11 @@ export class Aleph {
 
   render(): JSX.Element {
     return (
-      <div id="container" ref={(el: HTMLElement) => this._container = el}>
-        { this._renderScene() }
-        { this._renderControlPanel() }
+      <div id="container" ref={(el: HTMLElement) => (this._container = el)}>
+        {this._renderScene()}
+        {this._renderControlPanel()}
       </div>
-    )
+    );
   }
 
   private _getToolEls(): NodeListOf<Entity> {
@@ -309,11 +345,19 @@ export class Aleph {
   private _addEventListeners(): void {
     if (this._scene) {
       this._getToolEls().forEach((el: Entity) => {
-        el.addEventListener("intersection", this._toolIntersectedHandler, false);
+        el.addEventListener(
+          "intersection",
+          this._toolIntersectedHandler,
+          false
+        );
       });
 
-      if (this._gltfEntity) {
-        this._gltfEntity.addEventListener("model-loaded", this._srcLoadedHandler, false);
+      if (this._focusEntity) {
+        this._focusEntity.addEventListener(
+          "model-loaded",
+          this._srcLoadedHandler,
+          false
+        );
       }
     }
   }
@@ -321,5 +365,4 @@ export class Aleph {
   componentDidUpdate() {
     this._addEventListeners();
   }
-
 }

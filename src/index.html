@@ -9,9 +9,6 @@
  <script src="https://unpkg.com/aframe-orbit-controls@1.2.0/dist/aframe-orbit-controls.min.js"></script>
  <script src="https://unpkg.com/@ionic/core@4.1.1/dist/ionic.js"></script>
  <script src="/build/aleph.js"></script>
- <script src="js/al-gltf-model.js"></script>
- <script src="js/al-tool.js"></script>
- <script src="js/raycaster-listen.js"></script>
  <style>
 
    body {
@@ -35,6 +32,7 @@
    https://ami-test-manifests.netlify.com/collection/gltf/bowl-draco/_bowl-draco/bowl-draco.json
    http://files.blokdust.io/test/building-draco.glb
    http://files.blokdust.io/test/bowl-draco.glb
+   https://iiif-3d-manifests.netlify.com/collection/gltf/woody/_woody/assets/woody.gltf
  -->
 
  <div id="container">
@@ -52,7 +50,7 @@
 
      aleph.componentOnReady().then((component) => {
        //component.setDisplay("slices");
-       component.setSrc("http://files.blokdust.io/test/bowl-draco.glb");
+       component.setSrc("https://iiif-3d-manifests.netlify.com/collection/gltf/woody/_woody/assets/woody.gltf");
      });
 
    });

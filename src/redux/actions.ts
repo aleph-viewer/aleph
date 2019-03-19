@@ -4,7 +4,7 @@ import { Orientation } from "../enums/Orientation";
 import { ToolType } from "../enums/ToolType";
 
 export interface NullAction {
-  type: TypeKeys.NULL
+  type: TypeKeys.NULL;
 }
 
 // Keep this type updated with each known action
@@ -66,7 +66,7 @@ export enum TypeKeys {
 };
 
 export interface AppSetSrcAction {
-  type: TypeKeys.APP_SET_SRC,
+  type: TypeKeys.APP_SET_SRC;
   payload: string;
 }
 
@@ -78,11 +78,14 @@ export const appSetSrc = (payload: string) => async (dispatch, _getState) => {
 };
 
 export interface AppSetSrcLoadedAction {
-  type: TypeKeys.APP_SET_SRC_LOADED,
+  type: TypeKeys.APP_SET_SRC_LOADED;
   payload: boolean;
 }
 
-export const appSetSrcLoaded = (payload: boolean) => async (dispatch, _getState) => {
+export const appSetSrcLoaded = (payload: boolean) => async (
+  dispatch,
+  _getState
+) => {
   return dispatch({
     type: TypeKeys.APP_SET_SRC_LOADED,
     payload: payload
@@ -90,7 +93,7 @@ export const appSetSrcLoaded = (payload: boolean) => async (dispatch, _getState)
 };
 
 export interface AppAddToolAction {
-  type: TypeKeys.APP_ADD_TOOL,
+  type: TypeKeys.APP_ADD_TOOL;
   payload: Tool;
 }
 
@@ -102,11 +105,14 @@ export const appAddTool = (payload: Tool) => async (dispatch, _getState) => {
 };
 
 export interface AppRemoveToolAction {
-  type: TypeKeys.APP_REMOVE_TOOL,
+  type: TypeKeys.APP_REMOVE_TOOL;
   payload: number;
 }
 
-export const appRemoveTool = (payload: number) => async (dispatch, _getState) => {
+export const appRemoveTool = (payload: number) => async (
+  dispatch,
+  _getState
+) => {
   return dispatch({
     type: TypeKeys.APP_REMOVE_TOOL,
     payload: payload
@@ -114,11 +120,14 @@ export const appRemoveTool = (payload: number) => async (dispatch, _getState) =>
 };
 
 export interface AppSelectToolAction {
-  type: TypeKeys.APP_SELECT_TOOL,
+  type: TypeKeys.APP_SELECT_TOOL;
   payload: number;
 }
 
-export const appSelectTool = (payload: number) => async (dispatch, _getState) => {
+export const appSelectTool = (payload: number) => async (
+  dispatch,
+  _getState
+) => {
   return dispatch({
     type: TypeKeys.APP_SELECT_TOOL,
     payload: payload
@@ -126,7 +135,7 @@ export const appSelectTool = (payload: number) => async (dispatch, _getState) =>
 };
 
 export interface AppUpdateToolAction {
-  type: TypeKeys.APP_UPDATE_TOOL,
+  type: TypeKeys.APP_UPDATE_TOOL;
   payload: Tool;
 }
 
@@ -138,7 +147,7 @@ export const appUpdateTool = (payload: Tool) => async (dispatch, _getState) => {
 };
 
 export interface AppSaveToolsAction {
-  type: TypeKeys.APP_SAVE_TOOLS,
+  type: TypeKeys.APP_SAVE_TOOLS;
   payload: void;
 }
 

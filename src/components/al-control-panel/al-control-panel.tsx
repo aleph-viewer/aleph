@@ -121,8 +121,11 @@ export class ControlPanel {
                 (this.selectedTool !== null) ? (
                   <ion-button onClick={ () => {
                     this.removeTool(this.selectedTool);
-                  }}>Delete</ion-button>) : null
-              }
+                  }}
+                >
+                  Delete
+                </ion-button>
+              ) : null}
             </ion-buttons>
           </ion-toolbar>
         </ion-footer>
@@ -387,5 +390,4 @@ export class ControlPanel {
       </ion-app>
     );
   }
-
 }

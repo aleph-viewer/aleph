@@ -1,6 +1,7 @@
 import { Tool } from "../interfaces/Tool";
 import { GetUtils } from "./GetUtils";
 import { ToolType } from "../enums/ToolType";
+import { AlGltfModel } from "../aframe/aframe";
 
 export class CreateUtils {
 
@@ -14,4 +15,7 @@ export class CreateUtils {
     };
   }
 
+  static createAframeComponents(): void {
+    AFRAME.registerComponent(AlGltfModel.getName(), AlGltfModel.getObject());
+  }
 }
