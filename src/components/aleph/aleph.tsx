@@ -145,8 +145,8 @@ export class Aleph {
           fov={Constants.cameraValues.fov}
           near={Constants.cameraValues.near}
           far={Constants.cameraValues.far}
-          look-controls='enabled: false'
-          position='0 0 0'
+          look-controls="enabled: false"
+          position="0 0 0"
           orbit-controls={`
             maxPolarAngle: 165;
             minDistance: 0;
@@ -156,7 +156,9 @@ export class Aleph {
             enableDamping: true;
             dampingFactor: 0.25;
             target: ${ThreeUtils.vector3ToString(orbitData.sceneCenter)}; 
-            initialPosition: ${ThreeUtils.vector3ToString(orbitData.initialPosition)};
+            initialPosition: ${ThreeUtils.vector3ToString(
+              orbitData.initialPosition
+            )};
             enableDamping: true; 
             zoomSpeed: 1;`}
         />
