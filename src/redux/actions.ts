@@ -17,7 +17,7 @@ export type ActionTypes =
   | AppSelectToolAction
   | AppUpdateToolAction
   | AppSaveToolsAction
-  | AppSetDisplayAction
+  | AppSetDisplayModeAction
   | AppSetOrientationAction
   | AppSetToolsVisibleAction
   | AppSetToolsEnabledAction
@@ -25,7 +25,6 @@ export type ActionTypes =
   | AppSetOptionsVisibleAction
   | AppSetOptionsEnabledAction
   | AppSetBoundingBoxVisibleAction
-  | AppSetTHREEJSSceneNeedsUpdateAction
   | AppSetSlicesIndexAction
   | AppSetSlicesWindowWidthAction
   | AppSetSlicesWindowCenterAction
@@ -47,7 +46,7 @@ export enum TypeKeys {
   APP_SELECT_TOOL = "APP_SELECT_TOOL",
   APP_UPDATE_TOOL = "APP_UPDATE_TOOL",
   APP_SAVE_TOOLS = "APP_SAVE_TOOLS",
-  APP_SET_DISPLAY = "APP_SET_DISPLAY",
+  APP_SET_DISPLAY_MODE = "APP_SET_DISPLAY_MODE",
   APP_SET_ORIENTATION = "APP_SET_ORIENTATION",
   APP_SET_TOOLS_VISIBLE = "APP_SET_TOOLS_VISIBLE",
   APP_SET_TOOLS_ENABLED = "APP_SET_TOOLS_ENABLED",
@@ -55,7 +54,6 @@ export enum TypeKeys {
   APP_SET_OPTIONS_VISIBLE = "APP_SET_OPTIONS_VISIBLE",
   APP_SET_OPTIONS_ENABLED = "APP_SET_OPTIONS_ENABLED",
   APP_SET_BOUNDINGBOX_VISIBLE = "APP_SET_BOUNDINGBOX_VISIBLE",
-  APP_SET_THREEJS_SCENE_NEEDS_UPDATE = "APP_SET_THREEJS_SCENE_NEEDS_UPDATE",
   APP_SET_SLICES_INDEX = "APP_SET_SLICES_INDEX",
   APP_SET_SLICES_WINDOW_WIDTH = "APP_SET_SLICES_WINDOW_WIDTH",
   APP_SET_SLICES_WINDOW_CENTER = "APP_SET_SLICES_WINDOW_CENTER",
@@ -151,14 +149,14 @@ export const appSaveTools = (payload: void) => async (dispatch, _getState) => {
   });
 };
 
-export interface AppSetDisplayAction {
-  type: TypeKeys.APP_SET_DISPLAY,
+export interface AppSetDisplayModeAction {
+  type: TypeKeys.APP_SET_DISPLAY_MODE,
   payload: DisplayMode;
 }
 
-export const appSetDisplay = (payload: DisplayMode) => async (dispatch, _getState) => {
+export const appSetDisplayMode = (payload: DisplayMode) => async (dispatch, _getState) => {
   return dispatch({
-    type: TypeKeys.APP_SET_DISPLAY,
+    type: TypeKeys.APP_SET_DISPLAY_MODE,
     payload: payload
   });
 };
@@ -243,18 +241,6 @@ export interface AppSetBoundingBoxVisibleAction {
 export const appSetBoundingBoxVisible = (payload: boolean) => async (dispatch, _getState) => {
   return dispatch({
     type: TypeKeys.APP_SET_BOUNDINGBOX_VISIBLE,
-    payload: payload
-  });
-};
-
-export interface AppSetTHREEJSSceneNeedsUpdateAction {
-  type: TypeKeys.APP_SET_THREEJS_SCENE_NEEDS_UPDATE,
-  payload: boolean;
-}
-
-export const appSetTHREEJSSceneNeedsUpdate = (payload: boolean) => async (dispatch, _getState) => {
-  return dispatch({
-    type: TypeKeys.APP_SET_THREEJS_SCENE_NEEDS_UPDATE,
     payload: payload
   });
 };

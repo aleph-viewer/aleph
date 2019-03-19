@@ -3,12 +3,29 @@ import { ActionTypes, TypeKeys } from './actions';
 import { Tool } from '../interfaces/Tool';
 import { GetUtils } from '../utils/utils';
 import { DisplayMode } from '../enums/DisplayMode';
+import { Orientation } from '../enums/Orientation';
+import { ToolType } from '../enums/ToolType';
 
 interface AppState {
   src: string | null;
   srcLoaded: boolean;
   tools: Tool[];
   selectedTool: number | null;
+  displayMode: DisplayMode;
+  orientation: Orientation;
+  toolsEnabled: boolean;
+  toolType: ToolType;
+  optionsEnabled: boolean;
+  boundingBoxVisible: boolean;
+  slicesIndex: number;
+  slicesWindowWidth: number;
+  slicesWindowCenter: number;
+  volumeSteps: number;
+  volumeWindowWidth: number;
+  volumeWindowCenter: number;
+  angleToolEnabled: boolean;
+  annotationToolEnabled: boolean;
+  rulerToolEnabled: boolean;
 }
 
 export const getInitialState = () => {
@@ -16,7 +33,24 @@ export const getInitialState = () => {
     src: null,
     srcLoaded: false,
     selectedTool: null,
-    tools: []
+    tools: [],
+    displayMode: DisplayMode.MESH,
+    orientation: Orientation.CORONAL,
+    toolsVisible: true,
+    toolsEnabled: false,
+    toolType: ToolType.ANGLE,
+    optionsVisible: true,
+    optionsEnabled: false,
+    boundingBoxVisible: false,
+    slicesIndex: undefined,
+    slicesWindowWidth: undefined,
+    slicesWindowCenter: undefined,
+    volumeSteps: undefined,
+    volumeWindowWidth: undefined,
+    volumeWindowCenter: undefined,
+    angleToolEnabled: true,
+    annotationToolEnabled: true,
+    rulerToolEnabled: true
   };
 };
 
@@ -80,17 +114,17 @@ export const app = (state: AppState = getInitialState(), action: ActionTypes) =>
         ...state
       };
     }
-    case TypeKeys.APP_SET_DISPLAY: {
+    case TypeKeys.APP_SET_DISPLAY_MODE: {
+      console.log(action.payload);
       return {
         ...state,
         boundingBoxVisible: action.payload === DisplayMode.SLICES, // default to bounding box visible in slices mode
-        display: action.payload
+        displayMode: action.payload
       };
     }
     case TypeKeys.APP_SET_ORIENTATION: {
       return {
         ...state,
-        THREEJSSceneNeedsUpdate: true,
         slicesIndex: undefined,
         orientation: action.payload
       };
@@ -108,6 +142,7 @@ export const app = (state: AppState = getInitialState(), action: ActionTypes) =>
       };
     }
     case TypeKeys.APP_SET_TOOL_TYPE: {
+      console.log(action.payload);
       return {
         ...state,
         toolType: action.payload
@@ -129,12 +164,6 @@ export const app = (state: AppState = getInitialState(), action: ActionTypes) =>
       return {
         ...state,
         boundingBoxVisible: action.payload
-      };
-    }
-    case TypeKeys.APP_SET_THREEJS_SCENE_NEEDS_UPDATE: {
-      return {
-        ...state,
-        THREEJSSceneNeedsUpdate: action.payload
       };
     }
     case TypeKeys.APP_SET_SLICES_INDEX: {
