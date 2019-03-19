@@ -19,7 +19,7 @@ export class Aleph {
   private _srcLoadedHandler: any;
   private _toolIntersectedHandler: any;
 
-  @Prop({ context: 'store' }) store: Store;
+  @Prop({ context: "store" }) store: Store;
   @Prop() dracoDecoderPath: string | null;
 
   appSetSrc: Action;
@@ -97,7 +97,11 @@ export class Aleph {
     for (var i = 0; i < this.tools.length; i++) {
       if (i < this.tools.length) {
         const tool: Tool = this.tools[i];
-        tools.push(<a-entity id={tool.id} class="tool collidable" raycaster-listen geometry="primitive: sphere;" position={tool.position} material={ `color: ${ (this.selectedTool === tool.id) ? tool.selectedColor : tool.color}; shader: flat` }></a-entity>);
+        tools.push(<a-entity id={tool.id}
+          class="tool collidable"
+          raycaster-listen geometry="primitive: sphere;"
+          position={tool.position}
+          material={ `color: ${ (this.selectedTool === tool.id) ? tool.selectedColor : tool.color}; shader: flat` }></a-entity>);
       }
     }
 
@@ -162,7 +166,7 @@ export class Aleph {
   }
 
   private _getToolEls(): NodeListOf<Entity> {
-    return this._scene.querySelectorAll('.tool');
+    return this._scene.querySelectorAll(".tool");
   }
 
   private _srcLoaded(): void {
@@ -179,11 +183,11 @@ export class Aleph {
   private _addEventListeners(): void {
     if (this._scene) {
       this._getToolEls().forEach((el: Entity) => {
-        el.addEventListener('intersection', this._toolIntersectedHandler, false);
+        el.addEventListener("intersection", this._toolIntersectedHandler, false);
       });
 
       if (this._gltfEntity) {
-        this._gltfEntity.addEventListener('model-loaded', this._srcLoadedHandler, false);
+        this._gltfEntity.addEventListener("model-loaded", this._srcLoadedHandler, false);
       }
     }
   }

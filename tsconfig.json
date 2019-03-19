@@ -1,5 +1,10 @@
 {
   "compilerOptions": {
+    "plugins": [
+      {
+        "name": "typescript-tslint-plugin"
+      }
+    ],
     "allowSyntheticDefaultImports": true,
     "allowUnreachableCode": false,
     "declaration": false,
