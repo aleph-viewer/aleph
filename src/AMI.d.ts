@@ -1,11 +1,10 @@
-
 // todo: is there an AMI definition file?
 declare namespace AMI {
   class VolumeLoader {
-      constructor(...params);
-      data: any[];
-      free();
-      load(files: string[]): Promise<void>;
+    constructor(...params);
+    data: any[];
+    free();
+    load(files: string[]): Promise<void>;
   }
   class StackHelper {
     constructor(...params);
@@ -54,7 +53,7 @@ declare namespace AMI {
     static worldToData(...params): THREE.Vector3;
     static rescaleSlopeIntercept(...params): any;
   }
-  class  WidgetsCss {
+  class WidgetsCss {
     constructor(...params);
     static code: any;
   }
@@ -78,5 +77,4 @@ declare namespace AMI {
     enabled: boolean;
     domElement: any;
   }
-
 }

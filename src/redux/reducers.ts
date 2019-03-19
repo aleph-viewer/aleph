@@ -1,10 +1,10 @@
-import { combineReducers } from 'redux';
-import { ActionTypes, TypeKeys } from './actions';
-import { Tool } from '../interfaces/Tool';
-import { GetUtils } from '../utils/utils';
-import { DisplayMode } from '../enums/DisplayMode';
-import { Orientation } from '../enums/Orientation';
-import { ToolType } from '../enums/ToolType';
+import { combineReducers } from "redux";
+import { ActionTypes, TypeKeys } from "./actions";
+import { Tool } from "../interfaces/Tool";
+import { GetUtils } from "../utils/utils";
+import { DisplayMode } from "../enums/DisplayMode";
+import { Orientation } from "../enums/Orientation";
+import { ToolType } from "../enums/ToolType";
 
 interface AppState {
   src: string | null;
@@ -82,11 +82,9 @@ export const app = (
       const index: number = GetUtils.getToolIndex(action.payload, state.tools);
       return {
         ...state,
-        selectedTool: (state.selectedTool === action.payload) ? null : state.selectedTool,
-        tools: [
-          ...state.tools.slice(0, index),
-          ...state.tools.slice(index + 1)
-        ]
+        selectedTool:
+          state.selectedTool === action.payload ? null : state.selectedTool,
+        tools: [...state.tools.slice(0, index), ...state.tools.slice(index + 1)]
       };
     }
     case TypeKeys.APP_SELECT_TOOL: {

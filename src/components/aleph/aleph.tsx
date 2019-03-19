@@ -1,6 +1,30 @@
 import { Component, Prop, State, Method } from "@stencil/core";
 import { Store, Action } from "@stencil/redux";
-import { appSetSrc, appSetSrcLoaded, appAddTool, appRemoveTool, appSelectTool, appSaveTools, appSetDisplayMode, appSetOrientation, appSetToolsVisible, appSetToolsEnabled, appSetToolType, appSetOptionsVisible, appSetOptionsEnabled, appSetBoundingBoxVisible, appSetSlicesIndex, appSetSlicesWindowWidth, appSetSlicesWindowCenter, appSetVolumeSteps, appSetVolumeWindowWidth, appSetVolumeWindowCenter, appSetAngleToolEnabled, appSetAnnotationToolEnabled, appSetRulerToolEnabled } from "../../redux/actions";
+import {
+  appSetSrc,
+  appSetSrcLoaded,
+  appAddTool,
+  appRemoveTool,
+  appSelectTool,
+  appSaveTools,
+  appSetDisplayMode,
+  appSetOrientation,
+  appSetToolsVisible,
+  appSetToolsEnabled,
+  appSetToolType,
+  appSetOptionsVisible,
+  appSetOptionsEnabled,
+  appSetBoundingBoxVisible,
+  appSetSlicesIndex,
+  appSetSlicesWindowWidth,
+  appSetSlicesWindowCenter,
+  appSetVolumeSteps,
+  appSetVolumeWindowWidth,
+  appSetVolumeWindowCenter,
+  appSetAngleToolEnabled,
+  appSetAnnotationToolEnabled,
+  appSetRulerToolEnabled
+} from "../../redux/actions";
 import { configureStore } from "../../redux/store";
 import { Tool } from "../../interfaces/interfaces";
 import { ToolType } from "../../enums/ToolType";
@@ -264,11 +288,12 @@ export class Aleph {
         ref={(el: Entity) => (this._scene = el)}
         embedded
         renderer="colorManagement: true;"
-        vr-mode-ui="enabled: false">
-        { this._renderSrc() }
-        { this._renderTools() }
-        { this._renderLights() }
-        { this._renderCamera() }
+        vr-mode-ui="enabled: false"
+      >
+        {this._renderSrc()}
+        {this._renderTools()}
+        {this._renderLights()}
+        {this._renderCamera()}
       </a-scene>
     );
   }
@@ -314,7 +339,7 @@ export class Aleph {
         setVolumeSteps={this.appSetVolumeSteps}
         setVolumeWindowCenter={this.appSetVolumeWindowCenter}
         setVolumeWindowWidth={this.appSetVolumeWindowWidth}
-        ></al-control-panel>
+      />
     );
   }
 

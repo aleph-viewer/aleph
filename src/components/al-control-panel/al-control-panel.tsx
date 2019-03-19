@@ -11,7 +11,6 @@ import { Orientation } from "../../enums/Orientation";
   shadow: true
 })
 export class ControlPanel {
-
   @Prop() angleToolEnabled: boolean;
   @Prop() annotationToolEnabled: boolean;
   @Prop() boundingBoxVisible: boolean;
@@ -52,14 +51,27 @@ export class ControlPanel {
   @Prop() setVolumeWindowWidth: (index: number) => void;
 
   renderDisplayModeToggle(): JSX.Element {
-
     if (this.displayMode !== DisplayMode.MESH) {
       return (
         <ion-item id="mode">
-          <ion-icon name="eye"></ion-icon>
-          <select onChange={(e) => this.setDisplayMode(e.srcElement.nodeValue as DisplayMode)}>
-            <option selected={this.displayMode === DisplayMode.SLICES} value={DisplayMode.SLICES}>Slices</option>
-            <option selected={this.displayMode === DisplayMode.VOLUME} value={DisplayMode.VOLUME}>Volume</option>
+          <ion-icon name="eye" />
+          <select
+            onChange={e =>
+              this.setDisplayMode(e.srcElement.nodeValue as DisplayMode)
+            }
+          >
+            <option
+              selected={this.displayMode === DisplayMode.SLICES}
+              value={DisplayMode.SLICES}
+            >
+              Slices
+            </option>
+            <option
+              selected={this.displayMode === DisplayMode.VOLUME}
+              value={DisplayMode.VOLUME}
+            >
+              Volume
+            </option>
           </select>
         </ion-item>
       );
@@ -69,12 +81,15 @@ export class ControlPanel {
   }
 
   renderToolsToggle(): JSX.Element {
-
     if (this.toolsVisible) {
-      return (<ion-item>
-                <ion-icon name="create"></ion-icon>
-                <ion-toggle onIonChange={(e) => this.setToolsEnabled(e.detail.checked)}></ion-toggle>
-              </ion-item>);
+      return (
+        <ion-item>
+          <ion-icon name="create" />
+          <ion-toggle
+            onIonChange={e => this.setToolsEnabled(e.detail.checked)}
+          />
+        </ion-item>
+      );
     }
 
     return null;
@@ -86,16 +101,17 @@ export class ControlPanel {
         <ion-item>
           <ion-list lines="none">
             <ion-radio-group>
-              {
-                this.tools.map((tool: Tool) => {
-                  return (
-                    <ion-item>
-                      <ion-label>{ tool.id }</ion-label>
-                      <ion-radio checked={tool.id === this.selectedTool} onClick={() => this.selectTool(tool.id)}></ion-radio>
-                    </ion-item>
-                  );
-                })
-              }
+              {this.tools.map((tool: Tool) => {
+                return (
+                  <ion-item>
+                    <ion-label>{tool.id}</ion-label>
+                    <ion-radio
+                      checked={tool.id === this.selectedTool}
+                      onClick={() => this.selectTool(tool.id)}
+                    />
+                  </ion-item>
+                );
+              })}
             </ion-radio-group>
           </ion-list>
         </ion-item>,
@@ -103,23 +119,58 @@ export class ControlPanel {
           <ion-item>
             <ion-label>Tool Type</ion-label>
             <select
-              onChange={(e) => this.setToolType((e.target as HTMLSelectElement).value as ToolType)}>
-              { this.angleToolEnabled ? <option selected={this.toolType === ToolType.ANGLE} value={ToolType.ANGLE}>Angle</option> : null }
-              { this.annotationToolEnabled ? <option selected={this.toolType === ToolType.ANNOTATION} value={ToolType.ANNOTATION}>Annotation</option> : null }
-              { this.rulerToolEnabled ? <option selected={this.toolType === ToolType.RULER} value={ToolType.RULER}>Ruler</option> : null }
+              onChange={e =>
+                this.setToolType((e.target as HTMLSelectElement)
+                  .value as ToolType)
+              }
+            >
+              {this.angleToolEnabled ? (
+                <option
+                  selected={this.toolType === ToolType.ANGLE}
+                  value={ToolType.ANGLE}
+                >
+                  Angle
+                </option>
+              ) : null}
+              {this.annotationToolEnabled ? (
+                <option
+                  selected={this.toolType === ToolType.ANNOTATION}
+                  value={ToolType.ANNOTATION}
+                >
+                  Annotation
+                </option>
+              ) : null}
+              {this.rulerToolEnabled ? (
+                <option
+                  selected={this.toolType === ToolType.RULER}
+                  value={ToolType.RULER}
+                >
+                  Ruler
+                </option>
+              ) : null}
             </select>
           </ion-item>
           <ion-toolbar>
             <ion-buttons>
-              <ion-button onClick={ () => {
-                this.addTool(CreateUtils.createTool(this.tools, this.toolType));
-              }}>Add</ion-button>
-              <ion-button onClick={ () => {
-                this.saveTools();
-              }}>Save</ion-button>
-              {
-                (this.selectedTool !== null) ? (
-                  <ion-button onClick={ () => {
+              <ion-button
+                onClick={() => {
+                  this.addTool(
+                    CreateUtils.createTool(this.tools, this.toolType)
+                  );
+                }}
+              >
+                Add
+              </ion-button>
+              <ion-button
+                onClick={() => {
+                  this.saveTools();
+                }}
+              >
+                Save
+              </ion-button>
+              {this.selectedTool !== null ? (
+                <ion-button
+                  onClick={() => {
                     this.removeTool(this.selectedTool);
                   }}
                 >
@@ -137,10 +188,14 @@ export class ControlPanel {
 
   renderOptionsToggle(): JSX.Element {
     if (this.optionsVisible) {
-          return (<ion-item>
-                    <ion-icon name="options"></ion-icon>
-                    <ion-toggle onIonChange={(e) => this.setOptionsEnabled(e.detail.checked)}></ion-toggle>
-                  </ion-item>);
+      return (
+        <ion-item>
+          <ion-icon name="options" />
+          <ion-toggle
+            onIonChange={e => this.setOptionsEnabled(e.detail.checked)}
+          />
+        </ion-item>
+      );
     }
   }
 
@@ -148,15 +203,16 @@ export class ControlPanel {
     return (
       <ion-item>
         <ion-label>Bounding box</ion-label>
-        <ion-toggle checked={this.boundingBoxVisible} onIonChange={(e) => this.setBoundingBoxVisible(e.detail.checked)}></ion-toggle>
+        <ion-toggle
+          checked={this.boundingBoxVisible}
+          onIonChange={e => this.setBoundingBoxVisible(e.detail.checked)}
+        />
       </ion-item>
-    )
+    );
   }
 
   renderOptions(): JSX.Element {
-
     switch (this.displayMode) {
-
       /*
       case DisplayMode.SLICES: {
 
@@ -343,13 +399,9 @@ export class ControlPanel {
           )
         }
       }*/
-      case DisplayMode.MESH : {
+      case DisplayMode.MESH: {
         if (this.optionsVisible && this.optionsEnabled) {
-          return (
-            <div>
-              { this.renderBoundingBoxEnabled() }
-            </div>
-          );
+          return <div>{this.renderBoundingBoxEnabled()}</div>;
         }
       }
     }
@@ -382,11 +434,11 @@ export class ControlPanel {
   render(): JSX.Element {
     return (
       <ion-app id="control-panel">
-        { this.renderDisplayModeToggle() }
-        { this.renderToolsToggle() }
-        { this.renderTools() }
-        { this.renderOptionsToggle() }
-        { this.renderOptions() }
+        {this.renderDisplayModeToggle()}
+        {this.renderToolsToggle()}
+        {this.renderTools()}
+        {this.renderOptionsToggle()}
+        {this.renderOptions()}
       </ion-app>
     );
   }
