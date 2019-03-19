@@ -15,7 +15,7 @@ import {
 
 export namespace Components {
 
-  interface AlephControlPanel {
+  interface AlControlPanel {
     'addTool': (tool: Tool) => void;
     'removeTool': (id: number) => void;
     'saveTools': () => void;
@@ -23,7 +23,7 @@ export namespace Components {
     'selectedTool': number;
     'tools': Tool[];
   }
-  interface AlephControlPanelAttributes extends StencilHTMLAttributes {
+  interface AlControlPanelAttributes extends StencilHTMLAttributes {
     'addTool'?: (tool: Tool) => void;
     'removeTool'?: (id: number) => void;
     'saveTools'?: () => void;
@@ -43,20 +43,20 @@ export namespace Components {
 
 declare global {
   interface StencilElementInterfaces {
-    'AlephControlPanel': Components.AlephControlPanel;
+    'AlControlPanel': Components.AlControlPanel;
     'UvAleph': Components.UvAleph;
   }
 
   interface StencilIntrinsicElements {
-    'aleph-control-panel': Components.AlephControlPanelAttributes;
+    'al-control-panel': Components.AlControlPanelAttributes;
     'uv-aleph': Components.UvAlephAttributes;
   }
 
 
-  interface HTMLAlephControlPanelElement extends Components.AlephControlPanel, HTMLStencilElement {}
-  var HTMLAlephControlPanelElement: {
-    prototype: HTMLAlephControlPanelElement;
-    new (): HTMLAlephControlPanelElement;
+  interface HTMLAlControlPanelElement extends Components.AlControlPanel, HTMLStencilElement {}
+  var HTMLAlControlPanelElement: {
+    prototype: HTMLAlControlPanelElement;
+    new (): HTMLAlControlPanelElement;
   };
 
   interface HTMLUvAlephElement extends Components.UvAleph, HTMLStencilElement {}
@@ -66,12 +66,12 @@ declare global {
   };
 
   interface HTMLElementTagNameMap {
-    'aleph-control-panel': HTMLAlephControlPanelElement
+    'al-control-panel': HTMLAlControlPanelElement
     'uv-aleph': HTMLUvAlephElement
   }
 
   interface ElementTagNameMap {
-    'aleph-control-panel': HTMLAlephControlPanelElement;
+    'al-control-panel': HTMLAlControlPanelElement;
     'uv-aleph': HTMLUvAlephElement;
   }
 

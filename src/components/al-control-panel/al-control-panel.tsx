@@ -3,8 +3,8 @@ import { Tool } from "../../interfaces/interfaces";
 import { CreateUtils } from "../../utils/utils";
 
 @Component({
-  tag: "aleph-control-panel",
-  styleUrl: "aleph-control-panel.css",
+  tag: "al-control-panel",
+  styleUrl: "al-control-panel.css",
   shadow: true
 })
 export class ControlPanel {
