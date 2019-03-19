@@ -1,13 +1,31 @@
-import { combineReducers } from "redux";
-import { ActionTypes, TypeKeys } from "./actions";
-import { Tool } from "../interfaces/Tool";
-import { GetUtils } from "../utils/utils";
+import { combineReducers } from 'redux';
+import { ActionTypes, TypeKeys } from './actions';
+import { Tool } from '../interfaces/Tool';
+import { GetUtils } from '../utils/utils';
+import { DisplayMode } from '../enums/DisplayMode';
+import { Orientation } from '../enums/Orientation';
+import { ToolType } from '../enums/ToolType';
 
 interface AppState {
   src: string | null;
   srcLoaded: boolean;
   tools: Tool[];
   selectedTool: number | null;
+  displayMode: DisplayMode;
+  orientation: Orientation;
+  toolsEnabled: boolean;
+  toolType: ToolType;
+  optionsEnabled: boolean;
+  boundingBoxVisible: boolean;
+  slicesIndex: number;
+  slicesWindowWidth: number;
+  slicesWindowCenter: number;
+  volumeSteps: number;
+  volumeWindowWidth: number;
+  volumeWindowCenter: number;
+  angleToolEnabled: boolean;
+  annotationToolEnabled: boolean;
+  rulerToolEnabled: boolean;
 }
 
 export const getInitialState = () => {
@@ -15,7 +33,24 @@ export const getInitialState = () => {
     src: null,
     srcLoaded: false,
     selectedTool: null,
-    tools: []
+    tools: [],
+    displayMode: DisplayMode.MESH,
+    orientation: Orientation.CORONAL,
+    toolsVisible: true,
+    toolsEnabled: false,
+    toolType: ToolType.ANGLE,
+    optionsVisible: true,
+    optionsEnabled: false,
+    boundingBoxVisible: false,
+    slicesIndex: undefined,
+    slicesWindowWidth: undefined,
+    slicesWindowCenter: undefined,
+    volumeSteps: undefined,
+    volumeWindowWidth: undefined,
+    volumeWindowCenter: undefined,
+    angleToolEnabled: true,
+    annotationToolEnabled: true,
+    rulerToolEnabled: true
   };
 };
 
@@ -47,9 +82,11 @@ export const app = (
       const index: number = GetUtils.getToolIndex(action.payload, state.tools);
       return {
         ...state,
-        selectedTool:
-          state.selectedTool === action.payload ? null : state.selectedTool,
-        tools: [...state.tools.slice(0, index), ...state.tools.slice(index + 1)]
+        selectedTool: (state.selectedTool === action.payload) ? null : state.selectedTool,
+        tools: [
+          ...state.tools.slice(0, index),
+          ...state.tools.slice(index + 1)
+        ]
       };
     }
     case TypeKeys.APP_SELECT_TOOL: {
@@ -77,6 +114,112 @@ export const app = (
       console.log(JSON.stringify(state.tools));
       return {
         ...state
+      };
+    }
+    case TypeKeys.APP_SET_DISPLAY_MODE: {
+      console.log(action.payload);
+      return {
+        ...state,
+        boundingBoxVisible: action.payload === DisplayMode.SLICES, // default to bounding box visible in slices mode
+        displayMode: action.payload
+      };
+    }
+    case TypeKeys.APP_SET_ORIENTATION: {
+      return {
+        ...state,
+        slicesIndex: undefined,
+        orientation: action.payload
+      };
+    }
+    case TypeKeys.APP_SET_TOOLS_VISIBLE: {
+      return {
+        ...state,
+        toolsVisible: action.payload
+      };
+    }
+    case TypeKeys.APP_SET_TOOLS_ENABLED: {
+      return {
+        ...state,
+        toolsEnabled: action.payload
+      };
+    }
+    case TypeKeys.APP_SET_TOOL_TYPE: {
+      console.log(action.payload);
+      return {
+        ...state,
+        toolType: action.payload
+      };
+    }
+    case TypeKeys.APP_SET_OPTIONS_VISIBLE: {
+      return {
+        ...state,
+        optionsVisible: action.payload
+      };
+    }
+    case TypeKeys.APP_SET_OPTIONS_ENABLED: {
+      return {
+        ...state,
+        optionsEnabled: action.payload
+      };
+    }
+    case TypeKeys.APP_SET_BOUNDINGBOX_VISIBLE: {
+      return {
+        ...state,
+        boundingBoxVisible: action.payload
+      };
+    }
+    case TypeKeys.APP_SET_SLICES_INDEX: {
+      return {
+        ...state,
+        slicesIndex: action.payload
+      };
+    }
+    case TypeKeys.APP_SET_SLICES_WINDOW_WIDTH: {
+      return {
+        ...state,
+        slicesWindowWidth: action.payload
+      };
+    }
+    case TypeKeys.APP_SET_SLICES_WINDOW_CENTER: {
+      return {
+        ...state,
+        slicesWindowCenter: action.payload
+      };
+    }
+    case TypeKeys.APP_SET_VOLUME_STEPS: {
+      return {
+        ...state,
+        volumeSteps: action.payload
+      };
+    }
+    case TypeKeys.APP_SET_VOLUME_WINDOW_WIDTH: {
+      return {
+        ...state,
+        volumeWindowWidth: action.payload
+      };
+    }
+    case TypeKeys.APP_SET_VOLUME_WINDOW_CENTER: {
+      return {
+        ...state,
+        volumeWindowCenter: action.payload
+      };
+    }
+    case TypeKeys.APP_SET_ANGLE_TOOL_ENABLED: {
+      return {
+        ...state,
+        angleToolEnabled: action.payload
+      };
+    }
+    case TypeKeys.APP_SET_ANNOTATION_TOOL_ENABLED: {
+      return {
+        ...state,
+        annotationToolEnabled: action.payload
+      };
+    }
+    case TypeKeys.APP_SET_RULER_TOOL_ENABLED: {
+      return {
+        ...state,
+        rulerToolEnabled: action.payload
       };
     }
   }

@@ -1,18 +1,13 @@
 import { Component, Prop, State, Method } from "@stencil/core";
 import { Store, Action } from "@stencil/redux";
-import {
-  appSetSrc,
-  appSetSrcLoaded,
-  appAddTool,
-  appRemoveTool,
-  appSelectTool,
-  appSaveTools
-} from "../../redux/actions";
+import { appSetSrc, appSetSrcLoaded, appAddTool, appRemoveTool, appSelectTool, appSaveTools, appSetDisplayMode, appSetOrientation, appSetToolsVisible, appSetToolsEnabled, appSetToolType, appSetOptionsVisible, appSetOptionsEnabled, appSetBoundingBoxVisible, appSetSlicesIndex, appSetSlicesWindowWidth, appSetSlicesWindowCenter, appSetVolumeSteps, appSetVolumeWindowWidth, appSetVolumeWindowCenter, appSetAngleToolEnabled, appSetAnnotationToolEnabled, appSetRulerToolEnabled } from "../../redux/actions";
 import { configureStore } from "../../redux/store";
 import { Tool } from "../../interfaces/interfaces";
-import { CreateUtils, GetUtils, ThreeUtils } from "../../utils/utils";
+import { ToolType } from "../../enums/ToolType";
+import { Orientation } from "../../enums/Orientation";
+import { DisplayMode } from "../../enums/DisplayMode";
+import { GetUtils, ThreeUtils, CreateUtils } from "../../utils/utils";
 import { Constants } from "../../Constants";
-
 type Entity = import("aframe").Entity;
 
 @Component({
@@ -26,6 +21,8 @@ export class Aleph {
   private _focusEntity: Entity;
   private _srcLoadedHandler: any;
   private _toolIntersectedHandler: any;
+  private _stack: any;
+  private _stackHelper: AMI.StackHelper;
 
   @Prop({ context: "store" }) store: Store;
   @Prop() dracoDecoderPath: string | null;
@@ -36,11 +33,45 @@ export class Aleph {
   appRemoveTool: Action;
   appSelectTool: Action;
   appSaveTools: Action;
+  appSetDisplayMode: Action;
+  appSetOrientation: Action;
+  appSetToolsVisible: Action;
+  appSetToolsEnabled: Action;
+  appSetToolType: Action;
+  appSetOptionsVisible: Action;
+  appSetOptionsEnabled: Action;
+  appSetBoundingBoxVisible: Action;
+  appSetSlicesIndex: Action;
+  appSetSlicesWindowWidth: Action;
+  appSetSlicesWindowCenter: Action;
+  appSetVolumeSteps: Action;
+  appSetVolumeWindowWidth: Action;
+  appSetVolumeWindowCenter: Action;
+  appSetAngleToolEnabled: Action;
+  appSetAnnotationToolEnabled: Action;
+  appSetRulerToolEnabled: Action;
 
   @State() src: string | null;
   @State() srcLoaded: boolean;
   @State() selectedTool: number;
   @State() tools: Tool[];
+  @State() displayMode: DisplayMode;
+  @State() orientation: Orientation;
+  @State() toolsVisible: boolean;
+  @State() toolsEnabled: boolean;
+  @State() toolType: ToolType;
+  @State() optionsVisible: boolean;
+  @State() optionsEnabled: boolean;
+  @State() boundingBoxVisible: boolean;
+  @State() slicesIndex: number;
+  @State() slicesWindowWidth: number;
+  @State() slicesWindowCenter: number;
+  @State() volumeSteps: number;
+  @State() volumeWindowWidth: number;
+  @State() volumeWindowCenter: number;
+  @State() angleToolEnabled: boolean;
+  @State() annotationToolEnabled: boolean;
+  @State() rulerToolEnabled: boolean;
 
   @Method()
   async setSrc(src: string) {
@@ -54,14 +85,55 @@ export class Aleph {
 
     this.store.mapStateToProps(this, state => {
       const {
-        app: { src, srcLoaded, selectedTool, tools }
+        app: {
+          src,
+          srcLoaded,
+          selectedTool,
+          tools,
+          displayMode,
+          orientation,
+          toolsVisible,
+          toolsEnabled,
+          toolType,
+          optionsVisible,
+          optionsEnabled,
+          boundingBoxVisible,
+          THREEJSSceneNeedsUpdate,
+          slicesIndex,
+          slicesWindowWidth,
+          slicesWindowCenter,
+          volumeSteps,
+          volumeWindowWidth,
+          volumeWindowCenter,
+          angleToolEnabled,
+          annotationToolEnabled,
+          rulerToolEnabled
+        }
       } = state;
 
       return {
         src,
         srcLoaded,
         selectedTool,
-        tools
+        tools,
+        displayMode,
+        orientation,
+        toolsVisible,
+        toolsEnabled,
+        toolType,
+        optionsVisible,
+        optionsEnabled,
+        boundingBoxVisible,
+        THREEJSSceneNeedsUpdate,
+        slicesIndex,
+        slicesWindowWidth,
+        slicesWindowCenter,
+        volumeSteps,
+        volumeWindowWidth,
+        volumeWindowCenter,
+        angleToolEnabled,
+        annotationToolEnabled,
+        rulerToolEnabled
       };
     });
 
@@ -71,7 +143,24 @@ export class Aleph {
       appAddTool,
       appRemoveTool,
       appSelectTool,
-      appSaveTools
+      appSaveTools,
+      appSetDisplayMode,
+      appSetOrientation,
+      appSetToolsVisible,
+      appSetToolsEnabled,
+      appSetToolType,
+      appSetOptionsVisible,
+      appSetOptionsEnabled,
+      appSetBoundingBoxVisible,
+      appSetSlicesIndex,
+      appSetSlicesWindowWidth,
+      appSetSlicesWindowCenter,
+      appSetVolumeSteps,
+      appSetVolumeWindowWidth,
+      appSetVolumeWindowCenter,
+      appSetAngleToolEnabled,
+      appSetAnnotationToolEnabled,
+      appSetRulerToolEnabled
     });
 
     // set up event handlers
@@ -88,7 +177,7 @@ export class Aleph {
         id="focusEntity"
         ref={(el: Entity) => (this._focusEntity = el)}
         al-gltf-model={`
-            src: url(${this.src}); 
+            src: url(${this.src});
             dracoDecoderPath: ${this.dracoDecoderPath};
           `}
         position="0 0 0"
@@ -111,7 +200,7 @@ export class Aleph {
             position={tool.position}
             material={`color: ${
               this.selectedTool === tool.id ? tool.selectedColor : tool.color
-            }; 
+            };
             shader: flat`}
           />
         );
@@ -155,11 +244,11 @@ export class Aleph {
             zoomSpeed: 1.2;
             enableDamping: true;
             dampingFactor: 0.25;
-            target: ${ThreeUtils.vector3ToString(orbitData.sceneCenter)}; 
+            target: ${ThreeUtils.vector3ToString(orbitData.sceneCenter)};
             initialPosition: ${ThreeUtils.vector3ToString(
               orbitData.initialPosition
             )};
-            enableDamping: true; 
+            enableDamping: true;
             zoomSpeed: 1;`}
         />
       );
@@ -175,26 +264,57 @@ export class Aleph {
         ref={(el: Entity) => (this._scene = el)}
         embedded
         renderer="colorManagement: true;"
-        vr-mode-ui="enabled: false; enterVRButton: test"
-      >
-        {this._renderSrc()}
-        {this._renderTools()}
-        {this._renderLights()}
-        {this._renderCamera()}
+        vr-mode-ui="enabled: false">
+        { this._renderSrc() }
+        { this._renderTools() }
+        { this._renderLights() }
+        { this._renderCamera() }
       </a-scene>
     );
   }
 
   private _renderControlPanel(): JSX.Element {
+    // todo: tunnel state
     return (
       <al-control-panel
-        tools={this.tools}
+        angleToolEnabled={this.angleToolEnabled}
+        annotationToolEnabled={this.annotationToolEnabled}
+        boundingBoxVisible={this.boundingBoxVisible}
+        displayMode={this.displayMode}
+        optionsEnabled={this.optionsEnabled}
+        optionsVisible={this.optionsVisible}
+        orientation={this.orientation}
+        rulerToolEnabled={this.rulerToolEnabled}
         selectedTool={this.selectedTool}
-        selectTool={this.appSelectTool}
+        slicesIndex={this.slicesIndex}
+        slicesWindowCenter={this.slicesWindowCenter}
+        slicesWindowWidth={this.slicesWindowWidth}
+        stack={this._stack}
+        stackHelper={this._stackHelper}
+        tools={this.tools}
+        toolsEnabled={this.toolsEnabled}
+        toolsVisible={this.toolsVisible}
+        toolType={this.toolType}
+        volumeSteps={this.volumeSteps}
+        volumeWindowCenter={this.volumeWindowCenter}
+        volumeWindowWidth={this.volumeWindowWidth}
         addTool={this.appAddTool}
-        saveTools={this.appSaveTools}
         removeTool={this.appRemoveTool}
-      />
+        saveTools={this.appSaveTools}
+        selectTool={this.appSelectTool}
+        setBoundingBoxVisible={this.appSetBoundingBoxVisible}
+        setDisplayMode={this.appSetDisplayMode}
+        setOptionsEnabled={this.appSetOptionsEnabled}
+        setOrientation={this.appSetOrientation}
+        setSlicesIndex={this.appSetSlicesIndex}
+        setSlicesWindowCenter={this.appSetSlicesWindowCenter}
+        setSlicesWindowWidth={this.appSetSlicesWindowWidth}
+        setToolsEnabled={this.appSetToolsEnabled}
+        setToolType={this.appSetToolType}
+        setVolumeSteps={this.appSetVolumeSteps}
+        setVolumeWindowCenter={this.appSetVolumeWindowCenter}
+        setVolumeWindowWidth={this.appSetVolumeWindowWidth}
+        ></al-control-panel>
     );
   }
 
@@ -241,8 +361,6 @@ export class Aleph {
       }
     }
   }
-
-  componentDidLoad() {}
 
   componentDidUpdate() {
     this._addEventListeners();
