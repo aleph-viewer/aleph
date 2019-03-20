@@ -52,7 +52,6 @@ export class Aleph {
   private _scale: number;
   private _validTarget: boolean;
   private _maxMeshDistance: number;
-  private _camera: THREE.PerspectiveCamera;
 
   @Prop({ context: "store" }) store: Store;
   @Prop() dracoDecoderPath: string | null;
@@ -338,7 +337,6 @@ export class Aleph {
           `}
           ref={el => {
             this._controls = el.object3DMap.controls;
-            this._camera = el.object3DMap.camera;
           }}
         />
       );
@@ -487,11 +485,6 @@ export class Aleph {
           this._srcLoadedHandler,
           false
         );
-      }
-      if (this._camera) {
-        this._camera.addEventListener("raycaster-intersect-cleared", () => {
-          this.appSelectTool(-1);
-        });
       }
     }
   }

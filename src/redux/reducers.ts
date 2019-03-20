@@ -89,6 +89,7 @@ export const app = (
       };
     }
     case TypeKeys.APP_SELECT_TOOL: {
+      console.log("selected: ", action.payload);
       return {
         ...state,
         selectedTool: action.payload
@@ -116,7 +117,6 @@ export const app = (
       };
     }
     case TypeKeys.APP_SET_DISPLAY_MODE: {
-      console.log(action.payload);
       return {
         ...state,
         boundingBoxVisible: action.payload === DisplayMode.SLICES, // default to bounding box visible in slices mode
@@ -143,7 +143,6 @@ export const app = (
       };
     }
     case TypeKeys.APP_SET_TOOL_TYPE: {
-      console.log(action.payload);
       return {
         ...state,
         toolType: action.payload
