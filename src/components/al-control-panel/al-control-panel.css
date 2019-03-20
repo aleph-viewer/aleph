@@ -1,6 +1,20 @@
-#control-panel ion-label {
-  font-size: 14px;
+#control-panel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow-y: auto;
+  width: 100%;
+  max-width: 300px;
+  max-height: 100%;
 }
+
+/* #control-panel ion-app {
+  padding: 10px;
+} */
+
+/* #control-panel ion-label {
+  font-size: 14px;
+} */
 
 #control-panel select {
   padding: 5px;
