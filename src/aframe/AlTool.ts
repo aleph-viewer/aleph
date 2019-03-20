@@ -92,14 +92,14 @@ export class AlTool implements AframeComponent {
               "position",
               ThreeUtils.vector3ToString(result)
             );
-          }
 
-          // Update the raycaster for next frame
-          let pos = this.el.getAttribute("position");
-          let direction = mesh.position
-            .sub(this.focusObject.position)
-            .normalize();
-          (this.raycaster as THREE.Raycaster).set(pos, direction);
+            // Update the raycaster for next frame
+            let pos = this.el.getAttribute("position");
+            let direction = mesh.position
+              .sub(this.focusObject.position)
+              .normalize();
+            (this.raycaster as THREE.Raycaster).set(pos, direction);
+          }
         });
 
         //#endregion
