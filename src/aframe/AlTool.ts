@@ -5,6 +5,8 @@ import { Constants } from "../Constants";
 export class AlTool implements AframeComponent {
   public static getObject(): AframeObject {
     return {
+      dependencies: ['raycaster'],
+
       schema: {
         focusId: { type: "string", default: "focusEntity" },
         needsUpdate: { type: "boolean", default: "false" },
@@ -17,7 +19,7 @@ export class AlTool implements AframeComponent {
         console.log("init tool", this);
 
         //#region State setup
-        const cam = document.querySelector("a-camera").object3DMap.camera;
+        const cam = this.el.sceneEl.camera.el.object3DMap.camera;
         if (!cam) {
           console.error("no camera in scene!: " + cam);
         }
@@ -59,6 +61,14 @@ export class AlTool implements AframeComponent {
           0,
           this.camera.far
         );
+
+        this.el.addEventListener('raycaster-intersection', function () {
+          console.log('Mouse hit something!');
+        });
+        
+        this.el.addEventListener('raycaster-intersected-cleared', function () {
+          console.log('Mouse moved away!');
+        });
         //#endregion
 
         this.needsUpdate = this.data.needsUpdate;
