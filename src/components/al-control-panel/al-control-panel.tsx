@@ -432,13 +432,15 @@ export class ControlPanel {
 
   render(): JSX.Element {
     return (
-      <ion-app id="control-panel">
-        {this.renderDisplayModeToggle()}
-        {this.renderToolsToggle()}
-        {this.renderTools()}
-        {this.renderOptionsToggle()}
-        {this.renderOptions()}
-      </ion-app>
+      <div id="control-panel">
+        <ion-app>
+          {this.renderDisplayModeToggle()}
+          {this.renderToolsToggle()}
+          {this.renderTools()}
+          {this.renderOptionsToggle()}
+          {this.renderOptions()}
+        </ion-app>
+      </div>
     );
   }
 }
