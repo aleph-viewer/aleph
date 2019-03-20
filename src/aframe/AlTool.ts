@@ -1,7 +1,7 @@
 import { AframeComponent, AframeObject } from "../interfaces/interfaces";
-import { RaycasterUtils } from "../utils/utils";
+import { RaycasterUtils, ThreeUtils } from "../utils/utils";
 import { Constants } from "../Constants";
-import { Entity } from "aframe";
+
 export class AlTool implements AframeComponent {
   public static getObject(): AframeObject {
     return {
@@ -11,7 +11,7 @@ export class AlTool implements AframeComponent {
       },
 
       init(): void {
-        console.log("init tool", this);
+        //console.log("init tool", this);
 
         //#region State setup
         try {
@@ -22,7 +22,7 @@ export class AlTool implements AframeComponent {
 
         // Not properly selecting from document!
         try {
-          const docEl = document.getElementById(this.data.focusId) as Entity;
+          const docEl = this.el.sceneEl.querySelector(this.data.focusId);
           const focus = docEl.object3DMap.mesh;
           this.focusObject = focus;
         } catch {
@@ -31,49 +31,51 @@ export class AlTool implements AframeComponent {
         //#endregion
 
         //#region Mesh Setup
-        this.geometry = new THREE.SphereGeometry(1, 16, 16);
+        let geometry = new THREE.SphereGeometry(1, 16, 16);
 
         this.selectedColor = new THREE.Color(Constants.colorValues.red);
         this.normalColor = new THREE.Color(Constants.colorValues.blue);
 
-        this.material = new THREE.MeshBasicMaterial({
+        let material = new THREE.MeshBasicMaterial({
           color: this.normalColor
         });
 
-        let mesh = new THREE.Mesh(this.geometry, this.material);
+        let mesh = new THREE.Mesh(geometry, material);
         this.el.setObject3D("mesh", mesh);
         //#endregion
 
         //#region Raycaster Setup
         let pos = this.el.getAttribute("position");
-        console.group(pos);
+        //console.log(pos);
 
-        /*let direction = 
-          .sub(this.focusObject.position)
-          .normalize();
+        let direction = pos.sub(this.focusObject.position).normalize();
         this.raycaster = new THREE.Raycaster(
-          this.mesh.position,
+          pos,
           direction,
           0,
           this.camera.far
-        );*/
+        );
         //#endregion
 
         //#region Event Listeners
-        this.el.addEventListener("raycaster-intersected", function() {
-          console.log("Mouse hit tool!");
-          (this.material as THREE.MeshBasicMaterial).color = this.selectedColor;
+        this.el.addEventListener("raycaster-intersected", () => {
+          //console.log("Mouse hit tool!");
+
+          let mesh = this.el.object3DMap.mesh;
+          (mesh.material as THREE.MeshBasicMaterial).color = this.selectedColor;
         });
 
-        this.el.addEventListener("raycaster-intersected-cleared", function() {
-          console.log("Mouse out of tool!");
-          (this.material as THREE.MeshBasicMaterial).color = this.normalColor;
+        this.el.addEventListener("raycaster-intersected-cleared", () => {
+          //console.log("Mouse out of tool!");
+
+          let mesh = this.el.object3DMap.mesh;
+          (mesh.material as THREE.MeshBasicMaterial).color = this.normalColor;
         });
 
         /**
          * On mouse release
          */
-        this.el.addEventListener("mouseup", function() {
+        this.el.addEventListener("mouseup", () => {
           let raycaster = this.raycaster as THREE.Raycaster;
           let mesh = this.el.object3DMap.mesh;
           raycaster.far = this.maxRayDistance;
@@ -85,17 +87,19 @@ export class AlTool implements AframeComponent {
 
           // If we hit something with the world raycast
           if (result) {
-            mesh.position.copy(result);
+            console.log(result);
+            this.el.setAttribute(
+              "position",
+              ThreeUtils.vector3ToString(result)
+            );
           }
 
           // Update the raycaster for next frame
+          let pos = this.el.getAttribute("position");
           let direction = mesh.position
             .sub(this.focusObject.position)
             .normalize();
-          (this.raycaster as THREE.Raycaster).set(
-            this.mesh.position,
-            direction
-          );
+          (this.raycaster as THREE.Raycaster).set(pos, direction);
         });
 
         //#endregion

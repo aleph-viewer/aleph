@@ -1,5 +1,5 @@
 export class Constants {
-  static toolSize = 200;
+  static toolSize = 5;
 
   static colorValues = {
     red: "#f50057",

@@ -8,7 +8,7 @@ export class AlToolSpawner implements AframeComponent {
       schema: {},
 
       init(): void {
-        console.log("init tool spawner", this);
+        //console.log("init tool spawner", this);
 
         this.el.addEventListener("raycaster-intersected", () => {
           //console.log("Mouse hit focus!");

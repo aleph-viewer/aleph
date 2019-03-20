@@ -198,6 +198,9 @@ export class Aleph {
     this._addToolHandler = this._addToolHandler.bind(this);
     this._validTargetHandler = this._validTargetHandler.bind(this);
     this._meshDistanceHandler = this._meshDistanceHandler.bind(this);
+
+    // TODO remove
+    console.log(this._container);
   }
 
   private _renderSrc() {
@@ -224,6 +227,7 @@ export class Aleph {
     for (var i = 0; i < dataTools.length; i++) {
       if (i < this.tools.length) {
         const tool: Tool = dataTools[i];
+        console.log(tool.scale);
 
         outTools.push(
           <a-entity
@@ -238,6 +242,7 @@ export class Aleph {
             //   shader: flat;
             // `}
             scale={tool.scale}
+            //scale="1 1 1"
             al-tool={`
               focusId: ${tool.focusObject};
               maxRayDistance: ${tool.maxMeshDistance};
@@ -443,6 +448,9 @@ export class Aleph {
         this._meshDistanceHandler,
         false
       );
+      this._scene.addEventListener("mouseup", this._toolMouseUp, false);
+      this._scene.addEventListener("mousemove", this._toolMouseMove, false);
+      this._scene.addEventListener("mousedown", this._toolMouseDown, false);
 
       if (this._focusEntity) {
         this._focusEntity.addEventListener(
@@ -454,11 +462,7 @@ export class Aleph {
     }
   }
 
-  componentDidLoad() {
-    this._container.addEventListener("mouseup", this._toolMouseUp, false);
-    this._container.addEventListener("mousemove", this._toolMouseMove, false);
-    this._container.addEventListener("mousedown", this._toolMouseDown, false);
-  }
+  componentDidLoad() {}
 
   /**
    * Event function for mouseUp
