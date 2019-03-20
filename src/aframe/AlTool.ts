@@ -5,7 +5,7 @@ import { Constants } from "../Constants";
 export class AlTool implements AframeComponent {
   public static getObject(): AframeObject {
     return {
-      dependencies: ['raycaster'],
+      dependencies: ["raycaster"],
 
       schema: {
         focusId: { type: "string", default: "focusEntity" },
@@ -62,12 +62,12 @@ export class AlTool implements AframeComponent {
           this.camera.far
         );
 
-        this.el.addEventListener('raycaster-intersection', function () {
-          console.log('Mouse hit something!');
+        this.el.addEventListener("raycaster-intersection", function() {
+          console.log("Mouse hit something!");
         });
-        
-        this.el.addEventListener('raycaster-intersected-cleared', function () {
-          console.log('Mouse moved away!');
+
+        this.el.addEventListener("raycaster-intersected-cleared", function() {
+          console.log("Mouse moved away!");
         });
         //#endregion
 

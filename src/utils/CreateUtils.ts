@@ -19,6 +19,9 @@ export class CreateUtils {
   static createAframeComponents(): void {
     AFRAME.registerComponent(AlGltfModel.getName(), AlGltfModel.getObject());
     AFRAME.registerComponent(AlTool.getName(), AlTool.getObject());
-    AFRAME.registerComponent(AlToolSpawner.getName(), AlToolSpawner.getObject());
+    AFRAME.registerComponent(
+      AlToolSpawner.getName(),
+      AlToolSpawner.getObject()
+    );
   }
 }
