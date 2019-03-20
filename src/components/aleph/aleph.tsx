@@ -104,7 +104,22 @@ export class Aleph {
 
   @Method()
   async setSrc(src: string) {
+    // validate
+    // const fileExtension: string = src.substring(src.lastIndexOf(".") + 1);
+
+    // if (Object.values(MeshFileType).includes(fileExtension)) {
+    //   if (this.displayMode !== DisplayMode.MESH) {
+    //     throw new Error(
+    //       "When setting 'src' to a mesh file you must set 'displayMode' to 'mesh'"
+    //     );
+    //   }
+    // }
     this.appSetSrc(src);
+  }
+
+  @Method()
+  async setDisplayMode(displayMode: DisplayMode) {
+    this.appSetDisplayMode(displayMode);
   }
 
   componentWillLoad() {
@@ -204,20 +219,43 @@ export class Aleph {
   }
 
   private _renderSrc() {
-    return this.src ? (
-      <a-entity
-        al-tool-spawner
-        class="collidable"
-        id="focusEntity"
-        ref={(el: Entity) => (this._focusEntity = el)}
-        al-gltf-model={`
-            src: url(${this.src});
-            dracoDecoderPath: ${this.dracoDecoderPath};
-          `}
-        position="0 0 0"
-        scale="1 1 1"
-      />
-    ) : null;
+    if (!this.src) {
+      return null;
+    }
+
+    switch (this.displayMode) {
+      case DisplayMode.MESH: {
+        return (
+          <a-entity
+            al-tool-spawner
+            class="collidable"
+            id="focusEntity"
+            ref={(el: Entity) => (this._focusEntity = el)}
+            al-gltf-model={`
+                src: url(${this.src});
+                dracoDecoderPath: ${this.dracoDecoderPath};
+              `}
+            position="0 0 0"
+            scale="1 1 1"
+          />
+        );
+      }
+      default: {
+        return (
+          <a-entity
+            al-tool-spawner
+            class="collidable"
+            id="focusEntity"
+            ref={(el: Entity) => (this._focusEntity = el)}
+            al-volumetric-model={`
+                src: url(${this.src});
+              `}
+            position="0 0 0"
+            scale="1 1 1"
+          />
+        );
+      }
+    }
   }
 
   private _renderTools(): JSX.Element {
@@ -283,13 +321,13 @@ export class Aleph {
           look-controls="enabled: false"
           position="0 0 0"
           orbit-controls={`
-            maxPolarAngle: 165;
-            minDistance: 0;
+            maxPolarAngle: ${Constants.cameraValues.maxPolarAngle};
+            minDistance: ${Constants.cameraValues.minDistance};
             screenSpacePanning: true;
-            rotateSpeed: 0.75;
-            zoomSpeed: 1.2;
+            rotateSpeed: ${Constants.cameraValues.rotateSpeed};
+            zoomSpeed: ${Constants.cameraValues.zoomSpeed};
             enableDamping: true;
-            dampingFactor: 0.25;
+            dampingFactor: ${Constants.cameraValues.dampingFactor};
             target: ${ThreeUtils.vector3ToString(orbitData.sceneCenter)};
             initialPosition: ${ThreeUtils.vector3ToString(
               orbitData.initialPosition

@@ -1,7 +1,12 @@
 import { Tool } from "../interfaces/Tool";
 import { GetUtils } from "./GetUtils";
 import { ToolType } from "../enums/ToolType";
-import { AlGltfModel, AlTool, AlToolSpawner } from "../aframe/aframe";
+import {
+  AlGltfModel,
+  AlVolumetricModel,
+  AlTool,
+  AlToolSpawner
+} from "../aframe/aframe";
 import { ThreeUtils } from "./utils";
 import { Constants } from "../Constants";
 
@@ -28,6 +33,10 @@ export class CreateUtils {
 
   static createAframeComponents(): void {
     AFRAME.registerComponent(AlGltfModel.getName(), AlGltfModel.getObject());
+    AFRAME.registerComponent(
+      AlVolumetricModel.getName(),
+      AlVolumetricModel.getObject()
+    );
     AFRAME.registerComponent(AlTool.getName(), AlTool.getObject());
     AFRAME.registerComponent(
       AlToolSpawner.getName(),
