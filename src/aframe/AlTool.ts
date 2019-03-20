@@ -1,18 +1,18 @@
 import { AframeComponent, AframeObject } from "../interfaces/interfaces";
-import { RaycasterUtils } from "../utils/utils";
+import { RaycasterUtils, ThreeUtils } from "../utils/utils";
 import { Constants } from "../Constants";
-import { Entity } from "aframe";
+
 export class AlTool implements AframeComponent {
   public static getObject(): AframeObject {
     return {
       schema: {
         focusId: { type: "string", default: "#focusEntity" },
-        maxRayDistance: { type: "number", default: 1 }
+        maxRayDistance: { type: "number", default: 1 },
+        scale: { type: "number", default: 1 },
+        baseColor: { type: "string" }
       },
 
       init(): void {
-        console.log("init tool", this);
-
         //#region State setup
         try {
           this.camera = this.el.sceneEl.camera.el.object3DMap.camera;
@@ -22,7 +22,7 @@ export class AlTool implements AframeComponent {
 
         // Not properly selecting from document!
         try {
-          const docEl = document.getElementById(this.data.focusId) as Entity;
+          const docEl = this.el.sceneEl.querySelector(this.data.focusId);
           const focus = docEl.object3DMap.mesh;
           this.focusObject = focus;
         } catch {
@@ -31,51 +31,48 @@ export class AlTool implements AframeComponent {
         //#endregion
 
         //#region Mesh Setup
-        this.geometry = new THREE.SphereGeometry(1, 16, 16);
+        this.hoveredColor = new THREE.Color(Constants.colorValues.red);
+        this.baseColor = new THREE.Color(this.data.baseColor);
 
-        this.selectedColor = new THREE.Color(Constants.colorValues.red);
-        this.normalColor = new THREE.Color(Constants.colorValues.blue);
-
-        this.material = new THREE.MeshBasicMaterial({
-          color: this.normalColor
-        });
-
-        let mesh = new THREE.Mesh(this.geometry, this.material);
+        let geometry = new THREE.SphereGeometry(this.data.scale, 16, 16);
+        let material = new THREE.MeshBasicMaterial({ color: this.baseColor });
+        let mesh = new THREE.Mesh(geometry, material);
         this.el.setObject3D("mesh", mesh);
         //#endregion
 
         //#region Raycaster Setup
         let pos = this.el.getAttribute("position");
-        console.group(pos);
 
-        /*let direction = 
+        let direction = pos
+          .clone()
           .sub(this.focusObject.position)
           .normalize();
         this.raycaster = new THREE.Raycaster(
-          this.mesh.position,
+          pos,
           direction,
           0,
           this.camera.far
-        );*/
+        );
         //#endregion
 
         //#region Event Listeners
-        this.el.addEventListener("raycaster-intersected", function() {
-          console.log("Mouse hit tool!");
-          (this.material as THREE.MeshBasicMaterial).color = this.selectedColor;
+        this.el.addEventListener("click", () => {
+          let id = this.el.getAttribute("id");
+          this.el.emit("tool-selected", { id: id }, true);
         });
 
-        this.el.addEventListener("raycaster-intersected-cleared", function() {
-          console.log("Mouse out of tool!");
-          (this.material as THREE.MeshBasicMaterial).color = this.normalColor;
-        });
-
-        /**
-         * On mouse release
-         */
-        this.el.addEventListener("mouseup", function() {
-          let raycaster = this.raycaster as THREE.Raycaster;
+        this.el.addEventListener("raycaster-intersected", () => {
           let mesh = this.el.object3DMap.mesh;
+          (mesh.material as THREE.MeshBasicMaterial).color = this.hoveredColor;
+        });
+
+        this.el.addEventListener("raycaster-intersected-cleared", () => {
+          let mesh = this.el.object3DMap.mesh;
+          (mesh.material as THREE.MeshBasicMaterial).color = this.baseColor;
+        });
+
+        this.el.addEventListener("mouseup", () => {
+          let raycaster = this.raycaster as THREE.Raycaster;
           raycaster.far = this.maxRayDistance;
 
           let result = RaycasterUtils.castMeshRay(
@@ -85,23 +82,29 @@ export class AlTool implements AframeComponent {
 
           // If we hit something with the world raycast
           if (result) {
-            mesh.position.copy(result);
-          }
+            console.log(result);
+            this.el.setAttribute(
+              "position",
+              ThreeUtils.vector3ToString(result)
+            );
 
-          // Update the raycaster for next frame
-          let direction = mesh.position
-            .sub(this.focusObject.position)
-            .normalize();
-          (this.raycaster as THREE.Raycaster).set(
-            this.mesh.position,
-            direction
-          );
+            // Update the raycaster for next frame
+            let pos = this.el.getAttribute("position");
+            let direction = pos
+              .clone()
+              .sub(this.focusObject.position)
+              .normalize();
+            (this.raycaster as THREE.Raycaster).set(pos, direction);
+          }
         });
 
         //#endregion
       },
 
-      update(): void {},
+      update(): void {
+        let mesh = this.el.object3DMap.mesh;
+        (mesh.material as THREE.MeshBasicMaterial).color = this.baseColor;
+      },
 
       tick(): void {},
 

@@ -3,6 +3,10 @@ import { Constants } from "../Constants";
 import { Entity } from "aframe";
 
 export class GetUtils {
+  static getFileExtension(file: string): string {
+    return file.substring(file.lastIndexOf(".") + 1);
+  }
+
   static getRandomPosition(): THREE.Vector3 {
     const cubeDistributionWidth: number = 20;
     const x: number =

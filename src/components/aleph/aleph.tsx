@@ -32,6 +32,7 @@ import { Orientation } from "../../enums/Orientation";
 import { DisplayMode } from "../../enums/DisplayMode";
 import { GetUtils, ThreeUtils, CreateUtils } from "../../utils/utils";
 import { Constants } from "../../Constants";
+import { MeshFileType } from "../../enums/MeshFileType";
 type Entity = import("aframe").Entity;
 
 @Component({
@@ -41,7 +42,6 @@ type Entity = import("aframe").Entity;
 })
 export class Aleph {
   private _srcLoadedHandler: any;
-  private _toolIntersectedHandler: any;
   private _stack: any;
   private _stackHelper: AMI.StackHelper;
 
@@ -49,9 +49,10 @@ export class Aleph {
   private _focusEntity: Entity;
   private _controls: THREE.OrbitControls;
   private _scene: Entity;
-  private _scale: THREE.Vector3;
+  private _scale: number;
   private _validTarget: boolean;
   private _maxMeshDistance: number;
+  private _camera: THREE.PerspectiveCamera;
 
   @Prop({ context: "store" }) store: Store;
   @Prop() dracoDecoderPath: string | null;
@@ -104,7 +105,29 @@ export class Aleph {
 
   @Method()
   async setSrc(src: string) {
+    // validate
+    const fileExtension: string = GetUtils.getFileExtension(src);
+
+    if (Object.values(MeshFileType).includes(fileExtension)) {
+      if (this.displayMode !== DisplayMode.MESH) {
+        throw new Error(
+          "When setting 'src' to a mesh file you must set 'displayMode' to 'mesh'"
+        );
+      }
+    } else {
+      if (this.displayMode === DisplayMode.MESH) {
+        throw new Error(
+          "When setting 'src' to a non-mesh file you must set 'displayMode' to either 'slices' or 'volume'"
+        );
+      }
+    }
+
     this.appSetSrc(src);
+  }
+
+  @Method()
+  async setDisplayMode(displayMode: DisplayMode) {
+    this.appSetDisplayMode(displayMode);
   }
 
   componentWillLoad() {
@@ -194,53 +217,74 @@ export class Aleph {
 
     // set up event handlers
     this._srcLoadedHandler = this._srcLoaded.bind(this);
-    this._toolIntersectedHandler = this._toolIntersected.bind(this);
     this._addToolHandler = this._addToolHandler.bind(this);
     this._validTargetHandler = this._validTargetHandler.bind(this);
     this._meshDistanceHandler = this._meshDistanceHandler.bind(this);
+    this._toolSelectedHandler = this._toolSelectedHandler.bind(this);
+
+    // TODO remove
+    console.log(this._container);
   }
 
   private _renderSrc() {
-    return this.src ? (
-      <a-entity
-        al-tool-spawner
-        class="collidable"
-        id="focusEntity"
-        ref={(el: Entity) => (this._focusEntity = el)}
-        al-gltf-model={`
-            src: url(${this.src});
-            dracoDecoderPath: ${this.dracoDecoderPath};
-          `}
-        position="0 0 0"
-        scale="1 1 1"
-      />
-    ) : null;
+    if (!this.src) {
+      return null;
+    }
+
+    switch (this.displayMode) {
+      case DisplayMode.MESH: {
+        return (
+          <a-entity
+            al-tool-spawner
+            class="collidable"
+            id="focusEntity"
+            ref={(el: Entity) => (this._focusEntity = el)}
+            al-gltf-model={`
+                src: url(${this.src});
+                dracoDecoderPath: ${this.dracoDecoderPath};
+              `}
+            position="0 0 0"
+            scale="1 1 1"
+          />
+        );
+      }
+      default: {
+        return (
+          <a-entity
+            al-tool-spawner
+            class="collidable"
+            id="focusEntity"
+            ref={(el: Entity) => (this._focusEntity = el)}
+            al-volumetric-model={`
+                src: url(${this.src});
+              `}
+            position="0 0 0"
+            scale="1 1 1"
+          />
+        );
+      }
+    }
   }
 
   private _renderTools(): JSX.Element {
     const outTools: JSX.Element[] = [];
     const dataTools: Tool[] = this.tools;
+    const selected = this.selectedTool;
 
     for (var i = 0; i < dataTools.length; i++) {
-      if (i < this.tools.length) {
+      if (i < dataTools.length) {
         const tool: Tool = dataTools[i];
-
+        const color = selected === tool.id ? tool.selectedColor : tool.color;
         outTools.push(
           <a-entity
             class="collidable"
             id={tool.id}
-            // geometry="primitive: sphere;"
             position={tool.position}
-            // material={`
-            //   color: ${
-            //     this.selectedTool === tool.id ? tool.selectedColor : tool.color
-            //   };
-            //   shader: flat;
-            // `}
-            scale={tool.scale}
             al-tool={`
               focusId: ${tool.focusObject};
               maxRayDistance: ${tool.maxMeshDistance};
+              scale: ${tool.scale};
+              baseColor: ${color}
             `}
           />
         );
@@ -278,13 +322,13 @@ export class Aleph {
           look-controls="enabled: false"
           position="0 0 0"
           orbit-controls={`
-            maxPolarAngle: 165;
-            minDistance: 0;
+            maxPolarAngle: ${Constants.cameraValues.maxPolarAngle};
+            minDistance: ${Constants.cameraValues.minDistance};
             screenSpacePanning: true;
-            rotateSpeed: 0.75;
-            zoomSpeed: 1.2;
+            rotateSpeed: ${Constants.cameraValues.rotateSpeed};
+            zoomSpeed: ${Constants.cameraValues.zoomSpeed};
             enableDamping: true;
-            dampingFactor: 0.25;
+            dampingFactor: ${Constants.cameraValues.dampingFactor};
             target: ${ThreeUtils.vector3ToString(orbitData.sceneCenter)};
             initialPosition: ${ThreeUtils.vector3ToString(
               orbitData.initialPosition
@@ -294,6 +338,7 @@ export class Aleph {
           `}
           ref={el => {
             this._controls = el.object3DMap.controls;
+            this._camera = el.object3DMap.camera;
           }}
         />
       );
@@ -368,33 +413,20 @@ export class Aleph {
 
   render(): JSX.Element {
     return (
-      <div id="container" ref={(el: HTMLElement) => (this._container = el)}>
-        {this._renderScene()}
-        {this._renderControlPanel()}
+      <div>
+        <div id="container" ref={(el: HTMLElement) => (this._container = el)}>
+          {this._renderScene()}
+          {this._renderControlPanel()}
+        </div>
       </div>
     );
-  }
-
-  private _getToolEls(): NodeListOf<Entity> {
-    return this._scene.querySelectorAll(".tool");
   }
 
   private _srcLoaded(): void {
     const mesh: THREE.Mesh = this._focusEntity.object3DMap.mesh as THREE.Mesh;
     mesh.geometry.computeBoundingSphere();
-    this._scale = new THREE.Vector3(
-      mesh.geometry.boundingSphere.radius,
-      mesh.geometry.boundingSphere.radius,
-      mesh.geometry.boundingSphere.radius
-    );
+    this._scale = mesh.geometry.boundingSphere.radius;
     this.appSetSrcLoaded(true);
-  }
-
-  private _toolIntersected(event: CustomEvent): void {
-    const id: number = Number(event.detail.intersection.object.el.id);
-    if (this.selectedTool !== id) {
-      this.appSelectTool(id);
-    }
   }
 
   private _addToolHandler(event: CustomEvent): void {
@@ -422,17 +454,18 @@ export class Aleph {
     this._validTarget = event.detail.payload;
   }
 
+  private _toolSelectedHandler(event: CustomEvent): void {
+    this.appSelectTool(event.detail.id);
+  }
+
   private _addEventListeners(): void {
     if (this._scene) {
-      this._getToolEls().forEach((el: Entity) => {
-        el.addEventListener(
-          "intersection",
-          this._toolIntersectedHandler,
-          false
-        );
-      });
-
       this._scene.addEventListener("add-tool", this._addToolHandler, false);
+      this._scene.addEventListener(
+        "tool-selected",
+        this._toolSelectedHandler,
+        false
+      );
       this._scene.addEventListener(
         "valid-target",
         this._validTargetHandler,
@@ -444,6 +477,10 @@ export class Aleph {
         false
       );
 
+      this._scene.addEventListener("mousedown", this._toolMouseDown, false);
+      this._scene.addEventListener("mousemove", this._toolMouseMove, false);
+      this._scene.addEventListener("mouseup", this._toolMouseUp, false);
+
       if (this._focusEntity) {
         this._focusEntity.addEventListener(
           "model-loaded",
@@ -451,42 +488,30 @@ export class Aleph {
           false
         );
       }
+      if (this._camera) {
+        this._camera.addEventListener("raycaster-intersect-cleared", () => {
+          this.appSelectTool(-1);
+        });
+      }
     }
   }
 
-  componentDidLoad() {
-    this._container.addEventListener("mouseup", this._toolMouseUp, false);
-    this._container.addEventListener("mousemove", this._toolMouseMove, false);
-    this._container.addEventListener("mousedown", this._toolMouseDown, false);
-  }
+  componentDidLoad() {}
 
-  /**
-   * Event function for mouseUp
-   */
-  private _toolMouseUp(): void {
+  private _toolMouseDown(_evt: MouseEvent): void {
     if (this.toolsEnabled) {
-      // if something hovered, exit
-
-      this._controls.enabled = true;
+      this._controls.enabled = false;
     }
   }
 
-  /**
-   * Event function for mouseMove
-   * @param evt Event from mouse
-   */
   private _toolMouseMove(_evt: MouseEvent): void {
     if (this.toolsEnabled) {
     }
   }
 
-  /**
-   * Event function for mouseDown
-   * @param evt Mouse Event
-   */
-  private _toolMouseDown(_evt: MouseEvent): void {
+  private _toolMouseUp(): void {
     if (this.toolsEnabled) {
-      this._controls.enabled = false;
+      this._controls.enabled = true;
     }
   }
 
