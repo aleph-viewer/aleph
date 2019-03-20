@@ -64,8 +64,8 @@ export class GetUtils {
     entity: Entity
   ): { sceneCenter: THREE.Vector3; initialPosition: THREE.Vector3 } {
     const entityMap = entity.object3DMap;
-
     let entityMesh: THREE.Mesh = entityMap.mesh as THREE.Mesh;
+
     let sceneCenter: THREE.Vector3;
     let initialPosition: THREE.Vector3;
     let sceneDistance: number;

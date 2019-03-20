@@ -1,7 +1,7 @@
 import { Tool } from "../interfaces/Tool";
 import { GetUtils } from "./GetUtils";
 import { ToolType } from "../enums/ToolType";
-import { AlGltfModel } from "../aframe/aframe";
+import { AlGltfModel, AlTool, AlToolSpawner } from "../aframe/aframe";
 
 export class CreateUtils {
   static createTool(tools: Tool[], type: ToolType): Tool {
@@ -18,5 +18,7 @@ export class CreateUtils {
 
   static createAframeComponents(): void {
     AFRAME.registerComponent(AlGltfModel.getName(), AlGltfModel.getObject());
+    AFRAME.registerComponent(AlTool.getName(), AlTool.getObject());
+    AFRAME.registerComponent(AlToolSpawner.getName(), AlToolSpawner.getObject());
   }
 }

@@ -40,13 +40,15 @@ type Entity = import("aframe").Entity;
   shadow: true
 })
 export class Aleph {
-  private _container: HTMLElement;
-  private _scene: Entity;
-  private _focusEntity: Entity;
   private _srcLoadedHandler: any;
   private _toolIntersectedHandler: any;
   private _stack: any;
   private _stackHelper: AMI.StackHelper;
+
+  private _container: HTMLElement;
+  private _focusEntity: Entity;
+  private _controls: THREE.OrbitControls;
+  private _scene: Entity;
 
   @Prop({ context: "store" }) store: Store;
   @Prop() dracoDecoderPath: string | null;
@@ -190,14 +192,13 @@ export class Aleph {
     // set up event handlers
     this._srcLoadedHandler = this._srcLoaded.bind(this);
     this._toolIntersectedHandler = this._toolIntersected.bind(this);
-
-    // todo: remove
-    console.log(this._container);
   }
 
   private _renderSrc() {
     return this.src ? (
       <a-entity
+        al-tool-spawner
+        class="collidable"
         id="focusEntity"
         ref={(el: Entity) => (this._focusEntity = el)}
         al-gltf-model={`
@@ -219,6 +220,7 @@ export class Aleph {
 
         tools.push(
           <a-entity
+            class="collidable"
             id={tool.id}
             geometry="primitive: sphere;"
             position={tool.position}
@@ -254,7 +256,8 @@ export class Aleph {
 
       return (
         <a-camera
-          id="main-camera"
+          cursor="rayOrigin: mouse"
+          raycaster="objects: .collidable"
           fov={Constants.cameraValues.fov}
           near={Constants.cameraValues.near}
           far={Constants.cameraValues.far}
@@ -273,7 +276,11 @@ export class Aleph {
               orbitData.initialPosition
             )};
             enableDamping: true;
-            zoomSpeed: 1;`}
+            zoomSpeed: 1;
+          `}
+          ref={el => {
+            this._controls = el.object3DMap.controls;
+          }}
         />
       );
     } else {
@@ -285,10 +292,10 @@ export class Aleph {
     return (
       <a-scene
         inspector
-        ref={(el: Entity) => (this._scene = el)}
         embedded
         renderer="colorManagement: true;"
         vr-mode-ui="enabled: false"
+        ref={el => (this._scene = el)}
       >
         {this._renderSrc()}
         {this._renderTools()}
@@ -386,6 +393,42 @@ export class Aleph {
           false
         );
       }
+    }
+  }
+
+  componentDidLoad() {
+    this._container.addEventListener("mouseup", this._toolMouseUp, false);
+    this._container.addEventListener("mousemove", this._toolMouseMove, false);
+    this._container.addEventListener("mousedown", this._toolMouseDown, false);
+  }
+
+  /**
+   * Event function for mouseUp
+   */
+  private _toolMouseUp(): void {
+    if (this.toolsEnabled) {
+      // if something hovered, exit
+
+      this._controls.enabled = true;
+    }
+  }
+
+  /**
+   * Event function for mouseMove
+   * @param evt Event from mouse
+   */
+  private _toolMouseMove(_evt: MouseEvent): void {
+    if (this.toolsEnabled) {
+    }
+  }
+
+  /**
+   * Event function for mouseDown
+   * @param evt Mouse Event
+   */
+  private _toolMouseDown(_evt: MouseEvent): void {
+    if (this.toolsEnabled) {
+      this._controls.enabled = false;
     }
   }
 
