@@ -101,10 +101,7 @@ export class AlTool implements AframeComponent {
         //#endregion
       },
 
-      update(): void {
-        let mesh = this.el.object3DMap.mesh;
-        (mesh.material as THREE.MeshBasicMaterial).color = this.baseColor;
-      },
+      update(): void {},
 
       tick(): void {},
 
