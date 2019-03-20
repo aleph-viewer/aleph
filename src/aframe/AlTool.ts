@@ -82,7 +82,7 @@ export class AlTool implements AframeComponent {
 
           // If we hit something with the world raycast
           if (result) {
-            console.log(result);
+            //console.log(result);
             this.el.setAttribute(
               "position",
               ThreeUtils.vector3ToString(result)

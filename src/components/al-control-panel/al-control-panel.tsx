@@ -95,17 +95,19 @@ export class ControlPanel {
   }
 
   renderTools(): JSX.Element {
+    //console.log("render-tools-selected: ", this.selectedTool);
     if (this.toolsVisible && this.toolsEnabled) {
       return [
         <ion-item>
           <ion-list lines="none">
-            <ion-radio-group>
+            {/* TODO: Need to fix to work - currently only working 25% of the time */}
+            <ion-radio-group value={this.selectedTool}>
               {this.tools.map((tool: Tool) => {
                 return (
                   <ion-item>
                     <ion-label>{tool.id}</ion-label>
                     <ion-radio
-                      checked={tool.id === this.selectedTool}
+                      //checked={tool.id === this.selectedTool}
                       onClick={() => this.selectTool(tool.id)}
                     />
                   </ion-item>

@@ -274,6 +274,7 @@ export class Aleph {
       if (i < dataTools.length) {
         const tool: Tool = dataTools[i];
         const color = selected === tool.id ? tool.selectedColor : tool.color;
+        console.log("tool: ", tool.id, " color: ", color);
         outTools.push(
           <a-entity
             class="collidable"
@@ -289,6 +290,8 @@ export class Aleph {
         );
       }
     }
+
+    //console.log("selected-out-render: ", this.selectedTool);
 
     return outTools;
   }
@@ -510,5 +513,6 @@ export class Aleph {
 
   componentDidUpdate() {
     this._addEventListeners();
+    //console.log("post-render-selected: ", this.selectedTool);
   }
 }
