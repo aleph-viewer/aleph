@@ -11,6 +11,15 @@ export class AlVolumetricModel implements AframeComponent {
       init(): void {
         this.model = null;
         this.loader = new VolumetricLoader();
+
+        // todo: create lutcanvases container
+        /*
+        <div id="lut-container">
+          <div id="lut-min">0.0</div>
+          <div id="lut-canvases"></div>
+          <div id="lut-max">1.0</div>
+        </div>
+        */
       },
 
       update(): void {
@@ -25,7 +34,7 @@ export class AlVolumetricModel implements AframeComponent {
         this.remove();
 
         this.loader.load(src, el).then(stack => {
-          console.log(stack);
+          console.log("stack loaded", stack);
         });
       },
 

@@ -7,6 +7,7 @@
  <script src="https://unpkg.com/three@0.102.1/build/three.min.js"></script>
  <script src="js/aframe-master.js"></script>
  <script src="https://unpkg.com/aframe-orbit-controls@1.2.0/dist/aframe-orbit-controls.min.js"></script>
+ <script src="https://unpkg.com/ami.js@next/build/ami.min.js"></script>
  <script src="https://unpkg.com/@ionic/core@4.1.1/dist/ionic.js"></script>
  <script src="/build/aleph.js"></script>
  <style>
@@ -51,8 +52,8 @@
      // }, false);
 
      aleph.componentOnReady().then((component) => {
-       //component.setDisplay("slices");
-       component.setSrc("https://iiif-3d-manifests.netlify.com/collection/gltf/woody/_woody/assets/woody.gltf");
+       component.setDisplayMode("slices");
+       component.setSrc("https://ami-test-manifests.netlify.com/collection/dicom/brain/_brain/brain.json");
      });
 
    });

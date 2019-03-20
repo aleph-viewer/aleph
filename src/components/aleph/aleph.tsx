@@ -32,6 +32,7 @@ import { Orientation } from "../../enums/Orientation";
 import { DisplayMode } from "../../enums/DisplayMode";
 import { GetUtils, ThreeUtils, CreateUtils } from "../../utils/utils";
 import { Constants } from "../../Constants";
+import { MeshFileType } from "../../enums/MeshFileType";
 type Entity = import("aframe").Entity;
 
 @Component({
@@ -105,15 +106,22 @@ export class Aleph {
   @Method()
   async setSrc(src: string) {
     // validate
-    // const fileExtension: string = src.substring(src.lastIndexOf(".") + 1);
+    const fileExtension: string = GetUtils.getFileExtension(src);
 
-    // if (Object.values(MeshFileType).includes(fileExtension)) {
-    //   if (this.displayMode !== DisplayMode.MESH) {
-    //     throw new Error(
-    //       "When setting 'src' to a mesh file you must set 'displayMode' to 'mesh'"
-    //     );
-    //   }
-    // }
+    if (Object.values(MeshFileType).includes(fileExtension)) {
+      if (this.displayMode !== DisplayMode.MESH) {
+        throw new Error(
+          "When setting 'src' to a mesh file you must set 'displayMode' to 'mesh'"
+        );
+      }
+    } else {
+      if (this.displayMode === DisplayMode.MESH) {
+        throw new Error(
+          "When setting 'src' to a non-mesh file you must set 'displayMode' to either 'slices' or 'volume'"
+        );
+      }
+    }
+
     this.appSetSrc(src);
   }
 
@@ -411,9 +419,11 @@ export class Aleph {
 
   render(): JSX.Element {
     return (
-      <div id="container" ref={(el: HTMLElement) => (this._container = el)}>
-        {this._renderScene()}
-        {this._renderControlPanel()}
+      <div>
+        <div id="container" ref={(el: HTMLElement) => (this._container = el)}>
+          {this._renderScene()}
+          {this._renderControlPanel()}
+        </div>
       </div>
     );
   }
