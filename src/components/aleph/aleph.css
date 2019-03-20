@@ -16,10 +16,19 @@ a-scene {
   height: 100%;
 }
 
-al-control-panel {
-  width: 300px;
+#control-panel {
   position: absolute;
   top: 0;
+  left: 0;
+  overflow-y: auto;
+  width: 100%;
+  max-width: 300px;
+  height: 100%;
+  font-size: 14px;
+}
+
+#control-panel ion-app {
+  padding: 10px;
 }
 
 /* @media only screen and (min-width: 500px) {

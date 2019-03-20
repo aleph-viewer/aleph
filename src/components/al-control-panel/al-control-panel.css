@@ -1,0 +1,8 @@
+#control-panel ion-label {
+  font-size: 14px;
+}
+
+#control-panel select {
+  padding: 5px;
+  font-size: 14px;
+}
