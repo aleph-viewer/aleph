@@ -73,6 +73,7 @@ export const app = (
       };
     }
     case TypeKeys.APP_ADD_TOOL: {
+      console.log(action.payload);
       return {
         ...state,
         selectedTool: action.payload.id,
@@ -89,6 +90,7 @@ export const app = (
       };
     }
     case TypeKeys.APP_SELECT_TOOL: {
+      console.log("select: ", action.payload);
       return {
         ...state,
         selectedTool: action.payload

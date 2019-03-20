@@ -167,7 +167,7 @@ export class ControlPanel {
               >
                 Save
               </ion-button>
-              {this.selectedTool !== null ? (
+              {this.selectedTool !== -1 ? (
                 <ion-button
                   onClick={() => {
                     this.removeTool(this.selectedTool);

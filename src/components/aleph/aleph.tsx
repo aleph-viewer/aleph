@@ -431,16 +431,16 @@ export class Aleph {
     if (this.toolsEnabled && this._validTarget) {
       let intersection: THREE.Intersection = event.detail.detail.intersection;
 
-      this.appAddTool(
-        CreateUtils.createTool(
-          this.tools,
-          this.toolType,
-          intersection.point,
-          this._scale,
-          this._maxMeshDistance,
-          "#focusEntity"
-        )
+      const newTool: Tool = CreateUtils.createTool(
+        this.tools,
+        this.toolType,
+        intersection.point,
+        this._scale,
+        this._maxMeshDistance,
+        "#focusEntity"
       );
+
+      this.appAddTool(newTool);
     }
   }
 
