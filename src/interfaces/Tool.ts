@@ -6,4 +6,5 @@ export interface Tool {
   position: string;
   color: string;
   selectedColor: string;
+  scale: string;
 }

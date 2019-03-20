@@ -2,13 +2,13 @@ export class Constants {
   static toolSize = 200;
 
   static colorValues = {
-    red: 0xf50057,
-    blue: 0x00b0ff,
-    black: 0x000000,
-    white: 0xffffff,
-    yellow: 0xffeb3b,
-    green: 0x76ff03,
-    lightRed: 0xf77777
+    red: "#f50057",
+    blue: "#00b0ff",
+    black: "#000000",
+    white: "#ffffff",
+    yellow: "#ffeb3b",
+    green: "#76ff03",
+    lightRed: "#f77777"
   };
 
   static lightValues = {

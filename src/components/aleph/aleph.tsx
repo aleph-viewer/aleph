@@ -49,6 +49,9 @@ export class Aleph {
   private _focusEntity: Entity;
   private _controls: THREE.OrbitControls;
   private _scene: Entity;
+  private _scale: THREE.Vector3;
+  private _validTarget: boolean;
+  private _maxMeshDistance: number;
 
   @Prop({ context: "store" }) store: Store;
   @Prop() dracoDecoderPath: string | null;
@@ -192,6 +195,8 @@ export class Aleph {
     // set up event handlers
     this._srcLoadedHandler = this._srcLoaded.bind(this);
     this._toolIntersectedHandler = this._toolIntersected.bind(this);
+    this._addToolHandler = this._addToolHandler.bind(this);
+    this._validTargetHandler = this._validTargetHandler.bind(this);
   }
 
   private _renderSrc() {
@@ -224,10 +229,20 @@ export class Aleph {
             id={tool.id}
             geometry="primitive: sphere;"
             position={tool.position}
-            material={`color: ${
-              this.selectedTool === tool.id ? tool.selectedColor : tool.color
-            };
-            shader: flat`}
+            material={`
+              color: ${
+                this.selectedTool === tool.id ? tool.selectedColor : tool.color
+              };
+              shader: flat;
+            `}
+            scale={tool.scale}
+            al-tool={`
+                toolId: ${tool.id};
+                focusId: #focusEntity;
+                boundingScale: ${this._scale};
+                initialPosition: ${tool.position};
+                maxRayDistance: ${this._maxMeshDistance};
+            `}
           />
         );
       }
@@ -366,6 +381,13 @@ export class Aleph {
   }
 
   private _srcLoaded(): void {
+    const mesh: THREE.Mesh = this._focusEntity.object3DMap.mesh as THREE.Mesh;
+    mesh.geometry.computeBoundingSphere();
+    this._scale = new THREE.Vector3(
+      mesh.geometry.boundingSphere.radius,
+      mesh.geometry.boundingSphere.radius,
+      mesh.geometry.boundingSphere.radius
+    );
     this.appSetSrcLoaded(true);
   }
 
@@ -374,6 +396,29 @@ export class Aleph {
     if (this.selectedTool !== id) {
       this.appSelectTool(id);
     }
+  }
+
+  private _addToolHandler(event: CustomEvent): void {
+    if (this.toolsEnabled && this._validTarget) {
+      let intersection: THREE.Intersection = event.detail.detail.intersection;
+
+      this.appAddTool(
+        CreateUtils.createTool(
+          this.tools,
+          this.toolType,
+          intersection.point,
+          this._scale
+        )
+      );
+    }
+  }
+
+  private _meshDistanceHandler(event: CustomEvent): void {
+    this._maxMeshDistance = event.detail.dist;
+  }
+
+  private _validTargetHandler(event: CustomEvent): void {
+    this._validTarget = event.detail.payload;
   }
 
   private _addEventListeners(): void {
@@ -385,6 +430,18 @@ export class Aleph {
           false
         );
       });
+
+      this._scene.addEventListener("add-tool", this._addToolHandler, false);
+      this._scene.addEventListener(
+        "valid-target",
+        this._validTargetHandler,
+        false
+      );
+      this._scene.addEventListener(
+        "mesh-distance",
+        this._meshDistanceHandler,
+        false
+      );
 
       if (this._focusEntity) {
         this._focusEntity.addEventListener(

@@ -34,6 +34,7 @@ export class AlGltfModel implements AframeComponent {
             self.model = res.mesh;
             el.setObject3D("mesh", self.model);
             el.emit("model-loaded", { format: "gltf", model: self.model });
+            el.emit("mesh-distance", { dist: res.maxDist }, true);
           },
           undefined /* onProgress */,
           function gltfFailed(error) {
