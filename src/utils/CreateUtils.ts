@@ -15,7 +15,7 @@ export class CreateUtils {
     tools: Tool[],
     type: ToolType,
     position: THREE.Vector3,
-    scale: THREE.Vector3,
+    scale: number,
     maxMeshDistance: number,
     focusObject: string
   ): Tool {
@@ -24,8 +24,8 @@ export class CreateUtils {
       type: type,
       position: ThreeUtils.vector3ToString(position),
       color: Constants.colorValues.blue,
-      selectedColor: Constants.colorValues.red,
-      scale: ThreeUtils.vector3ToString(scale.divideScalar(Constants.toolSize)),
+      selectedColor: Constants.colorValues.green,
+      scale: scale / Constants.toolSize,
       maxMeshDistance: maxMeshDistance,
       focusObject: focusObject
     };
