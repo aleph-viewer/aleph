@@ -10,7 +10,9 @@ export class CreateUtils {
     tools: Tool[],
     type: ToolType,
     position: THREE.Vector3,
-    scale: THREE.Vector3
+    scale: THREE.Vector3,
+    maxMeshDistance: number,
+    focusObject: string
   ): Tool {
     return {
       id: GetUtils.getToolWithHighestId(tools) + 1,
@@ -18,7 +20,9 @@ export class CreateUtils {
       position: ThreeUtils.vector3ToString(position),
       color: Constants.colorValues.blue,
       selectedColor: Constants.colorValues.red,
-      scale: ThreeUtils.vector3ToString(scale.divideScalar(Constants.toolSize))
+      scale: ThreeUtils.vector3ToString(scale.divideScalar(Constants.toolSize)),
+      maxMeshDistance: maxMeshDistance,
+      focusObject: focusObject
     };
   }
 

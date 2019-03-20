@@ -197,6 +197,7 @@ export class Aleph {
     this._toolIntersectedHandler = this._toolIntersected.bind(this);
     this._addToolHandler = this._addToolHandler.bind(this);
     this._validTargetHandler = this._validTargetHandler.bind(this);
+    this._meshDistanceHandler = this._meshDistanceHandler.bind(this);
   }
 
   private _renderSrc() {
@@ -217,38 +218,36 @@ export class Aleph {
   }
 
   private _renderTools(): JSX.Element {
-    const tools: JSX.Element[] = [];
+    const outTools: JSX.Element[] = [];
+    const dataTools: Tool[] = this.tools;
 
-    for (var i = 0; i < this.tools.length; i++) {
+    for (var i = 0; i < dataTools.length; i++) {
       if (i < this.tools.length) {
-        const tool: Tool = this.tools[i];
+        const tool: Tool = dataTools[i];
 
-        tools.push(
+        outTools.push(
           <a-entity
             class="collidable"
             id={tool.id}
-            geometry="primitive: sphere;"
+            // geometry="primitive: sphere;"
             position={tool.position}
-            material={`
-              color: ${
-                this.selectedTool === tool.id ? tool.selectedColor : tool.color
-              };
-              shader: flat;
-            `}
+            // material={`
+            //   color: ${
+            //     this.selectedTool === tool.id ? tool.selectedColor : tool.color
+            //   };
+            //   shader: flat;
+            // `}
             scale={tool.scale}
             al-tool={`
-                toolId: ${tool.id};
-                focusId: #focusEntity;
-                boundingScale: ${this._scale};
-                initialPosition: ${tool.position};
-                maxRayDistance: ${this._maxMeshDistance};
+              focusId: ${tool.focusObject};
+              maxRayDistance: ${tool.maxMeshDistance};
             `}
           />
         );
       }
     }
 
-    return tools;
+    return outTools;
   }
 
   private _renderLights(): JSX.Element {
@@ -407,7 +406,9 @@ export class Aleph {
           this.tools,
           this.toolType,
           intersection.point,
-          this._scale
+          this._scale,
+          this._maxMeshDistance,
+          "#focusEntity"
         )
       );
     }

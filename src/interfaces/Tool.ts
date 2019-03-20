@@ -7,4 +7,6 @@ export interface Tool {
   color: string;
   selectedColor: string;
   scale: string;
+  maxMeshDistance: number;
+  focusObject: string;
 }

@@ -1,17 +1,12 @@
 import { AframeComponent, AframeObject } from "../interfaces/interfaces";
 import { RaycasterUtils } from "../utils/utils";
 import { Constants } from "../Constants";
-
+import { Entity } from "aframe";
 export class AlTool implements AframeComponent {
   public static getObject(): AframeObject {
     return {
-      dependencies: ["raycaster"],
-
       schema: {
-        toolId: { type: "number" },
-        focusId: { type: "selector" },
-        boundingScale: { type: "number", default: 1 },
-        initialPosition: { type: "vec3", default: { x: 0, y: 0, z: 0 } },
+        focusId: { type: "string", default: "#focusEntity" },
         maxRayDistance: { type: "number", default: 1 }
       },
 
@@ -19,27 +14,24 @@ export class AlTool implements AframeComponent {
         console.log("init tool", this);
 
         //#region State setup
-        const cam = this.el.sceneEl.camera.el.object3DMap.camera;
-        if (!cam) {
-          console.error("no camera in scene!: " + cam);
+        try {
+          this.camera = this.el.sceneEl.camera.el.object3DMap.camera;
+        } catch {
+          console.error("no camera in scene!: " + this.el.sceneEl);
         }
-        this.camera = cam;
 
         // Not properly selecting from document!
-        const docEl = this.data.focusId;
-        const focus = docEl.object3DMap.mesh;
-        if (!focus) {
-          console.error("no focus in scene!: " + focus);
+        try {
+          const docEl = document.getElementById(this.data.focusId) as Entity;
+          const focus = docEl.object3DMap.mesh;
+          this.focusObject = focus;
+        } catch {
+          console.error("no focus in scene!: " + this);
         }
-        this.focusObject = focus;
         //#endregion
 
         //#region Mesh Setup
-        this.geometry = new THREE.SphereGeometry(
-          1 * this.data.boundingScale,
-          16,
-          16
-        );
+        this.geometry = new THREE.SphereGeometry(1, 16, 16);
 
         this.selectedColor = new THREE.Color(Constants.colorValues.red);
         this.normalColor = new THREE.Color(Constants.colorValues.blue);
@@ -53,12 +45,10 @@ export class AlTool implements AframeComponent {
         //#endregion
 
         //#region Raycaster Setup
-        const initialPosition = new THREE.Vector3(
-          this.data.initialPosition.x,
-          this.data.initialPosition.y,
-          this.data.initialPosition.z
-        );
-        let direction = initialPosition
+        let pos = this.el.getAttribute("position");
+        console.group(pos);
+
+        /*let direction = 
           .sub(this.focusObject.position)
           .normalize();
         this.raycaster = new THREE.Raycaster(
@@ -66,7 +56,7 @@ export class AlTool implements AframeComponent {
           direction,
           0,
           this.camera.far
-        );
+        );*/
         //#endregion
 
         //#region Event Listeners
