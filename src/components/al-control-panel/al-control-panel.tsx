@@ -7,7 +7,7 @@ import { Orientation } from "../../enums/Orientation";
 @Component({
   tag: "al-control-panel",
   styleUrl: "al-control-panel.css",
-  shadow: true
+  shadow: false
 })
 export class ControlPanel {
   @Prop() angleToolEnabled: boolean;

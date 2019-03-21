@@ -39,7 +39,7 @@ type Scene = import("aframe").Scene;
 @Component({
   tag: "uv-aleph",
   styleUrl: "aleph.css",
-  shadow: true
+  shadow: false
 })
 export class Aleph {
   //#region Private variables
@@ -240,7 +240,8 @@ export class Aleph {
         <a-box
           animation="property: rotation; to: 0 360 0; loop: true; dur: 1500; easing: easeInOutQuad"
           position="0 0 -1"
-          scale=".05 .05 .05"
+          rotation="0.5 0 0"
+          scale=".03 .03 .03"
           color="#cecece"
         />
       );
@@ -383,7 +384,6 @@ export class Aleph {
   private _renderScene(): JSX.Element {
     return (
       <a-scene
-        inspector
         embedded
         renderer="colorManagement: true;"
         vr-mode-ui="enabled: false"
