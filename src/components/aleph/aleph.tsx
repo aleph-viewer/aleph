@@ -47,12 +47,14 @@ export class Aleph {
   private _stackHelper: AMI.StackHelper;
 
   private _focusEntity: Entity;
-  private _controls: THREE.OrbitControls;
   private _scene: Entity;
   private _scale: number;
   private _validTarget: boolean;
   private _maxMeshDistance: number;
   private _camera: Entity;
+
+  private _tcamera: THREE.PerspectiveCamera;
+  private _tcontrols: THREE.OrbitControls;
 
   private _intersectingTool: boolean;
   //#endregion
@@ -259,7 +261,7 @@ export class Aleph {
         return (
           <a-entity
             al-tool-spawner
-            class="collidable"
+            class="collidable targets"
             id="focusEntity"
             ref={(el: Entity) => (this._focusEntity = el)}
             al-volumetric-model={`
@@ -288,9 +290,12 @@ export class Aleph {
             position={tool.position}
             al-tool={`
               focusId: ${tool.focusObject};
-              maxRayDistance: ${tool.maxMeshDistance};
               scale: ${tool.scale};
               selected: ${selected === tool.id};
+            `}
+            raycaster={`
+              objects: .targets;
+              far: ${this._maxMeshDistance}
             `}
           />
         );
@@ -341,10 +346,7 @@ export class Aleph {
             enableDamping: true;
             zoomSpeed: 1;
           `}
-          ref={el => {
-            this._controls = el.object3DMap.controls;
-            el => (this._camera = el);
-          }}
+          ref={el => (this._camera = el)}
         />
       );
     } else {
@@ -475,6 +477,17 @@ export class Aleph {
 
   componentDidUpdate() {
     this._addEventListeners();
+    if (this._camera) {
+      const camMap = this._camera.object3DMap;
+      console.log(this._camera);
+
+      if (camMap) {
+        this._tcontrols = (camMap.controls as unknown) as THREE.OrbitControls;
+        this._tcamera = camMap.camera as THREE.PerspectiveCamera;
+        // TODO remove
+        console.log(this._tcamera);
+      }
+    }
   }
 
   private _intersectionClearedHandler(_evt): void {
@@ -488,7 +501,7 @@ export class Aleph {
 
   private _toolMouseDown(_evt: MouseEvent): void {
     if (this.toolsEnabled) {
-      this._controls.enabled = false;
+      this._tcontrols.enabled = false;
     }
   }
 
@@ -499,7 +512,7 @@ export class Aleph {
 
   private _toolMouseUp(): void {
     if (this.toolsEnabled) {
-      this._controls.enabled = true;
+      this._tcontrols.enabled = true;
     }
   }
 
