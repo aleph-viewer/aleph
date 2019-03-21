@@ -5,11 +5,8 @@ import { Constants } from "../Constants";
 export class AlTool implements AframeComponent {
   public static getObject(): AframeObject {
     return {
-<<<<<<< HEAD
       dependencies: ["raycaster"],
 
-=======
->>>>>>> 50506096d19ed51f0d9b845176531d7a56973d58
       schema: {
         focusId: { type: "string", default: "#focusEntity" },
         maxRayDistance: { type: "number", default: 1 },
@@ -60,14 +57,6 @@ export class AlTool implements AframeComponent {
         );
         //#endregion
 
-<<<<<<< HEAD
-        this.el.addEventListener("raycaster-intersection", function() {
-          console.log("Mouse hit something!");
-        });
-
-        this.el.addEventListener("raycaster-intersected-cleared", function() {
-          console.log("Mouse moved away!");
-=======
         //#region Event Listeners
         this.el.addEventListener("click", () => {
           let id = this.el.getAttribute("id");
@@ -108,7 +97,6 @@ export class AlTool implements AframeComponent {
               .normalize();
             (this.raycaster as THREE.Raycaster).set(pos, direction);
           }
->>>>>>> 50506096d19ed51f0d9b845176531d7a56973d58
         });
 
         //#endregion
