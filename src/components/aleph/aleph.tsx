@@ -34,6 +34,7 @@ import { GetUtils, ThreeUtils, CreateUtils } from "../../utils/utils";
 import { Constants } from "../../Constants";
 import { MeshFileType } from "../../enums/MeshFileType";
 type Entity = import("aframe").Entity;
+type Scene = import("aframe").Scene;
 
 @Component({
   tag: "uv-aleph",
@@ -47,7 +48,7 @@ export class Aleph {
   private _stackHelper: AMI.StackHelper;
 
   private _focusEntity: Entity;
-  private _scene: Entity;
+  private _scene: Scene;
   private _scale: number;
   private _validTarget: boolean;
   private _maxMeshDistance: number;
@@ -477,21 +478,13 @@ export class Aleph {
 
   componentDidUpdate() {
     this._addEventListeners();
-    if (this._camera) {
-      const camMap = this._camera.object3DMap;
-      console.log(this._camera);
+    this._tcamera = this._scene.camera as THREE.PerspectiveCamera;
 
-      if (camMap) {
-        this._tcamera = camMap.camera as THREE.PerspectiveCamera;
+    const acanvas: HTMLCanvasElement = this._scene.querySelector(".a-canvas");
 
-        const acanvas: HTMLCanvasElement = this._scene.querySelector(
-          ".a-canvas"
-        );
-        this._tcamera.aspect = acanvas.width / acanvas.height;
-        this._tcamera.updateProjectionMatrix();
-        //this._scene.renderer.setSize( window.innerWidth, window.innerHeight );
-      }
-    }
+    this._tcamera.aspect = acanvas.width / acanvas.height;
+    this._tcamera.updateProjectionMatrix();
+    this._scene.renderer.setSize(window.innerWidth, window.innerHeight);
   }
 
   private _intersectionClearedHandler(_evt): void {
