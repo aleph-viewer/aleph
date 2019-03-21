@@ -233,6 +233,72 @@ export class Aleph {
   }
 
   //#region Rendering Methods
+
+  private _renderSpinner() {
+    if (!this.srcLoaded) {
+      return (
+        <a-box
+          animation="property: rotation; to: 0 360 0; loop: true; dur: 1500; easing: easeInOutQuad"
+          position="0 0 -1"
+          scale=".05 .05 .05"
+          color="#cecece"
+        />
+      );
+    }
+
+    return null;
+  }
+
+  /*
+private _renderCamera(): JSX.Element {
+    let orbitData;
+
+    if (this._focusEntity) {
+      orbitData = GetUtils.getOrbitData(this._focusEntity);
+    }
+
+    if (this.srcLoaded) {
+      return (
+        <a-camera
+          ref={el => (this._camera = el)}
+          cursor="rayOrigin: mouse"
+          raycaster="objects: .collidable"
+          fov={Constants.cameraValues.fov}
+          near={Constants.cameraValues.near}
+          far={Constants.cameraValues.far}
+          look-controls="enabled: false"
+          position="0 0 0"
+          orbit-controls={`
+        maxPolarAngle: ${Constants.cameraValues.maxPolarAngle};
+        minDistance: ${Constants.cameraValues.minDistance};
+        screenSpacePanning: true;
+        rotateSpeed: ${Constants.cameraValues.rotateSpeed};
+        zoomSpeed: ${Constants.cameraValues.zoomSpeed};
+        enableDamping: true;
+        dampingFactor: ${Constants.cameraValues.dampingFactor};
+        target: ${ThreeUtils.vector3ToString(orbitData.sceneCenter)}
+        initialPosition: ${ThreeUtils.vector3ToString(
+          orbitData.initialPosition
+        )}
+      `}
+        />
+      );
+    } else {
+      return (
+        <a-camera
+          ref={el => (this._camera = el)}
+          fov={Constants.cameraValues.fov}
+          near={Constants.cameraValues.near}
+          far={Constants.cameraValues.far}
+          look-controls="enabled: false"
+          position="0 0 0"
+          target="0 0 0"
+        />
+      );
+    }
+  }
+  */
+
   private _renderSrc() {
     if (!this.src) {
       return null;
@@ -322,13 +388,9 @@ export class Aleph {
   }
 
   private _renderCamera(): JSX.Element {
-    let orbitData;
-
-    if (this._focusEntity) {
-      orbitData = GetUtils.getOrbitData(this._focusEntity);
-    }
-
     if (this.srcLoaded) {
+      let orbitData = GetUtils.getOrbitData(this._focusEntity);
+
       return (
         <a-camera
           ref={el => (this._camera = el)}
@@ -339,6 +401,7 @@ export class Aleph {
           far={Constants.cameraValues.far}
           look-controls="enabled: false"
           position="0 0 0"
+          rotation="0 0 0"
           orbit-controls={`
         maxPolarAngle: ${Constants.cameraValues.maxPolarAngle};
         minDistance: ${Constants.cameraValues.minDistance};
@@ -347,18 +410,10 @@ export class Aleph {
         zoomSpeed: ${Constants.cameraValues.zoomSpeed};
         enableDamping: true;
         dampingFactor: ${Constants.cameraValues.dampingFactor};
-        target: ${
-          orbitData
-            ? ThreeUtils.vector3ToString(orbitData.sceneCenter)
-            : "0 0 0"
-        };
-        initialPosition: ${
-          orbitData
-            ? ThreeUtils.vector3ToString(orbitData.initialPosition)
-            : "0 0 2"
-        };
-        enableDamping: true;
-        zoomSpeed: 1;
+        target: ${ThreeUtils.vector3ToString(orbitData.sceneCenter)};
+        initialPosition: ${ThreeUtils.vector3ToString(
+          orbitData.initialPosition
+        )};
       `}
         />
       );
@@ -366,13 +421,10 @@ export class Aleph {
       return (
         <a-camera
           ref={el => (this._camera = el)}
-          cursor="rayOrigin: mouse"
-          raycaster="objects: .collidable"
           fov={Constants.cameraValues.fov}
           near={Constants.cameraValues.near}
           far={Constants.cameraValues.far}
           look-controls="enabled: false"
-          position="0 0 0"
         />
       );
     }
@@ -387,6 +439,7 @@ export class Aleph {
         vr-mode-ui="enabled: false"
         ref={el => (this._scene = el)}
       >
+        {this._renderSpinner()}
         {this._renderSrc()}
         {this._renderTools()}
         {this._renderLights()}
