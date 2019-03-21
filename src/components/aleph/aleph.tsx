@@ -410,14 +410,7 @@ export class Aleph {
   }
 
   render(): JSX.Element {
-    return (
-      <div>
-        <div id="container" ref={(el: HTMLElement) => (this._container = el)}>
-          {this._renderScene()}
-          {this._renderControlPanel()}
-        </div>
-      </div>
-    );
+    return [this._renderScene(), this._renderControlPanel()];
   }
 
   private _srcLoaded(): void {

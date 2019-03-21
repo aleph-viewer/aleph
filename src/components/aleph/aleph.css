@@ -1,5 +1,4 @@
-#container {
-  background-color: var(--app-background-color);
+uv-aleph {
   left: 0;
   right: 0;
   top: 0;
@@ -11,6 +10,7 @@
 }
 
 a-scene {
+  background-color: var(--app-background-color);
   display: block;
   position: relative;
   width: 100%;
