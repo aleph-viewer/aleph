@@ -14,12 +14,13 @@
  <style>
 
    body {
-    font-family: sans-serif;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
     margin: 0;
-    padding: 0;
+    padding: 20px;
+   }
+
+   #container {
+     width: 1024px;
+     height: 768px;
    }
 
  </style>
@@ -40,7 +41,7 @@
  -->
 
  <div id="container">
-   <uv-aleph draco-decoder-path="js/"></uv-aleph>
+  <uv-aleph draco-decoder-path="js/"></uv-aleph>
  </div>
 
  <script>
@@ -56,9 +57,6 @@
        //component.setDisplayMode("slices");
        component.setSrc("https://iiif-3d-manifests.netlify.com/collection/gltf/woody/_woody/assets/woody.gltf");
      });
-
-    //  var container = document.querySelector('#container');
-    //  container.setAttribute('width');
 
    });
  </script>

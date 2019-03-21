@@ -1,6 +1,12 @@
 export class Constants {
   static toolSize = 100;
 
+  static toolColors = {
+    selected: "#76ff03",
+    hovered: "#f50057",
+    normal: "#00b0ff"
+  };
+
   static colorValues = {
     red: "#f50057",
     blue: "#00b0ff",
