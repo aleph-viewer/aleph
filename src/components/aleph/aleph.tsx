@@ -38,7 +38,7 @@ type Entity = import("aframe").Entity;
 @Component({
   tag: "uv-aleph",
   styleUrl: "aleph.css",
-  shadow: true
+  shadow: false
 })
 export class Aleph {
   //#region Private variables
@@ -415,7 +415,12 @@ export class Aleph {
   }
 
   render(): JSX.Element {
-    return [this._renderScene(), this._renderControlPanel()];
+    return (
+      <div id="aleph-wrapper">
+        {this._renderScene()}
+        {this._renderControlPanel()}
+      </div>
+    );
   }
   //#endregion
 
@@ -478,8 +483,13 @@ export class Aleph {
 
       if (camMap) {
         this._tcamera = camMap.camera as THREE.PerspectiveCamera;
-        // TODO remove
-        console.log(this._tcamera);
+
+        const acanvas: HTMLCanvasElement = this._scene.querySelector(
+          ".a-canvas"
+        );
+        this._tcamera.aspect = acanvas.width / acanvas.height;
+        this._tcamera.updateProjectionMatrix();
+        //this._scene.renderer.setSize( window.innerWidth, window.innerHeight );
       }
     }
   }

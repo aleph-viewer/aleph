@@ -1,4 +1,4 @@
-#control-panel {
+al-control-panel {
   position: absolute;
   top: 0;
   left: 0;
@@ -16,7 +16,7 @@
   font-size: 14px;
 } */
 
-#control-panel select {
+al-control-panel select {
   padding: 5px;
   font-size: 14px;
 }
