@@ -118,7 +118,6 @@ export const app = (
       };
     }
     case TypeKeys.APP_SET_DISPLAY_MODE: {
-      console.log(action.payload);
       return {
         ...state,
         boundingBoxVisible: action.payload === DisplayMode.SLICES, // default to bounding box visible in slices mode
@@ -145,7 +144,6 @@ export const app = (
       };
     }
     case TypeKeys.APP_SET_TOOL_TYPE: {
-      console.log(action.payload);
       return {
         ...state,
         toolType: action.payload

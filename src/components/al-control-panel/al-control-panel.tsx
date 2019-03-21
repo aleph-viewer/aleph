@@ -99,14 +99,14 @@ export class ControlPanel {
       return [
         <ion-item>
           <ion-list lines="none">
-            <ion-radio-group>
+            <ion-radio-group value={this.selectedTool}>
               {this.tools.map((tool: Tool) => {
                 return (
                   <ion-item>
                     <ion-label>{tool.id}</ion-label>
                     <ion-radio
-                      checked={tool.id === this.selectedTool}
                       onClick={() => this.selectTool(tool.id)}
+                      value={tool.id}
                     />
                   </ion-item>
                 );

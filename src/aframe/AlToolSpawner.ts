@@ -8,21 +8,25 @@ export class AlToolSpawner implements AframeComponent {
       schema: {},
 
       init(): void {
-        //console.log("init tool spawner", this);
-
         this.el.addEventListener("raycaster-intersected", () => {
-          //console.log("Mouse hit focus!");
           this.el.emit("valid-target", { payload: true }, true);
         });
 
+<<<<<<< HEAD
+        this.el.addEventListener("raycaster-intersection", function() {
+          console.log("Mouse hit focus!");
+        });
+
+        this.el.addEventListener("raycaster-intersected-cleared", function() {
+          console.log("Mouse moved away!");
+=======
         this.el.addEventListener("raycaster-intersected-cleared", () => {
-          //console.log("Mouse moved away!");
           this.el.emit("valid-target", { payload: false }, true);
         });
 
         this.el.addEventListener("click", evt => {
-          //console.log(evt.detail.intersection.point);
           this.el.emit("add-tool", evt, true);
+>>>>>>> 50506096d19ed51f0d9b845176531d7a56973d58
         });
         //#endregion
       },
