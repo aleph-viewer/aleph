@@ -18,9 +18,10 @@
     padding: 20px;
    }
 
-   #container {
-     width: 1024px;
-     height: 768px;
+   #annotations {
+     margin: 20px 0 10px 0;
+     width: 640px;
+     height: 100px;
    }
 
  </style>
@@ -40,23 +41,40 @@
    https://iiif-3d-manifests.netlify.com/collection/gltf/woody/_woody/assets/woody.gltf
  -->
 
- <div id="container">
-  <uv-aleph draco-decoder-path="js/"></uv-aleph>
+ <uv-aleph draco-decoder-path="js/"></uv-aleph>
+
+ <div>
+   <textarea id="annotations"></textarea>
+ </div>
+
+ <div>
+  <button id="load">Load</button>
  </div>
 
  <script>
    document.addEventListener('DOMContentLoaded', function(event) {
      const aleph = document.querySelector('uv-aleph');
 
+     aleph.componentOnReady().then(function() {
+       //component.setDisplayMode("slices");
+       aleph.load("https://iiif-3d-manifests.netlify.com/collection/gltf/woody/_woody/assets/woody.gltf");
+     });
+
      // aleph.addEventListener('onLoaded', function() {
      //   aleph.setToolsVisible(true); // can only show them after src loaded
      //   aleph.setOptionsVisible(true); // can only show them after src loaded
      // }, false);
 
-     aleph.componentOnReady().then((component) => {
-       //component.setDisplayMode("slices");
-       component.setSrc("https://iiif-3d-manifests.netlify.com/collection/gltf/woody/_woody/assets/woody.gltf");
-     });
+     var annotations = document.getElementById('annotations');
+
+     aleph.addEventListener('onSave', function(e) {
+       annotations.value = e.detail;
+     }, false);
+
+     document.getElementById('load').addEventListener('click', function(e) {
+      e.preventDefault();
+      aleph.loadtools(annotations.value);
+     }, false);
 
    });
  </script>

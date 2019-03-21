@@ -1,4 +1,11 @@
-import { Component, Prop, State, Method } from "@stencil/core";
+import {
+  Component,
+  Prop,
+  State,
+  Method,
+  Event,
+  EventEmitter
+} from "@stencil/core";
 import { Store, Action } from "@stencil/redux";
 import {
   appSetSrc,
@@ -6,7 +13,7 @@ import {
   appAddTool,
   appRemoveTool,
   appSelectTool,
-  appSaveTools,
+  appLoadTools,
   appSetDisplayMode,
   appSetOrientation,
   appSetToolsVisible,
@@ -60,13 +67,15 @@ export class Aleph {
   //#region Redux states, props & methods
   @Prop({ context: "store" }) store: Store;
   @Prop() dracoDecoderPath: string | null;
+  @Prop() width: number = 640;
+  @Prop() height: number = 480;
 
   appSetSrc: Action;
   appSetSrcLoaded: Action;
   appAddTool: Action;
   appRemoveTool: Action;
   appSelectTool: Action;
-  appSaveTools: Action;
+  appLoadTools: Action;
   appSetDisplayMode: Action;
   appSetOrientation: Action;
   appSetToolsVisible: Action;
@@ -108,7 +117,7 @@ export class Aleph {
   @State() rulerToolEnabled: boolean;
 
   @Method()
-  async setSrc(src: string) {
+  async load(src: string) {
     // validate
     const fileExtension: string = GetUtils.getFileExtension(src);
 
@@ -133,6 +142,20 @@ export class Aleph {
   async setDisplayMode(displayMode: DisplayMode) {
     this.appSetDisplayMode(displayMode);
   }
+
+  @Method()
+  async loadtools(tools: any) {
+    // remove all existing tools
+    while (this.tools.length) {
+      this.appRemoveTool(this.tools[this.tools.length - 1].id);
+    }
+
+    tools = JSON.parse(tools);
+
+    this.appLoadTools(tools);
+  }
+
+  @Event() onSave: EventEmitter;
   //#endregion
 
   componentWillLoad() {
@@ -200,7 +223,7 @@ export class Aleph {
       appAddTool,
       appRemoveTool,
       appSelectTool,
-      appSaveTools,
+      appLoadTools,
       appSetDisplayMode,
       appSetOrientation,
       appSetToolsVisible,
@@ -425,7 +448,7 @@ export class Aleph {
         volumeWindowWidth={this.volumeWindowWidth}
         addTool={this.appAddTool}
         removeTool={this.appRemoveTool}
-        saveTools={this.appSaveTools}
+        saveTools={this._saveTools.bind(this)}
         selectTool={this.appSelectTool}
         setBoundingBoxVisible={this.appSetBoundingBoxVisible}
         setDisplayMode={this.appSetDisplayMode}
@@ -445,13 +468,23 @@ export class Aleph {
 
   render(): JSX.Element {
     return (
-      <div id="al-wrapper">
+      <div
+        id="al-wrapper"
+        style={{
+          width: String(this.width) + "px",
+          height: String(this.height) + "px"
+        }}
+      >
         {this._renderScene()}
         {this._renderControlPanel()}
       </div>
     );
   }
   //#endregion
+
+  private _saveTools(): void {
+    this.onSave.emit(JSON.stringify(this.tools));
+  }
 
   private _srcLoaded(): void {
     const mesh: THREE.Mesh = this._focusEntity.object3DMap.mesh as THREE.Mesh;
