@@ -417,7 +417,12 @@ export class Aleph {
   }
 
   render(): JSX.Element {
-    return [this._renderScene(), this._renderControlPanel()];
+    return (
+      <div id="aleph-wrapper">
+        {this._renderScene()}
+        {this._renderControlPanel()}
+      </div>
+    );
   }
   //#endregion
 

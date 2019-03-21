@@ -25,6 +25,7 @@
    #container {
      width: 800px;
      height: 600px;
+     margin: 40px;
    }
  </style>
 </head>
@@ -44,10 +45,6 @@
  -->
 
  <div id="container">
-  <!-- <a-scene embedded background="color: #ECECEC">
-      <a-entity position="0 0 0" gltf-model="url(https://iiif-3d-manifests.netlify.com/collection/gltf/woody/_woody/assets/woody.gltf)"></a-entity>
-      <a-camera lookcontrols position="0 0 0.25" />
-  </a-scene> -->
   <uv-aleph draco-decoder-path="js/"></uv-aleph>
  </div>
 
@@ -64,9 +61,6 @@
        //component.setDisplayMode("slices");
        component.setSrc("https://iiif-3d-manifests.netlify.com/collection/gltf/woody/_woody/assets/woody.gltf");
      });
-
-    //  var container = document.querySelector('#container');
-    //  container.setAttribute('width');
 
    });
  </script>
