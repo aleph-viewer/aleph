@@ -243,7 +243,9 @@ export class Aleph {
       case DisplayMode.MESH: {
         return (
           <a-entity
-            al-tool-spawner
+            al-tool-spawner={`
+              toolsEnabled: ${this.toolsEnabled};
+            `}
             class="collidable"
             id="focusEntity"
             ref={(el: Entity) => (this._focusEntity = el)}
@@ -259,7 +261,9 @@ export class Aleph {
       default: {
         return (
           <a-entity
-            al-tool-spawner
+            al-tool-spawner={`
+            toolsEnabled: ${this.toolsEnabled};
+          `}
             class="collidable targets"
             id="focusEntity"
             ref={(el: Entity) => (this._focusEntity = el)}
@@ -291,6 +295,7 @@ export class Aleph {
               focusId: ${tool.focusObject};
               scale: ${tool.scale};
               selected: ${selected === tool.id};
+              toolsEnabled: ${this.toolsEnabled};
             `}
             raycaster={`
               objects: .targets;
@@ -487,11 +492,11 @@ export class Aleph {
     this._scene.renderer.setSize(window.innerWidth, window.innerHeight);
   }
 
+  //#region Event Handlers
   private _intersectionClearedHandler(_evt): void {
     this._intersectingTool = false;
   }
 
-  //#region Event Handlers
   private _intersectingToolHandler(_evt): void {
     this._intersectingTool = true;
   }

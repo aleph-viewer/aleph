@@ -14,7 +14,8 @@ export class AlTool implements AframeComponent {
       schema: {
         focusId: { type: "string", default: "#focusEntity" },
         scale: { type: "number", default: 1 },
-        selected: { type: "boolean" }
+        selected: { type: "boolean" },
+        toolsEnabled: { type: "boolean" }
       },
 
       init(): void {
@@ -47,6 +48,13 @@ export class AlTool implements AframeComponent {
         this.el.addEventListener("mousedown", _evt => {
           console.log("tool-", this.el.id, "  mouse down!");
 
+          if (this.data.toolsEnabled) {
+            this.el.sceneEl.camera.el.setAttribute(
+              "orbit-controls",
+              "enabled: false"
+            );
+          }
+
           let state = this.state as AlToolState;
           state.moving = true;
         });
@@ -54,6 +62,12 @@ export class AlTool implements AframeComponent {
         this.el.addEventListener("mouseup", _evt => {
           console.log("tool-", this.el.id, "  mouse up!");
 
+          if (this.data.toolsEnabled) {
+            this.el.sceneEl.camera.el.setAttribute(
+              "orbit-controls",
+              "enabled: true"
+            );
+          }
           let state = this.state as AlToolState;
           state.moving = false;
         });

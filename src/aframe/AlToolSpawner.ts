@@ -5,23 +5,27 @@ export class AlToolSpawner implements AframeComponent {
     return {
       dependencies: ["raycaster"],
 
-      schema: {},
+      schema: {
+        toolsEnabled: { type: "boolean" }
+      },
 
       init(): void {
         this.el.addEventListener("mousedown", () => {
-          console.log("mouseDown");
-          this.el.sceneEl.camera.el.setAttribute(
-            "orbit-controls",
-            "enabled: false"
-          );
+          if (this.data.toolsEnabled) {
+            this.el.sceneEl.camera.el.setAttribute(
+              "orbit-controls",
+              "enabled: false"
+            );
+          }
         });
 
         this.el.addEventListener("mouseup", () => {
-          console.log("mouseUp");
-          this.el.sceneEl.camera.el.setAttribute(
-            "orbit-controls",
-            "enabled: true"
-          );
+          if (this.data.toolsEnabled) {
+            this.el.sceneEl.camera.el.setAttribute(
+              "orbit-controls",
+              "enabled: true"
+            );
+          }
         });
 
         this.el.addEventListener("raycaster-intersected", () => {
