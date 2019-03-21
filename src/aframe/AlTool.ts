@@ -81,6 +81,15 @@ export class AlTool implements AframeComponent {
           let state = this.state as AlToolState;
           state.material.color = new THREE.Color(Constants.toolColors.hovered);
           state.hovered = true;
+
+          if (state.moving) {
+            // if (evt.detail.point) {
+            //   this.el.setAttribute(
+            //     "position",
+            //     ThreeUtils.vector3ToString(evt.detail.point)
+            //   );
+            // }
+          }
           this.el.emit("tool-intersection", {}, true);
         });
 
