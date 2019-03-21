@@ -33,6 +33,7 @@ import { DisplayMode } from "../../enums/DisplayMode";
 import { GetUtils, ThreeUtils, CreateUtils } from "../../utils/utils";
 import { Constants } from "../../Constants";
 import { MeshFileType } from "../../enums/MeshFileType";
+import { THREE } from "aframe";
 type Entity = import("aframe").Entity;
 type Scene = import("aframe").Scene;
 
@@ -318,39 +319,45 @@ export class Aleph {
   }
 
   private _renderCamera(): JSX.Element {
-    if (this.srcLoaded) {
-      let orbitData = GetUtils.getOrbitData(this._focusEntity);
+    let orbitData;
 
-      return (
-        <a-camera
-          ref={el => (this._camera = el)}
-          cursor="rayOrigin: mouse"
-          raycaster="objects: .collidable"
-          fov={Constants.cameraValues.fov}
-          near={Constants.cameraValues.near}
-          far={Constants.cameraValues.far}
-          look-controls="enabled: false"
-          position="0 0 0"
-          orbit-controls={`
-            maxPolarAngle: ${Constants.cameraValues.maxPolarAngle};
-            minDistance: ${Constants.cameraValues.minDistance};
-            screenSpacePanning: true;
-            rotateSpeed: ${Constants.cameraValues.rotateSpeed};
-            zoomSpeed: ${Constants.cameraValues.zoomSpeed};
-            enableDamping: true;
-            dampingFactor: ${Constants.cameraValues.dampingFactor};
-            target: ${ThreeUtils.vector3ToString(orbitData.sceneCenter)};
-            initialPosition: ${ThreeUtils.vector3ToString(
-              orbitData.initialPosition
-            )};
-            enableDamping: true;
-            zoomSpeed: 1;
-          `}
-        />
-      );
-    } else {
-      return null;
+    if (this._focusEntity) {
+      orbitData = GetUtils.getOrbitData(this._focusEntity);
     }
+
+    return (
+      <a-camera
+        ref={el => (this._camera = el)}
+        cursor="rayOrigin: mouse"
+        raycaster="objects: .collidable"
+        fov={Constants.cameraValues.fov}
+        near={Constants.cameraValues.near}
+        far={Constants.cameraValues.far}
+        look-controls="enabled: false"
+        position="0 0 0"
+        orbit-controls={`
+          maxPolarAngle: ${Constants.cameraValues.maxPolarAngle};
+          minDistance: ${Constants.cameraValues.minDistance};
+          screenSpacePanning: true;
+          rotateSpeed: ${Constants.cameraValues.rotateSpeed};
+          zoomSpeed: ${Constants.cameraValues.zoomSpeed};
+          enableDamping: true;
+          dampingFactor: ${Constants.cameraValues.dampingFactor};
+          target: ${
+            orbitData
+              ? ThreeUtils.vector3ToString(orbitData.sceneCenter)
+              : "0 0 0"
+          };
+          initialPosition: ${
+            orbitData
+              ? ThreeUtils.vector3ToString(orbitData.initialPosition)
+              : "0 0 2"
+          };
+          enableDamping: true;
+          zoomSpeed: 1;
+        `}
+      />
+    );
   }
 
   private _renderScene(): JSX.Element {
@@ -430,6 +437,7 @@ export class Aleph {
     mesh.geometry.computeBoundingSphere();
     this._scale = mesh.geometry.boundingSphere.radius;
     this.appSetSrcLoaded(true);
+    window.dispatchEvent(new Event("resize"));
   }
 
   private _addEventListeners(): void {
@@ -474,17 +482,18 @@ export class Aleph {
     }
   }
 
+  // resizeCamera() {
+  //   this._tcamera = this._scene.camera as THREE.PerspectiveCamera;
+  //   const acanvas: HTMLCanvasElement = this._scene.querySelector(".a-canvas");
+  //   this._tcamera.aspect = acanvas.width / acanvas.height;
+  //   this._tcamera.updateProjectionMatrix();
+  //   this._scene.renderer.setSize(window.innerWidth, window.innerHeight);
+  // }
+
   componentDidLoad() {}
 
   componentDidUpdate() {
     this._addEventListeners();
-    this._tcamera = this._scene.camera as THREE.PerspectiveCamera;
-
-    const acanvas: HTMLCanvasElement = this._scene.querySelector(".a-canvas");
-
-    this._tcamera.aspect = acanvas.width / acanvas.height;
-    this._tcamera.updateProjectionMatrix();
-    this._scene.renderer.setSize(window.innerWidth, window.innerHeight);
   }
 
   private _intersectionClearedHandler(_evt): void {
