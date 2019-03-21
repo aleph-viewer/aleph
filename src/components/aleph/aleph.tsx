@@ -290,9 +290,6 @@ export class Aleph {
         );
       }
     }
-
-    //console.log("selected-out-render: ", this.selectedTool);
-
     return outTools;
   }
 
@@ -513,6 +510,5 @@ export class Aleph {
 
   componentDidUpdate() {
     this._addEventListeners();
-    //console.log("post-render-selected: ", this.selectedTool);
   }
 }

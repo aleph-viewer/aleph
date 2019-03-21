@@ -73,7 +73,6 @@ export const app = (
       };
     }
     case TypeKeys.APP_ADD_TOOL: {
-      //console.log("added: ", action.payload);
       return {
         ...state,
         selectedTool: action.payload.id,
