@@ -52,9 +52,7 @@ export class Aleph {
   private _validTarget: boolean;
   private _maxMeshDistance: number;
   private _camera: Entity;
-
   private _tcamera: THREE.PerspectiveCamera;
-  private _tcontrols: THREE.OrbitControls;
 
   private _intersectingTool: boolean;
   //#endregion
@@ -324,6 +322,7 @@ export class Aleph {
 
       return (
         <a-camera
+          ref={el => (this._camera = el)}
           cursor="rayOrigin: mouse"
           raycaster="objects: .collidable"
           fov={Constants.cameraValues.fov}
@@ -346,7 +345,6 @@ export class Aleph {
             enableDamping: true;
             zoomSpeed: 1;
           `}
-          ref={el => (this._camera = el)}
         />
       );
     } else {
@@ -446,9 +444,6 @@ export class Aleph {
         this._meshDistanceHandler,
         false
       );
-      this._scene.addEventListener("mousedown", this._toolMouseDown, false);
-      this._scene.addEventListener("mousemove", this._toolMouseMove, false);
-      this._scene.addEventListener("mouseup", this._toolMouseUp, false);
 
       if (this._focusEntity) {
         this._focusEntity.addEventListener(
@@ -482,7 +477,6 @@ export class Aleph {
       console.log(this._camera);
 
       if (camMap) {
-        this._tcontrols = (camMap.controls as unknown) as THREE.OrbitControls;
         this._tcamera = camMap.camera as THREE.PerspectiveCamera;
         // TODO remove
         console.log(this._tcamera);
@@ -497,23 +491,6 @@ export class Aleph {
   //#region Event Handlers
   private _intersectingToolHandler(_evt): void {
     this._intersectingTool = true;
-  }
-
-  private _toolMouseDown(_evt: MouseEvent): void {
-    if (this.toolsEnabled) {
-      this._tcontrols.enabled = false;
-    }
-  }
-
-  private _toolMouseMove(_evt: MouseEvent): void {
-    if (this.toolsEnabled) {
-    }
-  }
-
-  private _toolMouseUp(): void {
-    if (this.toolsEnabled) {
-      this._tcontrols.enabled = true;
-    }
   }
 
   private _addToolHandler(event: CustomEvent): void {
