@@ -39,7 +39,7 @@ type Scene = import("aframe").Scene;
 @Component({
   tag: "uv-aleph",
   styleUrl: "aleph.css",
-  shadow: false
+  shadow: true
 })
 export class Aleph {
   //#region Private variables
@@ -249,56 +249,6 @@ export class Aleph {
     return null;
   }
 
-  /*
-private _renderCamera(): JSX.Element {
-    let orbitData;
-
-    if (this._focusEntity) {
-      orbitData = GetUtils.getOrbitData(this._focusEntity);
-    }
-
-    if (this.srcLoaded) {
-      return (
-        <a-camera
-          ref={el => (this._camera = el)}
-          cursor="rayOrigin: mouse"
-          raycaster="objects: .collidable"
-          fov={Constants.cameraValues.fov}
-          near={Constants.cameraValues.near}
-          far={Constants.cameraValues.far}
-          look-controls="enabled: false"
-          position="0 0 0"
-          orbit-controls={`
-        maxPolarAngle: ${Constants.cameraValues.maxPolarAngle};
-        minDistance: ${Constants.cameraValues.minDistance};
-        screenSpacePanning: true;
-        rotateSpeed: ${Constants.cameraValues.rotateSpeed};
-        zoomSpeed: ${Constants.cameraValues.zoomSpeed};
-        enableDamping: true;
-        dampingFactor: ${Constants.cameraValues.dampingFactor};
-        target: ${ThreeUtils.vector3ToString(orbitData.sceneCenter)}
-        initialPosition: ${ThreeUtils.vector3ToString(
-          orbitData.initialPosition
-        )}
-      `}
-        />
-      );
-    } else {
-      return (
-        <a-camera
-          ref={el => (this._camera = el)}
-          fov={Constants.cameraValues.fov}
-          near={Constants.cameraValues.near}
-          far={Constants.cameraValues.far}
-          look-controls="enabled: false"
-          position="0 0 0"
-          target="0 0 0"
-        />
-      );
-    }
-  }
-  */
-
   private _renderSrc() {
     if (!this.src) {
       return null;
@@ -495,7 +445,7 @@ private _renderCamera(): JSX.Element {
 
   render(): JSX.Element {
     return (
-      <div id="aleph-wrapper">
+      <div id="al-wrapper">
         {this._renderScene()}
         {this._renderControlPanel()}
       </div>

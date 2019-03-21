@@ -7,7 +7,7 @@ import { Orientation } from "../../enums/Orientation";
 @Component({
   tag: "al-control-panel",
   styleUrl: "al-control-panel.css",
-  shadow: false
+  shadow: true
 })
 export class ControlPanel {
   @Prop() angleToolEnabled: boolean;
@@ -432,13 +432,15 @@ export class ControlPanel {
 
   render(): JSX.Element {
     return (
-      <ion-app>
-        {this.renderDisplayModeToggle()}
-        {this.renderToolsToggle()}
-        {this.renderTools()}
-        {this.renderOptionsToggle()}
-        {this.renderOptions()}
-      </ion-app>
+      <div id="al-control-panel-wrapper">
+        <ion-app>
+          {this.renderDisplayModeToggle()}
+          {this.renderToolsToggle()}
+          {this.renderTools()}
+          {this.renderOptionsToggle()}
+          {this.renderOptions()}
+        </ion-app>
+      </div>
     );
   }
 }
