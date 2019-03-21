@@ -41,6 +41,7 @@ type Entity = import("aframe").Entity;
   shadow: false
 })
 export class Aleph {
+  //#region Private variables
   private _srcLoadedHandler: any;
   private _stack: any;
   private _stackHelper: AMI.StackHelper;
@@ -51,9 +52,14 @@ export class Aleph {
   private _validTarget: boolean;
   private _maxMeshDistance: number;
   private _camera: Entity;
+
   private _tcamera: THREE.PerspectiveCamera;
   private _tcontrols: THREE.OrbitControls;
 
+  private _intersectingTool: boolean;
+  //#endregion
+
+  //#region Redux states, props & methods
   @Prop({ context: "store" }) store: Store;
   @Prop() dracoDecoderPath: string | null;
 
@@ -129,6 +135,7 @@ export class Aleph {
   async setDisplayMode(displayMode: DisplayMode) {
     this.appSetDisplayMode(displayMode);
   }
+  //#endregion
 
   componentWillLoad() {
     CreateUtils.createAframeComponents();
@@ -221,8 +228,13 @@ export class Aleph {
     this._validTargetHandler = this._validTargetHandler.bind(this);
     this._meshDistanceHandler = this._meshDistanceHandler.bind(this);
     this._toolSelectedHandler = this._toolSelectedHandler.bind(this);
+    this._intersectingToolHandler = this._intersectingToolHandler.bind(this);
+    this._intersectionClearedHandler = this._intersectionClearedHandler.bind(
+      this
+    );
   }
 
+  //#region Rendering Methods
   private _renderSrc() {
     if (!this.src) {
       return null;
@@ -249,7 +261,7 @@ export class Aleph {
         return (
           <a-entity
             al-tool-spawner
-            class="collidable"
+            class="collidable targets"
             id="focusEntity"
             ref={(el: Entity) => (this._focusEntity = el)}
             al-volumetric-model={`
@@ -271,8 +283,6 @@ export class Aleph {
     for (var i = 0; i < dataTools.length; i++) {
       if (i < dataTools.length) {
         const tool: Tool = dataTools[i];
-        const color = selected === tool.id ? tool.selectedColor : tool.color;
-        console.log("tool: ", tool.id, " color: ", color);
         outTools.push(
           <a-entity
             class="collidable"
@@ -280,9 +290,12 @@ export class Aleph {
             position={tool.position}
             al-tool={`
               focusId: ${tool.focusObject};
-              maxRayDistance: ${tool.maxMeshDistance};
               scale: ${tool.scale};
-              baseColor: ${color}
+              selected: ${selected === tool.id};
+            `}
+            raycaster={`
+              objects: .targets;
+              far: ${this._maxMeshDistance}
             `}
           />
         );
@@ -333,9 +346,7 @@ export class Aleph {
             enableDamping: true;
             zoomSpeed: 1;
           `}
-          ref={el => {
-            this._camera = el;
-          }}
+          ref={el => (this._camera = el)}
         />
       );
     } else {
@@ -408,6 +419,7 @@ export class Aleph {
   render(): JSX.Element {
     return [this._renderScene(), this._renderControlPanel()];
   }
+  //#endregion
 
   private _srcLoaded(): void {
     const mesh: THREE.Mesh = this._focusEntity.object3DMap.mesh as THREE.Mesh;
@@ -416,8 +428,101 @@ export class Aleph {
     this.appSetSrcLoaded(true);
   }
 
+  private _addEventListeners(): void {
+    if (this._scene) {
+      this._scene.addEventListener("add-tool", this._addToolHandler, false);
+      this._scene.addEventListener(
+        "tool-selected",
+        this._toolSelectedHandler,
+        false
+      );
+      this._scene.addEventListener(
+        "valid-target",
+        this._validTargetHandler,
+        false
+      );
+      this._scene.addEventListener(
+        "mesh-distance",
+        this._meshDistanceHandler,
+        false
+      );
+      this._scene.addEventListener("mousedown", this._toolMouseDown, false);
+      this._scene.addEventListener("mousemove", this._toolMouseMove, false);
+      this._scene.addEventListener("mouseup", this._toolMouseUp, false);
+
+      if (this._focusEntity) {
+        this._focusEntity.addEventListener(
+          "model-loaded",
+          this._srcLoadedHandler,
+          false
+        );
+      }
+
+      if (this._camera) {
+        this._camera.addEventListener(
+          "tool-intersection",
+          this._intersectingToolHandler,
+          false
+        );
+        this._camera.addEventListener(
+          "tool-intersection-cleared",
+          this._intersectionClearedHandler,
+          false
+        );
+      }
+    }
+  }
+
+  componentDidLoad() {}
+
+  componentDidUpdate() {
+    this._addEventListeners();
+    if (this._camera) {
+      const camMap = this._camera.object3DMap;
+      console.log(this._camera);
+
+      if (camMap) {
+        this._tcontrols = (camMap.controls as unknown) as THREE.OrbitControls;
+        this._tcamera = camMap.camera as THREE.PerspectiveCamera;
+
+        const acanvas: HTMLCanvasElement = this._scene.querySelector(
+          ".a-canvas"
+        );
+        this._tcamera.aspect = acanvas.width / acanvas.height;
+        this._tcamera.updateProjectionMatrix();
+        //this._scene.renderer.setSize( window.innerWidth, window.innerHeight );
+      }
+    }
+  }
+
+  private _intersectionClearedHandler(_evt): void {
+    this._intersectingTool = false;
+  }
+
+  //#region Event Handlers
+  private _intersectingToolHandler(_evt): void {
+    this._intersectingTool = true;
+  }
+
+  private _toolMouseDown(_evt: MouseEvent): void {
+    if (this.toolsEnabled) {
+      this._tcontrols.enabled = false;
+    }
+  }
+
+  private _toolMouseMove(_evt: MouseEvent): void {
+    if (this.toolsEnabled) {
+    }
+  }
+
+  private _toolMouseUp(): void {
+    if (this.toolsEnabled) {
+      this._tcontrols.enabled = true;
+    }
+  }
+
   private _addToolHandler(event: CustomEvent): void {
-    if (this.toolsEnabled && this._validTarget) {
+    if (this.toolsEnabled && this._validTarget && !this._intersectingTool) {
       let intersection: THREE.Intersection = event.detail.detail.intersection;
 
       const newTool: Tool = CreateUtils.createTool(
@@ -442,81 +547,7 @@ export class Aleph {
   }
 
   private _toolSelectedHandler(event: CustomEvent): void {
-    this.appSelectTool(event.detail.id);
+    this.appSelectTool(Number(event.detail.id));
   }
-
-  private _addEventListeners(): void {
-    if (this._scene) {
-      this._scene.addEventListener("add-tool", this._addToolHandler, false);
-      this._scene.addEventListener(
-        "tool-selected",
-        this._toolSelectedHandler,
-        false
-      );
-      this._scene.addEventListener(
-        "valid-target",
-        this._validTargetHandler,
-        false
-      );
-      this._scene.addEventListener(
-        "mesh-distance",
-        this._meshDistanceHandler,
-        false
-      );
-
-      this._scene.addEventListener("mousedown", this._toolMouseDown, false);
-      this._scene.addEventListener("mousemove", this._toolMouseMove, false);
-      this._scene.addEventListener("mouseup", this._toolMouseUp, false);
-
-      if (this._focusEntity) {
-        this._focusEntity.addEventListener(
-          "model-loaded",
-          this._srcLoadedHandler,
-          false
-        );
-      }
-    }
-  }
-
-  componentDidLoad() {}
-
-  componentDidUpdate() {
-    console.log(this._tcontrols);
-
-    this._addEventListeners();
-
-    if (this._camera) {
-      const camMap = this._camera.object3DMap;
-      console.log(this._camera);
-
-      if (camMap) {
-        this._tcontrols = (camMap.controls as unknown) as THREE.OrbitControls;
-        this._tcamera = camMap.camera as THREE.PerspectiveCamera;
-
-        const acanvas: HTMLCanvasElement = this._scene.querySelector(
-          ".a-canvas"
-        );
-        this._tcamera.aspect = acanvas.width / acanvas.height;
-        this._tcamera.updateProjectionMatrix();
-        //this._scene.renderer.setSize( window.innerWidth, window.innerHeight );
-      }
-    }
-  }
-
-  private _toolMouseDown(_evt: MouseEvent): void {
-    if (this.toolsEnabled) {
-      //this._controls.enabled = false;
-    }
-  }
-
-  private _toolMouseMove(_evt: MouseEvent): void {
-    if (this.toolsEnabled) {
-    }
-  }
-
-  private _toolMouseUp(): void {
-    if (this.toolsEnabled) {
-      //this._controls.enabled = true;
-    }
-  }
+  //#endregion
 }
