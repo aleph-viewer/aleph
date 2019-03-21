@@ -45,7 +45,6 @@ export class Aleph {
   private _stack: any;
   private _stackHelper: AMI.StackHelper;
 
-  private _container: HTMLElement;
   private _focusEntity: Entity;
   private _controls: THREE.OrbitControls;
   private _scene: Entity;
@@ -220,9 +219,6 @@ export class Aleph {
     this._validTargetHandler = this._validTargetHandler.bind(this);
     this._meshDistanceHandler = this._meshDistanceHandler.bind(this);
     this._toolSelectedHandler = this._toolSelectedHandler.bind(this);
-
-    // TODO remove
-    console.log(this._container);
   }
 
   private _renderSrc() {
@@ -410,14 +406,7 @@ export class Aleph {
   }
 
   render(): JSX.Element {
-    return (
-      <div>
-        <div id="container" ref={(el: HTMLElement) => (this._container = el)}>
-          {this._renderScene()}
-          {this._renderControlPanel()}
-        </div>
-      </div>
-    );
+    return [this._renderScene(), this._renderControlPanel()];
   }
 
   private _srcLoaded(): void {

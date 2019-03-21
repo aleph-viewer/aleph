@@ -89,7 +89,6 @@ export const app = (
       };
     }
     case TypeKeys.APP_SELECT_TOOL: {
-      console.log("selected: ", action.payload);
       return {
         ...state,
         selectedTool: action.payload
