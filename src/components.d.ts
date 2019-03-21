@@ -105,6 +105,7 @@ export namespace Components {
 
   interface UvAleph {
     'dracoDecoderPath': string | null;
+    'setDisplayMode': (displayMode: DisplayMode) => Promise<void>;
     'setSrc': (src: string) => Promise<void>;
   }
   interface UvAlephAttributes extends StencilHTMLAttributes {

@@ -10,7 +10,7 @@ interface AppState {
   src: string | null;
   srcLoaded: boolean;
   tools: Tool[];
-  selectedTool: number | null;
+  selectedTool: number;
   displayMode: DisplayMode;
   orientation: Orientation;
   toolsEnabled: boolean;
@@ -32,7 +32,7 @@ export const getInitialState = () => {
   return {
     src: null,
     srcLoaded: false,
-    selectedTool: null,
+    selectedTool: -1,
     tools: [],
     displayMode: DisplayMode.MESH,
     orientation: Orientation.CORONAL,
@@ -75,6 +75,7 @@ export const app = (
     case TypeKeys.APP_ADD_TOOL: {
       return {
         ...state,
+        selectedTool: action.payload.id,
         tools: [...state.tools, action.payload]
       };
     }
@@ -83,7 +84,7 @@ export const app = (
       return {
         ...state,
         selectedTool:
-          state.selectedTool === action.payload ? null : state.selectedTool,
+          state.selectedTool === action.payload ? -1 : state.selectedTool,
         tools: [...state.tools.slice(0, index), ...state.tools.slice(index + 1)]
       };
     }
@@ -115,7 +116,6 @@ export const app = (
       };
     }
     case TypeKeys.APP_SET_DISPLAY_MODE: {
-      console.log(action.payload);
       return {
         ...state,
         boundingBoxVisible: action.payload === DisplayMode.SLICES, // default to bounding box visible in slices mode
@@ -142,7 +142,6 @@ export const app = (
       };
     }
     case TypeKeys.APP_SET_TOOL_TYPE: {
-      console.log(action.payload);
       return {
         ...state,
         toolType: action.payload

@@ -12,5 +12,6 @@ export const config: Config = {
   ],
   copy: [
     { src: 'js' }
-  ]
+  ],
+  globalStyle: 'src/global/variables.css'
 };

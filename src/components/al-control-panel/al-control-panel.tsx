@@ -1,6 +1,5 @@
 import { Component, Prop } from "@stencil/core";
 import { Tool } from "../../interfaces/interfaces";
-import { CreateUtils } from "../../utils/utils";
 import { DisplayMode } from "../../enums/DisplayMode";
 import { ToolType } from "../../enums/ToolType";
 import { Orientation } from "../../enums/Orientation";
@@ -100,14 +99,14 @@ export class ControlPanel {
       return [
         <ion-item>
           <ion-list lines="none">
-            <ion-radio-group>
+            <ion-radio-group value={this.selectedTool}>
               {this.tools.map((tool: Tool) => {
                 return (
                   <ion-item>
                     <ion-label>{tool.id}</ion-label>
                     <ion-radio
-                      checked={tool.id === this.selectedTool}
                       onClick={() => this.selectTool(tool.id)}
+                      value={tool.id}
                     />
                   </ion-item>
                 );
@@ -152,7 +151,7 @@ export class ControlPanel {
           </ion-item>
           <ion-toolbar>
             <ion-buttons>
-              <ion-button
+              {/* <ion-button
                 onClick={() => {
                   this.addTool(
                     CreateUtils.createTool(this.tools, this.toolType)
@@ -160,7 +159,7 @@ export class ControlPanel {
                 }}
               >
                 Add
-              </ion-button>
+              </ion-button> */}
               <ion-button
                 onClick={() => {
                   this.saveTools();

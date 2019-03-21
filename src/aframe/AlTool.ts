@@ -1,102 +1,122 @@
 import { AframeComponent, AframeObject } from "../interfaces/interfaces";
-import { RaycasterUtils } from "../utils/utils";
+import { RaycasterUtils, ThreeUtils } from "../utils/utils";
 import { Constants } from "../Constants";
 
 export class AlTool implements AframeComponent {
   public static getObject(): AframeObject {
     return {
+<<<<<<< HEAD
       dependencies: ["raycaster"],
 
+=======
+>>>>>>> 50506096d19ed51f0d9b845176531d7a56973d58
       schema: {
-        focusId: { type: "string", default: "focusEntity" },
-        needsUpdate: { type: "boolean", default: "false" },
-        boundingScale: { type: "number", default: "1" },
-        initialPosition: { type: "vec3", default: "0 0 0" },
-        maxRayDistance: { type: "number", default: "1" }
+        focusId: { type: "string", default: "#focusEntity" },
+        maxRayDistance: { type: "number", default: 1 },
+        scale: { type: "number", default: 1 },
+        baseColor: { type: "string" }
       },
 
       init(): void {
-        console.log("init tool", this);
-
         //#region State setup
-        const cam = this.el.sceneEl.camera.el.object3DMap.camera;
-        if (!cam) {
-          console.error("no camera in scene!: " + cam);
+        try {
+          this.camera = this.el.sceneEl.camera.el.object3DMap.camera;
+        } catch {
+          console.error("no camera in scene!: " + this.el.sceneEl);
         }
-        this.camera = cam;
 
-        const focus = document.querySelector("#" + this.data.focusId)
-          .object3DMap.mesh;
-        if (!focus) {
-          console.error("no focus in scene!: " + focus);
+        // Not properly selecting from document!
+        try {
+          const docEl = this.el.sceneEl.querySelector(this.data.focusId);
+          const focus = docEl.object3DMap.mesh;
+          this.focusObject = focus;
+        } catch {
+          console.error("no focus in scene!: " + this);
         }
-        this.focusEntity = focus;
         //#endregion
 
         //#region Mesh Setup
-        let geometry = new THREE.SphereGeometry(
-          1 * this.data.boundingScale,
-          16,
-          16
-        );
-        let material = new THREE.MeshBasicMaterial({
-          color: Constants.colorValues.blue
-        });
+        this.hoveredColor = new THREE.Color(Constants.colorValues.red);
+        this.baseColor = new THREE.Color(this.data.baseColor);
+
+        let geometry = new THREE.SphereGeometry(this.data.scale, 16, 16);
+        let material = new THREE.MeshBasicMaterial({ color: this.baseColor });
         let mesh = new THREE.Mesh(geometry, material);
         this.el.setObject3D("mesh", mesh);
         //#endregion
 
         //#region Raycaster Setup
-        const initialPosition = new THREE.Vector3(
-          this.data.initialPosition.x,
-          this.data.initialPosition.y,
-          this.data.initialPosition.z
-        );
-        let direction = initialPosition
-          .sub(this.focusEntity.position)
+        let pos = this.el.getAttribute("position");
+
+        let direction = pos
+          .clone()
+          .sub(this.focusObject.position)
           .normalize();
         this.raycaster = new THREE.Raycaster(
-          this.mesh.position,
+          pos,
           direction,
           0,
           this.camera.far
         );
+        //#endregion
 
+<<<<<<< HEAD
         this.el.addEventListener("raycaster-intersection", function() {
           console.log("Mouse hit something!");
         });
 
         this.el.addEventListener("raycaster-intersected-cleared", function() {
           console.log("Mouse moved away!");
+=======
+        //#region Event Listeners
+        this.el.addEventListener("click", () => {
+          let id = this.el.getAttribute("id");
+          this.el.emit("tool-selected", { id: id }, true);
         });
-        //#endregion
 
-        this.needsUpdate = this.data.needsUpdate;
+        this.el.addEventListener("raycaster-intersected", () => {
+          let mesh = this.el.object3DMap.mesh;
+          (mesh.material as THREE.MeshBasicMaterial).color = this.hoveredColor;
+        });
+
+        this.el.addEventListener("raycaster-intersected-cleared", () => {
+          let mesh = this.el.object3DMap.mesh;
+          (mesh.material as THREE.MeshBasicMaterial).color = this.baseColor;
+        });
+
+        this.el.addEventListener("mouseup", () => {
+          let raycaster = this.raycaster as THREE.Raycaster;
+          raycaster.far = this.maxRayDistance;
+
+          let result = RaycasterUtils.castMeshRay(
+            this.raycaster,
+            this.focusObject
+          );
+
+          // If we hit something with the world raycast
+          if (result) {
+            this.el.setAttribute(
+              "position",
+              ThreeUtils.vector3ToString(result)
+            );
+
+            // Update the raycaster for next frame
+            let pos = this.el.getAttribute("position");
+            let direction = pos
+              .clone()
+              .sub(this.focusObject.position)
+              .normalize();
+            (this.raycaster as THREE.Raycaster).set(pos, direction);
+          }
+>>>>>>> 50506096d19ed51f0d9b845176531d7a56973d58
+        });
+
+        //#endregion
       },
 
       update(): void {
-        let raycaster = this.raycaster as THREE.Raycaster;
         let mesh = this.el.object3DMap.mesh;
-        raycaster.far = this.maxRayDistance;
-
-        let result = RaycasterUtils.castMeshRay(
-          this.raycaster,
-          this.focusEntity
-        );
-
-        // If we hit something with the world raycast
-        if (result) {
-          mesh.position.copy(result);
-        }
-
-        // Update the raycaster for next frame
-        let direction = mesh.position
-          .sub(this.focusEntity.position)
-          .normalize();
-        (this.raycaster as THREE.Raycaster).set(this.mesh.position, direction);
-
-        // Reset needsUpdate
-        this.needsUpdate = false;
+        (mesh.material as THREE.MeshBasicMaterial).color = this.baseColor;
       },
 
       tick(): void {},

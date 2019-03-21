@@ -3,7 +3,6 @@ export class RaycasterUtils {
     raycaster: THREE.Raycaster,
     focusObject: THREE.Object3D
   ): THREE.Vector3 {
-    // TODO: This could be slow given every widget calls it
     let intersects: THREE.Intersection[] = raycaster.intersectObjects(
       focusObject.children
     );

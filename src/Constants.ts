@@ -1,14 +1,14 @@
 export class Constants {
-  static toolSize = 200;
+  static toolSize = 100;
 
   static colorValues = {
-    red: 0xf50057,
-    blue: 0x00b0ff,
-    black: 0x000000,
-    white: 0xffffff,
-    yellow: 0xffeb3b,
-    green: 0x76ff03,
-    lightRed: 0xf77777
+    red: "#f50057",
+    blue: "#00b0ff",
+    black: "#000000",
+    white: "#ffffff",
+    yellow: "#ffeb3b",
+    green: "#76ff03",
+    lightRed: "#f77777"
   };
 
   static lightValues = {
@@ -23,6 +23,11 @@ export class Constants {
   static cameraValues = {
     near: 0.05,
     far: 10000,
-    fov: 45
+    fov: 45,
+    maxPolarAngle: 165,
+    rotateSpeed: 0.75,
+    zoomSpeed: 1.2,
+    dampingFactor: 0.25,
+    minDistance: 0
   };
 }
