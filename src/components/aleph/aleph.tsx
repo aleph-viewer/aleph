@@ -38,7 +38,7 @@ type Entity = import("aframe").Entity;
 @Component({
   tag: "uv-aleph",
   styleUrl: "aleph.css",
-  shadow: true
+  shadow: false
 })
 export class Aleph {
   private _srcLoadedHandler: any;
@@ -46,11 +46,13 @@ export class Aleph {
   private _stackHelper: AMI.StackHelper;
 
   private _focusEntity: Entity;
-  private _controls: THREE.OrbitControls;
   private _scene: Entity;
   private _scale: number;
   private _validTarget: boolean;
   private _maxMeshDistance: number;
+  private _camera: Entity;
+  private _tcamera: THREE.PerspectiveCamera;
+  private _tcontrols: THREE.OrbitControls;
 
   @Prop({ context: "store" }) store: Store;
   @Prop() dracoDecoderPath: string | null;
@@ -332,7 +334,7 @@ export class Aleph {
             zoomSpeed: 1;
           `}
           ref={el => {
-            this._controls = el.object3DMap.controls;
+            this._camera = el;
           }}
         />
       );
@@ -478,9 +480,32 @@ export class Aleph {
 
   componentDidLoad() {}
 
+  componentDidUpdate() {
+    console.log(this._tcontrols);
+
+    this._addEventListeners();
+
+    if (this._camera) {
+      const camMap = this._camera.object3DMap;
+      console.log(this._camera);
+
+      if (camMap) {
+        this._tcontrols = (camMap.controls as unknown) as THREE.OrbitControls;
+        this._tcamera = camMap.camera as THREE.PerspectiveCamera;
+
+        const acanvas: HTMLCanvasElement = this._scene.querySelector(
+          ".a-canvas"
+        );
+        this._tcamera.aspect = acanvas.width / acanvas.height;
+        this._tcamera.updateProjectionMatrix();
+        //this._scene.renderer.setSize( window.innerWidth, window.innerHeight );
+      }
+    }
+  }
+
   private _toolMouseDown(_evt: MouseEvent): void {
     if (this.toolsEnabled) {
-      this._controls.enabled = false;
+      //this._controls.enabled = false;
     }
   }
 
@@ -491,11 +516,7 @@ export class Aleph {
 
   private _toolMouseUp(): void {
     if (this.toolsEnabled) {
-      this._controls.enabled = true;
+      //this._controls.enabled = true;
     }
-  }
-
-  componentDidUpdate() {
-    this._addEventListeners();
   }
 }
