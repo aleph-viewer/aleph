@@ -3,14 +3,13 @@ import {
   AframeObject,
   AlToolState
 } from "../interfaces/interfaces";
-import { ThreeUtils } from "../utils/utils";
 import { Constants } from "../Constants";
 
 export class AlTool implements AframeComponent {
   public static getObject(): AframeObject {
     return {
       schema: {
-        focusId: { type: "string", default: "#focusEntity" },
+        targetId: { type: "string", default: "#targetEntity" },
         scale: { type: "number", default: 1 },
         selected: { type: "boolean" },
         toolsEnabled: { type: "boolean" }
@@ -18,7 +17,7 @@ export class AlTool implements AframeComponent {
 
       init(): void {
         const camera = this.el.sceneEl.camera.el.object3DMap.camera;
-        const focus = this.el.sceneEl.querySelector(this.data.focusId)
+        const target = this.el.sceneEl.querySelector(this.data.targetId)
           .object3DMap.mesh;
         const geometry = new THREE.SphereGeometry(this.data.scale, 16, 16);
         let material = new THREE.MeshBasicMaterial();
@@ -29,8 +28,6 @@ export class AlTool implements AframeComponent {
 
         //#region Event Listeners
         this.el.addEventListener("mousedown", _evt => {
-          console.log("tool-", this.el.id, "  mouse down!");
-
           if (this.data.toolsEnabled) {
             this.el.sceneEl.camera.el.setAttribute(
               "orbit-controls",
@@ -43,8 +40,6 @@ export class AlTool implements AframeComponent {
         });
 
         this.el.addEventListener("mouseup", _evt => {
-          console.log("tool-", this.el.id, "  mouse up!");
-
           if (this.data.toolsEnabled) {
             this.el.sceneEl.camera.el.setAttribute(
               "orbit-controls",
@@ -82,7 +77,7 @@ export class AlTool implements AframeComponent {
         });
 
         let object3D = this.el.object3D as THREE.Object3D;
-        object3D.lookAt(focus.position);
+        object3D.lookAt(target.position);
 
         this.state = {
           selected: true,
@@ -91,7 +86,7 @@ export class AlTool implements AframeComponent {
           material,
           mesh,
           camera,
-          focus,
+          target,
           moving: false
         } as AlToolState;
       },
@@ -99,10 +94,10 @@ export class AlTool implements AframeComponent {
       update(): void {
         let state = this.state as AlToolState;
         let object3D = this.el.object3D as THREE.Object3D;
-        object3D.lookAt(state.focus.position);
+        object3D.lookAt(state.target.position);
 
-        state.focus = this.el.sceneEl.querySelector(
-          this.data.focusId
+        state.target = this.el.sceneEl.querySelector(
+          this.data.targetId
         ).object3DMap.mesh;
 
         state.selected = this.data.selected;

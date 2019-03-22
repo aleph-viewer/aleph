@@ -1,10 +1,10 @@
 export class RaycasterUtils {
   static castMeshRay(
     raycaster: THREE.Raycaster,
-    focusObject: THREE.Object3D
+    targetObject: THREE.Object3D
   ): THREE.Vector3 {
     let intersects: THREE.Intersection[] = raycaster.intersectObjects(
-      focusObject.children
+      targetObject.children
     );
 
     if (intersects.length <= 0) {

@@ -54,7 +54,7 @@ export class Aleph {
   private _stack: any;
   private _stackHelper: AMI.StackHelper;
 
-  private _focusEntity: Entity;
+  private _targetEntity: Entity;
   private _scene: Scene;
   private _scale: number;
   private _validTarget: boolean;
@@ -287,8 +287,8 @@ export class Aleph {
               toolsEnabled: ${this.toolsEnabled};
             `}
             class="collidable"
-            id="focusEntity"
-            ref={(el: Entity) => (this._focusEntity = el)}
+            id="targetEntity"
+            ref={(el: Entity) => (this._targetEntity = el)}
             al-gltf-model={`
                 src: url(${this.src});
                 dracoDecoderPath: ${this.dracoDecoderPath};
@@ -305,8 +305,8 @@ export class Aleph {
             toolsEnabled: ${this.toolsEnabled};
           `}
             class="collidable targets"
-            id="focusEntity"
-            ref={(el: Entity) => (this._focusEntity = el)}
+            id="targetEntity"
+            ref={(el: Entity) => (this._targetEntity = el)}
             al-volumetric-model={`
                 src: url(${this.src});
               `}
@@ -332,7 +332,7 @@ export class Aleph {
             id={tool.id}
             position={tool.position}
             al-tool={`
-              focusId: ${tool.focusObject};
+              targetId: ${tool.targetObject};
               scale: ${tool.scale};
               selected: ${selected === tool.id};
               toolsEnabled: ${this.toolsEnabled};
@@ -360,7 +360,7 @@ export class Aleph {
 
   private _renderCamera(): JSX.Element {
     if (this.srcLoaded) {
-      let orbitData = GetUtils.getOrbitData(this._focusEntity);
+      let orbitData = GetUtils.getOrbitData(this._targetEntity);
 
       return (
         <a-camera
@@ -485,7 +485,7 @@ export class Aleph {
   }
 
   private _srcLoaded(): void {
-    const mesh: THREE.Mesh = this._focusEntity.object3DMap.mesh as THREE.Mesh;
+    const mesh: THREE.Mesh = this._targetEntity.object3DMap.mesh as THREE.Mesh;
     mesh.geometry.computeBoundingSphere();
     this._scale = mesh.geometry.boundingSphere.radius;
     this.appSetSrcLoaded(true);
@@ -511,8 +511,8 @@ export class Aleph {
         false
       );
 
-      if (this._focusEntity) {
-        this._focusEntity.addEventListener(
+      if (this._targetEntity) {
+        this._targetEntity.addEventListener(
           "model-loaded",
           this._srcLoadedHandler,
           false
@@ -559,7 +559,7 @@ export class Aleph {
         intersection.point,
         this._scale,
         this._maxMeshDistance,
-        "#focusEntity"
+        "#targetEntity"
       );
 
       this.appAddTool(newTool);
@@ -581,7 +581,7 @@ export class Aleph {
   private _toolMovedHandler(event: CustomEvent):void {
     const toolId = event.detail.id;
     const raycaster = (this._camera.components.raycaster as any);
-    const intersection = raycaster.getIntersection(this._focusEntity) as THREE.Intersection;
+    const intersection = raycaster.getIntersection(this._targetEntity) as THREE.Intersection;
 
     if (intersection) {
       this.appSetToolMoved(toolId, intersection.point);

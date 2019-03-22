@@ -17,7 +17,7 @@ export class CreateUtils {
     position: THREE.Vector3,
     scale: number,
     maxMeshDistance: number,
-    focusObject: string
+    targetObject: string
   ): Tool {
     return {
       id: GetUtils.getToolWithHighestId(tools) + 1,
@@ -27,7 +27,7 @@ export class CreateUtils {
       selectedColor: Constants.colorValues.green,
       scale: scale / Constants.toolSize,
       maxMeshDistance: maxMeshDistance,
-      focusObject: focusObject
+      targetObject: targetObject
     };
   }
 
