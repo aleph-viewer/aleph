@@ -9,7 +9,7 @@ export class AlTool implements AframeComponent {
   public static getObject(): AframeObject {
     return {
       schema: {
-        targetId: { type: "string", default: "#targetEntity" },
+        targetId: { type: "string", default: "#target-entity" },
         scale: { type: "number", default: 1 },
         selected: { type: "boolean" },
         toolsEnabled: { type: "boolean" }
@@ -37,6 +37,7 @@ export class AlTool implements AframeComponent {
 
           let state = this.state as AlToolState;
           state.moving = true;
+          this.el.emit("tool-selected", { id: this.el.id }, true);
         });
 
         this.el.addEventListener("mouseup", _evt => {
@@ -121,7 +122,11 @@ export class AlTool implements AframeComponent {
 
       pause(): void {},
 
-      play(): void {}
+      play(): void {},
+
+      onEnterVR(): void {},
+
+      onExitVR(): void {}
     } as AframeObject;
   }
 

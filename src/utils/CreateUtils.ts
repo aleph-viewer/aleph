@@ -8,6 +8,7 @@ import {
 } from "../aframe/aframe";
 import { ThreeUtils } from "./utils";
 import { Constants } from "../Constants";
+import { AlOrbitControl } from "../aframe/AlOrbitControl";
 
 export class CreateUtils {
   static createTool(
@@ -34,6 +35,10 @@ export class CreateUtils {
     AFRAME.registerComponent(
       AlToolSpawner.getName(),
       AlToolSpawner.getObject()
+    );
+    AFRAME.registerComponent(
+      AlOrbitControl.getName(),
+      AlOrbitControl.getObject()
     );
   }
 }

@@ -49,7 +49,11 @@ export class AlVolumetricModel implements AframeComponent {
 
       pause(): void {},
 
-      play(): void {}
+      play(): void {},
+
+      onEnterVR(): void {},
+
+      onExitVR(): void {}
     } as AframeObject;
   }
 

@@ -50,7 +50,11 @@ export class AlToolSpawner implements AframeComponent {
 
       pause(): void {},
 
-      play(): void {}
+      play(): void {},
+
+      onEnterVR(): void {},
+
+      onExitVR(): void {}
     } as AframeObject;
   }
 
