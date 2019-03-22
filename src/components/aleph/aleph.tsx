@@ -314,7 +314,6 @@ export class Aleph {
       }
     }
   }
-
   private _renderTools(): JSX.Element {
     const outTools: JSX.Element[] = [];
     const dataTools: Tool[] = this.tools;
@@ -533,6 +532,13 @@ export class Aleph {
 
   componentDidUpdate() {
     this._addEventListeners();
+
+    //TODO: Only needs to happen once, not every render
+    let material = (this._camera.object3DMap.mesh as THREE.Mesh)
+      .material as THREE.Material;
+    if (material && !material.transparent) {
+      material.transparent = true;
+    }
   }
 
   //#region Event Handlers
