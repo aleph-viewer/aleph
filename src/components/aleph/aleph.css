@@ -1,20 +1,11 @@
-#aleph-wrapper {
-  /* left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  width: 100%;
-  height: 100%; */
-  /* overflow: hidden; */
-  height: 100%;
+#al-wrapper {
   position: relative;
   font-family: sans-serif;
 }
 
-#aleph-wrapper a-scene {
+#al-wrapper a-scene {
   background-color: var(--app-background-color);
   display: block;
-  /* position: relative; */
   width: 100%;
   height: 100%;
 }
@@ -25,23 +16,23 @@
   }
 } */
 
-#aleph-wrapper #lut-container {
+#al-wrapper #lut-container {
   display: none;
 }
 
-#aleph-wrapper .progress.container {
+#al-wrapper .progress.container {
   position: absolute;
   top: auto !important;
   bottom: 0 !important;
 }
 
-#aleph-wrapper .progress.container .load.progress {
+#al-wrapper .progress.container .load.progress {
   border: none !important;
   height: 4px !important;
   background-color: #fff !important;
 }
 
-#aleph-wrapper .progress.container .parse.progress {
+#al-wrapper .progress.container .parse.progress {
   border: none !important;
   height: 4px !important;
   background-color: #fff !important;

@@ -1,4 +1,11 @@
-import { Component, Prop, State, Method } from "@stencil/core";
+import {
+  Component,
+  Prop,
+  State,
+  Method,
+  Event,
+  EventEmitter
+} from "@stencil/core";
 import { Store, Action } from "@stencil/redux";
 import {
   appSetSrc,
@@ -6,7 +13,7 @@ import {
   appAddTool,
   appRemoveTool,
   appSelectTool,
-  appSaveTools,
+  appLoadTools,
   appSetDisplayMode,
   appSetOrientation,
   appSetToolsVisible,
@@ -60,13 +67,15 @@ export class Aleph {
   //#region Redux states, props & methods
   @Prop({ context: "store" }) store: Store;
   @Prop() dracoDecoderPath: string | null;
+  @Prop() width: number = 640;
+  @Prop() height: number = 480;
 
   appSetSrc: Action;
   appSetSrcLoaded: Action;
   appAddTool: Action;
   appRemoveTool: Action;
   appSelectTool: Action;
-  appSaveTools: Action;
+  appLoadTools: Action;
   appSetDisplayMode: Action;
   appSetOrientation: Action;
   appSetToolsVisible: Action;
@@ -108,7 +117,7 @@ export class Aleph {
   @State() rulerToolEnabled: boolean;
 
   @Method()
-  async setSrc(src: string) {
+  async load(src: string) {
     // validate
     const fileExtension: string = GetUtils.getFileExtension(src);
 
@@ -133,6 +142,20 @@ export class Aleph {
   async setDisplayMode(displayMode: DisplayMode) {
     this.appSetDisplayMode(displayMode);
   }
+
+  @Method()
+  async loadtools(tools: any) {
+    // remove all existing tools
+    while (this.tools.length) {
+      this.appRemoveTool(this.tools[this.tools.length - 1].id);
+    }
+
+    tools = JSON.parse(tools);
+
+    this.appLoadTools(tools);
+  }
+
+  @Event() onSave: EventEmitter;
   //#endregion
 
   componentWillLoad() {
@@ -200,7 +223,7 @@ export class Aleph {
       appAddTool,
       appRemoveTool,
       appSelectTool,
-      appSaveTools,
+      appLoadTools,
       appSetDisplayMode,
       appSetOrientation,
       appSetToolsVisible,
@@ -233,6 +256,23 @@ export class Aleph {
   }
 
   //#region Rendering Methods
+
+  private _renderSpinner() {
+    if (!this.srcLoaded) {
+      return (
+        <a-box
+          animation="property: rotation; to: 0 360 0; loop: true; dur: 1500; easing: easeInOutQuad"
+          position="0 0 -1"
+          rotation="0.5 0 0"
+          scale=".03 .03 .03"
+          color="#cecece"
+        />
+      );
+    }
+
+    return null;
+  }
+
   private _renderSrc() {
     if (!this.src) {
       return null;
@@ -322,13 +362,9 @@ export class Aleph {
   }
 
   private _renderCamera(): JSX.Element {
-    let orbitData;
-
-    if (this._focusEntity) {
-      orbitData = GetUtils.getOrbitData(this._focusEntity);
-    }
-
     if (this.srcLoaded) {
+      let orbitData = GetUtils.getOrbitData(this._focusEntity);
+
       return (
         <a-camera
           ref={el => (this._camera = el)}
@@ -339,6 +375,7 @@ export class Aleph {
           far={Constants.cameraValues.far}
           look-controls="enabled: false"
           position="0 0 0"
+          rotation="0 0 0"
           orbit-controls={`
         maxPolarAngle: ${Constants.cameraValues.maxPolarAngle};
         minDistance: ${Constants.cameraValues.minDistance};
@@ -347,18 +384,10 @@ export class Aleph {
         zoomSpeed: ${Constants.cameraValues.zoomSpeed};
         enableDamping: true;
         dampingFactor: ${Constants.cameraValues.dampingFactor};
-        target: ${
-          orbitData
-            ? ThreeUtils.vector3ToString(orbitData.sceneCenter)
-            : "0 0 0"
-        };
-        initialPosition: ${
-          orbitData
-            ? ThreeUtils.vector3ToString(orbitData.initialPosition)
-            : "0 0 2"
-        };
-        enableDamping: true;
-        zoomSpeed: 1;
+        target: ${ThreeUtils.vector3ToString(orbitData.sceneCenter)};
+        initialPosition: ${ThreeUtils.vector3ToString(
+          orbitData.initialPosition
+        )};
       `}
         />
       );
@@ -366,13 +395,10 @@ export class Aleph {
       return (
         <a-camera
           ref={el => (this._camera = el)}
-          cursor="rayOrigin: mouse"
-          raycaster="objects: .collidable"
           fov={Constants.cameraValues.fov}
           near={Constants.cameraValues.near}
           far={Constants.cameraValues.far}
           look-controls="enabled: false"
-          position="0 0 0"
         />
       );
     }
@@ -381,12 +407,12 @@ export class Aleph {
   private _renderScene(): JSX.Element {
     return (
       <a-scene
-        inspector
         embedded
         renderer="colorManagement: true;"
         vr-mode-ui="enabled: false"
         ref={el => (this._scene = el)}
       >
+        {this._renderSpinner()}
         {this._renderSrc()}
         {this._renderTools()}
         {this._renderLights()}
@@ -422,7 +448,7 @@ export class Aleph {
         volumeWindowWidth={this.volumeWindowWidth}
         addTool={this.appAddTool}
         removeTool={this.appRemoveTool}
-        saveTools={this.appSaveTools}
+        saveTools={this._saveTools.bind(this)}
         selectTool={this.appSelectTool}
         setBoundingBoxVisible={this.appSetBoundingBoxVisible}
         setDisplayMode={this.appSetDisplayMode}
@@ -442,13 +468,23 @@ export class Aleph {
 
   render(): JSX.Element {
     return (
-      <div id="aleph-wrapper">
+      <div
+        id="al-wrapper"
+        style={{
+          width: String(this.width) + "px",
+          height: String(this.height) + "px"
+        }}
+      >
         {this._renderScene()}
         {this._renderControlPanel()}
       </div>
     );
   }
   //#endregion
+
+  private _saveTools(): void {
+    this.onSave.emit(JSON.stringify(this.tools));
+  }
 
   private _srcLoaded(): void {
     const mesh: THREE.Mesh = this._focusEntity.object3DMap.mesh as THREE.Mesh;

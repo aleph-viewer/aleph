@@ -1,4 +1,4 @@
-al-control-panel {
+#al-control-panel-wrapper {
   position: absolute;
   top: 0;
   left: 0;
@@ -8,15 +8,7 @@ al-control-panel {
   max-height: 100%;
 }
 
-/* #control-panel ion-app {
-  padding: 10px;
-} */
-
-/* #control-panel ion-label {
-  font-size: 14px;
-} */
-
-al-control-panel select {
+#al-control-panel-wrapper select {
   padding: 5px;
   font-size: 14px;
 }

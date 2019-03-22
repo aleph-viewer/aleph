@@ -109,10 +109,10 @@ export const app = (
         })
       };
     }
-    case TypeKeys.APP_SAVE_TOOLS: {
-      console.log(JSON.stringify(state.tools));
+    case TypeKeys.APP_LOAD_TOOLS: {
       return {
-        ...state
+        ...state,
+        tools: action.payload
       };
     }
     case TypeKeys.APP_SET_DISPLAY_MODE: {

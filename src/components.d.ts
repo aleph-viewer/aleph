@@ -105,11 +105,17 @@ export namespace Components {
 
   interface UvAleph {
     'dracoDecoderPath': string | null;
+    'height': number;
+    'load': (src: string) => Promise<void>;
+    'loadtools': (tools: any) => Promise<void>;
     'setDisplayMode': (displayMode: DisplayMode) => Promise<void>;
-    'setSrc': (src: string) => Promise<void>;
+    'width': number;
   }
   interface UvAlephAttributes extends StencilHTMLAttributes {
     'dracoDecoderPath'?: string | null;
+    'height'?: number;
+    'onOnSave'?: (event: CustomEvent) => void;
+    'width'?: number;
   }
 }
 

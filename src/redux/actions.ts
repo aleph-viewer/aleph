@@ -16,7 +16,7 @@ export type ActionTypes =
   | AppRemoveToolAction
   | AppSelectToolAction
   | AppUpdateToolAction
-  | AppSaveToolsAction
+  | AppLoadToolsAction
   | AppSetDisplayModeAction
   | AppSetOrientationAction
   | AppSetToolsVisibleAction
@@ -44,7 +44,7 @@ export enum TypeKeys {
   APP_REMOVE_TOOL = "APP_REMOVE_TOOL",
   APP_SELECT_TOOL = "APP_SELECT_TOOL",
   APP_UPDATE_TOOL = "APP_UPDATE_TOOL",
-  APP_SAVE_TOOLS = "APP_SAVE_TOOLS",
+  APP_LOAD_TOOLS = "APP_LOAD_TOOLS",
   APP_SET_DISPLAY_MODE = "APP_SET_DISPLAY_MODE",
   APP_SET_ORIENTATION = "APP_SET_ORIENTATION",
   APP_SET_TOOLS_VISIBLE = "APP_SET_TOOLS_VISIBLE",
@@ -145,14 +145,14 @@ export const appUpdateTool = (payload: Tool) => async (dispatch, _getState) => {
   });
 };
 
-export interface AppSaveToolsAction {
-  type: TypeKeys.APP_SAVE_TOOLS;
-  payload: void;
+export interface AppLoadToolsAction {
+  type: TypeKeys.APP_LOAD_TOOLS;
+  payload: any;
 }
 
-export const appSaveTools = (payload: void) => async (dispatch, _getState) => {
+export const appLoadTools = (payload: void) => async (dispatch, _getState) => {
   return dispatch({
-    type: TypeKeys.APP_SAVE_TOOLS,
+    type: TypeKeys.APP_LOAD_TOOLS,
     payload: payload
   });
 };
