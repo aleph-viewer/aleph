@@ -51,8 +51,7 @@ export class AlTool implements AframeComponent {
         });
 
         this.el.addEventListener("click", _evt => {
-          const id = this.el.getAttribute("id");
-          this.el.emit("tool-selected", { id: id }, true);
+          this.el.emit("tool-selected", { id: this.el.id }, true);
         });
 
         this.el.addEventListener("raycaster-intersected", _evt => {
@@ -102,7 +101,7 @@ export class AlTool implements AframeComponent {
 
         state.selected = this.data.selected;
 
-        if (state.hovered) {
+        if (state.hovered || state.moving) {
           state.material.color = new THREE.Color(Constants.toolColors.hovered);
         } else if (state.selected) {
           state.material.color = new THREE.Color(Constants.toolColors.selected);
