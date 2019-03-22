@@ -1,18 +1,26 @@
 <!DOCTYPE html>
 <html dir="ltr" lang="en">
-<head>
- <meta charset="utf-8">
- <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0">
- <title>Aleph</title>
- <script src="https://unpkg.com/three@0.102.1/build/three.min.js"></script>
- <script src="js/aframe-master.js"></script>
- <script src="https://unpkg.com/aframe-orbit-controls@1.2.0/dist/aframe-orbit-controls.min.js"></script>
- <script src="https://unpkg.com/aframe-fps-counter-component@1.0.1/dist/aframe-fps-counter-component.min.js"></script>
- <script src="https://unpkg.com/ami.js@next/build/ami.min.js"></script>
- <script src="https://unpkg.com/@ionic/core@4.1.1/dist/ionic.js"></script>
- <script src="/build/aleph.js"></script>
- <link rel="stylesheet" href="/build/aleph.css">
- <style>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0"
+    />
+    <title>Aleph</title>
+    <script src="https://unpkg.com/three@0.102.1/build/three.min.js"></script>
+    <script src="js/aframe-master.js"></script>
+    <script src="https://unpkg.com/aframe-orbit-controls@1.2.0/dist/aframe-orbit-controls.min.js"></script>
+    <script src="https://unpkg.com/aframe-fps-counter-component@1.0.1/dist/aframe-fps-counter-component.min.js"></script>
+    <script src="https://unpkg.com/ami.js@next/build/ami.min.js"></script>
+    <script src="https://unpkg.com/@ionic/core@4.1.1/dist/ionic.js"></script>
+    <script src="/build/aleph.js"></script>
+    <link rel="stylesheet" href="/build/aleph.css" />
+    <style>
+      *,
+      *:before,
+      *:after {
+        box-sizing: border-box;
+      }
 
       body {
         margin: 0;
@@ -38,15 +46,14 @@
 
       #debug {
         flex: 20%;
+        min-width: 350px;
         padding: 1rem;
       }
 
       .rs-base {
-        margin-left: auto;
-        position: relative;
-        display: inline-block;
-        text-align: right;
-        width: 20%
+        margin-top: 20px;
+        position: static;
+        width: auto;
       }
     </style>
   </head>
@@ -84,6 +91,7 @@
     <script>
       document.addEventListener("DOMContentLoaded", function(event) {
         const container = document.querySelector("#container");
+        const debug = document.querySelector("#debug");
         const aleph = document.querySelector("uv-aleph");
 
         aleph.componentOnReady().then(function() {
@@ -108,11 +116,19 @@
           false
         );
 
+        aleph.addEventListener("onLoad", function() {
+          // move the auto-generate framerate counter to the debug col
+          setTimeout(() => {
+            const framerate = document.querySelector(".rs-base");
+            debug.appendChild(framerate);
+          }, 250);
+        }, false);
+
         document.getElementById("load").addEventListener(
           "click",
           function(e) {
             e.preventDefault();
-            aleph.loadtools(annotations.value);
+            aleph.loadAnnotations(annotations.value);
           },
           false
         );

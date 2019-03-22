@@ -142,7 +142,7 @@ export class Aleph {
   }
 
   @Method()
-  async loadtools(tools: any) {
+  async loadAnnotations(tools: any) {
     // remove all existing tools
     while (this.tools.length) {
       this.appRemoveTool(this.tools[this.tools.length - 1].id);
@@ -153,6 +153,7 @@ export class Aleph {
     this.appLoadTools(tools);
   }
 
+  @Event() onLoad: EventEmitter;
   @Event() onSave: EventEmitter;
   //#endregion
 
@@ -482,6 +483,7 @@ export class Aleph {
     mesh.geometry.computeBoundingSphere();
     this._scale = mesh.geometry.boundingSphere.radius;
     this.appSetSrcLoaded(true);
+    this.onLoad.emit();
   }
 
   private _addEventListeners(): void {

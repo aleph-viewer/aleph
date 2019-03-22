@@ -100,13 +100,14 @@ export namespace Components {
     'dracoDecoderPath': string | null;
     'height': string;
     'load': (src: string) => Promise<void>;
-    'loadtools': (tools: any) => Promise<void>;
+    'loadAnnotations': (tools: any) => Promise<void>;
     'setDisplayMode': (displayMode: DisplayMode) => Promise<void>;
     'width': string;
   }
   interface UvAlephAttributes extends StencilHTMLAttributes {
     'dracoDecoderPath'?: string | null;
     'height'?: string;
+    'onOnLoad'?: (event: CustomEvent) => void;
     'onOnSave'?: (event: CustomEvent) => void;
     'width'?: string;
   }

@@ -12,3 +12,12 @@
   padding: 5px;
   font-size: 14px;
 }
+
+#al-control-panel-wrapper div.al-list {
+  background-color: var(--ion-background-color);
+}
+
+#al-control-panel-wrapper div.al-list label {
+  display: block;
+  padding: 0.25rem;
+}
