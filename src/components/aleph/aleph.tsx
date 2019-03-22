@@ -67,8 +67,8 @@ export class Aleph {
   //#region Redux states, props & methods
   @Prop({ context: "store" }) store: Store;
   @Prop() dracoDecoderPath: string | null;
-  @Prop() width: number = 640;
-  @Prop() height: number = 480;
+  @Prop() width: string = "640px";
+  @Prop() height: string = "480px";
 
   appSetSrc: Action;
   appSetSrcLoaded: Action;
@@ -471,8 +471,8 @@ export class Aleph {
       <div
         id="al-wrapper"
         style={{
-          width: String(this.width) + "px",
-          height: String(this.height) + "px"
+          width: this.width,
+          height: this.height
         }}
       >
         {this._renderScene()}
