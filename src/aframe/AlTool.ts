@@ -9,8 +9,6 @@ import { Constants } from "../Constants";
 export class AlTool implements AframeComponent {
   public static getObject(): AframeObject {
     return {
-      dependencies: ["raycaster"],
-
       schema: {
         focusId: { type: "string", default: "#focusEntity" },
         scale: { type: "number", default: 1 },
@@ -30,23 +28,6 @@ export class AlTool implements AframeComponent {
         this.el.setObject3D("mesh", mesh);
 
         //#region Event Listeners
-        // Non Functional
-        this.el.addEventListener("raycaster-intersection", evt => {
-          console.log("tool-", this.el.id, "  intersected!");
-
-          if (evt.detail.point) {
-            this.el.setAttribute(
-              "position",
-              ThreeUtils.vector3ToString(evt.detail.point)
-            );
-          }
-        });
-
-        // Non Functional
-        this.el.addEventListener("raycaster-intersection-cleared", _evt => {
-          console.log("tool-", this.el.id, "  cleared intersect!");
-        });
-
         this.el.addEventListener("mousedown", _evt => {
           console.log("tool-", this.el.id, "  mouse down!");
 
@@ -136,16 +117,10 @@ export class AlTool implements AframeComponent {
       },
 
       tick(): void {
-        //   let state = this.state as AlToolState;
-        //   if (state.moving && state.selected) {
-        //     const intersection = evt.detail.el.components.raycaster.getIntersection(
-        //       this.el
-        //     );
-        //     this.el.setAttribute(
-        //       "position",
-        //       ThreeUtils.vector3ToString(intersection.point)
-        //     );
-        //   }
+        let state = this.state as AlToolState;
+        if (state.moving && state.selected) {
+          this.el.emit("tool-moved", {id: this.el.id}, true);
+        }
       },
 
       remove(): void {},

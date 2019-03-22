@@ -253,6 +253,7 @@ export class Aleph {
     this._intersectionClearedHandler = this._intersectionClearedHandler.bind(
       this
     );
+    this._toolMovedHandler = this._toolMovedHandler.bind(this);
   }
 
   //#region Rendering Methods
@@ -335,10 +336,6 @@ export class Aleph {
               scale: ${tool.scale};
               selected: ${selected === tool.id};
               toolsEnabled: ${this.toolsEnabled};
-            `}
-            raycaster={`
-              objects: .targets;
-              far: ${Constants.cameraValues.far}
             `}
           />
         );
@@ -496,6 +493,7 @@ export class Aleph {
 
   private _addEventListeners(): void {
     if (this._scene) {
+      this._scene.addEventListener("tool-moved", this._toolMovedHandler, false);
       this._scene.addEventListener("add-tool", this._addToolHandler, false);
       this._scene.addEventListener(
         "tool-selected",
@@ -578,6 +576,23 @@ export class Aleph {
 
   private _toolSelectedHandler(event: CustomEvent): void {
     this.appSelectTool(Number(event.detail.id));
+  }
+
+  private _toolMovedHandler(event: CustomEvent):void {
+    const toolId = event.detail.id;
+    const raycaster = (this._camera.components.raycaster as any);
+    const intersection = raycaster.getIntersection(this._focusEntity) as THREE.Intersection;
+
+    if (intersection) {
+      this.appSetToolMoved(toolId, intersection.point);
+    } else {
+      let toolPos = ThreeUtils.stringToVector3(this._scene.querySelector("#" + toolId).getAttribute("position"));
+      const raycasterPos = ThreeUtils.stringToVector3(raycaster.getAttribute("position"));
+      toolPos.x = raycasterPos.x;
+      toolPos.y = raycasterPos.y;
+
+      this.appSetToolMoved(toolId, toolPos);
+    }
   }
   //#endregion
 }
