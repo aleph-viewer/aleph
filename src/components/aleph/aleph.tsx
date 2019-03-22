@@ -585,9 +585,10 @@ export class Aleph {
       let toolPos: THREE.Vector3 = (this._scene
         .querySelector("#" + toolId)
         .getAttribute("position") as unknown) as THREE.Vector3;
-      const raycasterPos = raycaster.raycaster.ray.origin;
-      toolPos.x = raycasterPos.x;
-      toolPos.y = raycasterPos.y;
+
+      let cameraPos = new THREE.Vector3();
+      this._camera.object3D.getWorldPosition(cameraPos);
+      console.log(cameraPos);
 
       this.appUpdateTool({
         id: toolId,

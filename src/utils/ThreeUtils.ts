@@ -21,10 +21,4 @@ export class ThreeUtils {
   static vector3ToString(vec: THREE.Vector3): string {
     return vec.toArray().join(" ");
   }
-
-  static stringToVector3(vec: string): THREE.Vector3 {
-    const res = vec.split(" ");
-
-    return new THREE.Vector3(Number(res[0]), Number(res[1]), Number(res[2]));
-  }
 }

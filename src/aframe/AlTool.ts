@@ -112,7 +112,7 @@ export class AlTool implements AframeComponent {
 
       tick(): void {
         let state = this.state as AlToolState;
-        if (state.moving && state.selected) {
+        if (state.moving && state.selected && this.data.toolsEnabled) {
           this.el.emit("tool-moved", { id: this.el.id }, true);
         }
       },
