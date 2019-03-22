@@ -94,23 +94,23 @@ export class ControlPanel {
   renderTools(): JSX.Element {
     if (this.toolsVisible && this.toolsEnabled) {
       return [
-        <ion-item>
-          <ion-list lines="none">
-            <ion-radio-group value={this.selectedTool}>
-              {this.tools.map((tool: Tool) => {
-                return (
-                  <ion-item>
-                    <ion-radio
-                      onClick={() => this.selectTool(tool.id)}
-                      value={tool.id}
-                    />
-                    <ion-label>{tool.id}</ion-label>
-                  </ion-item>
-                );
-              })}
-            </ion-radio-group>
-          </ion-list>
-        </ion-item>,
+        <div class="al-list">
+          {this.tools.map((tool: Tool) => {
+            return (
+              <label class="block">
+                <input
+                  type="radio"
+                  checked={this.selectedTool === tool.id}
+                  id={tool.id}
+                  name="tool"
+                  value={tool.id}
+                  onChange={e => this.selectTool(e.srcElement.id)}
+                />
+                {tool.id}
+              </label>
+            );
+          })}
+        </div>,
         <ion-footer>
           {/* <ion-item>
             <ion-label>Tool Type</ion-label>
