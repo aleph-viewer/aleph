@@ -4,17 +4,15 @@ import { Tool } from "../interfaces/Tool";
 import { GetUtils } from "../utils/utils";
 import { DisplayMode } from "../enums/DisplayMode";
 import { Orientation } from "../enums/Orientation";
-import { ToolType } from "../enums/ToolType";
 
 interface AppState {
   src: string | null;
   srcLoaded: boolean;
   tools: Tool[];
-  selectedTool: number;
+  selectedTool: string | null;
   displayMode: DisplayMode;
   orientation: Orientation;
   toolsEnabled: boolean;
-  toolType: ToolType;
   optionsEnabled: boolean;
   boundingBoxVisible: boolean;
   slicesIndex: number;
@@ -32,13 +30,12 @@ export const getInitialState = () => {
   return {
     src: null,
     srcLoaded: false,
-    selectedTool: -1,
+    selectedTool: null,
     tools: [],
     displayMode: DisplayMode.MESH,
     orientation: Orientation.CORONAL,
     toolsVisible: true,
     toolsEnabled: false,
-    toolType: ToolType.ANGLE,
     optionsVisible: true,
     optionsEnabled: false,
     boundingBoxVisible: false,
@@ -84,7 +81,7 @@ export const app = (
       return {
         ...state,
         selectedTool:
-          state.selectedTool === action.payload ? -1 : state.selectedTool,
+          state.selectedTool === action.payload ? null : state.selectedTool,
         tools: [...state.tools.slice(0, index), ...state.tools.slice(index + 1)]
       };
     }
@@ -95,6 +92,7 @@ export const app = (
       };
     }
     case TypeKeys.APP_UPDATE_TOOL: {
+      console.log("update tool", action.payload);
       return {
         ...state,
         tools: state.tools.map(tool => {
@@ -139,12 +137,6 @@ export const app = (
       return {
         ...state,
         toolsEnabled: action.payload
-      };
-    }
-    case TypeKeys.APP_SET_TOOL_TYPE: {
-      return {
-        ...state,
-        toolType: action.payload
       };
     }
     case TypeKeys.APP_SET_OPTIONS_VISIBLE: {

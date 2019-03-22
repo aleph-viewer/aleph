@@ -13,12 +13,12 @@ import {
   appAddTool,
   appRemoveTool,
   appSelectTool,
+  appUpdateTool,
   appLoadTools,
   appSetDisplayMode,
   appSetOrientation,
   appSetToolsVisible,
   appSetToolsEnabled,
-  appSetToolType,
   appSetOptionsVisible,
   appSetOptionsEnabled,
   appSetBoundingBoxVisible,
@@ -34,7 +34,6 @@ import {
 } from "../../redux/actions";
 import { configureStore } from "../../redux/store";
 import { Tool } from "../../interfaces/interfaces";
-import { ToolType } from "../../enums/ToolType";
 import { Orientation } from "../../enums/Orientation";
 import { DisplayMode } from "../../enums/DisplayMode";
 import { GetUtils, ThreeUtils, CreateUtils } from "../../utils/utils";
@@ -67,20 +66,20 @@ export class Aleph {
   //#region Redux states, props & methods
   @Prop({ context: "store" }) store: Store;
   @Prop() dracoDecoderPath: string | null;
-  @Prop() width: number = 640;
-  @Prop() height: number = 480;
+  @Prop() width: string = "640px";
+  @Prop() height: string = "480px";
 
   appSetSrc: Action;
   appSetSrcLoaded: Action;
   appAddTool: Action;
   appRemoveTool: Action;
   appSelectTool: Action;
+  appUpdateTool: Action;
   appLoadTools: Action;
   appSetDisplayMode: Action;
   appSetOrientation: Action;
   appSetToolsVisible: Action;
   appSetToolsEnabled: Action;
-  appSetToolType: Action;
   appSetOptionsVisible: Action;
   appSetOptionsEnabled: Action;
   appSetBoundingBoxVisible: Action;
@@ -96,13 +95,12 @@ export class Aleph {
 
   @State() src: string | null;
   @State() srcLoaded: boolean;
-  @State() selectedTool: number;
+  @State() selectedTool: string;
   @State() tools: Tool[];
   @State() displayMode: DisplayMode;
   @State() orientation: Orientation;
   @State() toolsVisible: boolean;
   @State() toolsEnabled: boolean;
-  @State() toolType: ToolType;
   @State() optionsVisible: boolean;
   @State() optionsEnabled: boolean;
   @State() boundingBoxVisible: boolean;
@@ -174,7 +172,6 @@ export class Aleph {
           orientation,
           toolsVisible,
           toolsEnabled,
-          toolType,
           optionsVisible,
           optionsEnabled,
           boundingBoxVisible,
@@ -200,7 +197,6 @@ export class Aleph {
         orientation,
         toolsVisible,
         toolsEnabled,
-        toolType,
         optionsVisible,
         optionsEnabled,
         boundingBoxVisible,
@@ -223,12 +219,12 @@ export class Aleph {
       appAddTool,
       appRemoveTool,
       appSelectTool,
+      appUpdateTool,
       appLoadTools,
       appSetDisplayMode,
       appSetOrientation,
       appSetToolsVisible,
       appSetToolsEnabled,
-      appSetToolType,
       appSetOptionsVisible,
       appSetOptionsEnabled,
       appSetBoundingBoxVisible,
@@ -321,7 +317,6 @@ export class Aleph {
   private _renderTools(): JSX.Element {
     const outTools: JSX.Element[] = [];
     const dataTools: Tool[] = this.tools;
-    const selected = this.selectedTool;
 
     for (var i = 0; i < dataTools.length; i++) {
       if (i < dataTools.length) {
@@ -332,9 +327,9 @@ export class Aleph {
             id={tool.id}
             position={tool.position}
             al-tool={`
-              targetId: ${tool.targetObject};
+              targetId: ${tool.targetId};
               scale: ${tool.scale};
-              selected: ${selected === tool.id};
+              selected: ${this.selectedTool === tool.id};
               toolsEnabled: ${this.toolsEnabled};
             `}
           />
@@ -440,7 +435,6 @@ export class Aleph {
         tools={this.tools}
         toolsEnabled={this.toolsEnabled}
         toolsVisible={this.toolsVisible}
-        toolType={this.toolType}
         volumeSteps={this.volumeSteps}
         volumeWindowCenter={this.volumeWindowCenter}
         volumeWindowWidth={this.volumeWindowWidth}
@@ -456,7 +450,6 @@ export class Aleph {
         setSlicesWindowCenter={this.appSetSlicesWindowCenter}
         setSlicesWindowWidth={this.appSetSlicesWindowWidth}
         setToolsEnabled={this.appSetToolsEnabled}
-        setToolType={this.appSetToolType}
         setVolumeSteps={this.appSetVolumeSteps}
         setVolumeWindowCenter={this.appSetVolumeWindowCenter}
         setVolumeWindowWidth={this.appSetVolumeWindowWidth}
@@ -469,8 +462,8 @@ export class Aleph {
       <div
         id="al-wrapper"
         style={{
-          width: String(this.width) + "px",
-          height: String(this.height) + "px"
+          width: this.width,
+          height: this.height
         }}
       >
         {this._renderScene()}
@@ -555,11 +548,9 @@ export class Aleph {
 
       const newTool: Tool = CreateUtils.createTool(
         this.tools,
-        this.toolType,
+        "#targetEntity",
         intersection.point,
-        this._scale,
-        this._maxMeshDistance,
-        "#targetEntity"
+        this._scale
       );
 
       this.appAddTool(newTool);
@@ -575,23 +566,33 @@ export class Aleph {
   }
 
   private _toolSelectedHandler(event: CustomEvent): void {
-    this.appSelectTool(Number(event.detail.id));
+    this.appSelectTool(event.detail.id);
   }
 
-  private _toolMovedHandler(event: CustomEvent):void {
+  private _toolMovedHandler(event: CustomEvent): void {
     const toolId = event.detail.id;
-    const raycaster = (this._camera.components.raycaster as any);
-    const intersection = raycaster.getIntersection(this._targetEntity) as THREE.Intersection;
+    const raycaster = this._camera.components.raycaster as any;
+    const intersection = raycaster.getIntersection(
+      this._targetEntity
+    ) as THREE.Intersection;
 
     if (intersection) {
-      this.appSetToolMoved(toolId, intersection.point);
+      this.appUpdateTool({
+        id: toolId,
+        position: ThreeUtils.vector3ToString(intersection.point)
+      });
     } else {
-      let toolPos = ThreeUtils.stringToVector3(this._scene.querySelector("#" + toolId).getAttribute("position"));
-      const raycasterPos = ThreeUtils.stringToVector3(raycaster.getAttribute("position"));
+      let toolPos: THREE.Vector3 = (this._scene
+        .querySelector("#" + toolId)
+        .getAttribute("position") as unknown) as THREE.Vector3;
+      const raycasterPos = raycaster.raycaster.ray.origin;
       toolPos.x = raycasterPos.x;
       toolPos.y = raycasterPos.y;
 
-      this.appSetToolMoved(toolId, toolPos);
+      this.appUpdateTool({
+        id: toolId,
+        position: ThreeUtils.vector3ToString(toolPos)
+      });
     }
   }
   //#endregion

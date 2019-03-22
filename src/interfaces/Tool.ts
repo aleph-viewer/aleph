@@ -1,12 +1,6 @@
-import { ToolType } from "../enums/ToolType";
-
 export interface Tool {
-  id: number;
-  type: ToolType;
+  id: string;
+  targetId: string;
   position: string;
-  color: string;
-  selectedColor: string;
   scale: number;
-  maxMeshDistance: number;
-  targetObject: string;
 }

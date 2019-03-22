@@ -17,9 +17,6 @@ import {
 import {
   Tool,
 } from './interfaces/interfaces';
-import {
-  ToolType,
-} from './enums/ToolType';
 
 
 export namespace Components {
@@ -33,11 +30,11 @@ export namespace Components {
     'optionsEnabled': boolean;
     'optionsVisible': boolean;
     'orientation': Orientation;
-    'removeTool': (id: number) => void;
+    'removeTool': (id: string) => void;
     'rulerToolEnabled': boolean;
     'saveTools': () => void;
-    'selectTool': (id: number) => void;
-    'selectedTool': number;
+    'selectTool': (id: string) => void;
+    'selectedTool': string | null;
     'setBoundingBoxVisible': (visible: boolean) => void;
     'setDisplayMode': (mode: DisplayMode) => void;
     'setOptionsEnabled': (enabled: boolean) => void;
@@ -45,7 +42,6 @@ export namespace Components {
     'setSlicesIndex': (index: number) => void;
     'setSlicesWindowCenter': (index: number) => void;
     'setSlicesWindowWidth': (index: number) => void;
-    'setToolType': (toolType: ToolType) => void;
     'setToolsEnabled': (enabled: boolean) => void;
     'setVolumeSteps': (steps: number) => void;
     'setVolumeWindowCenter': (index: number) => void;
@@ -55,7 +51,6 @@ export namespace Components {
     'slicesWindowWidth': number;
     'stack': any;
     'stackHelper': AMI.StackHelper;
-    'toolType': ToolType;
     'tools': Tool[];
     'toolsEnabled': boolean;
     'toolsVisible': boolean;
@@ -72,11 +67,11 @@ export namespace Components {
     'optionsEnabled'?: boolean;
     'optionsVisible'?: boolean;
     'orientation'?: Orientation;
-    'removeTool'?: (id: number) => void;
+    'removeTool'?: (id: string) => void;
     'rulerToolEnabled'?: boolean;
     'saveTools'?: () => void;
-    'selectTool'?: (id: number) => void;
-    'selectedTool'?: number;
+    'selectTool'?: (id: string) => void;
+    'selectedTool'?: string | null;
     'setBoundingBoxVisible'?: (visible: boolean) => void;
     'setDisplayMode'?: (mode: DisplayMode) => void;
     'setOptionsEnabled'?: (enabled: boolean) => void;
@@ -84,7 +79,6 @@ export namespace Components {
     'setSlicesIndex'?: (index: number) => void;
     'setSlicesWindowCenter'?: (index: number) => void;
     'setSlicesWindowWidth'?: (index: number) => void;
-    'setToolType'?: (toolType: ToolType) => void;
     'setToolsEnabled'?: (enabled: boolean) => void;
     'setVolumeSteps'?: (steps: number) => void;
     'setVolumeWindowCenter'?: (index: number) => void;
@@ -94,7 +88,6 @@ export namespace Components {
     'slicesWindowWidth'?: number;
     'stack'?: any;
     'stackHelper'?: AMI.StackHelper;
-    'toolType'?: ToolType;
     'tools'?: Tool[];
     'toolsEnabled'?: boolean;
     'toolsVisible'?: boolean;
@@ -105,17 +98,17 @@ export namespace Components {
 
   interface UvAleph {
     'dracoDecoderPath': string | null;
-    'height': number;
+    'height': string;
     'load': (src: string) => Promise<void>;
     'loadtools': (tools: any) => Promise<void>;
     'setDisplayMode': (displayMode: DisplayMode) => Promise<void>;
-    'width': number;
+    'width': string;
   }
   interface UvAlephAttributes extends StencilHTMLAttributes {
     'dracoDecoderPath'?: string | null;
-    'height'?: number;
+    'height'?: string;
     'onOnSave'?: (event: CustomEvent) => void;
-    'width'?: number;
+    'width'?: string;
   }
 }
 

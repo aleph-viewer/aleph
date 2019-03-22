@@ -14,30 +14,44 @@
  <link rel="stylesheet" href="/build/aleph.css">
  <style>
 
-   body {
-    margin: 0;
-    padding: 20px;
-   }
+      body {
+        margin: 0;
+        padding: 0;
+      }
 
-   #annotations {
-     margin: 20px 0 10px 0;
-     width: 640px;
-     height: 100px;
-   }
+      #annotations {
+        margin: 20px 0 10px 0;
+        height: 100px;
+        width: 100%;
+      }
 
-  .rs-base {
-    margin-left: auto;
-    position: relative;
-    display: inline-block; 
-    text-align: right; 
-    width: 20%
-  }
+      #container {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        padding: 1rem;
+      }
 
- </style>
-</head>
-<body>
+      #scene {
+        flex: 80%;
+      }
 
- <!--
+      #debug {
+        flex: 20%;
+        padding: 1rem;
+      }
+
+      .rs-base {
+        margin-left: auto;
+        position: relative;
+        display: inline-block;
+        text-align: right;
+        width: 20%
+      }
+    </style>
+  </head>
+  <body>
+    <!--
    https://ami-test-manifests.netlify.com/collection/dicom/brain/_brain/brain.json
    https://www.morphosource.org/media/morphosource/dcm_sample/platypus/dcm_multi_vf300_16bit_allslices.json
    https://www.morphosource.org/media/morphosource/dcm_sample/platypus/dcm_multi_vf300_jpegQ95_16bit_allslices.json
@@ -49,44 +63,70 @@
    http://files.blokdust.io/test/bowl-draco.glb
    https://iiif-3d-manifests.netlify.com/collection/gltf/woody/_woody/assets/woody.gltf
  -->
+    <div id="container">
+      <div id="scene">
+        <uv-aleph
+          draco-decoder-path="js/"
+          width="100%"
+          height="100%"
+        ></uv-aleph>
+      </div>
+      <div id="debug">
+        <div>
+          <textarea id="annotations"></textarea>
+        </div>
+        <div>
+          <button id="load">Load</button>
+        </div>
+      </div>
+    </div>
 
- <uv-aleph draco-decoder-path="js/"></uv-aleph>
+    <script>
+      document.addEventListener("DOMContentLoaded", function(event) {
+        const container = document.querySelector("#container");
+        const aleph = document.querySelector("uv-aleph");
 
- <div>
-   <textarea id="annotations"></textarea>
- </div>
+        aleph.componentOnReady().then(function() {
+          //component.setDisplayMode("slices");
+          aleph.load(
+            "https://iiif-3d-manifests.netlify.com/collection/gltf/woody/_woody/assets/woody.gltf"
+          );
+        });
 
- <div>
-  <button id="load">Load</button>
- </div>
+        // aleph.addEventListener('onLoaded', function() {
+        //   aleph.setToolsVisible(true); // can only show them after src loaded
+        //   aleph.setOptionsVisible(true); // can only show them after src loaded
+        // }, false);
 
- <script>
-   document.addEventListener('DOMContentLoaded', function(event) {
-     const aleph = document.querySelector('uv-aleph');
+        var annotations = document.getElementById("annotations");
 
-     aleph.componentOnReady().then(function() {
-       //component.setDisplayMode("slices");
-       aleph.load("https://iiif-3d-manifests.netlify.com/collection/gltf/woody/_woody/assets/woody.gltf");
-     });
+        aleph.addEventListener(
+          "onSave",
+          function(e) {
+            annotations.value = e.detail;
+          },
+          false
+        );
 
-     // aleph.addEventListener('onLoaded', function() {
-     //   aleph.setToolsVisible(true); // can only show them after src loaded
-     //   aleph.setOptionsVisible(true); // can only show them after src loaded
-     // }, false);
+        document.getElementById("load").addEventListener(
+          "click",
+          function(e) {
+            e.preventDefault();
+            aleph.loadtools(annotations.value);
+          },
+          false
+        );
 
-     var annotations = document.getElementById('annotations');
+        function resize() {
+          container.style.height = window.innerHeight + "px";
+        }
 
-     aleph.addEventListener('onSave', function(e) {
-       annotations.value = e.detail;
-     }, false);
+        window.addEventListener("resize", evt => {
+          resize();
+        });
 
-     document.getElementById('load').addEventListener('click', function(e) {
-      e.preventDefault();
-      aleph.loadtools(annotations.value);
-     }, false);
-
-   });
- </script>
-
-</body>
+        resize();
+      });
+    </script>
+  </body>
 </html>

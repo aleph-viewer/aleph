@@ -1,7 +1,6 @@
 import { Component, Prop } from "@stencil/core";
 import { Tool } from "../../interfaces/interfaces";
 import { DisplayMode } from "../../enums/DisplayMode";
-import { ToolType } from "../../enums/ToolType";
 import { Orientation } from "../../enums/Orientation";
 
 @Component({
@@ -18,7 +17,7 @@ export class ControlPanel {
   @Prop() optionsVisible: boolean;
   @Prop() orientation: Orientation;
   @Prop() rulerToolEnabled: boolean;
-  @Prop() selectedTool: number;
+  @Prop() selectedTool: string | null;
   @Prop() slicesIndex: number;
   @Prop() slicesWindowCenter: number;
   @Prop() slicesWindowWidth: number;
@@ -27,15 +26,14 @@ export class ControlPanel {
   @Prop() tools: Tool[];
   @Prop() toolsEnabled: boolean;
   @Prop() toolsVisible: boolean;
-  @Prop() toolType: ToolType;
   @Prop() volumeSteps: number;
   @Prop() volumeWindowCenter: number;
   @Prop() volumeWindowWidth: number;
 
   @Prop() addTool: (tool: Tool) => void;
-  @Prop() removeTool: (id: number) => void;
+  @Prop() removeTool: (id: string) => void;
   @Prop() saveTools: () => void;
-  @Prop() selectTool: (id: number) => void;
+  @Prop() selectTool: (id: string) => void;
   @Prop() setBoundingBoxVisible: (visible: boolean) => void;
   @Prop() setDisplayMode: (mode: DisplayMode) => void;
   @Prop() setOptionsEnabled: (enabled: boolean) => void;
@@ -44,7 +42,6 @@ export class ControlPanel {
   @Prop() setSlicesWindowCenter: (index: number) => void;
   @Prop() setSlicesWindowWidth: (index: number) => void;
   @Prop() setToolsEnabled: (enabled: boolean) => void;
-  @Prop() setToolType: (toolType: ToolType) => void;
   @Prop() setVolumeSteps: (steps: number) => void;
   @Prop() setVolumeWindowCenter: (index: number) => void;
   @Prop() setVolumeWindowWidth: (index: number) => void;
@@ -103,11 +100,11 @@ export class ControlPanel {
               {this.tools.map((tool: Tool) => {
                 return (
                   <ion-item>
-                    <ion-label>{tool.id}</ion-label>
                     <ion-radio
                       onClick={() => this.selectTool(tool.id)}
                       value={tool.id}
                     />
+                    <ion-label>{tool.id}</ion-label>
                   </ion-item>
                 );
               })}
@@ -115,7 +112,7 @@ export class ControlPanel {
           </ion-list>
         </ion-item>,
         <ion-footer>
-          <ion-item>
+          {/* <ion-item>
             <ion-label>Tool Type</ion-label>
             <select
               onChange={e =>
@@ -148,7 +145,7 @@ export class ControlPanel {
                 </option>
               ) : null}
             </select>
-          </ion-item>
+          </ion-item> */}
           <ion-toolbar>
             <ion-buttons>
               {/* <ion-button
@@ -167,7 +164,7 @@ export class ControlPanel {
               >
                 Save
               </ion-button>
-              {this.selectedTool !== -1 ? (
+              {this.selectedTool !== null ? (
                 <ion-button
                   onClick={() => {
                     this.removeTool(this.selectedTool);
