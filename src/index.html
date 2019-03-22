@@ -46,15 +46,14 @@
 
       #debug {
         flex: 20%;
+        min-width: 350px;
         padding: 1rem;
       }
 
       .rs-base {
-        margin-left: auto;
-        position: relative;
-        display: inline-block;
-        text-align: right;
-        width: 20%;
+        margin-top: 20px;
+        position: static;
+        width: auto;
       }
     </style>
   </head>
@@ -92,6 +91,7 @@
     <script>
       document.addEventListener("DOMContentLoaded", function(event) {
         const container = document.querySelector("#container");
+        const debug = document.querySelector("#debug");
         const aleph = document.querySelector("uv-aleph");
 
         aleph.componentOnReady().then(function() {
@@ -116,11 +116,19 @@
           false
         );
 
+        aleph.addEventListener("onLoad", function() {
+          // move the auto-generate framerate counter to the debug col
+          setTimeout(() => {
+            const framerate = document.querySelector(".rs-base");
+            debug.appendChild(framerate);
+          }, 250);
+        }, false);
+
         document.getElementById("load").addEventListener(
           "click",
           function(e) {
             e.preventDefault();
-            aleph.loadtools(annotations.value);
+            aleph.loadAnnotations(annotations.value);
           },
           false
         );
