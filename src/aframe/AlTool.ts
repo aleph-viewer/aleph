@@ -30,6 +30,7 @@ export class AlTool implements AframeComponent {
         this.el.setObject3D("mesh", mesh);
 
         //#region Event Listeners
+        // Non Functional
         this.el.addEventListener("raycaster-intersection", evt => {
           console.log("tool-", this.el.id, "  intersected!");
 
@@ -41,6 +42,7 @@ export class AlTool implements AframeComponent {
           }
         });
 
+        // Non Functional
         this.el.addEventListener("raycaster-intersection-cleared", _evt => {
           console.log("tool-", this.el.id, "  cleared intersect!");
         });
@@ -81,15 +83,6 @@ export class AlTool implements AframeComponent {
           let state = this.state as AlToolState;
           state.material.color = new THREE.Color(Constants.toolColors.hovered);
           state.hovered = true;
-
-          if (state.moving) {
-            // if (evt.detail.point) {
-            //   this.el.setAttribute(
-            //     "position",
-            //     ThreeUtils.vector3ToString(evt.detail.point)
-            //   );
-            // }
-          }
           this.el.emit("tool-intersection", {}, true);
         });
 
@@ -103,6 +96,7 @@ export class AlTool implements AframeComponent {
             state.material.color = new THREE.Color(Constants.toolColors.normal);
           }
           state.hovered = false;
+
           this.el.emit("tool-intersection-cleared", {}, true);
         });
 
@@ -141,7 +135,18 @@ export class AlTool implements AframeComponent {
         }
       },
 
-      tick(): void {},
+      tick(): void {
+        //   let state = this.state as AlToolState;
+        //   if (state.moving && state.selected) {
+        //     const intersection = evt.detail.el.components.raycaster.getIntersection(
+        //       this.el
+        //     );
+        //     this.el.setAttribute(
+        //       "position",
+        //       ThreeUtils.vector3ToString(intersection.point)
+        //     );
+        //   }
+      },
 
       remove(): void {},
 

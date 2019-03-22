@@ -338,7 +338,7 @@ export class Aleph {
             `}
             raycaster={`
               objects: .targets;
-              far: ${this._maxMeshDistance}
+              far: ${Constants.cameraValues.far}
             `}
           />
         );
@@ -367,6 +367,7 @@ export class Aleph {
 
       return (
         <a-camera
+          fps-counter
           ref={el => (this._camera = el)}
           cursor="rayOrigin: mouse"
           raycaster="objects: .collidable"
