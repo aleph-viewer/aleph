@@ -1,6 +1,5 @@
 import { Tool } from "../interfaces/Tool";
 import { GetUtils } from "./GetUtils";
-import { ToolType } from "../enums/ToolType";
 import {
   AlGltfModel,
   AlVolumetricModel,
@@ -13,21 +12,15 @@ import { Constants } from "../Constants";
 export class CreateUtils {
   static createTool(
     tools: Tool[],
-    type: ToolType,
+    targetId: string,
     position: THREE.Vector3,
-    scale: number,
-    maxMeshDistance: number,
-    focusObject: string
+    scale: number
   ): Tool {
     return {
-      id: GetUtils.getToolWithHighestId(tools) + 1,
-      type: type,
+      id: GetUtils.getNextToolId(tools),
+      targetId: targetId,
       position: ThreeUtils.vector3ToString(position),
-      color: Constants.colorValues.blue,
-      selectedColor: Constants.colorValues.green,
-      scale: scale / Constants.toolSize,
-      maxMeshDistance: maxMeshDistance,
-      focusObject: focusObject
+      scale: scale / Constants.toolSize
     };
   }
 

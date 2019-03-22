@@ -5,6 +5,6 @@ export interface AlToolState {
   material: THREE.MeshBasicMaterial;
   mesh: THREE.Mesh;
   camera: THREE.Camera;
-  focus: THREE.Object3D;
+  target: THREE.Object3D;
   moving: boolean;
 }

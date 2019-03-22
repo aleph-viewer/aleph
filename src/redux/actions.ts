@@ -1,7 +1,6 @@
 import { Tool } from "../interfaces/Tool";
 import { DisplayMode } from "../enums/DisplayMode";
 import { Orientation } from "../enums/Orientation";
-import { ToolType } from "../enums/ToolType";
 
 export interface NullAction {
   type: TypeKeys.NULL;
@@ -21,7 +20,6 @@ export type ActionTypes =
   | AppSetOrientationAction
   | AppSetToolsVisibleAction
   | AppSetToolsEnabledAction
-  | AppSetToolTypeAction
   | AppSetOptionsVisibleAction
   | AppSetOptionsEnabledAction
   | AppSetBoundingBoxVisibleAction
@@ -49,7 +47,6 @@ export enum TypeKeys {
   APP_SET_ORIENTATION = "APP_SET_ORIENTATION",
   APP_SET_TOOLS_VISIBLE = "APP_SET_TOOLS_VISIBLE",
   APP_SET_TOOLS_ENABLED = "APP_SET_TOOLS_ENABLED",
-  APP_SET_TOOL_TYPE = "APP_SET_TOOL_TYPE",
   APP_SET_OPTIONS_VISIBLE = "APP_SET_OPTIONS_VISIBLE",
   APP_SET_OPTIONS_ENABLED = "APP_SET_OPTIONS_ENABLED",
   APP_SET_BOUNDINGBOX_VISIBLE = "APP_SET_BOUNDINGBOX_VISIBLE",
@@ -105,7 +102,7 @@ export const appAddTool = (payload: Tool) => async (dispatch, _getState) => {
 
 export interface AppRemoveToolAction {
   type: TypeKeys.APP_REMOVE_TOOL;
-  payload: number;
+  payload: string | null;
 }
 
 export const appRemoveTool = (payload: number) => async (
@@ -213,21 +210,6 @@ export const appSetToolsEnabled = (payload: boolean) => async (
 ) => {
   return dispatch({
     type: TypeKeys.APP_SET_TOOLS_ENABLED,
-    payload: payload
-  });
-};
-
-export interface AppSetToolTypeAction {
-  type: TypeKeys.APP_SET_TOOL_TYPE;
-  payload: ToolType;
-}
-
-export const appSetToolType = (payload: ToolType) => async (
-  dispatch,
-  _getState
-) => {
-  return dispatch({
-    type: TypeKeys.APP_SET_TOOL_TYPE,
     payload: payload
   });
 };

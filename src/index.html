@@ -1,23 +1,18 @@
 <!DOCTYPE html>
 <html dir="ltr" lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0"
-    />
-    <title>Aleph</title>
-    <script src="https://unpkg.com/three@0.102.1/build/three.min.js"></script>
-    <script src="js/aframe-master.js"></script>
-    <script src="https://unpkg.com/aframe-orbit-controls@1.2.0/dist/aframe-orbit-controls.min.js"></script>
-    <script src="https://unpkg.com/ami.js@next/build/ami.min.js"></script>
-    <script src="https://unpkg.com/@ionic/core@4.1.1/dist/ionic.js"></script>
-    <script src="/build/aleph.js"></script>
-    <link rel="stylesheet" href="/build/aleph.css" />
-    <style>
-      * {
-        box-sizing: border-box;
-      }
+<head>
+ <meta charset="utf-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0">
+ <title>Aleph</title>
+ <script src="https://unpkg.com/three@0.102.1/build/three.min.js"></script>
+ <script src="js/aframe-master.js"></script>
+ <script src="https://unpkg.com/aframe-orbit-controls@1.2.0/dist/aframe-orbit-controls.min.js"></script>
+ <script src="https://unpkg.com/aframe-fps-counter-component@1.0.1/dist/aframe-fps-counter-component.min.js"></script>
+ <script src="https://unpkg.com/ami.js@next/build/ami.min.js"></script>
+ <script src="https://unpkg.com/@ionic/core@4.1.1/dist/ionic.js"></script>
+ <script src="/build/aleph.js"></script>
+ <link rel="stylesheet" href="/build/aleph.css">
+ <style>
 
       body {
         margin: 0;
@@ -44,6 +39,14 @@
       #debug {
         flex: 20%;
         padding: 1rem;
+      }
+
+      .rs-base {
+        margin-left: auto;
+        position: relative;
+        display: inline-block;
+        text-align: right;
+        width: 20%
       }
     </style>
   </head>

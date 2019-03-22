@@ -37,7 +37,7 @@ export class GetUtils {
       return Math.max.apply(
         Math,
         tools.map(tool => {
-          return tool.id;
+          return this.getToolIdNumber(tool.id);
         })
       );
     }
@@ -45,9 +45,17 @@ export class GetUtils {
     return -1;
   }
 
-  static getToolIndex(id: number, tools: Tool[]): number {
+  static getToolIdNumber(toolId: string): number {
+    return Number(toolId.split("-")[1]);
+  }
+
+  static getNextToolId(tools: Tool[]): string {
+    return "tool-" + Number(this.getToolWithHighestId(tools) + 1);
+  }
+
+  static getToolIndex(id: string, tools: Tool[]): number {
     return tools.findIndex((tool: Tool) => {
-      return tool.id === id;
+      return this.getToolIdNumber(tool.id) === this.getToolIdNumber(id);
     });
   }
 
