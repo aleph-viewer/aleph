@@ -1,6 +1,6 @@
 export interface AframeObject {
   schema: {};
-  init: () => void;
+  init: (data?: any) => void;
   update: () => void;
   tick: () => void;
   remove: () => void;

@@ -59,6 +59,7 @@ export class Aleph {
   private _validTarget: boolean;
   private _camera: Entity;
   private _maxMeshDistance: number;
+  private _spinner: Entity;
 
   private _intersectingTool: boolean;
   //#endregion
@@ -267,12 +268,11 @@ export class Aleph {
     if (!this.srcLoaded) {
       return (
         <a-entity
-          gltf-model="src: url(assets/tetrahedron.glb)"
           animation="property: rotation; to: 0 120 0; loop: true; dur: 1000; easing: easeInOutQuad"
-          position="0 0 -4"
-          rotation="0 0.1 0"
-          scale="0.15 0.15 0.15"
-          material={`color: ${this.spinnerColor};`}
+          geometry="primitive: al-spinner;"
+          scale="0.2 0.2 0.2"
+          material={`color: ${this.spinnerColor}`}
+          ref={(el: Entity) => (this._spinner = el)}
         />
       );
     }
@@ -549,8 +549,8 @@ export class Aleph {
     if (!this.srcLoaded && this._camera) {
       // reset the camera to look at the spinner
       // doing this in the render method has no effect
-      this._camera.object3DMap.camera.position.set(0, 2.15, 0);
-      this._camera.object3DMap.camera.rotation.set(-0.5, 0, 0);
+      this._camera.object3DMap.camera.position.set(0, 2.15, -4);
+      this._camera.object3DMap.camera.lookAt(this._spinner.object3D.position);
     }
   }
 
