@@ -8,7 +8,7 @@
     />
     <title>Aleph</title>
     <script src="https://unpkg.com/three@0.102.1/build/three.min.js"></script>
-    <script src="js/aframe-master.js"></script>
+    <script src="/assets/aframe-master.js"></script>
     <script src="https://unpkg.com/aframe-orbit-controls@1.2.0/dist/aframe-orbit-controls.min.js"></script>
     <script src="https://unpkg.com/aframe-fps-counter-component@1.0.1/dist/aframe-fps-counter-component.min.js"></script>
     <script src="https://unpkg.com/aframe-look-at-component@0.8.0/dist/aframe-look-at-component.min.js"></script>
@@ -28,12 +28,6 @@
         padding: 0;
       }
 
-      #annotations {
-        margin: 20px 0 10px 0;
-        height: 100px;
-        width: 100%;
-      }
-
       #container {
         width: 100%;
         height: 100%;
@@ -51,6 +45,15 @@
         padding: 1rem;
       }
 
+      #debug section {
+        margin: 1rem 0 1rem 0;
+      }
+
+      #debug section textarea {
+        height: 3rem;
+        width: 100%;
+      }
+
       .rs-base {
         margin-top: 20px;
         position: static;
@@ -59,33 +62,47 @@
     </style>
   </head>
   <body>
-    <!--
-   https://ami-test-manifests.netlify.com/collection/dicom/brain/_brain/brain.json
-   https://www.morphosource.org/media/morphosource/dcm_sample/platypus/dcm_multi_vf300_16bit_allslices.json
-   https://www.morphosource.org/media/morphosource/dcm_sample/platypus/dcm_multi_vf300_jpegQ95_16bit_allslices.json
-   https://ami-test-manifests.netlify.com/collection/nifti/brain/_brain/brain.json
-   https://ami-test-manifests.netlify.com/collection/stl/brain/_brain/brain.json
-   https://ami-test-manifests.netlify.com/collection/gltf/fisherman/_fisherman/fisherman.json
-   https://ami-test-manifests.netlify.com/collection/gltf/bowl-draco/_bowl-draco/bowl-draco.json
-   http://files.blokdust.io/test/building-draco.glb
-   http://files.blokdust.io/test/bowl-draco.glb
-   https://iiif-3d-manifests.netlify.com/collection/gltf/woody/_woody/assets/woody.gltf
- -->
     <div id="container">
       <div id="scene">
         <uv-aleph
-          draco-decoder-path="js/"
+          draco-decoder-path="assets/"
           width="100%"
           height="100%"
+          debug="false"
         ></uv-aleph>
       </div>
       <div id="debug">
-        <div>
-          <textarea id="annotations"></textarea>
-        </div>
-        <div>
+        <section>
+          <!--
+            https://ami-test-manifests.netlify.com/collection/stl/brain/_brain/brain.json
+          -->
+          <select id="test-files">
+            <optgroup label="GLTF">
+              <option value="https://iiif-3d-manifests.netlify.com/collection/gltf/woody/_woody/assets/woody.gltf">Fisherman</option>
+            </optgroup>
+            <optgroup label="DRACO">
+              <option selected value="http://files.blokdust.io/test/bowl-draco.glb">Bowl</option>
+            </optgroup>
+            <optgroup label="DICOM">
+              <option
+                value="https://ami-test-manifests.netlify.com/collection/dicom/brain/_brain/brain.json">Brain</option>
+              <option
+                value="https://www.morphosource.org/media/morphosource/dcm_sample/platypus/dcm_multi_vf300_16bit_allslices.json">Platypus 16bit</option>
+              <option
+                value="https://www.morphosource.org/media/morphosource/dcm_sample/platypus/dcm_multi_vf300_jpegQ95_16bit_allslices.json">Platypus jpegQ95</option>
+            </optgroup>
+            <optgroup label="NIFTI">
+              <option
+                value="https://ami-test-manifests.netlify.com/collection/nifti/brain/_brain/brain.json">Brain</option>
+            </optgroup>
+          </select>
+        </section>
+        <section>
+          <textarea id="annotations" placeholder="annotations"></textarea>
+        </section>
+        <section>
           <button id="load">Load</button>
-        </div>
+        </section>
       </div>
     </div>
 
@@ -94,12 +111,11 @@
         const container = document.querySelector("#container");
         const debug = document.querySelector("#debug");
         const aleph = document.querySelector("uv-aleph");
+        const testFiles = document.querySelector("#test-files");
 
         aleph.componentOnReady().then(function() {
           //component.setDisplayMode("slices");
-          aleph.load(
-            "https://iiif-3d-manifests.netlify.com/collection/gltf/woody/_woody/assets/woody.gltf"
-          );
+          aleph.load(getTestFile());
         });
 
         // aleph.addEventListener('onLoaded', function() {
@@ -117,13 +133,19 @@
           false
         );
 
-        aleph.addEventListener("onLoad", function() {
-          // move the auto-generate framerate counter to the debug col
-          setTimeout(() => {
-            const framerate = document.querySelector(".rs-base");
-            debug.appendChild(framerate);
-          }, 250);
-        }, false);
+        aleph.addEventListener(
+          "onLoad",
+          function() {
+            // move the auto-generated framerate counter to the debug col
+            setTimeout(() => {
+              const framerate = document.querySelector(".rs-base");
+              if (framerate) {
+                debug.appendChild(framerate);
+              }
+            }, 250);
+          },
+          false
+        );
 
         document.getElementById("load").addEventListener(
           "click",
@@ -134,6 +156,14 @@
           false
         );
 
+        function getTestFile() {
+          return testFiles.value;
+        }
+
+        testFiles.addEventListener('change', function() {
+          aleph.load(getTestFile());
+        }, false);
+
         function resize() {
           container.style.height = window.innerHeight + "px";
         }
@@ -142,6 +172,7 @@
           resize();
         });
 
+        getTestFile();
         resize();
       });
     </script>

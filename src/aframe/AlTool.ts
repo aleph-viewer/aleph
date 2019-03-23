@@ -59,7 +59,7 @@ export class AlTool implements AframeComponent {
           let state = this.state as AlToolState;
           state.material.color = new THREE.Color(Constants.toolColors.hovered);
           state.hovered = true;
-          this.el.emit("tool-intersection", {}, true);
+          this.el.emit("al-tool-intersection", {}, true);
         });
 
         this.el.addEventListener("raycaster-intersected-cleared", _evt => {
@@ -73,7 +73,7 @@ export class AlTool implements AframeComponent {
           }
           state.hovered = false;
 
-          this.el.emit("tool-intersection-cleared", {}, true);
+          this.el.emit("al-tool-intersection-cleared", {}, true);
         });
 
         let object3D = this.el.object3D as THREE.Object3D;
@@ -118,7 +118,9 @@ export class AlTool implements AframeComponent {
         }
       },
 
-      remove(): void {},
+      remove(): void {
+        this.el.removeObject3D("mesh");
+      },
 
       pause(): void {},
 

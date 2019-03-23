@@ -69,6 +69,7 @@ export class Aleph {
   @Prop() dracoDecoderPath: string | null;
   @Prop() width: string = "640px";
   @Prop() height: string = "480px";
+  @Prop() debug: boolean = false;
 
   appSetSrc: Action;
   appSetSrcLoaded: Action;
@@ -134,7 +135,14 @@ export class Aleph {
       }
     }
 
-    this.appSetSrc(src);
+    if (this.src) {
+      this.appSetSrc(null); // shows loading spinner and resets gltf-model
+      setTimeout(() => {
+        this.appSetSrc(src);
+      }, 250);
+    } else {
+      this.appSetSrc(src);
+    }
   }
 
   @Method()
@@ -255,16 +263,16 @@ export class Aleph {
   }
 
   //#region Rendering Methods
-
-  private _renderSpinner() {
+  private _renderSpinner(): JSX.Element {
     if (!this.srcLoaded) {
       return (
-        <a-box
+        <a-entity
+          gltf-model="src: url(assets/tetrahedron.glb)"
           animation="property: rotation; to: 0 360 0; loop: true; dur: 1500; easing: easeInOutQuad"
-          position="0 0 -1"
-          rotation="0.5 0 0"
-          scale=".03 .03 .03"
-          color="#cecece"
+          position="0 0 -4"
+          rotation="0.5 0.5 0"
+          scale="0.1 0.1 0.1"
+          material="color: #fff; opacity: 0.9; transparent: true"
         />
       );
     }
@@ -272,7 +280,7 @@ export class Aleph {
     return null;
   }
 
-  private _renderSrc() {
+  private _renderSrc(): JSX.Element {
     if (!this.src) {
       return null;
     }
@@ -288,11 +296,12 @@ export class Aleph {
             id="target-entity"
             ref={(el: Entity) => (this._targetEntity = el)}
             al-gltf-model={`
-                src: url(${this.src});
-                dracoDecoderPath: ${this.dracoDecoderPath};
-              `}
+              src: url(${this.src});
+              dracoDecoderPath: ${this.dracoDecoderPath};
+            `}
             position="0 0 0"
             scale="1 1 1"
+            ref={(el: Entity) => (this._targetEntity = el)}
           />
         );
       }
@@ -306,10 +315,11 @@ export class Aleph {
             id="target-entity"
             ref={(el: Entity) => (this._targetEntity = el)}
             al-volumetric-model={`
-                src: url(${this.src});
-              `}
+              src: url(${this.src});
+            `}
             position="0 0 0"
             scale="1 1 1"
+            ref={(el: Entity) => (this._targetEntity = el)}
           />
         );
       }
@@ -374,8 +384,9 @@ export class Aleph {
 
       return (
         <a-camera
-          fps-counter
-          ref={el => (this._camera = el)}
+          fps-counter={`
+            enabled: ${this.debug}
+          `}
           cursor="rayOrigin: mouse"
           raycaster="objects: .collidable"
           fov={Constants.cameraValues.fov}
@@ -415,11 +426,11 @@ export class Aleph {
     } else {
       return (
         <a-camera
-          ref={el => (this._camera = el)}
           fov={Constants.cameraValues.fov}
           near={Constants.cameraValues.near}
           far={Constants.cameraValues.far}
           look-controls="enabled: false"
+          ref={el => (this._camera = el)}
         />
       );
     }
@@ -523,19 +534,25 @@ export class Aleph {
       this._scene.addEventListener("tool-moved", this._toolMovedHandler, false);
       this._scene.addEventListener("add-tool", this._addToolHandler, false);
       this._scene.addEventListener(
-        "tool-selected",
+        "al-tool-moved",
+        this._toolMovedHandler,
+        false
+      );
+      this._scene.addEventListener("al-add-tool", this._addToolHandler, false);
+      this._scene.addEventListener(
+        "al-tool-selected",
         this._toolSelectedHandler,
         false
       );
       this._scene.addEventListener(
-        "valid-target",
+        "al-valid-target",
         this._validTargetHandler,
         false
       );
 
       if (this._targetEntity) {
         this._targetEntity.addEventListener(
-          "model-loaded",
+          "al-model-loaded",
           this._srcLoadedHandler,
           false
         );
@@ -543,12 +560,12 @@ export class Aleph {
 
       if (this._camera) {
         this._camera.addEventListener(
-          "tool-intersection",
+          "al-tool-intersection",
           this._intersectingToolHandler,
           false
         );
         this._camera.addEventListener(
-          "tool-intersection-cleared",
+          "al-tool-intersection-cleared",
           this._intersectionClearedHandler,
           false
         );
@@ -615,7 +632,7 @@ export class Aleph {
   }
 
   private _toolMovedHandler(event: CustomEvent): void {
-    const toolId = event.detail.id;
+    const toolId: string = event.detail.id;
     const raycaster = this._camera.components.raycaster as any;
 
     // First try target

@@ -29,15 +29,15 @@ export class AlToolSpawner implements AframeComponent {
         });
 
         this.el.addEventListener("raycaster-intersected", () => {
-          this.el.emit("valid-target", { payload: true }, true);
+          this.el.emit("al-valid-target", { payload: true }, true);
         });
 
         this.el.addEventListener("raycaster-intersected-cleared", () => {
-          this.el.emit("valid-target", { payload: false }, true);
+          this.el.emit("al-valid-target", { payload: false }, true);
         });
 
         this.el.addEventListener("click", evt => {
-          this.el.emit("add-tool", evt, true);
+          this.el.emit("al-add-tool", evt, true);
         });
         //#endregion
       },
