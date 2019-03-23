@@ -103,6 +103,7 @@ export namespace Components {
     'load': (src: string) => Promise<void>;
     'loadAnnotations': (tools: any) => Promise<void>;
     'setDisplayMode': (displayMode: DisplayMode) => Promise<void>;
+    'spinnerColor': string;
     'width': string;
   }
   interface UvAlephAttributes extends StencilHTMLAttributes {
@@ -111,6 +112,7 @@ export namespace Components {
     'height'?: string;
     'onOnLoad'?: (event: CustomEvent) => void;
     'onOnSave'?: (event: CustomEvent) => void;
+    'spinnerColor'?: string;
     'width'?: string;
   }
 }
