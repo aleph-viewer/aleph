@@ -68,6 +68,7 @@ export class Aleph {
   @Prop() dracoDecoderPath: string | null;
   @Prop() width: string = "640px";
   @Prop() height: string = "480px";
+  @Prop() debug: boolean = false;
 
   appSetSrc: Action;
   appSetSrcLoaded: Action;
@@ -292,13 +293,13 @@ export class Aleph {
             `}
             class="collidable"
             id="targetEntity"
-            ref={(el: Entity) => (this._targetEntity = el)}
             al-gltf-model={`
               src: url(${this.src});
               dracoDecoderPath: ${this.dracoDecoderPath};
             `}
             position="0 0 0"
             scale="1 1 1"
+            ref={(el: Entity) => (this._targetEntity = el)}
           />
         );
       }
@@ -310,12 +311,12 @@ export class Aleph {
             `}
             class="collidable targets"
             id="targetEntity"
-            ref={(el: Entity) => (this._targetEntity = el)}
             al-volumetric-model={`
               src: url(${this.src});
             `}
             position="0 0 0"
             scale="1 1 1"
+            ref={(el: Entity) => (this._targetEntity = el)}
           />
         );
       }
@@ -367,40 +368,39 @@ export class Aleph {
 
       return (
         <a-camera
-          fps-counter
-          ref={el => (this._camera = el)}
+          fps-counter={`
+            enabled: ${this.debug}
+          `}
           cursor="rayOrigin: mouse"
           raycaster="objects: .collidable"
           fov={Constants.cameraValues.fov}
           near={Constants.cameraValues.near}
           far={Constants.cameraValues.far}
           look-controls="enabled: false"
-          position="0 0 0"
-          rotation="0 0 0"
           orbit-controls={`
-        maxPolarAngle: ${Constants.cameraValues.maxPolarAngle};
-        minDistance: ${Constants.cameraValues.minDistance};
-        screenSpacePanning: true;
-        rotateSpeed: ${Constants.cameraValues.rotateSpeed};
-        zoomSpeed: ${Constants.cameraValues.zoomSpeed};
-        enableDamping: true;
-        dampingFactor: ${Constants.cameraValues.dampingFactor};
-        target: ${ThreeUtils.vector3ToString(orbitData.sceneCenter)};
-        initialPosition: ${ThreeUtils.vector3ToString(
-          orbitData.initialPosition
-        )};
-      `}
+            maxPolarAngle: ${Constants.cameraValues.maxPolarAngle};
+            minDistance: ${Constants.cameraValues.minDistance};
+            screenSpacePanning: true;
+            rotateSpeed: ${Constants.cameraValues.rotateSpeed};
+            zoomSpeed: ${Constants.cameraValues.zoomSpeed};
+            enableDamping: true;
+            dampingFactor: ${Constants.cameraValues.dampingFactor};
+            target: ${ThreeUtils.vector3ToString(orbitData.sceneCenter)};
+            initialPosition: ${ThreeUtils.vector3ToString(
+              orbitData.initialPosition
+            )};
+          `}
+          ref={el => (this._camera = el)}
         />
       );
     } else {
       return (
         <a-camera
-          ref={el => (this._camera = el)}
           fov={Constants.cameraValues.fov}
           near={Constants.cameraValues.near}
           far={Constants.cameraValues.far}
           look-controls="enabled: false"
-          position="0 0 0"
+          ref={el => (this._camera = el)}
         />
       );
     }
@@ -545,6 +545,10 @@ export class Aleph {
 
   componentDidUpdate() {
     this._addEventListeners();
+    if (!this.srcLoaded && this._camera) {
+      this._camera.object3DMap.camera.position.set(0, 0, 0);
+      this._camera.object3DMap.camera.rotation.set(0, 0, 0);
+    }
   }
 
   //#region Event Handlers

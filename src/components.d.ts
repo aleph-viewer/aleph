@@ -97,6 +97,7 @@ export namespace Components {
   }
 
   interface UvAleph {
+    'debug': boolean;
     'dracoDecoderPath': string | null;
     'height': string;
     'load': (src: string) => Promise<void>;
@@ -105,6 +106,7 @@ export namespace Components {
     'width': string;
   }
   interface UvAlephAttributes extends StencilHTMLAttributes {
+    'debug'?: boolean;
     'dracoDecoderPath'?: string | null;
     'height'?: string;
     'onOnLoad'?: (event: CustomEvent) => void;

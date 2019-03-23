@@ -27,12 +27,6 @@
         padding: 0;
       }
 
-      #annotations {
-        margin: 0 0 10px 0;
-        height: 100px;
-        width: 100%;
-      }
-
       #container {
         width: 100%;
         height: 100%;
@@ -50,6 +44,15 @@
         padding: 1rem;
       }
 
+      #debug section {
+        margin: 1rem 0 1rem 0;
+      }
+
+      #debug section textarea {
+        height: 3rem;
+        width: 100%;
+      }
+
       .rs-base {
         margin-top: 20px;
         position: static;
@@ -64,16 +67,11 @@
           draco-decoder-path="assets/"
           width="100%"
           height="100%"
+          debug="false"
         ></uv-aleph>
       </div>
       <div id="debug">
-        <div>
-          <textarea id="annotations"></textarea>
-        </div>
-        <div>
-          <button id="load">Load</button>
-        </div>
-        <div>
+        <section>
           <!--
             https://ami-test-manifests.netlify.com/collection/stl/brain/_brain/brain.json
           -->
@@ -97,7 +95,13 @@
                 value="https://ami-test-manifests.netlify.com/collection/nifti/brain/_brain/brain.json">Brain</option>
             </optgroup>
           </select>
-        </div>
+        </section>
+        <section>
+          <textarea id="annotations" placeholder="annotations"></textarea>
+        </section>
+        <section>
+          <button id="load">Load</button>
+        </section>
       </div>
     </div>
 
@@ -131,10 +135,12 @@
         aleph.addEventListener(
           "onLoad",
           function() {
-            // move the auto-generate framerate counter to the debug col
+            // move the auto-generated framerate counter to the debug col
             setTimeout(() => {
               const framerate = document.querySelector(".rs-base");
-              debug.appendChild(framerate);
+              if (framerate) {
+                debug.appendChild(framerate);
+              }
             }, 250);
           },
           false

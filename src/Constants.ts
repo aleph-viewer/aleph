@@ -31,8 +31,8 @@ export class Constants {
     far: 10000,
     fov: 45,
     maxPolarAngle: 165,
-    rotateSpeed: 0.75,
-    zoomSpeed: 2,
+    rotateSpeed: 0.5,
+    zoomSpeed: 1,
     dampingFactor: 0.25,
     minDistance: 0
   };
