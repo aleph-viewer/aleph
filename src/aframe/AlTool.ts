@@ -122,7 +122,9 @@ export class AlTool implements AframeComponent {
         }
       },
 
-      remove(): void {},
+      remove(): void {
+        this.el.removeObject3D("mesh");
+      },
 
       pause(): void {},
 
