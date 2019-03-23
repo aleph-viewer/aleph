@@ -3,7 +3,6 @@ import {
   AframeObject,
   AlToolState
 } from "../interfaces/interfaces";
-import { ThreeUtils } from "../utils/utils";
 import { Constants } from "../Constants";
 
 export class AlTool implements AframeComponent {
@@ -57,14 +56,14 @@ export class AlTool implements AframeComponent {
 
         this.el.addEventListener("click", _evt => {
           const id = this.el.getAttribute("id");
-          this.el.emit("tool-selected", { id: id }, true);
+          this.el.emit("al-tool-selected", { id: id }, true);
         });
 
         this.el.addEventListener("raycaster-intersected", _evt => {
           let state = this.state as AlToolState;
           state.material.color = new THREE.Color(Constants.toolColors.hovered);
           state.hovered = true;
-          this.el.emit("tool-intersection", {}, true);
+          this.el.emit("al-tool-intersection", {}, true);
         });
 
         this.el.addEventListener("raycaster-intersected-cleared", _evt => {
@@ -78,7 +77,7 @@ export class AlTool implements AframeComponent {
           }
           state.hovered = false;
 
-          this.el.emit("tool-intersection-cleared", {}, true);
+          this.el.emit("al-tool-intersection-cleared", {}, true);
         });
 
         let object3D = this.el.object3D as THREE.Object3D;
@@ -119,7 +118,7 @@ export class AlTool implements AframeComponent {
       tick(): void {
         let state = this.state as AlToolState;
         if (state.moving && state.selected) {
-          this.el.emit("tool-moved", { id: this.el.id }, true);
+          this.el.emit("al-tool-moved", { id: this.el.id }, true);
         }
       },
 

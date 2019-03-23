@@ -11,7 +11,7 @@
     "dist/"
   ],
   "scripts": {
-    "lint:all": "prettier --write \"./src/**/*.{js,jsx,json,css,ts,tsx}\" \"!./src/js/* \"",
+    "lint:all": "prettier --write \"./src/**/*.{js,jsx,json,css,ts,tsx}\" \"!./src/assets/* \"",
     "build:dev": "npm run lint:all && stencil build --dev",
     "build": "npm run lint:all && stencil build --docs",
     "start": "stencil build --dev --serve",

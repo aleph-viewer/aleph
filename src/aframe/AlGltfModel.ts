@@ -33,8 +33,8 @@ export class AlGltfModel implements AframeComponent {
             let res = GLTFUtils.setup(gltfModel);
             self.model = res.mesh;
             el.setObject3D("mesh", self.model);
-            el.emit("model-loaded", { format: "gltf", model: self.model });
-            el.emit("mesh-distance", { dist: res.maxDist }, true);
+            el.emit("al-model-loaded", { format: "gltf", model: self.model });
+            el.emit("al-mesh-distance", { dist: res.maxDist }, true);
           },
           undefined /* onProgress */,
           function gltfFailed(error) {
@@ -43,7 +43,7 @@ export class AlGltfModel implements AframeComponent {
                 ? error.message
                 : "Failed to load glTF model";
             console.warn(message);
-            el.emit("model-error", { format: "gltf", src: src });
+            el.emit("al-model-error", { format: "gltf", src: src });
           }
         );
       },

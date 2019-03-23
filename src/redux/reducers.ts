@@ -60,7 +60,8 @@ export const app = (
       return {
         ...state,
         src: action.payload,
-        srcLoaded: false
+        srcLoaded: false,
+        tools: []
       };
     }
     case TypeKeys.APP_SET_SRC_LOADED: {

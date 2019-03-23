@@ -1,3 +1,4 @@
 export enum MeshFileType {
-  GLTF = "gltf"
+  GLTF = "gltf",
+  GLB = "glb"
 }
