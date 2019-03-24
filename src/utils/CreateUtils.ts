@@ -9,6 +9,7 @@ import {
 import { ThreeUtils } from "./utils";
 import { Constants } from "../Constants";
 import { AlSpinner } from "../aframe/AlSpinner";
+import { AlHalo } from "../aframe/AlHalo";
 
 export class CreateUtils {
   static createTool(
@@ -26,6 +27,7 @@ export class CreateUtils {
   }
 
   static createAframeComponents(): void {
+    AFRAME.registerShader(AlHalo.getName(), AlHalo.getObject());
     AFRAME.registerGeometry(AlSpinner.getName(), AlSpinner.getObject());
     AFRAME.registerComponent(AlGltfModel.getName(), AlGltfModel.getObject());
     AFRAME.registerComponent(

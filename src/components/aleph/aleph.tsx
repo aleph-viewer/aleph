@@ -271,7 +271,7 @@ export class Aleph {
           animation="property: rotation; to: 0 120 0; loop: true; dur: 1000; easing: easeInOutQuad"
           geometry="primitive: al-spinner;"
           scale="0.2 0.2 0.2"
-          material={`color: ${this.spinnerColor}`}
+          material={`color: ${this.spinnerColor};`}
           ref={(el: Entity) => (this._spinner = el)}
         />
       );
