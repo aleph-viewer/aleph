@@ -7,6 +7,7 @@
       content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0"
     />
     <title>Aleph</title>
+    <script src="https://unpkg.com/proxy-observe@0.0.21/browser/proxy-observe.min.js"></script>
     <script src="https://unpkg.com/three@0.102.1/build/three.min.js"></script>
     <script src="/assets/aframe-master.js"></script>
     <script src="https://unpkg.com/aframe-orbit-controls@1.2.0/dist/aframe-orbit-controls.min.js"></script>
@@ -44,12 +45,16 @@
         padding: 1rem;
       }
 
+      #debug h1 {
+        margin: 0;
+      }
+
       #debug section {
-        margin: 1rem 0 1rem 0;
+        margin: 1rem 0 0 0;
       }
 
       #debug section textarea {
-        height: 3rem;
+        height: 5rem;
         width: 100%;
       }
 
@@ -72,11 +77,13 @@
         ></uv-aleph>
       </div>
       <div id="debug">
+        <h1>ℵ</h1>
+
         <section>
           <!--
             https://ami-test-manifests.netlify.com/collection/stl/brain/_brain/brain.json
           -->
-          <select id="test-files">
+          <select id="test-files-select">
             <optgroup label="GLTF">
               <option value="https://iiif-3d-manifests.netlify.com/collection/gltf/woody/_woody/assets/woody.gltf">Fisherman</option>
             </optgroup>
@@ -98,37 +105,52 @@
           </select>
         </section>
         <section>
-          <textarea id="annotations" placeholder="annotations"></textarea>
+          <input type="text" id="test-files-input" placeholder="test file"><button id="load-test-file-button">Load</button>
         </section>
         <section>
-          <button id="load">Load</button>
+          <textarea id="annotations-textarea" placeholder="annotations"></textarea>
+        </section>
+        <section>
+          <button id="load-annotations-button">Load</button>
         </section>
       </div>
     </div>
 
     <script>
-      document.addEventListener("DOMContentLoaded", function(event) {
-        const container = document.querySelector("#container");
-        const debug = document.querySelector("#debug");
-        const aleph = document.querySelector("uv-aleph");
-        const testFiles = document.querySelector("#test-files");
 
-        aleph.componentOnReady().then(function() {
-          //component.setDisplayMode("slices");
-          aleph.load(getTestFile());
+      let container, debug, aleph, testFilesSelect, testFileInput, loadTestFileButton, annotationsTextArea;
+
+      let state = {
+        testFile: null,
+        annotations: null
+      }
+
+      if (Object.observe) {
+        // use proxies for an observable state
+        state = Object.observe(state, (changeset) => {
+          render(changeset);
         });
+      }
+
+      function init() {
+        container = document.getElementById("container");
+        debug = document.getElementById("debug");
+        aleph = document.querySelector("uv-aleph");
+        testFilesSelect = document.getElementById("test-files-select");
+        testFileInput = document.getElementById("test-files-input");
+        loadTestFileButton = document.getElementById("load-test-file-button");
+        annotationsTextArea = document.getElementById("annotations-textarea");
+        loadAnnotationsButton = document.getElementById("load-annotations-button");
 
         // aleph.addEventListener('onLoaded', function() {
         //   aleph.setToolsVisible(true); // can only show them after src loaded
         //   aleph.setOptionsVisible(true); // can only show them after src loaded
         // }, false);
 
-        var annotations = document.getElementById("annotations");
-
         aleph.addEventListener(
           "onSave",
           function(e) {
-            annotations.value = e.detail;
+            state.annotations = e.detail;
           },
           false
         );
@@ -147,34 +169,67 @@
           false
         );
 
-        document.getElementById("load").addEventListener(
+        loadAnnotationsButton.addEventListener(
           "click",
           function(e) {
             e.preventDefault();
-            aleph.loadAnnotations(annotations.value);
+            state.annotations = annotationsTextArea.value;
           },
           false
         );
 
-        function getTestFile() {
-          return testFiles.value;
-        }
-
-        testFiles.addEventListener('change', function() {
-          aleph.load(getTestFile());
+        testFilesSelect.addEventListener("change", function() {
+          state.testFile = testFilesSelect.value;
         }, false);
 
-        function resize() {
-          container.style.height = window.innerHeight + "px";
+        loadTestFileButton.addEventListener(
+          "click",
+          function(e) {
+            e.preventDefault();
+            state.testFile = testFileInput.value;
+          },
+          false
+        );
+      }
+
+      function changeSetIncludes(changeSet, name) {
+        return (changeSet.findIndex((item) => { return (item.name === name) }) !== -1);
+      }
+
+      function render(changeSet) {
+
+        if (changeSetIncludes(changeSet, "testFile")) {
+          testFilesSelect.value = state.testFile;
+          testFileInput.value = state.testFile;
+          aleph.load(state.testFile);
         }
 
-        window.addEventListener("resize", evt => {
-          resize();
+        if (changeSetIncludes(changeSet, "annotations")) {
+          annotationsTextArea.value = state.annotations;
+          aleph.loadAnnotations(state.annotations);
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", function(event) {
+
+        init();
+        resize();
+
+        aleph.componentOnReady().then(function() {
+          //component.setDisplayMode("slices");
+          state.testFile = testFilesSelect.value;
         });
 
-        getTestFile();
+      });
+
+      function resize() {
+        container.style.height = window.innerHeight + "px";
+      }
+
+      window.addEventListener("resize", function() {
         resize();
       });
+
     </script>
   </body>
 </html>
