@@ -157,17 +157,12 @@ export class Aleph {
 
   @Method()
   async loadTools(tools: any) {
-    // remove all existing tools
-    while (this.tools.length) {
-      this.appRemoveTool(this.tools[this.tools.length - 1].id);
-    }
-
-    this.appLoadTools(tools);
+    this._loadTools(tools);
   }
 
   @Method()
   async selectTool(toolId: string) {
-    this.appSelectTool(toolId);
+    this._selectTool(toolId);
   }
 
   @Event() onLoad: EventEmitter;
@@ -498,6 +493,18 @@ export class Aleph {
   }
   //#endregion
 
+  //#region Private methods
+
+  private _loadTools(tools: Tool[]): void {
+    // remove all existing tools
+    while (this.tools.length) {
+      this.appRemoveTool(this.tools[this.tools.length - 1].id);
+    }
+
+    this.appLoadTools(tools);
+    this.onToolsChanged.emit(this.tools);
+  }
+
   private _saveTools(): void {
     this.onSave.emit(this.tools);
   }
@@ -523,6 +530,71 @@ export class Aleph {
     this._scale = mesh.geometry.boundingSphere.radius;
     this.appSetSrcLoaded(true);
     this.onLoad.emit();
+  }
+  //#endregion
+
+  //#region Event Handlers
+  private _controlsInitEventHandler(event: CustomEvent): void {
+    this._tcontrols = event.detail.controls;
+    this._splashBack = event.detail.splashBack;
+    this._scene.sceneEl.object3D.add(this._splashBack);
+  }
+
+  private _intersectionClearedEventHandler(_evt): void {
+    this._intersectingTool = false;
+  }
+
+  private _intersectingToolEventHandler(_evt): void {
+    this._intersectingTool = true;
+  }
+
+  private _addToolEventHandler(event: CustomEvent): void {
+    if (this.toolsEnabled && this._validTarget && !this._intersectingTool) {
+      let intersection: THREE.Intersection = event.detail.detail.intersection;
+
+      const newTool: Tool = CreateUtils.createTool(
+        this.tools,
+        "#" + this._targetEntity.id,
+        intersection.point,
+        this._scale
+      );
+
+      this._addTool(newTool);
+    }
+  }
+
+  private _validTargetEventHandler(event: CustomEvent): void {
+    this._validTarget = event.detail.payload;
+  }
+
+  private _toolSelectedEventHandler(event: CustomEvent): void {
+    this._selectTool(event.detail.id);
+  }
+
+  private _toolMovedEventHandler(event: CustomEvent): void {
+    const toolId: string = event.detail.id;
+    const raycaster = this._camera.components.raycaster as any;
+
+    // First try target
+    let intersection = raycaster.getIntersection(
+      this._targetEntity
+    ) as THREE.Intersection;
+
+    if (!intersection) {
+      // Next try splashback
+      intersection = raycaster.getIntersection(
+        this._camera
+      ) as THREE.Intersection;
+    }
+
+    if (intersection) {
+      this.appUpdateTool({
+        id: toolId,
+        position: ThreeUtils.vector3ToString(intersection.point)
+      });
+    } else {
+      console.log("No intersection!");
+    }
   }
 
   private _addEventListeners(): void {
@@ -575,6 +647,7 @@ export class Aleph {
       }
     }
   }
+  //#endregion
 
   componentDidLoad() {}
 
@@ -598,69 +671,4 @@ export class Aleph {
       this._camera.object3DMap.camera.lookAt(this._spinner.object3D.position);
     }
   }
-
-  private _controlsInitEventHandler(event: CustomEvent): void {
-    this._tcontrols = event.detail.controls;
-    this._splashBack = event.detail.splashBack;
-    this._scene.sceneEl.object3D.add(this._splashBack);
-  }
-
-  //#region Event Handlers
-  private _intersectionClearedEventHandler(_evt): void {
-    this._intersectingTool = false;
-  }
-
-  private _intersectingToolEventHandler(_evt): void {
-    this._intersectingTool = true;
-  }
-
-  private _addToolEventHandler(event: CustomEvent): void {
-    if (this.toolsEnabled && this._validTarget && !this._intersectingTool) {
-      let intersection: THREE.Intersection = event.detail.detail.intersection;
-
-      const newTool: Tool = CreateUtils.createTool(
-        this.tools,
-        "#" + this._targetEntity.id,
-        intersection.point,
-        this._scale
-      );
-
-      this._addTool(newTool);
-    }
-  }
-
-  private _validTargetEventHandler(event: CustomEvent): void {
-    this._validTarget = event.detail.payload;
-  }
-
-  private _toolSelectedEventHandler(event: CustomEvent): void {
-    this._selectTool(event.detail.id);
-  }
-
-  private _toolMovedEventHandler(event: CustomEvent): void {
-    const toolId: string = event.detail.id;
-    const raycaster = this._camera.components.raycaster as any;
-
-    // First try target
-    let intersection = raycaster.getIntersection(
-      this._targetEntity
-    ) as THREE.Intersection;
-
-    if (!intersection) {
-      // Next try splashback
-      intersection = (raycaster.raycaster as THREE.Raycaster).intersectObject(
-        this._splashBack
-      )[0];
-    }
-
-    if (intersection) {
-      this.appUpdateTool({
-        id: toolId,
-        position: ThreeUtils.vector3ToString(intersection.point)
-      });
-    } else {
-      console.log("No intersection!");
-    }
-  }
-  //#endregion
 }

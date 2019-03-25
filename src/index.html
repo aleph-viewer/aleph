@@ -61,8 +61,8 @@
         width: 100%;
       }
 
-      #debug .selected {
-        border: 1px solid red;
+      #debug a.selected {
+        color: cornflowerblue;
       }
 
       #debug ul {
@@ -260,6 +260,11 @@
         });
 
         toolList.querySelectorAll("a.tool").forEach(a => {
+
+          if (a.dataset.id === state.selectedTool) {
+            a.classList.add("selected");
+          }
+
           a.addEventListener("click", (e) => {
             e.preventDefault();
             aleph.selectTool(e.srcElement.dataset.id);
