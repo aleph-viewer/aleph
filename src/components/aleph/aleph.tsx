@@ -49,7 +49,7 @@ type Scene = import("aframe").Scene;
 })
 export class Aleph {
   //#region Private variables
-  private _srcLoadedHandler: any;
+  private _srcLoadedEventHandler: any;
   private _stack: any;
   private _stackHelper: AMI.StackHelper;
 
@@ -257,16 +257,18 @@ export class Aleph {
     });
 
     // set up event handlers
-    this._srcLoadedHandler = this._srcLoaded.bind(this);
-    this._addToolHandler = this._addToolHandler.bind(this);
-    this._validTargetHandler = this._validTargetHandler.bind(this);
-    this._toolSelectedHandler = this._toolSelectedHandler.bind(this);
-    this._intersectingToolHandler = this._intersectingToolHandler.bind(this);
-    this._intersectionClearedHandler = this._intersectionClearedHandler.bind(
+    this._srcLoadedEventHandler = this._srcLoaded.bind(this);
+    this._addToolEventHandler = this._addToolEventHandler.bind(this);
+    this._validTargetEventHandler = this._validTargetEventHandler.bind(this);
+    this._toolSelectedEventHandler = this._toolSelectedEventHandler.bind(this);
+    this._intersectingToolEventHandler = this._intersectingToolEventHandler.bind(
       this
     );
-    this._toolMovedHandler = this._toolMovedHandler.bind(this);
-    this._controlsInitHandler = this._controlsInitHandler.bind(this);
+    this._intersectionClearedEventHandler = this._intersectionClearedEventHandler.bind(
+      this
+    );
+    this._toolMovedEventHandler = this._toolMovedEventHandler.bind(this);
+    this._controlsInitEventHandler = this._controlsInitEventHandler.bind(this);
   }
 
   //#region Rendering Methods
@@ -547,32 +549,44 @@ export class Aleph {
     if (this._scene) {
       this._scene.addEventListener(
         "controls-init",
-        this._controlsInitHandler,
+        this._controlsInitEventHandler,
         false
       );
-      this._scene.addEventListener("tool-moved", this._toolMovedHandler, false);
-      this._scene.addEventListener("add-tool", this._addToolHandler, false);
+      this._scene.addEventListener(
+        "tool-moved",
+        this._toolMovedEventHandler,
+        false
+      );
+      this._scene.addEventListener(
+        "add-tool",
+        this._addToolEventHandler,
+        false
+      );
       this._scene.addEventListener(
         "al-tool-moved",
-        this._toolMovedHandler,
+        this._toolMovedEventHandler,
         false
       );
-      this._scene.addEventListener("al-add-tool", this._addToolHandler, false);
+      this._scene.addEventListener(
+        "al-add-tool",
+        this._addToolEventHandler,
+        false
+      );
       this._scene.addEventListener(
         "al-tool-selected",
-        this._toolSelectedHandler,
+        this._toolSelectedEventHandler,
         false
       );
       this._scene.addEventListener(
         "al-valid-target",
-        this._validTargetHandler,
+        this._validTargetEventHandler,
         false
       );
 
       if (this._targetEntity) {
         this._targetEntity.addEventListener(
           "al-model-loaded",
-          this._srcLoadedHandler,
+          this._srcLoadedEventHandler,
           false
         );
       }
@@ -580,12 +594,12 @@ export class Aleph {
       if (this._camera) {
         this._camera.addEventListener(
           "al-tool-intersection",
-          this._intersectingToolHandler,
+          this._intersectingToolEventHandler,
           false
         );
         this._camera.addEventListener(
           "al-tool-intersection-cleared",
-          this._intersectionClearedHandler,
+          this._intersectionClearedEventHandler,
           false
         );
       }
@@ -619,20 +633,20 @@ export class Aleph {
     }
   }
 
-  private _controlsInitHandler(event: CustomEvent): void {
+  private _controlsInitEventHandler(event: CustomEvent): void {
     this._tcontrols = event.detail.controls;
   }
 
   //#region Event Handlers
-  private _intersectionClearedHandler(_evt): void {
+  private _intersectionClearedEventHandler(_evt): void {
     this._intersectingTool = false;
   }
 
-  private _intersectingToolHandler(_evt): void {
+  private _intersectingToolEventHandler(_evt): void {
     this._intersectingTool = true;
   }
 
-  private _addToolHandler(event: CustomEvent): void {
+  private _addToolEventHandler(event: CustomEvent): void {
     if (this.toolsEnabled && this._validTarget && !this._intersectingTool) {
       let intersection: THREE.Intersection = event.detail.detail.intersection;
 
@@ -647,15 +661,15 @@ export class Aleph {
     }
   }
 
-  private _validTargetHandler(event: CustomEvent): void {
+  private _validTargetEventHandler(event: CustomEvent): void {
     this._validTarget = event.detail.payload;
   }
 
-  private _toolSelectedHandler(event: CustomEvent): void {
+  private _toolSelectedEventHandler(event: CustomEvent): void {
     this._selectTool(event.detail.id);
   }
 
-  private _toolMovedHandler(event: CustomEvent): void {
+  private _toolMovedEventHandler(event: CustomEvent): void {
     const toolId: string = event.detail.id;
     const raycaster = this._camera.components.raycaster as any;
 
