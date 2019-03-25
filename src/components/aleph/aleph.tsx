@@ -301,7 +301,6 @@ export class Aleph {
             `}
             position="0 0 0"
             scale="1 1 1"
-            ref={(el: Entity) => (this._targetEntity = el)}
           />
         );
       }
@@ -319,7 +318,6 @@ export class Aleph {
             `}
             position="0 0 0"
             scale="1 1 1"
-            ref={(el: Entity) => (this._targetEntity = el)}
           />
         );
       }
