@@ -32,15 +32,23 @@ export class AlToolSpawner implements AframeRegistry {
         });
 
         this.el.addEventListener("raycaster-intersected", () => {
-          this.el.emit("al-valid-target", { payload: true }, true);
+          this.el.emit(
+            AlToolSpawnerEvents.VALID_TARGET,
+            { payload: true },
+            true
+          );
         });
 
         this.el.addEventListener("raycaster-intersected-cleared", () => {
-          this.el.emit("al-valid-target", { payload: false }, true);
+          this.el.emit(
+            AlToolSpawnerEvents.VALID_TARGET,
+            { payload: false },
+            true
+          );
         });
 
         this.el.addEventListener("click", evt => {
-          this.el.emit("al-add-tool", evt, true);
+          this.el.emit(AlToolSpawnerEvents.ADD_TOOL, evt, true);
         });
         //#endregion
       },
@@ -64,4 +72,9 @@ export class AlToolSpawner implements AframeRegistry {
   public static getName(): string {
     return "al-tool-spawner";
   }
+}
+
+export class AlToolSpawnerEvents {
+  static VALID_TARGET: string = "al-valid-target";
+  static ADD_TOOL: string = "al-add-tool";
 }

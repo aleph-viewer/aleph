@@ -40,7 +40,7 @@ export class AlTool implements AframeRegistry {
 
           let state = this.state as AlToolState;
           state.moving = true;
-          this.el.emit("tool-selected", { id: this.el.id }, true);
+          this.el.emit(AlToolEvents.SELECTED, { id: this.el.id }, true);
         });
 
         this.el.addEventListener("mouseup", _evt => {
@@ -55,14 +55,14 @@ export class AlTool implements AframeRegistry {
         });
 
         this.el.addEventListener("click", _evt => {
-          this.el.emit("tool-selected", { id: this.el.id }, true);
+          this.el.emit(AlToolEvents.SELECTED, { id: this.el.id }, true);
         });
 
         this.el.addEventListener("raycaster-intersected", _evt => {
           let state = this.state as AlToolState;
           state.material.color = new THREE.Color(Constants.toolColors.hovered);
           state.hovered = true;
-          this.el.emit("al-tool-intersection", {}, true);
+          this.el.emit(AlToolEvents.INTERSECTION, {}, true);
         });
 
         this.el.addEventListener("raycaster-intersected-cleared", _evt => {
@@ -76,7 +76,7 @@ export class AlTool implements AframeRegistry {
           }
           state.hovered = false;
 
-          this.el.emit("al-tool-intersection-cleared", {}, true);
+          this.el.emit(AlToolEvents.INTERSECTION_CLEARED, {}, true);
         });
 
         let object3D = this.el.object3D as THREE.Object3D;
@@ -117,7 +117,7 @@ export class AlTool implements AframeRegistry {
       tick(): void {
         let state = this.state as AlToolState;
         if (state.moving && state.selected && this.data.toolsEnabled) {
-          this.el.emit("tool-moved", { id: this.el.id }, true);
+          this.el.emit(AlToolEvents.TOOL_MOVED, { id: this.el.id }, true);
         }
       },
 
@@ -138,4 +138,11 @@ export class AlTool implements AframeRegistry {
   public static getName(): string {
     return "al-tool";
   }
+}
+
+export class AlToolEvents {
+  static SELECTED: string = "al-tool-selected";
+  static INTERSECTION: string = "al-tool-intersection";
+  static INTERSECTION_CLEARED: string = "al-tool-intersection-cleared";
+  static TOOL_MOVED: string = "al-tool-moved";
 }
