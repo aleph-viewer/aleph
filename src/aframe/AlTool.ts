@@ -40,6 +40,7 @@ export class AlTool implements AframeRegistry {
             );
           }
 
+          this.state.mouseDown = true;
           this.el.emit(AlToolEvents.SELECTED, { id: this.el.id }, true);
         });
 
@@ -51,6 +52,7 @@ export class AlTool implements AframeRegistry {
               "enabled: true"
             );
 
+            this.state.mouseDown = false;
             let state = this.state as AlToolState;
             state.dragging = false;
           }
@@ -65,6 +67,9 @@ export class AlTool implements AframeRegistry {
         this.el.addEventListener("raycaster-intersected-cleared", _evt => {
           let state = this.state as AlToolState;
           state.hovered = false;
+          if (this.mouseDown) {
+            state.dragging = true;
+          }
           this.el.emit(AlToolEvents.INTERSECTION_CLEARED, {}, true);
         });
 

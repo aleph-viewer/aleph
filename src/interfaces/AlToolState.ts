@@ -7,4 +7,5 @@ export interface AlToolState {
   camera: THREE.Camera;
   target: THREE.Object3D;
   dragging: boolean;
+  mouseDown: boolean;
 }
