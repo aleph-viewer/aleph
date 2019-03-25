@@ -157,17 +157,12 @@ export class Aleph {
 
   @Method()
   async loadTools(tools: any) {
-    // remove all existing tools
-    while (this.tools.length) {
-      this.appRemoveTool(this.tools[this.tools.length - 1].id);
-    }
-
-    this.appLoadTools(tools);
+    this._loadTools(tools);
   }
 
   @Method()
   async selectTool(toolId: string) {
-    this.appSelectTool(toolId);
+    this._selectTool(toolId);
   }
 
   @Event() onLoad: EventEmitter;
@@ -498,6 +493,18 @@ export class Aleph {
   }
   //#endregion
 
+  //#region Private methods
+
+  private _loadTools(tools: Tool[]): void {
+    // remove all existing tools
+    while (this.tools.length) {
+      this.appRemoveTool(this.tools[this.tools.length - 1].id);
+    }
+
+    this.appLoadTools(tools);
+    this.onToolsChanged.emit(this.tools);
+  }
+
   private _saveTools(): void {
     this.onSave.emit(this.tools);
   }
@@ -524,90 +531,15 @@ export class Aleph {
     this.appSetSrcLoaded(true);
     this.onLoad.emit();
   }
+  //#endregion
 
-  private _addEventListeners(): void {
-    if (this._scene) {
-      this._scene.addEventListener(
-        "controls-init",
-        this._controlsInitEventHandler,
-        false
-      );
-      this._scene.addEventListener(
-        AlToolEvents.TOOL_MOVED,
-        this._toolMovedEventHandler,
-        false
-      );
-      this._scene.addEventListener(
-        AlToolSpawnerEvents.ADD_TOOL,
-        this._addToolEventHandler,
-        false
-      );
-      this._scene.addEventListener(
-        AlToolEvents.SELECTED,
-        this._toolSelectedEventHandler,
-        false
-      );
-      this._scene.addEventListener(
-        AlToolSpawnerEvents.VALID_TARGET,
-        this._validTargetEventHandler,
-        false
-      );
-
-      if (this._targetEntity) {
-        this._targetEntity.addEventListener(
-          AlGltfModelEvents.LOADED,
-          this._srcLoadedEventHandler,
-          false
-        );
-      }
-
-      if (this._camera) {
-        this._camera.addEventListener(
-          AlToolEvents.INTERSECTION,
-          this._intersectingToolEventHandler,
-          false
-        );
-        this._camera.addEventListener(
-          AlToolEvents.INTERSECTION_CLEARED,
-          this._intersectionClearedEventHandler,
-          false
-        );
-      }
-    }
-  }
-
-  componentDidLoad() {}
-
-  componentDidUpdate() {
-    this._addEventListeners();
-
-    // Turns debug text inside the models invisible
-    // TODO: Wire to debug variable
-    try {
-      const mat = (this._camera.object3DMap.text as THREE.Mesh)
-        .material as THREE.Material;
-      if (mat) {
-        mat.transparent = true;
-      }
-    } catch {
-      console.warn("FPS Text not loaded yet");
-    }
-
-    if (!this.srcLoaded && this._camera) {
-      // reset the camera to look at the spinner
-      // doing this in the render method has no effect
-      this._camera.object3DMap.camera.position.set(0, 2.15, -4);
-      this._camera.object3DMap.camera.lookAt(this._spinner.object3D.position);
-    }
-  }
-
+  //#region Event Handlers
   private _controlsInitEventHandler(event: CustomEvent): void {
     this._tcontrols = event.detail.controls;
     this._splashBack = event.detail.splashBack;
     this._scene.sceneEl.object3D.add(this._splashBack);
   }
 
-  //#region Event Handlers
   private _intersectionClearedEventHandler(_evt): void {
     this._intersectingTool = false;
   }
@@ -664,5 +596,81 @@ export class Aleph {
       console.log("No intersection!");
     }
   }
+
+  private _addEventListeners(): void {
+    if (this._scene) {
+      this._scene.addEventListener(
+        "controls-init",
+        this._controlsInitEventHandler,
+        false
+      );
+      this._scene.addEventListener(
+        AlToolEvents.TOOL_MOVED,
+        this._toolMovedEventHandler,
+        false
+      );
+      this._scene.addEventListener(
+        AlToolSpawnerEvents.ADD_TOOL,
+        this._addToolEventHandler,
+        false
+      );
+      this._scene.addEventListener(
+        AlToolEvents.SELECTED,
+        this._toolSelectedEventHandler,
+        false
+      );
+      this._scene.addEventListener(
+        AlToolSpawnerEvents.VALID_TARGET,
+        this._validTargetEventHandler,
+        false
+      );
+
+      if (this._targetEntity) {
+        this._targetEntity.addEventListener(
+          AlGltfModelEvents.LOADED,
+          this._srcLoadedEventHandler,
+          false
+        );
+      }
+
+      if (this._camera) {
+        this._camera.addEventListener(
+          AlToolEvents.INTERSECTION,
+          this._intersectingToolEventHandler,
+          false
+        );
+        this._camera.addEventListener(
+          AlToolEvents.INTERSECTION_CLEARED,
+          this._intersectionClearedEventHandler,
+          false
+        );
+      }
+    }
+  }
   //#endregion
+
+  componentDidLoad() {}
+
+  componentDidUpdate() {
+    this._addEventListeners();
+
+    // Turns debug text inside the models invisible
+    // TODO: Wire to debug variable
+    try {
+      const mat = (this._camera.object3DMap.text as THREE.Mesh)
+        .material as THREE.Material;
+      if (mat) {
+        mat.transparent = true;
+      }
+    } catch {
+      console.warn("FPS Text not loaded yet");
+    }
+
+    if (!this.srcLoaded && this._camera) {
+      // reset the camera to look at the spinner
+      // doing this in the render method has no effect
+      this._camera.object3DMap.camera.position.set(0, 2.15, -4);
+      this._camera.object3DMap.camera.lookAt(this._spinner.object3D.position);
+    }
+  }
 }
