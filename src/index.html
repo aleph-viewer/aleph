@@ -60,6 +60,10 @@
         width: 100%;
       }
 
+      #debug .selected {
+        border: 1px solid red;
+      }
+
       .rs-base {
         margin-top: 20px;
         position: static;
@@ -85,7 +89,7 @@
           <!--
             https://ami-test-manifests.netlify.com/collection/stl/brain/_brain/brain.json
           -->
-          <select id="test-files-select">
+          <select id="src-select">
             <optgroup label="GLTF">
               <option value="https://iiif-3d-manifests.netlify.com/collection/gltf/woody/_woody/assets/woody.gltf">Fisherman</option>
             </optgroup>
@@ -107,27 +111,28 @@
           </select>
         </section>
         <section>
-          <input type="text" id="test-files-input" placeholder="test file"><button id="load-test-file-button">Load</button>
+          <input type="text" id="src-input" placeholder="src"><button id="load-src-button">Load</button>
         </section>
         <section>
-          <textarea id="annotations-textarea" placeholder="annotations"></textarea>
+          <textarea id="tools-textarea" placeholder="tools"></textarea>
         </section>
         <section>
-          <ul id="annotation-list"></ul>
+          <ul id="tool-list"></ul>
         </section>
         <section>
-          <button id="load-annotations-button">Load</button>
+          <button id="load-tools-button">Load</button>
         </section>
       </div>
     </div>
 
     <script>
 
-      let container, debug, aleph, testFilesSelect, testFileInput, loadTestFileButton, annotationsTextArea, annotationList;
+      let container, debug, aleph, srcSelect, srcInput, loadSrcButton, toolsTextArea, loadToolsButton, toolList;
 
       let state = {
-        testFile: null,
-        annotations: []
+        src: null,
+        tools: [],
+        selectedTool: null
       }
 
       if (Object.observe) {
@@ -140,12 +145,12 @@
         container = document.getElementById("container");
         debug = document.getElementById("debug");
         aleph = document.querySelector("uv-aleph");
-        testFilesSelect = document.getElementById("test-files-select");
-        testFileInput = document.getElementById("test-files-input");
-        loadTestFileButton = document.getElementById("load-test-file-button");
-        annotationsTextArea = document.getElementById("annotations-textarea");
-        loadAnnotationsButton = document.getElementById("load-annotations-button");
-        annotationList = document.getElementById("annotation-list");
+        srcSelect = document.getElementById("src-select");
+        srcInput = document.getElementById("src-input");
+        loadSrcButton = document.getElementById("load-src-button");
+        toolsTextArea = document.getElementById("tools-textarea");
+        loadToolsButton = document.getElementById("load-tools-button");
+        toolList = document.getElementById("tool-list");
 
         // aleph.addEventListener('onLoaded', function() {
         //   aleph.setToolsVisible(true); // can only show them after src loaded
@@ -155,7 +160,7 @@
         aleph.addEventListener(
           "onSave",
           function(e) {
-            state.annotations = e.detail;
+            state.tools = e.detail;
           },
           false
         );
@@ -163,7 +168,15 @@
         aleph.addEventListener(
           "onToolsChanged",
           function(e) {
-            state.annotations = e.detail;
+            state.tools = e.detail;
+          },
+          false
+        );
+
+        aleph.addEventListener(
+          "onSelectedToolChanged",
+          function(e) {
+            state.selectedTool = e.detail;
           },
           false
         );
@@ -182,24 +195,24 @@
           false
         );
 
-        loadAnnotationsButton.addEventListener(
+        srcSelect.addEventListener("change", function() {
+          state.src = srcSelect.value;
+        }, false);
+
+        loadSrcButton.addEventListener(
           "click",
           function(e) {
             e.preventDefault();
-            state.annotations = annotationsTextArea.value;
+            state.src = srcInput.value;
           },
           false
         );
 
-        testFilesSelect.addEventListener("change", function() {
-          state.testFile = testFilesSelect.value;
-        }, false);
-
-        loadTestFileButton.addEventListener(
+        loadToolsButton.addEventListener(
           "click",
           function(e) {
             e.preventDefault();
-            state.testFile = testFileInput.value;
+            state.tools = JSON.parse(toolsTextArea.value);
           },
           false
         );
@@ -218,47 +231,34 @@
 
       function render(changeSet) {
 
-        // todo: can selectedTool be a prop?
-        aleph.getSelectedTool().then((selectedTool) => {
+        if (changeSetIncludes(changeSet, "src")) {
+          srcSelect.value = state.src;
+          srcInput.value = state.src;
+          aleph.load(state.src);
+        }
 
-          if (changeSetIncludes(changeSet, "testFile")) {
-            testFilesSelect.value = state.testFile;
-            testFileInput.value = state.testFile;
-            aleph.load(state.testFile);
-          }
+        if (changeSetIncludes(changeSet, "tools")) {
+          toolsTextArea.value = JSON.stringify(state.tools);
+          aleph.loadTools(state.tools);
+        }
 
-          if (changeSetIncludes(changeSet, "annotations")) {
-            annotationsTextArea.value = JSON.stringify(state.annotations);
-            aleph.loadAnnotations(state.annotations);
-          }
+        toolList.innerHTML = "";
 
-          annotationList.innerHTML = "";
-
-          // render annotation radio button list
-          state.annotations.forEach((anno) => {
-            annotationList.appendChild(createElementFromString(`
-              <li>
-                <label class="block">
-                  <input
-                    type="radio"
-                    checked="${selectedTool.id === anno.id}"
-                    id="${anno.id}"
-                    name="tool"
-                    value="${anno.id}"
-                  />
-                  ${anno.id}
-                </label>
-              </li>`));
-          });
-
-          annotationList.querySelectorAll("input").forEach(input => {
-            input.addEventListener("change", (e) => {
-              aleph.selectTool(e.srcElement.id);
-            });
-          });
-
-          aleph.selectTool(selectedTool);
+        // render tool radio button list
+        state.tools.forEach((anno) => {
+          toolList.appendChild(createElementFromString(`
+            <li>
+              <a href="#" class="tool" data-id="${anno.id}">${anno.id}</a>
+            </li>`));
         });
+
+        toolList.querySelectorAll("a.tool").forEach(a => {
+          a.addEventListener("click", (e) => {
+            e.preventDefault();
+            aleph.selectTool(e.srcElement.dataset.id);
+          });
+        });
+
       }
 
       document.addEventListener("DOMContentLoaded", function(event) {
@@ -268,7 +268,7 @@
 
         aleph.componentOnReady().then(function() {
           //component.setDisplayMode("slices");
-          state.testFile = testFilesSelect.value;
+          state.src = srcSelect.value;
         });
 
       });

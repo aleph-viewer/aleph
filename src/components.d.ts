@@ -99,10 +99,9 @@ export namespace Components {
   interface UvAleph {
     'debug': boolean;
     'dracoDecoderPath': string | null;
-    'getSelectedTool': () => Promise<Tool>;
     'height': string;
     'load': (src: string) => Promise<void>;
-    'loadAnnotations': (tools: any) => Promise<void>;
+    'loadTools': (tools: any) => Promise<void>;
     'selectTool': (toolId: string) => Promise<void>;
     'setDisplayMode': (displayMode: DisplayMode) => Promise<void>;
     'spinnerColor': string;
@@ -114,6 +113,7 @@ export namespace Components {
     'height'?: string;
     'onOnLoad'?: (event: CustomEvent) => void;
     'onOnSave'?: (event: CustomEvent) => void;
+    'onOnSelectedToolChanged'?: (event: CustomEvent) => void;
     'onOnToolsChanged'?: (event: CustomEvent) => void;
     'spinnerColor'?: string;
     'width'?: string;

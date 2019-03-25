@@ -152,7 +152,7 @@ export class Aleph {
   }
 
   @Method()
-  async loadAnnotations(tools: any) {
+  async loadTools(tools: any) {
     // remove all existing tools
     while (this.tools.length) {
       this.appRemoveTool(this.tools[this.tools.length - 1].id);
@@ -166,14 +166,10 @@ export class Aleph {
     this.appSelectTool(toolId);
   }
 
-  @Method()
-  async getSelectedTool() {
-    return GetUtils.getToolById(this.selectedTool, this.tools);
-  }
-
   @Event() onLoad: EventEmitter;
   @Event() onSave: EventEmitter;
   @Event() onToolsChanged: EventEmitter;
+  @Event() onSelectedToolChanged: EventEmitter;
   //#endregion
 
   componentWillLoad() {
@@ -508,7 +504,7 @@ export class Aleph {
 
   private _selectTool(toolId: string): void {
     this.appSelectTool(toolId);
-    this.onToolsChanged.emit(this.tools);
+    this.onSelectedToolChanged.emit(this.selectedTool);
   }
 
   private _srcLoaded(): void {
