@@ -6,5 +6,5 @@ export interface AlToolState {
   mesh: THREE.Mesh;
   camera: THREE.Camera;
   target: THREE.Object3D;
-  moving: boolean;
+  dragging: boolean;
 }

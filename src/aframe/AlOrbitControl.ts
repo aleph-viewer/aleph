@@ -199,7 +199,7 @@ export class AlOrbitControl implements AframeRegistry {
       remove() {
         let state = this.state as AlOrbitControlState;
 
-        this.sceneEl.object3D.remove(this._splashBack);
+        this.sceneEl.object3D.remove(state.splashBackMesh);
         state.controls.reset();
         state.controls.dispose();
         state.splashBackMaterial.dispose();

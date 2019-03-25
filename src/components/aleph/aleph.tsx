@@ -606,7 +606,7 @@ export class Aleph {
         false
       );
       this._scene.addEventListener(
-        AlToolEvents.TOOL_MOVED,
+        AlToolEvents.TOOL_DRAGGING,
         this._toolMovedEventHandler,
         false
       );
@@ -663,9 +663,7 @@ export class Aleph {
       if (mat) {
         mat.transparent = true;
       }
-    } catch {
-      console.warn("FPS Text not loaded yet");
-    }
+    } catch {}
 
     if (!this.srcLoaded && this._camera) {
       // reset the camera to look at the spinner
