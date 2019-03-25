@@ -4,6 +4,7 @@ import { AframeRegistry } from "./AframeRegistry";
 import { AlToolState } from "./AlToolState";
 import { AlOrbitControlState } from "./AlOrbitControlState";
 import { AframeShader } from "./AframeShader";
+import { AlCameraState } from "./AlCameraState";
 
 export {
   Tool,
@@ -11,5 +12,6 @@ export {
   AframeRegistry,
   AlToolState,
   AlOrbitControlState,
-  AframeShader
+  AframeShader,
+  AlCameraState
 };

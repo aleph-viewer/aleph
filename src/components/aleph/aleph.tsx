@@ -33,7 +33,7 @@ import {
   appSetRulerToolEnabled
 } from "../../redux/actions";
 import { configureStore } from "../../redux/store";
-import { Tool } from "../../interfaces/interfaces";
+import { Tool, AlCameraState } from "../../interfaces/interfaces";
 import { Orientation } from "../../enums/Orientation";
 import { DisplayMode } from "../../enums/DisplayMode";
 import { GetUtils, ThreeUtils, CreateUtils } from "../../utils/utils";
@@ -54,7 +54,7 @@ export class Aleph {
   private _stackHelper: AMI.StackHelper;
 
   private _targetEntity: Entity;
-  private _splashBack: Entity;
+  private _splashBack: THREE.Mesh;
   private _scene: Scene;
   private _scale: number;
   private _validTarget: boolean;
@@ -370,63 +370,62 @@ export class Aleph {
 
   private _renderCamera(): JSX.Element {
     if (this.srcLoaded) {
-      let orbitData = GetUtils.getOrbitData(this._targetEntity);
-      let splashBackPos: THREE.Vector3 = orbitData.sceneCenter.clone();
-      let tControlsPos: THREE.Vector3;
-      let max: number;
-      splashBackPos.z -= this._scale * 0.2;
+      let camData = {
+        position: new THREE.Vector3(0, 0, -2),
+        target: new THREE.Vector3(0, 0, 0)
+      } as AlCameraState;
 
       if (this._tcontrols) {
-        tControlsPos = this._tcontrols.object.position;
-        max = Math.max(
-          Math.max(tControlsPos.x, tControlsPos.y),
-          tControlsPos.z
-        );
-        max *= 2;
-        console.log(tControlsPos);
-      }
-
-      return (
-        <a-camera
-          fps-counter={`
-            enabled: ${this.debug}
-          `}
-          cursor="rayOrigin: mouse"
-          raycaster="objects: .collidable"
-          fov={Constants.cameraValues.fov}
-          near={Constants.cameraValues.near}
-          far={Constants.cameraValues.far}
-          position="0 0 0"
-          rotation="0 0 0"
-          al-orbit-control={`
-            maxPolarAngle: ${Constants.cameraValues.maxPolarAngle};
-            minDistance: ${Constants.cameraValues.minDistance};
-            screenSpacePanning: true;
-            rotateSpeed: ${Constants.cameraValues.rotateSpeed};
-            zoomSpeed: ${Constants.cameraValues.zoomSpeed};
-            enableDamping: true;
-            dampingFactor: ${Constants.cameraValues.dampingFactor};
-            target: ${ThreeUtils.vector3ToString(orbitData.sceneCenter)};
-            initialPosition: ${ThreeUtils.vector3ToString(
-              orbitData.initialPosition
-            )};
-          `}
-        >
-          <a-plane
-            ref={el => (this._splashBack = el)}
-            position={ThreeUtils.vector3ToString(splashBackPos)}
-            id="#splash-back"
-            look-at="[camera]"
-            class="collidable"
-            scale={`${this._scale * max} ${this._scale * max} ${this._scale *
-              max}`}
-            // material={`
-            //   wireframe: true;
-            //   transparent: true;
-            // `}
+        return (
+          <a-camera
+            fps-counter={`
+              enabled: ${this.debug}
+            `}
+            cursor="rayOrigin: mouse"
+            raycaster="objects: .collidable"
+            fov={Constants.cameraValues.fov}
+            near={Constants.cameraValues.near}
+            far={Constants.cameraValues.far}
+            rotation="0 0 0"
+            al-orbit-control={`
+              maxPolarAngle: ${Constants.cameraValues.maxPolarAngle};
+              minDistance: ${Constants.cameraValues.minDistance};
+              screenSpacePanning: true;
+              rotateSpeed: ${Constants.cameraValues.rotateSpeed};
+              zoomSpeed: ${Constants.cameraValues.zoomSpeed};
+              enableDamping: true;
+              dampingFactor: ${Constants.cameraValues.dampingFactor};
+              target: ${ThreeUtils.vector3ToString(camData.target)};
+              startPosition=${ThreeUtils.vector3ToString(camData.position)};
+            `}
           />
-        </a-camera>
-      );
+        );
+      } else {
+        return (
+          <a-camera
+            fps-counter={`
+              enabled: ${this.debug}
+            `}
+            cursor="rayOrigin: mouse"
+            raycaster="objects: .collidable"
+            fov={Constants.cameraValues.fov}
+            near={Constants.cameraValues.near}
+            far={Constants.cameraValues.far}
+            position={ThreeUtils.vector3ToString(camData.position)}
+            rotation="0 0 0"
+            al-orbit-control={`
+              maxPolarAngle: ${Constants.cameraValues.maxPolarAngle};
+              minDistance: ${Constants.cameraValues.minDistance};
+              screenSpacePanning: true;
+              rotateSpeed: ${Constants.cameraValues.rotateSpeed};
+              zoomSpeed: ${Constants.cameraValues.zoomSpeed};
+              enableDamping: true;
+              dampingFactor: ${Constants.cameraValues.dampingFactor};
+              target: ${ThreeUtils.vector3ToString(camData.target)};
+            `}
+          />
+        );
+      }
     } else {
       return (
         <a-camera
@@ -604,23 +603,20 @@ export class Aleph {
       }
     } catch {
       console.warn("FPS Text not loaded yet");
-      if (!this.srcLoaded && this._camera) {
-        // reset the camera to look at the spinner
-        // doing this in the render method has no effect
-        this._camera.object3DMap.camera.position.set(0, 2.15, -4);
-        this._camera.object3DMap.camera.lookAt(this._spinner.object3D.position);
-      }
+    }
 
-      try {
-        this._splashBack.object3D.lookAt(this._tcontrols.object.position);
-      } catch {
-        console.warn("Splashback not loaded yet");
-      }
+    if (!this.srcLoaded && this._camera) {
+      // reset the camera to look at the spinner
+      // doing this in the render method has no effect
+      this._camera.object3DMap.camera.position.set(0, 2.15, -4);
+      this._camera.object3DMap.camera.lookAt(this._spinner.object3D.position);
     }
   }
 
   private _controlsInitHandler(event: CustomEvent): void {
     this._tcontrols = event.detail.controls;
+    this._splashBack = event.detail.splashBack;
+    this._scene.sceneEl.object3D.add(this._splashBack);
   }
 
   //#region Event Handlers
