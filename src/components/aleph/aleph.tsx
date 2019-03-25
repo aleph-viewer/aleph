@@ -391,17 +391,17 @@ export class Aleph {
           far={Constants.cameraValues.far}
           rotation="0 0 0"
           al-orbit-control={`
-              maxPolarAngle: ${Constants.cameraValues.maxPolarAngle};
-              minDistance: ${Constants.cameraValues.minDistance};
-              screenSpacePanning: true;
-              rotateSpeed: ${Constants.cameraValues.rotateSpeed};
-              zoomSpeed: ${Constants.cameraValues.zoomSpeed};
-              enableDamping: true;
-              dampingFactor: ${Constants.cameraValues.dampingFactor};
-              target: ${ThreeUtils.vector3ToString(camData.target)};
-              startPosition: ${ThreeUtils.vector3ToString(camData.position)};
-              targetRadius: ${radius};
-            `}
+            maxPolarAngle: ${Constants.cameraValues.maxPolarAngle};
+            minDistance: ${Constants.cameraValues.minDistance};
+            screenSpacePanning: true;
+            rotateSpeed: ${Constants.cameraValues.rotateSpeed};
+            zoomSpeed: ${Constants.cameraValues.zoomSpeed};
+            enableDamping: true;
+            dampingFactor: ${Constants.cameraValues.dampingFactor};
+            target: ${ThreeUtils.vector3ToString(camData.target)};
+            startPosition: ${ThreeUtils.vector3ToString(camData.position)};
+            targetRadius: ${radius};
+          `}
         />
       );
     } else {

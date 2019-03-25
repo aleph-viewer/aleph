@@ -63,6 +63,8 @@ export class AlOrbitControl implements AframeRegistry {
         let splashBackMaterial = new THREE.MeshBasicMaterial();
         let splashBackMesh = new THREE.Mesh(splashBackGeom, splashBackMaterial);
 
+        //this.el.setObject3D("mesh", splashBackMesh);
+
         el.setAttribute("position", this.data.startPosition);
 
         const lookPos = el.getAttribute("position");
@@ -199,7 +201,8 @@ export class AlOrbitControl implements AframeRegistry {
       remove() {
         let state = this.state as AlOrbitControlState;
 
-        this.sceneEl.object3D.remove(state.splashBackMesh);
+        //this.el.removeObject3D("mesh");
+        this.el.sceneEl.object3D.remove(state.splashBackMesh);
         state.controls.reset();
         state.controls.dispose();
         state.splashBackMaterial.dispose();
