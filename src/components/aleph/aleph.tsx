@@ -583,9 +583,9 @@ export class Aleph {
 
     if (!intersection) {
       // Next try splashback
-      intersection = raycaster.getIntersection(
-        this._camera
-      ) as THREE.Intersection;
+      intersection = (raycaster.raycaster as THREE.Raycaster).intersectObject(
+        this._splashBack
+      )[0];
     }
 
     if (intersection) {
