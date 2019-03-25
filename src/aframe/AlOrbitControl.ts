@@ -3,7 +3,7 @@ import {
   AframeComponent,
   AlOrbitControlState
 } from "../interfaces/interfaces";
-import { GLTFUtils } from "../utils/utils";
+import { Constants } from "../Constants";
 
 export class AlOrbitControl implements AframeRegistry {
   public static getObject(): AframeComponent {
@@ -11,6 +11,7 @@ export class AlOrbitControl implements AframeRegistry {
       dependencies: ["camera"],
 
       schema: {
+        startPosition: { type: "vec3" },
         autoRotate: { type: "boolean" },
         autoRotateSpeed: { default: 2 },
         dampingFactor: { default: 0.1 },
@@ -20,7 +21,6 @@ export class AlOrbitControl implements AframeRegistry {
         enablePan: { default: true },
         enableRotate: { default: true },
         enableZoom: { default: true },
-        initialPosition: { type: "vec3" },
         keyPanSpeed: { default: 7 },
         minAzimuthAngle: { type: "number", default: -Infinity },
         maxAzimuthAngle: { type: "number", default: Infinity },
@@ -33,7 +33,8 @@ export class AlOrbitControl implements AframeRegistry {
         rotateSpeed: { default: 0.05 },
         screenSpacePanning: { default: false },
         target: { type: "vec3" },
-        zoomSpeed: { default: 0.5 }
+        zoomSpeed: { type: "number", default: 0.5 },
+        targetRadius: { type: "number", default: 1 }
       },
       init() {
         this.onEnterVR = this.onEnterVR.bind(this);
@@ -58,18 +59,43 @@ export class AlOrbitControl implements AframeRegistry {
           document.body.style.cursor = "grab";
         });
 
-        el.getObject3D("camera").position.copy(this.data.initialPosition);
+        let splashBackGeom = new THREE.PlaneGeometry(1, 1, 1, 1);
+        let splashBackMaterial = new THREE.MeshBasicMaterial();
+        let splashBackMesh = new THREE.Mesh(splashBackGeom, splashBackMaterial);
+
+        el.setAttribute("position", this.data.startPosition);
+
+        const lookPos = el.getAttribute("position");
+        const direction: THREE.Vector3 = lookPos
+          .clone()
+          .sub(this.data.target)
+          .normalize();
+        const splashPos = direction.multiplyScalar(-this.data.targetRadius);
+        const scaleN = this.data.targetRadius * Constants.splashBackSize;
+
+        splashBackMesh.scale.copy(new THREE.Vector3(scaleN, scaleN, scaleN));
+        splashBackMesh.position.copy(splashPos);
 
         this.state = {
-          controls: controls,
-          oldPosition: oldPosition,
-          target: target
+          controls,
+          oldPosition,
+          target,
+          splashBackMesh,
+          splashBackGeom,
+          splashBackMaterial
         } as AlOrbitControlState;
 
-        el.emit("controls-init", { controls: this.state.controls }, true);
+        el.emit(
+          "controls-init",
+          {
+            controls: this.state.controls,
+            splashBack: this.state.splashBackMesh
+          },
+          true
+        );
       },
       onEnterVR() {
-        let state = this.state;
+        let state = this.state as AlOrbitControlState;
         let el = this.el;
 
         if (
@@ -86,7 +112,7 @@ export class AlOrbitControl implements AframeRegistry {
         }
       },
       onExitVR() {
-        let state = this.state;
+        let state = this.state as AlOrbitControlState;
         let el = this.el;
 
         if (
@@ -103,7 +129,7 @@ export class AlOrbitControl implements AframeRegistry {
       },
 
       update(_oldData) {
-        let state = this.state;
+        let state = this.state as AlOrbitControlState;
         let controls = state.controls;
         const data = this.data;
 
@@ -124,15 +150,27 @@ export class AlOrbitControl implements AframeRegistry {
         controls.minDistance = data.minDistance;
         controls.minPolarAngle = THREE.Math.degToRad(data.minPolarAngle);
         controls.minAzimuthAngle = THREE.Math.degToRad(data.minAzimuthAngle);
-        controls.minZoom = data.minZoom;
-        controls.panSpeed = data.panSpeed;
         controls.rotateSpeed = data.rotateSpeed;
         controls.screenSpacePanning = data.screenSpacePanning;
         controls.zoomSpeed = data.zoomSpeed;
+
+        const direction: THREE.Vector3 = this.el
+          .getAttribute("position")
+          .clone()
+          .sub(this.data.target)
+          .normalize();
+        const splashPos = direction.multiplyScalar(-this.data.targetRadius);
+        const scaleN = this.data.targetRadius * Constants.splashBackSize;
+
+        state.splashBackMesh.scale.copy(
+          new THREE.Vector3(scaleN, scaleN, scaleN)
+        );
+        state.splashBackMesh.position.copy(splashPos);
       },
 
       tick() {
-        let state = this.state;
+        let state = this.state as AlOrbitControlState;
+        let el = this.el;
         let controls = state.controls;
         const data = this.data;
 
@@ -144,14 +182,30 @@ export class AlOrbitControl implements AframeRegistry {
           (controls.enableDamping || controls.autoRotate)
         ) {
           controls.update();
+
+          const lookPos = controls.object.position;
+          const direction: THREE.Vector3 = lookPos
+            .clone()
+            .sub(state.target)
+            .normalize();
+          const splashPos = direction.multiplyScalar(-data.targetRadius);
+
+          el.setAttribute("position", lookPos);
+          (state.splashBackMesh as THREE.Mesh).lookAt(lookPos);
+          state.splashBackMesh.position.copy(splashPos);
         }
       },
 
       remove() {
-        let state = this.state;
+        let state = this.state as AlOrbitControlState;
 
+        this.sceneEl.object3D.remove(this._splashBack);
         state.controls.reset();
         state.controls.dispose();
+        state.splashBackMaterial.dispose();
+        state.splashBackGeom.dispose();
+        state.splashBackMesh = null;
+        state = null;
         this.el.sceneEl.removeEventListener("enter-vr", this.onEnterVR);
         this.el.sceneEl.removeEventListener("exit-vr", this.onExitVR);
       },
