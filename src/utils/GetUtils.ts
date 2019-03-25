@@ -59,6 +59,16 @@ export class GetUtils {
     });
   }
 
+  static getToolById(id: string, tools: Tool[]): Tool | null {
+    let tool: Tool | null = null;
+
+    tool = tools.find((tool: Tool) => {
+      return tool.id === id;
+    });
+
+    return tool;
+  }
+
   static getGeometryCenter(
     geometry: THREE.Geometry | THREE.BufferGeometry
   ): THREE.Vector3 {

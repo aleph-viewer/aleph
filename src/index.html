@@ -8,6 +8,8 @@
     />
     <title>Aleph</title>
     <script src="https://unpkg.com/proxy-observe@0.0.21/browser/proxy-observe.min.js"></script>
+    <script src="https://unpkg.com/react@16.8.5/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@16.8.5/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/three@0.102.1/build/three.min.js"></script>
     <script src="/assets/aframe-master.js"></script>
     <script src="https://unpkg.com/aframe-orbit-controls@1.2.0/dist/aframe-orbit-controls.min.js"></script>
@@ -111,6 +113,9 @@
           <textarea id="annotations-textarea" placeholder="annotations"></textarea>
         </section>
         <section>
+          <ul id="annotation-list"></ul>
+        </section>
+        <section>
           <button id="load-annotations-button">Load</button>
         </section>
       </div>
@@ -118,15 +123,14 @@
 
     <script>
 
-      let container, debug, aleph, testFilesSelect, testFileInput, loadTestFileButton, annotationsTextArea;
+      let container, debug, aleph, testFilesSelect, testFileInput, loadTestFileButton, annotationsTextArea, annotationList;
 
       let state = {
         testFile: null,
-        annotations: null
+        annotations: []
       }
 
       if (Object.observe) {
-        // use proxies for an observable state
         state = Object.observe(state, (changeset) => {
           render(changeset);
         });
@@ -141,6 +145,7 @@
         loadTestFileButton = document.getElementById("load-test-file-button");
         annotationsTextArea = document.getElementById("annotations-textarea");
         loadAnnotationsButton = document.getElementById("load-annotations-button");
+        annotationList = document.getElementById("annotation-list");
 
         // aleph.addEventListener('onLoaded', function() {
         //   aleph.setToolsVisible(true); // can only show them after src loaded
@@ -149,6 +154,14 @@
 
         aleph.addEventListener(
           "onSave",
+          function(e) {
+            state.annotations = e.detail;
+          },
+          false
+        );
+
+        aleph.addEventListener(
+          "onToolsChanged",
           function(e) {
             state.annotations = e.detail;
           },
@@ -192,22 +205,60 @@
         );
       }
 
+      function createElementFromString(htmlString) {
+        const div = document.createElement('div');
+        div.innerHTML = htmlString.trim();
+        // Change this to div.childNodes to support multiple top-level nodes
+        return div.firstChild;
+      }
+
       function changeSetIncludes(changeSet, name) {
         return (changeSet.findIndex((item) => { return (item.name === name) }) !== -1);
       }
 
       function render(changeSet) {
 
-        if (changeSetIncludes(changeSet, "testFile")) {
-          testFilesSelect.value = state.testFile;
-          testFileInput.value = state.testFile;
-          aleph.load(state.testFile);
-        }
+        // todo: can selectedTool be a prop?
+        aleph.getSelectedTool().then((selectedTool) => {
 
-        if (changeSetIncludes(changeSet, "annotations")) {
-          annotationsTextArea.value = state.annotations;
-          aleph.loadAnnotations(state.annotations);
-        }
+          if (changeSetIncludes(changeSet, "testFile")) {
+            testFilesSelect.value = state.testFile;
+            testFileInput.value = state.testFile;
+            aleph.load(state.testFile);
+          }
+
+          if (changeSetIncludes(changeSet, "annotations")) {
+            annotationsTextArea.value = JSON.stringify(state.annotations);
+            aleph.loadAnnotations(state.annotations);
+          }
+
+          annotationList.innerHTML = "";
+
+          // render annotation radio button list
+          state.annotations.forEach((anno) => {
+            annotationList.appendChild(createElementFromString(`
+              <li>
+                <label class="block">
+                  <input
+                    type="radio"
+                    checked="${selectedTool.id === anno.id}"
+                    id="${anno.id}"
+                    name="tool"
+                    value="${anno.id}"
+                  />
+                  ${anno.id}
+                </label>
+              </li>`));
+          });
+
+          annotationList.querySelectorAll("input").forEach(input => {
+            input.addEventListener("change", (e) => {
+              aleph.selectTool(e.srcElement.id);
+            });
+          });
+
+          aleph.selectTool(selectedTool);
+        });
       }
 
       document.addEventListener("DOMContentLoaded", function(event) {

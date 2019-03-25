@@ -158,13 +158,22 @@ export class Aleph {
       this.appRemoveTool(this.tools[this.tools.length - 1].id);
     }
 
-    tools = JSON.parse(tools);
-
     this.appLoadTools(tools);
+  }
+
+  @Method()
+  async selectTool(toolId: string) {
+    this.appSelectTool(toolId);
+  }
+
+  @Method()
+  async getSelectedTool() {
+    return GetUtils.getToolById(this.selectedTool, this.tools);
   }
 
   @Event() onLoad: EventEmitter;
   @Event() onSave: EventEmitter;
+  @Event() onToolsChanged: EventEmitter;
   //#endregion
 
   componentWillLoad() {
@@ -448,10 +457,10 @@ export class Aleph {
         volumeSteps={this.volumeSteps}
         volumeWindowCenter={this.volumeWindowCenter}
         volumeWindowWidth={this.volumeWindowWidth}
-        addTool={this.appAddTool}
-        removeTool={this.appRemoveTool}
+        addTool={this._addTool.bind(this)}
+        removeTool={this._removeTool.bind(this)}
         saveTools={this._saveTools.bind(this)}
-        selectTool={this.appSelectTool}
+        selectTool={this._selectTool.bind(this)}
         setBoundingBoxVisible={this.appSetBoundingBoxVisible}
         setDisplayMode={this.appSetDisplayMode}
         setOptionsEnabled={this.appSetOptionsEnabled}
@@ -484,7 +493,22 @@ export class Aleph {
   //#endregion
 
   private _saveTools(): void {
-    this.onSave.emit(JSON.stringify(this.tools));
+    this.onSave.emit(this.tools);
+  }
+
+  private _addTool(tool: Tool): void {
+    this.appAddTool(tool);
+    this.onToolsChanged.emit(this.tools);
+  }
+
+  private _removeTool(toolId: string): void {
+    this.appRemoveTool(toolId);
+    this.onToolsChanged.emit(this.tools);
+  }
+
+  private _selectTool(toolId: string): void {
+    this.appSelectTool(toolId);
+    this.onToolsChanged.emit(this.tools);
   }
 
   private _srcLoaded(): void {
@@ -574,7 +598,7 @@ export class Aleph {
         this._scale
       );
 
-      this.appAddTool(newTool);
+      this._addTool(newTool);
     }
   }
 
@@ -587,7 +611,7 @@ export class Aleph {
   }
 
   private _toolSelectedHandler(event: CustomEvent): void {
-    this.appSelectTool(event.detail.id);
+    this._selectTool(event.detail.id);
   }
 
   private _toolMovedHandler(event: CustomEvent): void {
