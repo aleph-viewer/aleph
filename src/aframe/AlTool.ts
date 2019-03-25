@@ -1,12 +1,12 @@
 import {
+  AframeRegistry,
   AframeComponent,
-  AframeObject,
   AlToolState
 } from "../interfaces/interfaces";
 import { Constants } from "../Constants";
 
-export class AlTool implements AframeComponent {
-  public static getObject(): AframeObject {
+export class AlTool implements AframeRegistry {
+  public static getObject(): AframeComponent {
     return {
       schema: {
         targetId: { type: "string", default: "#target-entity" },
@@ -16,6 +16,9 @@ export class AlTool implements AframeComponent {
       },
 
       init(): void {
+        this.onEnterVR = this.onEnterVR.bind(this);
+        this.onExitVR = this.onExitVR.bind(this);
+
         const camera = this.el.sceneEl.camera.el.object3DMap.camera;
         const target = this.el.sceneEl.querySelector(this.data.targetId)
           .object3DMap.mesh;
@@ -129,7 +132,7 @@ export class AlTool implements AframeComponent {
       onEnterVR(): void {},
 
       onExitVR(): void {}
-    } as AframeObject;
+    } as AframeComponent;
   }
 
   public static getName(): string {

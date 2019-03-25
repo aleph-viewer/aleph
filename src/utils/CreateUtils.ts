@@ -4,13 +4,13 @@ import {
   AlGltfModel,
   AlVolumetricModel,
   AlTool,
-  AlToolSpawner
+  AlToolSpawner,
+  AlOrbitControl,
+  AlSpinner,
+  AlHalo
 } from "../aframe/aframe";
 import { ThreeUtils } from "./utils";
 import { Constants } from "../Constants";
-import { AlOrbitControl } from "../aframe/AlOrbitControl";
-import { AlSpinner } from "../aframe/AlSpinner";
-import { AlHalo } from "../aframe/AlHalo";
 
 export class CreateUtils {
   static createTool(

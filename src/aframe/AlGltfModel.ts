@@ -1,8 +1,8 @@
-import { AframeComponent, AframeObject } from "../interfaces/interfaces";
+import { AframeRegistry, AframeComponent } from "../interfaces/interfaces";
 import { GLTFUtils } from "../utils/utils";
 
-export class AlGltfModel implements AframeComponent {
-  public static getObject(): AframeObject {
+export class AlGltfModel implements AframeRegistry {
+  public static getObject(): AframeComponent {
     return {
       schema: {
         src: { type: "model", default: "" },
@@ -10,6 +10,9 @@ export class AlGltfModel implements AframeComponent {
       },
 
       init(): void {
+        this.onEnterVR = this.onEnterVR.bind(this);
+        this.onExitVR = this.onExitVR.bind(this);
+
         this.model = null;
         this.loader = new THREE.GLTFLoader();
         (THREE as any).DRACOLoader.setDecoderPath(this.data.dracoDecoderPath);
@@ -64,7 +67,7 @@ export class AlGltfModel implements AframeComponent {
       onEnterVR(): void {},
 
       onExitVR(): void {}
-    } as AframeObject;
+    } as AframeComponent;
   }
 
   public static getName(): string {

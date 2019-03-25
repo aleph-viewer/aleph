@@ -1,12 +1,12 @@
 import {
+  AframeRegistry,
   AframeComponent,
-  AframeObject,
   AlOrbitControlState
 } from "../interfaces/interfaces";
 import { GLTFUtils } from "../utils/utils";
 
-export class AlOrbitControl implements AframeComponent {
-  public static getObject(): AframeObject {
+export class AlOrbitControl implements AframeRegistry {
+  public static getObject(): AframeComponent {
     return {
       dependencies: ["camera"],
 
@@ -36,6 +36,9 @@ export class AlOrbitControl implements AframeComponent {
         zoomSpeed: { default: 0.5 }
       },
       init() {
+        this.onEnterVR = this.onEnterVR.bind(this);
+        this.onExitVR = this.onExitVR.bind(this);
+
         let el = this.el;
         let oldPosition = new THREE.Vector3();
         let controls = new THREE.OrbitControls(
@@ -43,9 +46,6 @@ export class AlOrbitControl implements AframeComponent {
           el.sceneEl.renderer.domElement
         );
         let target = new THREE.Vector3();
-
-        this.onEnterVR = this.onEnterVR.bind(this);
-        this.onExitVR = this.onExitVR.bind(this);
 
         el.sceneEl.addEventListener("enter-vr", this.onEnterVR);
         el.sceneEl.addEventListener("exit-vr", this.onExitVR);
@@ -159,7 +159,7 @@ export class AlOrbitControl implements AframeComponent {
       pause() {},
 
       play() {}
-    } as AframeObject;
+    } as AframeComponent;
   }
 
   public static getName(): string {

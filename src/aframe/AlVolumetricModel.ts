@@ -1,14 +1,17 @@
-import { AframeComponent, AframeObject } from "../interfaces/interfaces";
+import { AframeRegistry, AframeComponent } from "../interfaces/interfaces";
 import { VolumetricLoader } from "../utils/VolumetricLoader";
 
-export class AlVolumetricModel implements AframeComponent {
-  public static getObject(): AframeObject {
+export class AlVolumetricModel implements AframeRegistry {
+  public static getObject(): AframeComponent {
     return {
       schema: {
         src: { type: "model", default: "" }
       },
 
       init(): void {
+        this.onEnterVR = this.onEnterVR.bind(this);
+        this.onExitVR = this.onExitVR.bind(this);
+
         this.model = null;
         this.loader = new VolumetricLoader();
 
@@ -54,7 +57,7 @@ export class AlVolumetricModel implements AframeComponent {
       onEnterVR(): void {},
 
       onExitVR(): void {}
-    } as AframeObject;
+    } as AframeComponent;
   }
 
   public static getName(): string {

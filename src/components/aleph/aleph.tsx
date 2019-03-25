@@ -62,6 +62,7 @@ export class Aleph {
   private _tcontrols: THREE.OrbitControls;
 
   private _intersectingTool: boolean;
+  private _spinner: Entity;
   //#endregion
 
   //#region Redux states, props & methods
@@ -583,17 +584,18 @@ export class Aleph {
       }
     } catch {
       console.warn("FPS Text not loaded yet");
-    if (!this.srcLoaded && this._camera) {
-      // reset the camera to look at the spinner
-      // doing this in the render method has no effect
-      this._camera.object3DMap.camera.position.set(0, 2.15, -4);
-      this._camera.object3DMap.camera.lookAt(this._spinner.object3D.position);
-    }
+      if (!this.srcLoaded && this._camera) {
+        // reset the camera to look at the spinner
+        // doing this in the render method has no effect
+        this._camera.object3DMap.camera.position.set(0, 2.15, -4);
+        this._camera.object3DMap.camera.lookAt(this._spinner.object3D.position);
+      }
 
-    try {
-      this._splashBack.object3D.lookAt(this._tcontrols.object.position);
-    } catch {
-      console.warn("Splashback not loaded yet");
+      try {
+        this._splashBack.object3D.lookAt(this._tcontrols.object.position);
+      } catch {
+        console.warn("Splashback not loaded yet");
+      }
     }
   }
 

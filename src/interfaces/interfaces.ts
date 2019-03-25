@@ -1,13 +1,15 @@
 import { Tool } from "./Tool";
-import { AframeObject } from "./AframeObject";
 import { AframeComponent } from "./AframeComponent";
+import { AframeRegistry } from "./AframeRegistry";
 import { AlToolState } from "./AlToolState";
 import { AlOrbitControlState } from "./AlOrbitControlState";
+import { AframeShader } from "./AframeShader";
 
 export {
   Tool,
-  AframeObject,
   AframeComponent,
+  AframeRegistry,
   AlToolState,
-  AlOrbitControlState
+  AlOrbitControlState,
+  AframeShader
 };
