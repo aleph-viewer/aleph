@@ -70,6 +70,7 @@ export class Aleph {
   @Prop() width: string = "640px";
   @Prop() height: string = "480px";
   @Prop() debug: boolean = false;
+  @Prop() spinnerColor: string = "#fff";
 
   appSetSrc: Action;
   appSetSrcLoaded: Action;
@@ -267,12 +268,11 @@ export class Aleph {
     if (!this.srcLoaded) {
       return (
         <a-entity
-          gltf-model="src: url(assets/tetrahedron.glb)"
-          animation="property: rotation; to: 0 360 0; loop: true; dur: 1500; easing: easeInOutQuad"
-          position="0 0 -4"
-          rotation="0.5 0.5 0"
-          scale="0.1 0.1 0.1"
-          material="color: #fff; opacity: 0.9; transparent: true"
+          animation="property: rotation; to: 0 120 0; loop: true; dur: 1000; easing: easeInOutQuad"
+          geometry="primitive: al-spinner;"
+          scale="0.2 0.2 0.2"
+          material={`color: ${this.spinnerColor};`}
+          ref={(el: Entity) => (this._spinner = el)}
         />
       );
     }
@@ -575,7 +575,6 @@ export class Aleph {
 
   componentDidUpdate() {
     this._addEventListeners();
-
     try {
       const mat = (this._camera.object3DMap.text as THREE.Mesh)
         .material as THREE.Material;
@@ -584,6 +583,11 @@ export class Aleph {
       }
     } catch {
       console.warn("FPS Text not loaded yet");
+    if (!this.srcLoaded && this._camera) {
+      // reset the camera to look at the spinner
+      // doing this in the render method has no effect
+      this._camera.object3DMap.camera.position.set(0, 2.15, -4);
+      this._camera.object3DMap.camera.lookAt(this._spinner.object3D.position);
     }
 
     try {

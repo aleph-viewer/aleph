@@ -1,6 +1,6 @@
 export interface AframeObject {
   schema: {};
-  init: () => void;
+  init: (data?: any) => void;
   onEnterVR: () => void;
   onExitVR: () => void;
   update: (oldData) => void;
