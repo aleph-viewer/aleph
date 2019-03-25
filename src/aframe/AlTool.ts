@@ -67,7 +67,7 @@ export class AlTool implements AframeRegistry {
         this.el.addEventListener("raycaster-intersected-cleared", _evt => {
           let state = this.state as AlToolState;
           state.hovered = false;
-          if (this.mouseDown) {
+          if (state.mouseDown && state.selected) {
             state.dragging = true;
           }
           this.el.emit(AlToolEvents.INTERSECTION_CLEARED, {}, true);
