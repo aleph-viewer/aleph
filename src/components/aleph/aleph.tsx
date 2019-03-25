@@ -39,6 +39,9 @@ import { DisplayMode } from "../../enums/DisplayMode";
 import { GetUtils, ThreeUtils, CreateUtils } from "../../utils/utils";
 import { Constants } from "../../Constants";
 import { MeshFileType } from "../../enums/MeshFileType";
+import { AlToolEvents } from "../../aframe/AlTool";
+import { AlToolSpawnerEvents } from "../../aframe/AlToolSpawner";
+import { AlGltfModelEvents } from "../../aframe/AlGltfModel";
 type Entity = import("aframe").Entity;
 type Scene = import("aframe").Scene;
 
@@ -530,39 +533,29 @@ export class Aleph {
         false
       );
       this._scene.addEventListener(
-        "tool-moved",
+        AlToolEvents.TOOL_MOVED,
         this._toolMovedEventHandler,
         false
       );
       this._scene.addEventListener(
-        "add-tool",
+        AlToolSpawnerEvents.ADD_TOOL,
         this._addToolEventHandler,
         false
       );
       this._scene.addEventListener(
-        "al-tool-moved",
-        this._toolMovedEventHandler,
-        false
-      );
-      this._scene.addEventListener(
-        "al-add-tool",
-        this._addToolEventHandler,
-        false
-      );
-      this._scene.addEventListener(
-        "al-tool-selected",
+        AlToolEvents.SELECTED,
         this._toolSelectedEventHandler,
         false
       );
       this._scene.addEventListener(
-        "al-valid-target",
+        AlToolSpawnerEvents.VALID_TARGET,
         this._validTargetEventHandler,
         false
       );
 
       if (this._targetEntity) {
         this._targetEntity.addEventListener(
-          "al-model-loaded",
+          AlGltfModelEvents.LOADED,
           this._srcLoadedEventHandler,
           false
         );
@@ -570,12 +563,12 @@ export class Aleph {
 
       if (this._camera) {
         this._camera.addEventListener(
-          "al-tool-intersection",
+          AlToolEvents.INTERSECTION,
           this._intersectingToolEventHandler,
           false
         );
         this._camera.addEventListener(
-          "al-tool-intersection-cleared",
+          AlToolEvents.INTERSECTION_CLEARED,
           this._intersectionClearedEventHandler,
           false
         );
