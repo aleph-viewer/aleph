@@ -512,6 +512,7 @@ export class Aleph {
   private _addTool(tool: Tool): void {
     this.appAddTool(tool);
     this.onToolsChanged.emit(this.tools);
+    this._selectTool(tool.id);
   }
 
   private _removeTool(toolId: string): void {
