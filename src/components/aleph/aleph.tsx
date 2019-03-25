@@ -606,7 +606,7 @@ export class Aleph {
         false
       );
       this._scene.addEventListener(
-        AlToolEvents.TOOL_DRAGGING,
+        AlToolEvents.DRAGGING,
         this._toolMovedEventHandler,
         false
       );
@@ -657,13 +657,15 @@ export class Aleph {
 
     // Turns debug text inside the models invisible
     // TODO: Wire to debug variable
-    try {
-      const mat = (this._camera.object3DMap.text as THREE.Mesh)
-        .material as THREE.Material;
-      if (mat) {
-        mat.transparent = true;
-      }
-    } catch {}
+    if (this.debug) {
+      try {
+        const mat = (this._camera.object3DMap.text as THREE.Mesh)
+          .material as THREE.Material;
+        if (mat) {
+          mat.transparent = true;
+        }
+      } catch {}
+    }
 
     if (!this.srcLoaded && this._camera) {
       // reset the camera to look at the spinner

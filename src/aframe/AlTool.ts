@@ -33,19 +33,19 @@ export class AlTool implements AframeRegistry {
         //#region Event Listeners
         this.el.addEventListener("mousedown", _evt => {
           if (this.data.toolsEnabled) {
+            // todo: shouldn't be setting this here, emit an event and handle it in the main scene
             this.el.sceneEl.camera.el.setAttribute(
               AlOrbitControl.getName(),
               "enabled: false"
             );
           }
 
-          let state = this.state as AlToolState;
-          state.dragging = true;
           this.el.emit(AlToolEvents.SELECTED, { id: this.el.id }, true);
         });
 
         this.el.addEventListener("mouseup", _evt => {
           if (this.data.toolsEnabled) {
+            // todo: shouldn't be setting this here, emit an event and handle it in the main scene
             this.el.sceneEl.camera.el.setAttribute(
               AlOrbitControl.getName(),
               "enabled: true"
@@ -58,22 +58,13 @@ export class AlTool implements AframeRegistry {
 
         this.el.addEventListener("raycaster-intersected", _evt => {
           let state = this.state as AlToolState;
-          state.material.color = new THREE.Color(Constants.toolColors.hovered);
           state.hovered = true;
           this.el.emit(AlToolEvents.INTERSECTION, {}, true);
         });
 
         this.el.addEventListener("raycaster-intersected-cleared", _evt => {
           let state = this.state as AlToolState;
-          if (state.selected) {
-            state.material.color = new THREE.Color(
-              Constants.toolColors.selected
-            );
-          } else {
-            state.material.color = new THREE.Color(Constants.toolColors.normal);
-          }
           state.hovered = false;
-
           this.el.emit(AlToolEvents.INTERSECTION_CLEARED, {}, true);
         });
 
@@ -102,6 +93,13 @@ export class AlTool implements AframeRegistry {
         ).object3DMap.mesh;
 
         state.selected = this.data.selected;
+      },
+
+      tick(): void {
+        let state = this.state as AlToolState;
+        if (this.data.toolsEnabled && state.dragging) {
+          this.el.emit(AlToolEvents.DRAGGING, { id: this.el.id }, true);
+        }
 
         if (state.hovered || state.dragging) {
           state.material.color = new THREE.Color(Constants.toolColors.hovered);
@@ -109,13 +107,6 @@ export class AlTool implements AframeRegistry {
           state.material.color = new THREE.Color(Constants.toolColors.selected);
         } else {
           state.material.color = new THREE.Color(Constants.toolColors.normal);
-        }
-      },
-
-      tick(): void {
-        let state = this.state as AlToolState;
-        if (state.dragging && state.selected && this.data.toolsEnabled) {
-          this.el.emit(AlToolEvents.TOOL_DRAGGING, { id: this.el.id }, true);
         }
       },
 
@@ -142,5 +133,5 @@ export class AlToolEvents {
   static SELECTED: string = "al-tool-selected";
   static INTERSECTION: string = "al-tool-intersection";
   static INTERSECTION_CLEARED: string = "al-tool-intersection-cleared";
-  static TOOL_DRAGGING: string = "al-tool-dragging";
+  static DRAGGING: string = "al-tool-dragging";
 }
