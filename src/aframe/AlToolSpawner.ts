@@ -1,7 +1,7 @@
-import { AframeComponent, AframeObject } from "../interfaces/interfaces";
+import { AframeRegistry, AframeComponent } from "../interfaces/interfaces";
 
-export class AlToolSpawner implements AframeComponent {
-  public static getObject(): AframeObject {
+export class AlToolSpawner implements AframeRegistry {
+  public static getObject(): AframeComponent {
     return {
       dependencies: ["raycaster"],
 
@@ -10,6 +10,9 @@ export class AlToolSpawner implements AframeComponent {
       },
 
       init(): void {
+        this.onEnterVR = this.onEnterVR.bind(this);
+        this.onExitVR = this.onExitVR.bind(this);
+
         this.el.addEventListener("mousedown", () => {
           if (this.data.toolsEnabled) {
             this.el.sceneEl.camera.el.setAttribute(
@@ -50,8 +53,12 @@ export class AlToolSpawner implements AframeComponent {
 
       pause(): void {},
 
-      play(): void {}
-    } as AframeObject;
+      play(): void {},
+
+      onEnterVR(): void {},
+
+      onExitVR(): void {}
+    } as AframeComponent;
   }
 
   public static getName(): string {

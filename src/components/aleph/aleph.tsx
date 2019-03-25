@@ -54,14 +54,15 @@ export class Aleph {
   private _stackHelper: AMI.StackHelper;
 
   private _targetEntity: Entity;
+  private _splashBack: Entity;
   private _scene: Scene;
   private _scale: number;
   private _validTarget: boolean;
   private _camera: Entity;
-  private _maxMeshDistance: number;
-  private _spinner: Entity;
+  private _tcontrols: THREE.OrbitControls;
 
   private _intersectingTool: boolean;
+  private _spinner: Entity;
   //#endregion
 
   //#region Redux states, props & methods
@@ -259,13 +260,13 @@ export class Aleph {
     this._srcLoadedHandler = this._srcLoaded.bind(this);
     this._addToolHandler = this._addToolHandler.bind(this);
     this._validTargetHandler = this._validTargetHandler.bind(this);
-    this._meshDistanceHandler = this._meshDistanceHandler.bind(this);
     this._toolSelectedHandler = this._toolSelectedHandler.bind(this);
     this._intersectingToolHandler = this._intersectingToolHandler.bind(this);
     this._intersectionClearedHandler = this._intersectionClearedHandler.bind(
       this
     );
     this._toolMovedHandler = this._toolMovedHandler.bind(this);
+    this._controlsInitHandler = this._controlsInitHandler.bind(this);
   }
 
   //#region Rendering Methods
@@ -298,14 +299,14 @@ export class Aleph {
               toolsEnabled: ${this.toolsEnabled};
             `}
             class="collidable"
-            id="targetEntity"
+            id="target-entity"
+            ref={(el: Entity) => (this._targetEntity = el)}
             al-gltf-model={`
               src: url(${this.src});
               dracoDecoderPath: ${this.dracoDecoderPath};
             `}
             position="0 0 0"
             scale="1 1 1"
-            ref={(el: Entity) => (this._targetEntity = el)}
           />
         );
       }
@@ -313,22 +314,21 @@ export class Aleph {
         return (
           <a-entity
             al-tool-spawner={`
-              toolsEnabled: ${this.toolsEnabled};
-            `}
-            class="collidable targets"
-            id="targetEntity"
+            toolsEnabled: ${this.toolsEnabled};
+          `}
+            class="collidable"
+            id="target-entity"
+            ref={(el: Entity) => (this._targetEntity = el)}
             al-volumetric-model={`
               src: url(${this.src});
             `}
             position="0 0 0"
             scale="1 1 1"
-            ref={(el: Entity) => (this._targetEntity = el)}
           />
         );
       }
     }
   }
-
   private _renderTools(): JSX.Element {
     const outTools: JSX.Element[] = [];
     const dataTools: Tool[] = this.tools;
@@ -371,6 +371,20 @@ export class Aleph {
   private _renderCamera(): JSX.Element {
     if (this.srcLoaded) {
       let orbitData = GetUtils.getOrbitData(this._targetEntity);
+      let splashBackPos: THREE.Vector3 = orbitData.sceneCenter.clone();
+      let tControlsPos: THREE.Vector3;
+      let max: number;
+      splashBackPos.z -= this._scale * 0.2;
+
+      if (this._tcontrols) {
+        tControlsPos = this._tcontrols.object.position;
+        max = Math.max(
+          Math.max(tControlsPos.x, tControlsPos.y),
+          tControlsPos.z
+        );
+        max *= 2;
+        console.log(tControlsPos);
+      }
 
       return (
         <a-camera
@@ -382,8 +396,9 @@ export class Aleph {
           fov={Constants.cameraValues.fov}
           near={Constants.cameraValues.near}
           far={Constants.cameraValues.far}
-          look-controls="enabled: false"
-          orbit-controls={`
+          position="0 0 0"
+          rotation="0 0 0"
+          al-orbit-control={`
             maxPolarAngle: ${Constants.cameraValues.maxPolarAngle};
             minDistance: ${Constants.cameraValues.minDistance};
             screenSpacePanning: true;
@@ -396,8 +411,21 @@ export class Aleph {
               orbitData.initialPosition
             )};
           `}
-          ref={el => (this._camera = el)}
-        />
+        >
+          <a-plane
+            ref={el => (this._splashBack = el)}
+            position={ThreeUtils.vector3ToString(splashBackPos)}
+            id="#splash-back"
+            look-at="[camera]"
+            class="collidable"
+            scale={`${this._scale * max} ${this._scale * max} ${this._scale *
+              max}`}
+            // material={`
+            //   wireframe: true;
+            //   transparent: true;
+            // `}
+          />
+        </a-camera>
       );
     } else {
       return (
@@ -518,6 +546,13 @@ export class Aleph {
   private _addEventListeners(): void {
     if (this._scene) {
       this._scene.addEventListener(
+        "controls-init",
+        this._controlsInitHandler,
+        false
+      );
+      this._scene.addEventListener("tool-moved", this._toolMovedHandler, false);
+      this._scene.addEventListener("add-tool", this._addToolHandler, false);
+      this._scene.addEventListener(
         "al-tool-moved",
         this._toolMovedHandler,
         false
@@ -531,11 +566,6 @@ export class Aleph {
       this._scene.addEventListener(
         "al-valid-target",
         this._validTargetHandler,
-        false
-      );
-      this._scene.addEventListener(
-        "al-mesh-distance",
-        this._meshDistanceHandler,
         false
       );
 
@@ -566,12 +596,31 @@ export class Aleph {
 
   componentDidUpdate() {
     this._addEventListeners();
-    if (!this.srcLoaded && this._camera) {
-      // reset the camera to look at the spinner
-      // doing this in the render method has no effect
-      this._camera.object3DMap.camera.position.set(0, 2.15, -4);
-      this._camera.object3DMap.camera.lookAt(this._spinner.object3D.position);
+    try {
+      const mat = (this._camera.object3DMap.text as THREE.Mesh)
+        .material as THREE.Material;
+      if (mat) {
+        mat.transparent = true;
+      }
+    } catch {
+      console.warn("FPS Text not loaded yet");
+      if (!this.srcLoaded && this._camera) {
+        // reset the camera to look at the spinner
+        // doing this in the render method has no effect
+        this._camera.object3DMap.camera.position.set(0, 2.15, -4);
+        this._camera.object3DMap.camera.lookAt(this._spinner.object3D.position);
+      }
+
+      try {
+        this._splashBack.object3D.lookAt(this._tcontrols.object.position);
+      } catch {
+        console.warn("Splashback not loaded yet");
+      }
     }
+  }
+
+  private _controlsInitHandler(event: CustomEvent): void {
+    this._tcontrols = event.detail.controls;
   }
 
   //#region Event Handlers
@@ -589,17 +638,13 @@ export class Aleph {
 
       const newTool: Tool = CreateUtils.createTool(
         this.tools,
-        "#targetEntity",
+        "#" + this._targetEntity.id,
         intersection.point,
         this._scale
       );
 
       this._addTool(newTool);
     }
-  }
-
-  private _meshDistanceHandler(event: CustomEvent): void {
-    this._maxMeshDistance = event.detail.dist;
   }
 
   private _validTargetHandler(event: CustomEvent): void {
@@ -613,9 +658,18 @@ export class Aleph {
   private _toolMovedHandler(event: CustomEvent): void {
     const toolId: string = event.detail.id;
     const raycaster = this._camera.components.raycaster as any;
-    const intersection = raycaster.getIntersection(
+
+    // First try target
+    let intersection = raycaster.getIntersection(
       this._targetEntity
     ) as THREE.Intersection;
+
+    if (!intersection) {
+      // Next try splashback
+      intersection = raycaster.getIntersection(
+        this._splashBack
+      ) as THREE.Intersection;
+    }
 
     if (intersection) {
       this.appUpdateTool({
@@ -623,17 +677,7 @@ export class Aleph {
         position: ThreeUtils.vector3ToString(intersection.point)
       });
     } else {
-      let toolPos: THREE.Vector3 = (this._scene
-        .querySelector("#" + toolId)
-        .getAttribute("position") as unknown) as THREE.Vector3;
-      const raycasterPos = raycaster.raycaster.ray.origin;
-      toolPos.x = raycasterPos.x;
-      toolPos.y = raycasterPos.y;
-
-      this.appUpdateTool({
-        id: toolId,
-        position: ThreeUtils.vector3ToString(toolPos)
-      });
+      console.log("No intersection!");
     }
   }
   //#endregion

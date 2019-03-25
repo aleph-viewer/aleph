@@ -1,7 +1,9 @@
-export interface AframeObject {
+export interface AframeShader {
   schema: {};
+  vertexShader: string;
+  fragmentShader: string;
   init: (data?: any) => void;
-  update: () => void;
+  update: (oldData) => void;
   tick: () => void;
   remove: () => void;
   pause: () => void;

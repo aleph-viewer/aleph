@@ -1,7 +1,7 @@
-import { AframeComponent, AframeObject } from "../interfaces/interfaces";
+import { AframeRegistry, AframeShader } from "../interfaces/interfaces";
 
-export class AlHalo implements AframeComponent {
-  public static getObject(): AframeObject {
+export class AlHalo implements AframeRegistry {
+  public static getObject(): AframeShader {
     return {
       schema: {},
 
@@ -34,7 +34,7 @@ export class AlHalo implements AframeComponent {
       remove(): void {},
       pause(): void {},
       play(): void {}
-    } as AframeObject;
+    } as AframeShader;
   }
 
   public static getName(): string {

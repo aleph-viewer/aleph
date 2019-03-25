@@ -1,7 +1,7 @@
-import { AframeComponent, AframeObject } from "../interfaces/interfaces";
+import { AframeRegistry, AframeComponent } from "../interfaces/interfaces";
 
-export class AlSpinner implements AframeComponent {
-  public static getObject(): AframeObject {
+export class AlSpinner implements AframeRegistry {
+  public static getObject(): AframeComponent {
     return {
       schema: {
         detail: { default: 0, min: 0, max: 5, type: "int" },
@@ -9,6 +9,9 @@ export class AlSpinner implements AframeComponent {
       },
 
       init(data): void {
+        this.onEnterVR = this.onEnterVR.bind(this);
+        this.onExitVR = this.onExitVR.bind(this);
+
         this.geometry = new THREE.TetrahedronGeometry(data.radius, data.detail);
         this.geometry.applyMatrix(
           new THREE.Matrix4().makeRotationAxis(
@@ -19,11 +22,19 @@ export class AlSpinner implements AframeComponent {
       },
 
       update(): void {},
+
       tick(): void {},
+
       remove(): void {},
+
       pause(): void {},
-      play(): void {}
-    } as AframeObject;
+
+      play(): void {},
+
+      onEnterVR(): void {},
+
+      onExitVR(): void {}
+    } as AframeComponent;
   }
 
   public static getName(): string {

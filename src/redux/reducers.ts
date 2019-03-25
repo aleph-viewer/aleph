@@ -93,7 +93,6 @@ export const app = (
       };
     }
     case TypeKeys.APP_UPDATE_TOOL: {
-      console.log("update tool", action.payload);
       return {
         ...state,
         tools: state.tools.map(tool => {

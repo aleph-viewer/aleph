@@ -1,21 +1,24 @@
 import {
+  AframeRegistry,
   AframeComponent,
-  AframeObject,
   AlToolState
 } from "../interfaces/interfaces";
 import { Constants } from "../Constants";
 
-export class AlTool implements AframeComponent {
-  public static getObject(): AframeObject {
+export class AlTool implements AframeRegistry {
+  public static getObject(): AframeComponent {
     return {
       schema: {
-        targetId: { type: "string", default: "#targetEntity" },
+        targetId: { type: "string", default: "#target-entity" },
         scale: { type: "number", default: 1 },
         selected: { type: "boolean" },
         toolsEnabled: { type: "boolean" }
       },
 
       init(): void {
+        this.onEnterVR = this.onEnterVR.bind(this);
+        this.onExitVR = this.onExitVR.bind(this);
+
         const camera = this.el.sceneEl.camera.el.object3DMap.camera;
         const target = this.el.sceneEl.querySelector(this.data.targetId)
           .object3DMap.mesh;
@@ -28,8 +31,6 @@ export class AlTool implements AframeComponent {
 
         //#region Event Listeners
         this.el.addEventListener("mousedown", _evt => {
-          console.log(this.el.id, "  mouse down!");
-
           if (this.data.toolsEnabled) {
             this.el.sceneEl.camera.el.setAttribute(
               "orbit-controls",
@@ -39,11 +40,10 @@ export class AlTool implements AframeComponent {
 
           let state = this.state as AlToolState;
           state.moving = true;
+          this.el.emit("tool-selected", { id: this.el.id }, true);
         });
 
         this.el.addEventListener("mouseup", _evt => {
-          console.log(this.el.id, "  mouse up!");
-
           if (this.data.toolsEnabled) {
             this.el.sceneEl.camera.el.setAttribute(
               "orbit-controls",
@@ -55,8 +55,7 @@ export class AlTool implements AframeComponent {
         });
 
         this.el.addEventListener("click", _evt => {
-          const id = this.el.getAttribute("id");
-          this.el.emit("al-tool-selected", { id: id }, true);
+          this.el.emit("tool-selected", { id: this.el.id }, true);
         });
 
         this.el.addEventListener("raycaster-intersected", _evt => {
@@ -106,7 +105,7 @@ export class AlTool implements AframeComponent {
 
         state.selected = this.data.selected;
 
-        if (state.hovered) {
+        if (state.hovered || state.moving) {
           state.material.color = new THREE.Color(Constants.toolColors.hovered);
         } else if (state.selected) {
           state.material.color = new THREE.Color(Constants.toolColors.selected);
@@ -117,8 +116,8 @@ export class AlTool implements AframeComponent {
 
       tick(): void {
         let state = this.state as AlToolState;
-        if (state.moving && state.selected) {
-          this.el.emit("al-tool-moved", { id: this.el.id }, true);
+        if (state.moving && state.selected && this.data.toolsEnabled) {
+          this.el.emit("tool-moved", { id: this.el.id }, true);
         }
       },
 
@@ -128,8 +127,12 @@ export class AlTool implements AframeComponent {
 
       pause(): void {},
 
-      play(): void {}
-    } as AframeObject;
+      play(): void {},
+
+      onEnterVR(): void {},
+
+      onExitVR(): void {}
+    } as AframeComponent;
   }
 
   public static getName(): string {

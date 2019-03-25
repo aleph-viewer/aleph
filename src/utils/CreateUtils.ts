@@ -1,15 +1,15 @@
-import { Tool } from "../interfaces/Tool";
-import { GetUtils } from "./GetUtils";
+import { Tool } from "../interfaces/interfaces";
 import {
   AlGltfModel,
   AlVolumetricModel,
   AlTool,
-  AlToolSpawner
+  AlToolSpawner,
+  AlOrbitControl,
+  AlSpinner,
+  AlHalo
 } from "../aframe/aframe";
-import { ThreeUtils } from "./utils";
+import { ThreeUtils, GetUtils } from "./utils";
 import { Constants } from "../Constants";
-import { AlSpinner } from "../aframe/AlSpinner";
-import { AlHalo } from "../aframe/AlHalo";
 
 export class CreateUtils {
   static createTool(
@@ -38,6 +38,10 @@ export class CreateUtils {
     AFRAME.registerComponent(
       AlToolSpawner.getName(),
       AlToolSpawner.getObject()
+    );
+    AFRAME.registerComponent(
+      AlOrbitControl.getName(),
+      AlOrbitControl.getObject()
     );
   }
 }
