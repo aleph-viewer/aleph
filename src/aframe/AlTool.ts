@@ -40,7 +40,7 @@ export class AlTool implements AframeRegistry {
 
           let state = this.state as AlToolState;
           state.moving = true;
-          this.el.emit("tool-selected", { id: this.el.id }, true);
+          this.el.emit("al-tool-selected", { id: this.el.id }, true);
         });
 
         this.el.addEventListener("mouseup", _evt => {
@@ -55,7 +55,7 @@ export class AlTool implements AframeRegistry {
         });
 
         this.el.addEventListener("click", _evt => {
-          this.el.emit("tool-selected", { id: this.el.id }, true);
+          this.el.emit("al-tool-selected", { id: this.el.id }, true);
         });
 
         this.el.addEventListener("raycaster-intersected", _evt => {
