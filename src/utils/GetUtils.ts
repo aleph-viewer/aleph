@@ -1,6 +1,7 @@
 import { Tool } from "../interfaces/Tool";
 import { Constants } from "../Constants";
 import { Entity } from "aframe";
+import { AlCameraState } from "../interfaces/interfaces";
 
 export class GetUtils {
   static getFileExtension(file: string): string {
@@ -82,9 +83,7 @@ export class GetUtils {
     return geom.boundingSphere.center;
   }
 
-  static getOrbitData(
-    entity: Entity
-  ): { sceneCenter: THREE.Vector3; initialPosition: THREE.Vector3 } {
+  static getOrbitData(entity: Entity): AlCameraState {
     const entityMap = entity.object3DMap;
     let entityMesh: THREE.Mesh = entityMap.mesh as THREE.Mesh;
 
@@ -92,20 +91,24 @@ export class GetUtils {
     let initialPosition: THREE.Vector3;
     let sceneDistance: number;
 
+    //TODO geometry as constant
     if (entityMesh) {
       if (!entityMesh.geometry.boundingSphere) {
         entityMesh.geometry.computeBoundingSphere();
       }
       sceneCenter = entityMesh.position;
       sceneDistance =
-        (2.5 * entityMesh.geometry.boundingSphere.radius) /
+        (Constants.initialZoom * entityMesh.geometry.boundingSphere.radius) /
         Math.tan((Constants.cameraValues.fov * Math.PI) / 180);
 
       initialPosition = new THREE.Vector3();
       initialPosition.copy(sceneCenter);
       initialPosition.z += sceneDistance;
 
-      return { sceneCenter, initialPosition };
+      return {
+        target: sceneCenter,
+        position: initialPosition
+      } as AlCameraState;
     } else {
       console.warn(
         "No mesh object found in object map!: " + entity.object3DMap
