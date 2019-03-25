@@ -16,7 +16,7 @@ export class AlToolSpawner implements AframeRegistry {
         this.el.addEventListener("mousedown", () => {
           if (this.data.toolsEnabled) {
             this.el.sceneEl.camera.el.setAttribute(
-              "orbit-controls",
+              "al-orbit-control",
               "enabled: false"
             );
           }
@@ -25,7 +25,7 @@ export class AlToolSpawner implements AframeRegistry {
         this.el.addEventListener("mouseup", () => {
           if (this.data.toolsEnabled) {
             this.el.sceneEl.camera.el.setAttribute(
-              "orbit-controls",
+              "al-orbit-control",
               "enabled: true"
             );
           }

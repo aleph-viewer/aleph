@@ -1,5 +1,7 @@
 export class Constants {
-  static toolSize = 100;
+  static toolSize = 10;
+
+  static splashBackSize = 5;
 
   static toolColors = {
     selected: "#76ff03",

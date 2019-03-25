@@ -375,19 +375,22 @@ export class Aleph {
         target: new THREE.Vector3(0, 0, 0)
       } as AlCameraState;
 
-      if (this._tcontrols) {
-        return (
-          <a-camera
-            fps-counter={`
+      const mesh = this._targetEntity.object3DMap.mesh as THREE.Mesh;
+      const radius = mesh.geometry.boundingSphere.radius;
+
+      return (
+        <a-camera
+          fps-counter={`
               enabled: ${this.debug}
             `}
-            cursor="rayOrigin: mouse"
-            raycaster="objects: .collidable"
-            fov={Constants.cameraValues.fov}
-            near={Constants.cameraValues.near}
-            far={Constants.cameraValues.far}
-            rotation="0 0 0"
-            al-orbit-control={`
+          cursor="rayOrigin: mouse"
+          raycaster="objects: .collidable"
+          class="collidable"
+          fov={Constants.cameraValues.fov}
+          near={Constants.cameraValues.near}
+          far={Constants.cameraValues.far}
+          rotation="0 0 0"
+          al-orbit-control={`
               maxPolarAngle: ${Constants.cameraValues.maxPolarAngle};
               minDistance: ${Constants.cameraValues.minDistance};
               screenSpacePanning: true;
@@ -396,36 +399,11 @@ export class Aleph {
               enableDamping: true;
               dampingFactor: ${Constants.cameraValues.dampingFactor};
               target: ${ThreeUtils.vector3ToString(camData.target)};
-              startPosition=${ThreeUtils.vector3ToString(camData.position)};
+              startPosition: ${ThreeUtils.vector3ToString(camData.position)};
+              targetRadius: ${radius};
             `}
-          />
-        );
-      } else {
-        return (
-          <a-camera
-            fps-counter={`
-              enabled: ${this.debug}
-            `}
-            cursor="rayOrigin: mouse"
-            raycaster="objects: .collidable"
-            fov={Constants.cameraValues.fov}
-            near={Constants.cameraValues.near}
-            far={Constants.cameraValues.far}
-            position={ThreeUtils.vector3ToString(camData.position)}
-            rotation="0 0 0"
-            al-orbit-control={`
-              maxPolarAngle: ${Constants.cameraValues.maxPolarAngle};
-              minDistance: ${Constants.cameraValues.minDistance};
-              screenSpacePanning: true;
-              rotateSpeed: ${Constants.cameraValues.rotateSpeed};
-              zoomSpeed: ${Constants.cameraValues.zoomSpeed};
-              enableDamping: true;
-              dampingFactor: ${Constants.cameraValues.dampingFactor};
-              target: ${ThreeUtils.vector3ToString(camData.target)};
-            `}
-          />
-        );
-      }
+        />
+      );
     } else {
       return (
         <a-camera
@@ -595,6 +573,9 @@ export class Aleph {
 
   componentDidUpdate() {
     this._addEventListeners();
+
+    // Turns debug text inside the models invisible
+    // TODO: Wire to debug variable
     try {
       const mat = (this._camera.object3DMap.text as THREE.Mesh)
         .material as THREE.Material;
@@ -663,7 +644,7 @@ export class Aleph {
     if (!intersection) {
       // Next try splashback
       intersection = raycaster.getIntersection(
-        this._splashBack
+        this._camera
       ) as THREE.Intersection;
     }
 
