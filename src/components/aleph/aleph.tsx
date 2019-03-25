@@ -369,11 +369,21 @@ export class Aleph {
   }
 
   private _renderCamera(): JSX.Element {
-    if (this.srcLoaded) {
-      let camData = {
-        position: new THREE.Vector3(0, 0, -2),
+    let camData: AlCameraState;
+    let mesh: THREE.Mesh;
+    let radius: number;
+
+    try {
+      camData = GetUtils.getOrbitData(this._targetEntity);
+      mesh = this._targetEntity.object3DMap.mesh as THREE.Mesh;
+      radius = mesh.geometry.boundingSphere.radius;
+    } catch {
+      camData = {
+        position: new THREE.Vector3(0, 0, -1),
         target: new THREE.Vector3(0, 0, 0)
       } as AlCameraState;
+      radius = 1;
+    }
 
       const mesh = this._targetEntity.object3DMap.mesh as THREE.Mesh;
       const radius = mesh.geometry.boundingSphere.radius;
@@ -412,7 +422,9 @@ export class Aleph {
           far={Constants.cameraValues.far}
           look-controls="enabled: false"
           ref={el => (this._camera = el)}
-        />
+        >
+          {this._renderSpinner()}
+        </a-camera>
       );
     }
   }
