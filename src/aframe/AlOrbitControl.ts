@@ -36,7 +36,7 @@ export class AlOrbitControl implements AframeRegistry {
         screenSpacePanning: { default: false },
         target: { type: "vec3" },
         zoomSpeed: { type: "number", default: 0.5 },
-        targetRadius: { type: "number", default: 1 }
+        boundingRadius: { type: "number", default: 1 }
       },
       init() {
         this.onEnterVR = this.onEnterVR.bind(this);
@@ -66,6 +66,7 @@ export class AlOrbitControl implements AframeRegistry {
         //#region Mesh Creation
         let splashBackGeom = new THREE.PlaneGeometry(1, 1, 1, 1);
         let splashBackMaterial = new THREE.MeshBasicMaterial();
+        splashBackMaterial.side = THREE.DoubleSide;
         let splashBackMesh = new THREE.Mesh(splashBackGeom, splashBackMaterial);
         //#endregion
 
@@ -86,8 +87,8 @@ export class AlOrbitControl implements AframeRegistry {
           .clone()
           .sub(target.clone())
           .normalize();
-        const splashPos = direction.multiplyScalar(this.data.targetRadius);
-        const scaleN = this.data.targetRadius * Constants.splashBackSize;
+        const splashPos = direction.multiplyScalar(this.data.boundingRadius);
+        const scaleN = this.data.boundingRadius * Constants.splashBackSize;
         //#endregion
 
         splashBackMesh.scale.copy(new THREE.Vector3(scaleN, scaleN, scaleN));
@@ -104,7 +105,7 @@ export class AlOrbitControl implements AframeRegistry {
         };
 
         el.emit(
-          AlOrbitControlEvents.CONTROLS_INIT,
+          AlOrbitControlEvents.INIT,
           {
             controls: this.state.controls,
             splashBack: this.state.splashBackMesh
@@ -183,7 +184,6 @@ export class AlOrbitControl implements AframeRegistry {
             _oldData.startPosition.y !== data.startPosition.y ||
             _oldData.startPosition.z !== data.startPosition.z
           ) {
-            console.log("update:", data.startPosition);
             state.startPosition = data.startPosition;
             el.setAttribute("position", data.startPosition);
           }
@@ -215,8 +215,8 @@ export class AlOrbitControl implements AframeRegistry {
             .clone()
             .sub(target.clone())
             .normalize();
-          const splashPos = direction.multiplyScalar(-data.targetRadius);
-          const scaleN = data.targetRadius * Constants.splashBackSize;
+          const splashPos = direction.multiplyScalar(-data.boundingRadius);
+          const scaleN = data.boundingRadius * Constants.splashBackSize;
 
           state.splashBackMesh.scale.copy(
             new THREE.Vector3(scaleN, scaleN, scaleN)
@@ -252,5 +252,5 @@ export class AlOrbitControl implements AframeRegistry {
 }
 
 export class AlOrbitControlEvents {
-  static CONTROLS_INIT: string = "al-controls-init";
+  static INIT: string = "al-controls-init";
 }

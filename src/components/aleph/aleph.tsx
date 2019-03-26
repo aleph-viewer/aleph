@@ -411,7 +411,7 @@ export class Aleph {
       dampingFactor: ${Constants.cameraValues.dampingFactor};
       target: ${ThreeUtils.vector3ToString(camData.target)};
       startPosition: ${ThreeUtils.vector3ToString(camData.position)};
-      targetRadius: ${radius};
+      boundingRadius: ${radius};
     `}
       >
         {this._renderSpinner()}
@@ -546,7 +546,6 @@ export class Aleph {
 
   private _controlsInitEventHandler(event: CustomEvent): void {
     this._tcontrols = event.detail.controls;
-    this._tcontrols.enabled = true;
     this._splashBack = event.detail.splashBack;
     this._scene.sceneEl.object3D.add(this._splashBack);
   }
@@ -611,7 +610,7 @@ export class Aleph {
   private _addEventListeners(): void {
     if (this._scene) {
       this._scene.addEventListener(
-        AlOrbitControlEvents.CONTROLS_INIT,
+        AlOrbitControlEvents.INIT,
         this._controlsInitEventHandler,
         false
       );
