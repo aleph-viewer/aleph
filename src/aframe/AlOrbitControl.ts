@@ -185,7 +185,7 @@ export class AlOrbitControl implements AframeRegistry {
           .clone()
           .sub(target.clone())
           .normalize();
-        const splashPos = direction.multiplyScalar(data.targetRadius);
+        const splashPos = direction.multiplyScalar(-data.targetRadius);
         const scaleN = data.targetRadius * Constants.splashBackSize;
 
         state.splashBackMesh.scale.copy(
