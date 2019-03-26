@@ -162,11 +162,6 @@ export class AlOrbitControl implements AframeRegistry {
         dataStartPosition.x = data.startPosition.x;
         dataStartPosition.y = data.startPosition.y;
         dataStartPosition.z = data.startPosition.z;
-
-        let target = new THREE.Vector3();
-        target.x = state.target.x;
-        target.y = state.target.y;
-        target.z = state.target.z;
         //#endregion
 
         const lengthComparison = (dataStartPosition
@@ -178,20 +173,6 @@ export class AlOrbitControl implements AframeRegistry {
           state.startPosition = data.startPosition;
           el.setAttribute("position", dataStartPosition);
         }
-
-        const lookPos = el.getAttribute("position");
-
-        const direction: THREE.Vector3 = lookPos
-          .clone()
-          .sub(target.clone())
-          .normalize();
-        const splashPos = direction.multiplyScalar(-data.targetRadius);
-        const scaleN = data.targetRadius * Constants.splashBackSize;
-
-        state.splashBackMesh.scale.copy(
-          new THREE.Vector3(scaleN, scaleN, scaleN)
-        );
-        state.splashBackMesh.position.copy(splashPos);
 
         controls.target = state.target.copy(data.target);
         controls.autoRotate = data.autoRotate;
@@ -230,7 +211,7 @@ export class AlOrbitControl implements AframeRegistry {
         ) {
           controls.update();
 
-          const lookPos = el.getAttribute("position");
+          const lookPos = controls.object.position;
           let target = new THREE.Vector3();
           target.x = state.target.x;
           target.y = state.target.y;
