@@ -83,7 +83,7 @@ export class GetUtils {
     return geom.boundingSphere.center;
   }
 
-  static getCameraState(entity: Entity): AlCameraState {
+  static getCameraStateFromEntity(entity: Entity): AlCameraState {
     const entityMap = entity.object3DMap;
     let entityMesh: THREE.Mesh = entityMap.mesh as THREE.Mesh;
 
@@ -91,7 +91,6 @@ export class GetUtils {
     let initialPosition: THREE.Vector3;
     let sceneDistance: number;
 
-    //TODO geometry as constant
     if (entityMesh) {
       const geom = entityMesh.geometry;
       if (!geom.boundingSphere) {

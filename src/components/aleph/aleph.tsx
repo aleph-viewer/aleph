@@ -381,7 +381,7 @@ export class Aleph {
     let radius: number = 1;
 
     if (this._targetEntity) {
-      let result = GetUtils.getCameraState(this._targetEntity);
+      let result = GetUtils.getCameraStateFromEntity(this._targetEntity);
       if (result) {
         camData = result;
         mesh = this._targetEntity.object3DMap.mesh as THREE.Mesh;
