@@ -1,10 +1,10 @@
-import { Tool } from "./Tool";
+import { AlToolSerial } from "./index";
 import { DisplayMode, Orientation } from "../enums";
 
 export interface AlAppState {
   src: string | null;
   srcLoaded: boolean;
-  tools: Tool[];
+  tools: AlToolSerial[];
   selectedTool: string | null;
   displayMode: DisplayMode;
   orientation: Orientation;

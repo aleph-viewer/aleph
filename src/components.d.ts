@@ -15,7 +15,7 @@ import {
   Orientation,
 } from './enums/Orientation';
 import {
-  Tool,
+  AlToolSerial,
 } from './interfaces';
 import {
   DisplayMode as DisplayMode2,
@@ -25,7 +25,7 @@ import {
 export namespace Components {
 
   interface AlControlPanel {
-    'addTool': (tool: Tool) => void;
+    'addTool': (tool: AlToolSerial) => void;
     'angleToolEnabled': boolean;
     'annotationToolEnabled': boolean;
     'boundingBoxVisible': boolean;
@@ -54,7 +54,7 @@ export namespace Components {
     'slicesWindowWidth': number;
     'stack': any;
     'stackHelper': AMI.StackHelper;
-    'tools': Tool[];
+    'tools': AlToolSerial[];
     'toolsEnabled': boolean;
     'toolsVisible': boolean;
     'volumeSteps': number;
@@ -62,7 +62,7 @@ export namespace Components {
     'volumeWindowWidth': number;
   }
   interface AlControlPanelAttributes extends StencilHTMLAttributes {
-    'addTool'?: (tool: Tool) => void;
+    'addTool'?: (tool: AlToolSerial) => void;
     'angleToolEnabled'?: boolean;
     'annotationToolEnabled'?: boolean;
     'boundingBoxVisible'?: boolean;
@@ -91,7 +91,7 @@ export namespace Components {
     'slicesWindowWidth'?: number;
     'stack'?: any;
     'stackHelper'?: AMI.StackHelper;
-    'tools'?: Tool[];
+    'tools'?: AlToolSerial[];
     'toolsEnabled'?: boolean;
     'toolsVisible'?: boolean;
     'volumeSteps'?: number;

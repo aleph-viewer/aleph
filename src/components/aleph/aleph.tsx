@@ -34,7 +34,7 @@ import {
   AppSetAngleToolEnabledAction
 } from "../../redux/actions";
 import { configureStore } from "../../redux/store";
-import { Tool, AlCameraState, AppState } from "../../interfaces";
+import { AlToolSerial, AlCameraSerial, AlAppState } from "../../interfaces";
 import { GetUtils, ThreeUtils, CreateUtils } from "../../utils";
 import { Constants } from "../../Constants";
 import { MeshFileType, Orientation, DisplayMode } from "../../enums";
@@ -103,7 +103,7 @@ export class Aleph {
   @State() src: string | null;
   @State() srcLoaded: boolean;
   @State() selectedTool: string;
-  @State() tools: Tool[];
+  @State() tools: AlToolSerial[];
   @State() displayMode: DisplayMode;
   @State() orientation: Orientation;
   @State() toolsVisible: boolean;
@@ -335,11 +335,11 @@ export class Aleph {
 
   private _renderTools(): JSX.Element {
     const outTools: JSX.Element[] = [];
-    const dataTools: Tool[] = this.tools;
+    const dataTools: AlToolSerial[] = this.tools;
 
     for (var i = 0; i < dataTools.length; i++) {
       if (i < dataTools.length) {
-        const tool: Tool = dataTools[i];
+        const tool: AlToolSerial = dataTools[i];
         outTools.push(
           <a-entity
             class="collidable"
@@ -376,7 +376,7 @@ export class Aleph {
     let camData = {
       position: new THREE.Vector3(0, 0, -1),
       target: new THREE.Vector3(0, 0, 0)
-    } as AlCameraState;
+    } as AlCameraSerial;
     let mesh: THREE.Mesh;
     let radius: number = 1;
 
@@ -493,7 +493,7 @@ export class Aleph {
 
   //#region Private methods
 
-  private _loadTools(tools: Tool[]): void {
+  private _loadTools(tools: AlToolSerial[]): void {
     // remove all existing tools
     while (this.tools.length) {
       this.appRemoveTool(this.tools[this.tools.length - 1].id);
@@ -507,7 +507,7 @@ export class Aleph {
     this.onSave.emit(this.tools);
   }
 
-  private _addTool(tool: Tool): void {
+  private _addTool(tool: AlToolSerial): void {
     this.appAddTool(tool);
     this.onToolsChanged.emit(this.tools);
     this._selectTool(tool.id);
@@ -531,7 +531,7 @@ export class Aleph {
     this.onLoad.emit({
       selectedTool: this.selectedTool,
       tools: this.tools
-    } as AppState);
+    } as AlAppState);
   }
   //#endregion
 
@@ -562,7 +562,7 @@ export class Aleph {
     if (this.toolsEnabled && this._validTarget && !this._intersectingTool) {
       let intersection: THREE.Intersection = event.detail.detail.intersection;
 
-      const newTool: Tool = CreateUtils.createTool(
+      const newTool: AlToolSerial = CreateUtils.createTool(
         this.tools,
         "#" + this._targetEntity.id,
         intersection.point,

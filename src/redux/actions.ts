@@ -1,4 +1,4 @@
-import { Tool } from "../interfaces/Tool";
+import { AlToolSerial } from "../interfaces/AlToolSerial";
 import { DisplayMode } from "../enums/DisplayMode";
 import { Orientation } from "../enums/Orientation";
 
@@ -90,10 +90,13 @@ export const appSetSrcLoaded = (payload: boolean) => async (
 
 export interface AppAddToolAction {
   type: TypeKeys.APP_ADD_TOOL;
-  payload: Tool;
+  payload: AlToolSerial;
 }
 
-export const appAddTool = (payload: Tool) => async (dispatch, _getState) => {
+export const appAddTool = (payload: AlToolSerial) => async (
+  dispatch,
+  _getState
+) => {
   return dispatch({
     type: TypeKeys.APP_ADD_TOOL,
     payload: payload
@@ -132,10 +135,13 @@ export const appSelectTool = (payload: number) => async (
 
 export interface AppUpdateToolAction {
   type: TypeKeys.APP_UPDATE_TOOL;
-  payload: Tool;
+  payload: AlToolSerial;
 }
 
-export const appUpdateTool = (payload: Tool) => async (dispatch, _getState) => {
+export const appUpdateTool = (payload: AlToolSerial) => async (
+  dispatch,
+  _getState
+) => {
   return dispatch({
     type: TypeKeys.APP_UPDATE_TOOL,
     payload: payload
