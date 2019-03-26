@@ -33,28 +33,19 @@ export class AlTool implements AframeRegistry {
         //#region Event Listeners
         this.el.addEventListener("mousedown", _evt => {
           if (this.data.toolsEnabled) {
-            // todo: shouldn't be setting this here, emit an event and handle it in the main scene
-            this.el.sceneEl.camera.el.setAttribute(
-              AlOrbitControl.getName(),
-              "enabled: false"
-            );
+            let state = this.state as AlToolState;
+            state.mouseDown = true;
+            this.el.emit(AlToolEvents.CONTROLS_DISABLED, {}, true);
+            this.el.emit(AlToolEvents.SELECTED, { id: this.el.id }, true);
           }
-
-          this.state.mouseDown = true;
-          this.el.emit(AlToolEvents.SELECTED, { id: this.el.id }, true);
         });
 
         this.el.addEventListener("mouseup", _evt => {
           if (this.data.toolsEnabled) {
-            // todo: shouldn't be setting this here, emit an event and handle it in the main scene
-            this.el.sceneEl.camera.el.setAttribute(
-              AlOrbitControl.getName(),
-              "enabled: true"
-            );
-
-            this.state.mouseDown = false;
             let state = this.state as AlToolState;
             state.dragging = false;
+            state.mouseDown = false;
+            this.el.emit(AlToolEvents.CONTROLS_ENABLED), {}, true;
           }
         });
 
@@ -139,4 +130,6 @@ export class AlToolEvents {
   static INTERSECTION: string = "al-tool-intersection";
   static INTERSECTION_CLEARED: string = "al-tool-intersection-cleared";
   static DRAGGING: string = "al-tool-dragging";
+  static CONTROLS_ENABLED: string = "al-control-enable";
+  static CONTROLS_DISABLED: string = "al-control-disabled";
 }

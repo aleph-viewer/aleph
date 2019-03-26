@@ -17,6 +17,9 @@ import {
 import {
   Tool,
 } from './interfaces/interfaces';
+import {
+  DisplayMode as DisplayMode2,
+} from './enums/enums';
 
 
 export namespace Components {

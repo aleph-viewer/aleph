@@ -34,14 +34,15 @@ import {
 } from "../../redux/actions";
 import { configureStore } from "../../redux/store";
 import { Tool, AlCameraState } from "../../interfaces/interfaces";
-import { Orientation } from "../../enums/Orientation";
-import { DisplayMode } from "../../enums/DisplayMode";
 import { GetUtils, ThreeUtils, CreateUtils } from "../../utils/utils";
 import { Constants } from "../../Constants";
-import { MeshFileType } from "../../enums/MeshFileType";
-import { AlToolEvents } from "../../aframe/AlTool";
-import { AlToolSpawnerEvents } from "../../aframe/AlToolSpawner";
-import { AlGltfModelEvents } from "../../aframe/AlGltfModel";
+import { MeshFileType, Orientation, DisplayMode } from "../../enums/enums";
+import {
+  AlToolEvents,
+  AlToolSpawnerEvents,
+  AlGltfModelEvents,
+  AlOrbitControlEvents
+} from "../../aframe/aframe";
 type Entity = import("aframe").Entity;
 type Scene = import("aframe").Scene;
 
@@ -52,7 +53,6 @@ type Scene = import("aframe").Scene;
 })
 export class Aleph {
   //#region Private variables
-  private _srcLoadedEventHandler: any;
   private _stack: any;
   private _stackHelper: AMI.StackHelper;
 
@@ -65,7 +65,6 @@ export class Aleph {
   private _tcontrols: THREE.OrbitControls;
 
   private _intersectingTool: boolean;
-  private _spinner: Entity;
   //#endregion
 
   //#region Redux states, props & methods
@@ -255,7 +254,7 @@ export class Aleph {
     });
 
     // set up event handlers
-    this._srcLoadedEventHandler = this._srcLoaded.bind(this);
+    this._srcLoaded = this._srcLoaded.bind(this);
     this._addToolEventHandler = this._addToolEventHandler.bind(this);
     this._validTargetEventHandler = this._validTargetEventHandler.bind(this);
     this._toolSelectedEventHandler = this._toolSelectedEventHandler.bind(this);
@@ -267,18 +266,26 @@ export class Aleph {
     );
     this._toolMovedEventHandler = this._toolMovedEventHandler.bind(this);
     this._controlsInitEventHandler = this._controlsInitEventHandler.bind(this);
+    this._controlsEnabledHandler = this._controlsEnabledHandler.bind(this);
+    this._controlsDisabedHandler = this._controlsDisabedHandler.bind(this);
   }
 
   //#region Rendering Methods
   private _renderSpinner(): JSX.Element {
     if (!this.srcLoaded) {
+      // IF controls are loaded but source is not, look at the spinner
+      if (this._tcontrols) {
+        this._tcontrols.object.lookAt(new THREE.Vector3(0, 0, 0));
+      }
+
       return (
         <a-entity
+          position="0, 0, -4"
+          rotation="0 0 0"
           animation="property: rotation; to: 0 120 0; loop: true; dur: 1000; easing: easeInOutQuad"
           geometry="primitive: al-spinner;"
           scale="0.2 0.2 0.2"
           material={`color: ${this.spinnerColor};`}
-          ref={(el: Entity) => (this._spinner = el)}
         />
       );
     }
@@ -329,6 +336,7 @@ export class Aleph {
       }
     }
   }
+
   private _renderTools(): JSX.Element {
     const outTools: JSX.Element[] = [];
     const dataTools: Tool[] = this.tools;
@@ -369,52 +377,46 @@ export class Aleph {
   }
 
   private _renderCamera(): JSX.Element {
-    if (this.srcLoaded) {
-      let camData = {
-        position: new THREE.Vector3(0, 0, -2),
-        target: new THREE.Vector3(0, 0, 0)
-      } as AlCameraState;
+    let camData = {
+      position: new THREE.Vector3(0, 0, -1),
+      target: new THREE.Vector3(0, 0, 0)
+    } as AlCameraState;
+    let mesh: THREE.Mesh;
+    let radius: number = 1;
 
-      const mesh = this._targetEntity.object3DMap.mesh as THREE.Mesh;
-      const radius = mesh.geometry.boundingSphere.radius;
-
-      return (
-        <a-camera
-          fps-counter={`
-              enabled: ${this.debug}
-            `}
-          cursor="rayOrigin: mouse"
-          raycaster="objects: .collidable"
-          class="collidable"
-          fov={Constants.cameraValues.fov}
-          near={Constants.cameraValues.near}
-          far={Constants.cameraValues.far}
-          rotation="0 0 0"
-          al-orbit-control={`
-            maxPolarAngle: ${Constants.cameraValues.maxPolarAngle};
-            minDistance: ${Constants.cameraValues.minDistance};
-            screenSpacePanning: true;
-            rotateSpeed: ${Constants.cameraValues.rotateSpeed};
-            zoomSpeed: ${Constants.cameraValues.zoomSpeed};
-            enableDamping: true;
-            dampingFactor: ${Constants.cameraValues.dampingFactor};
-            target: ${ThreeUtils.vector3ToString(camData.target)};
-            startPosition: ${ThreeUtils.vector3ToString(camData.position)};
-            targetRadius: ${radius};
-          `}
-        />
-      );
-    } else {
-      return (
-        <a-camera
-          fov={Constants.cameraValues.fov}
-          near={Constants.cameraValues.near}
-          far={Constants.cameraValues.far}
-          look-controls="enabled: false"
-          ref={el => (this._camera = el)}
-        />
-      );
+    if (this._targetEntity) {
+      let result = GetUtils.getCameraState(this._targetEntity);
+      if (result) {
+        camData = result;
+        mesh = this._targetEntity.object3DMap.mesh as THREE.Mesh;
+        radius = mesh.geometry.boundingSphere.radius;
+      }
     }
+
+    return (
+      <a-camera
+        cursor="rayOrigin: mouse"
+        raycaster="objects: .collidable"
+        fov={Constants.cameraValues.fov}
+        near={Constants.cameraValues.near}
+        look-controls="enabled: false"
+        far={Constants.cameraValues.far}
+        al-orbit-control={`
+      maxPolarAngle: ${Constants.cameraValues.maxPolarAngle};
+      minDistance: ${Constants.cameraValues.minDistance};
+      screenSpacePanning: true;
+      rotateSpeed: ${Constants.cameraValues.rotateSpeed};
+      zoomSpeed: ${Constants.cameraValues.zoomSpeed};
+      enableDamping: true;
+      dampingFactor: ${Constants.cameraValues.dampingFactor};
+      target: ${ThreeUtils.vector3ToString(camData.target)};
+      startPosition: ${ThreeUtils.vector3ToString(camData.position)};
+      boundingRadius: ${radius};
+    `}
+      >
+        {this._renderSpinner()}
+      </a-camera>
+    );
   }
 
   private _renderScene(): JSX.Element {
@@ -425,7 +427,6 @@ export class Aleph {
         vr-mode-ui="enabled: false"
         ref={el => (this._scene = el)}
       >
-        {this._renderSpinner()}
         {this._renderSrc()}
         {this._renderTools()}
         {this._renderLights()}
@@ -535,6 +536,14 @@ export class Aleph {
   //#endregion
 
   //#region Event Handlers
+  private _controlsEnabledHandler(_event: CustomEvent): void {
+    this._tcontrols.enabled = true;
+  }
+
+  private _controlsDisabedHandler(_event: CustomEvent): void {
+    this._tcontrols.enabled = false;
+  }
+
   private _controlsInitEventHandler(event: CustomEvent): void {
     this._tcontrols = event.detail.controls;
     this._splashBack = event.detail.splashBack;
@@ -601,8 +610,18 @@ export class Aleph {
   private _addEventListeners(): void {
     if (this._scene) {
       this._scene.addEventListener(
-        "controls-init",
+        AlOrbitControlEvents.INIT,
         this._controlsInitEventHandler,
+        false
+      );
+      this._scene.addEventListener(
+        AlToolEvents.CONTROLS_ENABLED,
+        this._controlsEnabledHandler,
+        false
+      );
+      this._scene.addEventListener(
+        AlToolEvents.CONTROLS_DISABLED,
+        this._controlsDisabedHandler,
         false
       );
       this._scene.addEventListener(
@@ -629,7 +648,7 @@ export class Aleph {
       if (this._targetEntity) {
         this._targetEntity.addEventListener(
           AlGltfModelEvents.LOADED,
-          this._srcLoadedEventHandler,
+          this._srcLoaded,
           false
         );
       }
@@ -665,13 +684,6 @@ export class Aleph {
           mat.transparent = true;
         }
       } catch {}
-    }
-
-    if (!this.srcLoaded && this._camera) {
-      // reset the camera to look at the spinner
-      // doing this in the render method has no effect
-      this._camera.object3DMap.camera.position.set(0, 2.15, -4);
-      this._camera.object3DMap.camera.lookAt(this._spinner.object3D.position);
     }
   }
 }

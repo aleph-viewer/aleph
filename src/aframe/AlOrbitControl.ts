@@ -4,6 +4,8 @@ import {
   AlOrbitControlState
 } from "../interfaces/interfaces";
 import { Constants } from "../Constants";
+import { ThreeUtils } from "../utils/utils";
+import { start } from "repl";
 
 export class AlOrbitControl implements AframeRegistry {
   public static getObject(): AframeComponent {
@@ -34,7 +36,7 @@ export class AlOrbitControl implements AframeRegistry {
         screenSpacePanning: { default: false },
         target: { type: "vec3" },
         zoomSpeed: { type: "number", default: 0.5 },
-        targetRadius: { type: "number", default: 1 }
+        boundingRadius: { type: "number", default: 1 }
       },
       init() {
         this.onEnterVR = this.onEnterVR.bind(this);
@@ -46,8 +48,9 @@ export class AlOrbitControl implements AframeRegistry {
           el.getObject3D("camera"),
           el.sceneEl.renderer.domElement
         );
-        let target = new THREE.Vector3();
+        let data = this.data;
 
+        //#region Event Handlers
         el.sceneEl.addEventListener("enter-vr", this.onEnterVR);
         el.sceneEl.addEventListener("exit-vr", this.onExitVR);
 
@@ -58,37 +61,51 @@ export class AlOrbitControl implements AframeRegistry {
         document.addEventListener("mouseup", () => {
           document.body.style.cursor = "grab";
         });
+        //#endregion
 
+        //#region Mesh Creation
         let splashBackGeom = new THREE.PlaneGeometry(1, 1, 1, 1);
         let splashBackMaterial = new THREE.MeshBasicMaterial();
+        splashBackMaterial.side = THREE.DoubleSide;
         let splashBackMesh = new THREE.Mesh(splashBackGeom, splashBackMaterial);
+        //#endregion
 
-        //this.el.setObject3D("mesh", splashBackMesh);
+        //#region Positioning
+        el.setAttribute("position", data.startPosition);
 
-        el.setAttribute("position", this.data.startPosition);
+        let startPosition = new THREE.Vector3();
+        startPosition.x = data.startPosition.x;
+        startPosition.y = data.startPosition.y;
+        startPosition.z = data.startPosition.z;
 
-        const lookPos = el.getAttribute("position");
-        const direction: THREE.Vector3 = lookPos
+        let target = new THREE.Vector3();
+        target.x = data.target.x;
+        target.y = data.target.y;
+        target.z = data.target.z;
+
+        const direction: THREE.Vector3 = startPosition
           .clone()
-          .sub(this.data.target)
+          .sub(target.clone())
           .normalize();
-        const splashPos = direction.multiplyScalar(-this.data.targetRadius);
-        const scaleN = this.data.targetRadius * Constants.splashBackSize;
+        const splashPos = direction.multiplyScalar(this.data.boundingRadius);
+        const scaleN = this.data.boundingRadius * Constants.splashBackSize;
+        //#endregion
 
         splashBackMesh.scale.copy(new THREE.Vector3(scaleN, scaleN, scaleN));
         splashBackMesh.position.copy(splashPos);
 
-        this.state = {
+        (this.state as AlOrbitControlState) = {
           controls,
           oldPosition,
           target,
           splashBackMesh,
           splashBackGeom,
-          splashBackMaterial
-        } as AlOrbitControlState;
+          splashBackMaterial,
+          startPosition
+        };
 
         el.emit(
-          "controls-init",
+          AlOrbitControlEvents.INIT,
           {
             controls: this.state.controls,
             splashBack: this.state.splashBackMesh
@@ -132,6 +149,7 @@ export class AlOrbitControl implements AframeRegistry {
 
       update(_oldData) {
         let state = this.state as AlOrbitControlState;
+        let el = this.el;
         let controls = state.controls;
         const data = this.data;
 
@@ -156,18 +174,20 @@ export class AlOrbitControl implements AframeRegistry {
         controls.screenSpacePanning = data.screenSpacePanning;
         controls.zoomSpeed = data.zoomSpeed;
 
-        const direction: THREE.Vector3 = this.el
-          .getAttribute("position")
-          .clone()
-          .sub(this.data.target)
-          .normalize();
-        const splashPos = direction.multiplyScalar(-this.data.targetRadius);
-        const scaleN = this.data.targetRadius * Constants.splashBackSize;
-
-        state.splashBackMesh.scale.copy(
-          new THREE.Vector3(scaleN, scaleN, scaleN)
-        );
-        state.splashBackMesh.position.copy(splashPos);
+        // If _oldData.startPosition exists, this is not the initialisation update
+        if (_oldData.startPosition) {
+          // Check the old start position against the value passed in by aleph._renderCamera()
+          // This is to check and see if the source has changed, as the startPosition for each
+          // source is determined by it's bounding sphere.
+          if (
+            _oldData.startPosition.x !== data.startPosition.x ||
+            _oldData.startPosition.y !== data.startPosition.y ||
+            _oldData.startPosition.z !== data.startPosition.z
+          ) {
+            state.startPosition = data.startPosition;
+            el.setAttribute("position", data.startPosition);
+          }
+        }
       },
 
       tick() {
@@ -186,22 +206,29 @@ export class AlOrbitControl implements AframeRegistry {
           controls.update();
 
           const lookPos = controls.object.position;
+          let target = new THREE.Vector3();
+          target.x = state.target.x;
+          target.y = state.target.y;
+          target.z = state.target.z;
+
           const direction: THREE.Vector3 = lookPos
             .clone()
-            .sub(state.target)
+            .sub(target.clone())
             .normalize();
-          const splashPos = direction.multiplyScalar(-data.targetRadius);
+          const splashPos = direction.multiplyScalar(-data.boundingRadius);
+          const scaleN = data.boundingRadius * Constants.splashBackSize;
 
-          el.setAttribute("position", lookPos);
-          (state.splashBackMesh as THREE.Mesh).lookAt(lookPos);
+          state.splashBackMesh.scale.copy(
+            new THREE.Vector3(scaleN, scaleN, scaleN)
+          );
           state.splashBackMesh.position.copy(splashPos);
+          el.setAttribute("position", lookPos);
         }
       },
 
       remove() {
         let state = this.state as AlOrbitControlState;
 
-        //this.el.removeObject3D("mesh");
         this.el.sceneEl.object3D.remove(state.splashBackMesh);
         state.controls.reset();
         state.controls.dispose();
@@ -222,4 +249,8 @@ export class AlOrbitControl implements AframeRegistry {
   public static getName(): string {
     return "al-orbit-control";
   }
+}
+
+export class AlOrbitControlEvents {
+  static INIT: string = "al-controls-init";
 }
