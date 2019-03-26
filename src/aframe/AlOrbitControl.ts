@@ -39,6 +39,7 @@ export class AlOrbitControl implements AframeRegistry {
         boundingRadius: { type: "number", default: 1 }
       },
       init() {
+        //#region Bindings & Initialisation
         this.onEnterVR = this.onEnterVR.bind(this);
         this.onExitVR = this.onExitVR.bind(this);
 
@@ -49,6 +50,15 @@ export class AlOrbitControl implements AframeRegistry {
           el.sceneEl.renderer.domElement
         );
         let data = this.data;
+
+        //#region Mesh Creation
+        let splashBackGeom = new THREE.PlaneGeometry(1, 1, 1, 1);
+        let splashBackMaterial = new THREE.MeshBasicMaterial();
+        splashBackMaterial.side = THREE.DoubleSide;
+        let splashBackMesh = new THREE.Mesh(splashBackGeom, splashBackMaterial);
+        //#endregion
+
+        //#endregion
 
         //#region Event Handlers
         el.sceneEl.addEventListener("enter-vr", this.onEnterVR);
@@ -63,16 +73,11 @@ export class AlOrbitControl implements AframeRegistry {
         });
         //#endregion
 
-        //#region Mesh Creation
-        let splashBackGeom = new THREE.PlaneGeometry(1, 1, 1, 1);
-        let splashBackMaterial = new THREE.MeshBasicMaterial();
-        splashBackMaterial.side = THREE.DoubleSide;
-        let splashBackMesh = new THREE.Mesh(splashBackGeom, splashBackMaterial);
-        //#endregion
-
         //#region Positioning
+        // Set Camera Element position to be at the start position
         el.setAttribute("position", data.startPosition);
 
+        // Convert the startPosition & target Objects into THREE.Vector3 s
         let startPosition = new THREE.Vector3();
         startPosition.x = data.startPosition.x;
         startPosition.y = data.startPosition.y;
@@ -83,6 +88,7 @@ export class AlOrbitControl implements AframeRegistry {
         target.y = data.target.y;
         target.z = data.target.z;
 
+        // Get the direction of the Camera from the target (Start -> Target)
         const direction: THREE.Vector3 = startPosition
           .clone()
           .sub(target.clone())
