@@ -37,6 +37,7 @@ export class AlOrbitControl implements AframeRegistry {
         targetRadius: { type: "number", default: 1 }
       },
       init() {
+        console.log("init camera");
         this.onEnterVR = this.onEnterVR.bind(this);
         this.onExitVR = this.onExitVR.bind(this);
 
