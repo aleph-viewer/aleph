@@ -1,7 +1,6 @@
-import { Tool } from "../interfaces/Tool";
+import { AlToolSerial, AlCameraSerial } from "../interfaces";
 import { Constants } from "../Constants";
 import { Entity } from "aframe";
-import { AlCameraState } from "../interfaces";
 
 export class GetUtils {
   static getFileExtension(file: string): string {
@@ -33,7 +32,7 @@ export class GetUtils {
     );
   }
 
-  static getToolWithHighestId(tools: Tool[]): number {
+  static getToolWithHighestId(tools: AlToolSerial[]): number {
     if (tools.length) {
       return Math.max.apply(
         Math,
@@ -50,20 +49,20 @@ export class GetUtils {
     return Number(toolId.split("-")[1]);
   }
 
-  static getNextToolId(tools: Tool[]): string {
+  static getNextToolId(tools: AlToolSerial[]): string {
     return "tool-" + Number(this.getToolWithHighestId(tools) + 1);
   }
 
-  static getToolIndex(id: string, tools: Tool[]): number {
-    return tools.findIndex((tool: Tool) => {
+  static getToolIndex(id: string, tools: AlToolSerial[]): number {
+    return tools.findIndex((tool: AlToolSerial) => {
       return this.getToolIdNumber(tool.id) === this.getToolIdNumber(id);
     });
   }
 
-  static getToolById(id: string, tools: Tool[]): Tool | null {
-    let tool: Tool | null = null;
+  static getToolById(id: string, tools: AlToolSerial[]): AlToolSerial | null {
+    let tool: AlToolSerial | null = null;
 
-    tool = tools.find((tool: Tool) => {
+    tool = tools.find((tool: AlToolSerial) => {
       return tool.id === id;
     });
 
@@ -83,7 +82,7 @@ export class GetUtils {
     return geom.boundingSphere.center;
   }
 
-  static getCameraStateFromEntity(entity: Entity): AlCameraState {
+  static getCameraStateFromEntity(entity: Entity): AlCameraSerial {
     const entityMap = entity.object3DMap;
     let entityMesh: THREE.Mesh = entityMap.mesh as THREE.Mesh;
 
@@ -108,7 +107,7 @@ export class GetUtils {
       return {
         target: sceneCenter,
         position: initialPosition
-      } as AlCameraState;
+      } as AlCameraSerial;
     }
 
     return null;

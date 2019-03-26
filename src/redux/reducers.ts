@@ -3,7 +3,7 @@ import { ActionTypes, TypeKeys } from "./actions";
 import { GetUtils } from "../utils";
 import { DisplayMode } from "../enums/DisplayMode";
 import { Orientation } from "../enums/Orientation";
-import { AppState } from "../interfaces";
+import { AlAppState } from "../interfaces";
 
 export const getInitialState = () => {
   return {
@@ -31,7 +31,7 @@ export const getInitialState = () => {
 };
 
 export const app = (
-  state: AppState = getInitialState(),
+  state: AlAppState = getInitialState(),
   action: ActionTypes
 ) => {
   switch (action.type) {

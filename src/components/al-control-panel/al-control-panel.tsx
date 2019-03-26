@@ -1,5 +1,5 @@
 import { Component, Prop } from "@stencil/core";
-import { Tool } from "../../interfaces";
+import { AlToolSerial } from "../../interfaces";
 import { DisplayMode } from "../../enums/DisplayMode";
 import { Orientation } from "../../enums/Orientation";
 
@@ -23,14 +23,14 @@ export class ControlPanel {
   @Prop() slicesWindowWidth: number;
   @Prop() stack: any;
   @Prop() stackHelper: AMI.StackHelper;
-  @Prop() tools: Tool[];
+  @Prop() tools: AlToolSerial[];
   @Prop() toolsEnabled: boolean;
   @Prop() toolsVisible: boolean;
   @Prop() volumeSteps: number;
   @Prop() volumeWindowCenter: number;
   @Prop() volumeWindowWidth: number;
 
-  @Prop() addTool: (tool: Tool) => void;
+  @Prop() addTool: (tool: AlToolSerial) => void;
   @Prop() removeTool: (id: string) => void;
   @Prop() saveTools: () => void;
   @Prop() selectTool: (id: string) => void;

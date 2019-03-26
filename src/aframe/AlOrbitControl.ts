@@ -4,8 +4,6 @@ import {
   AlOrbitControlState
 } from "../interfaces";
 import { Constants } from "../Constants";
-import { ThreeUtils } from "../utils";
-import { start } from "repl";
 
 export class AlOrbitControl implements AframeRegistry {
   public static getObject(): AframeComponent {

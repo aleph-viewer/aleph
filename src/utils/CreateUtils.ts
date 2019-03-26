@@ -1,4 +1,4 @@
-import { Tool } from "../interfaces";
+import { AlToolSerial } from "../interfaces";
 import {
   AlGltfModel,
   AlVolumetricModel,
@@ -13,11 +13,11 @@ import { Constants } from "../Constants";
 
 export class CreateUtils {
   static createTool(
-    tools: Tool[],
+    tools: AlToolSerial[],
     targetId: string,
     position: THREE.Vector3,
     scale: number
-  ): Tool {
+  ): AlToolSerial {
     return {
       id: GetUtils.getNextToolId(tools),
       targetId: targetId,
