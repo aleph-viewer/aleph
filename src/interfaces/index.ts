@@ -1,4 +1,4 @@
-import { AppState } from "./AppState";
+import { AlAppState } from "./AlAppState";
 import { Tool } from "./Tool";
 import { AframeComponent } from "./AframeComponent";
 import { AframeRegistry } from "./AframeRegistry";
@@ -8,7 +8,7 @@ import { AframeShader } from "./AframeShader";
 import { AlCameraState } from "./AlCameraState";
 
 export {
-  AppState,
+  AlAppState as AppState,
   Tool,
   AframeComponent,
   AframeRegistry,

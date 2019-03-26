@@ -1,7 +1,7 @@
 import { Tool } from "./Tool";
 import { DisplayMode, Orientation } from "../enums";
 
-export interface AppState {
+export interface AlAppState {
   src: string | null;
   srcLoaded: boolean;
   tools: Tool[];
