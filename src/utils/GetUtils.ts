@@ -1,6 +1,7 @@
 import { AlToolSerial, AlCameraSerial } from "../interfaces";
 import { Constants } from "../Constants";
 import { Entity } from "aframe";
+import { ThreeUtils } from ".";
 
 export class GetUtils {
   static getFileExtension(file: string): string {
@@ -111,5 +112,29 @@ export class GetUtils {
     }
 
     return null;
+  }
+
+  static getCameraStateFromTool(tool: AlToolSerial): AlCameraSerial {
+    let targ = new THREE.Vector3();
+    targ.copy(ThreeUtils.stringToVector3(tool.target));
+
+    let pos = new THREE.Vector3();
+    pos.copy(ThreeUtils.stringToVector3(tool.position));
+
+    // (Position -> Target)
+    let dir = pos
+      .clone()
+      .sub(targ.clone())
+      .normalize();
+    let camPos = new THREE.Vector3();
+    camPos.copy(pos);
+
+    // Add {defaultZoom} intervals of dir to camPos
+    camPos.add(dir.clone().multiplyScalar(Constants.initialZoom));
+
+    return {
+      target: targ,
+      position: camPos
+    } as AlCameraSerial;
   }
 }

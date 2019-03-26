@@ -5,6 +5,8 @@ export class Constants {
 
   static initialZoom = 4;
 
+  static dollySteps = 10;
+
   static toolColors = {
     selected: "#76ff03",
     hovered: "#f50057",

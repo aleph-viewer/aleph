@@ -14,15 +14,18 @@ import { Constants } from "../Constants";
 export class CreateUtils {
   static createTool(
     tools: AlToolSerial[],
-    targetId: string,
+    target: THREE.Vector3,
     position: THREE.Vector3,
     scale: number
   ): AlToolSerial {
+    const id = GetUtils.getNextToolId(tools);
     return {
-      id: GetUtils.getNextToolId(tools),
-      targetId: targetId,
+      id: id,
+      target: ThreeUtils.vector3ToString(target),
       position: ThreeUtils.vector3ToString(position),
-      scale: scale / Constants.toolSize
+      scale: scale / Constants.toolSize,
+      text: id,
+      textOffset: ThreeUtils.vector3ToString(position.clone().addScalar(scale))
     };
   }
 

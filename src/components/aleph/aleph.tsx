@@ -66,6 +66,7 @@ export class Aleph {
   private _tcontrols: THREE.OrbitControls;
 
   private _intersectingTool: boolean;
+  private _isToolAnimating: boolean;
   //#endregion
 
   //#region Redux states, props & methods
@@ -162,7 +163,7 @@ export class Aleph {
 
   @Method()
   async selectTool(toolId: string) {
-    this._selectTool(toolId);
+    this._selectTool(toolId, true);
   }
 
   @Event() onLoad: EventEmitter;
@@ -269,6 +270,8 @@ export class Aleph {
     this._controlsInitEventHandler = this._controlsInitEventHandler.bind(this);
     this._controlsEnabledHandler = this._controlsEnabledHandler.bind(this);
     this._controlsDisabledHandler = this._controlsDisabledHandler.bind(this);
+    this._animationFinished = this._animationFinished.bind(this);
+    this._isToolAnimating = false;
   }
 
   //#region Rendering Methods
@@ -344,12 +347,15 @@ export class Aleph {
           <a-entity
             class="collidable"
             id={tool.id}
+            rotation="0 0 0"
             position={tool.position}
             al-tool={`
-              targetId: ${tool.targetId};
+              target: ${tool.target};
               scale: ${tool.scale};
               selected: ${this.selectedTool === tool.id};
               toolsEnabled: ${this.toolsEnabled};
+              text: ${tool.text};
+              textOffset: ${tool.textOffset};
             `}
           />
         );
@@ -380,17 +386,34 @@ export class Aleph {
     let mesh: THREE.Mesh;
     let radius: number = 1;
 
+    // IF the target entity exsists
     if (this._targetEntity) {
-      let result = GetUtils.getCameraStateFromEntity(this._targetEntity);
-      if (result) {
-        camData = result;
-        mesh = this._targetEntity.object3DMap.mesh as THREE.Mesh;
-        radius = mesh.geometry.boundingSphere.radius;
+      // IF we're animating to a tool
+      // TODO: Differentiate between Tool -> Tool && Target -> Target animations
+      if (this._isToolAnimating) {
+        // Get camera state from tool and set as result
+        let result = GetUtils.getCameraStateFromTool(
+          GetUtils.getToolById(this.selectedTool, this.tools)
+        );
+        if (result) {
+          camData = result;
+          mesh = this._targetEntity.object3DMap.mesh as THREE.Mesh;
+          radius = mesh.geometry.boundingSphere.radius;
+        }
+      } else {
+        // Get camera state from entity and set as result
+        let result = GetUtils.getCameraStateFromEntity(this._targetEntity);
+        if (result) {
+          camData = result;
+          mesh = this._targetEntity.object3DMap.mesh as THREE.Mesh;
+          radius = mesh.geometry.boundingSphere.radius;
+        }
       }
     }
 
     return (
       <a-camera
+        id="mainCamera"
         cursor="rayOrigin: mouse"
         raycaster="objects: .collidable"
         fov={Constants.cameraValues.fov}
@@ -406,8 +429,9 @@ export class Aleph {
       enableDamping: true;
       dampingFactor: ${Constants.cameraValues.dampingFactor};
       target: ${ThreeUtils.vector3ToString(camData.target)};
-      startPosition: ${ThreeUtils.vector3ToString(camData.position)};
+      inPosition: ${ThreeUtils.vector3ToString(camData.position)};
       boundingRadius: ${radius};
+      animating: ${this._isToolAnimating}
     `}
         ref={el => (this._camera = el)}
       >
@@ -492,7 +516,6 @@ export class Aleph {
   //#endregion
 
   //#region Private methods
-
   private _loadTools(tools: AlToolSerial[]): void {
     // remove all existing tools
     while (this.tools.length) {
@@ -510,7 +533,7 @@ export class Aleph {
   private _addTool(tool: AlToolSerial): void {
     this.appAddTool(tool);
     this.onToolsChanged.emit(this.tools);
-    this._selectTool(tool.id);
+    this._selectTool(tool.id, false);
   }
 
   private _removeTool(toolId: string): void {
@@ -518,7 +541,8 @@ export class Aleph {
     this.onToolsChanged.emit(this.tools);
   }
 
-  private _selectTool(toolId: string): void {
+  private _selectTool(toolId: string, animate: boolean): void {
+    this._isToolAnimating = animate;
     this.appSelectTool(toolId);
     this.onSelectedToolChanged.emit(this.selectedTool);
   }
@@ -536,6 +560,10 @@ export class Aleph {
   //#endregion
 
   //#region Event Handlers
+  private _animationFinished(_event: CustomEvent): void {
+    this._isToolAnimating = false;
+  }
+
   private _controlsEnabledHandler(_event: CustomEvent): void {
     this._tcontrols.enabled = true;
   }
@@ -564,7 +592,7 @@ export class Aleph {
 
       const newTool: AlToolSerial = CreateUtils.createTool(
         this.tools,
-        "#" + this._targetEntity.id,
+        this._targetEntity.object3D.position,
         intersection.point,
         this._scale
       );
@@ -578,7 +606,7 @@ export class Aleph {
   }
 
   private _toolSelectedEventHandler(event: CustomEvent): void {
-    this._selectTool(event.detail.id);
+    this._selectTool(event.detail.id, false);
   }
 
   private _toolMovedEventHandler(event: CustomEvent): void {
@@ -609,6 +637,11 @@ export class Aleph {
 
   private _addEventListeners(): void {
     if (this._scene) {
+      this._scene.addEventListener(
+        AlOrbitControlEvents.ANIMATION_FINISHED,
+        this._animationFinished,
+        false
+      );
       this._scene.addEventListener(
         AlOrbitControlEvents.INIT,
         this._controlsInitEventHandler,

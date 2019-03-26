@@ -5,28 +5,35 @@ export class AlTool implements AframeRegistry {
   public static getObject(): AframeComponent {
     return {
       schema: {
-        targetId: { type: "string", default: "#target-entity" },
+        target: { type: "vec3" },
         scale: { type: "number", default: 1 },
         selected: { type: "boolean" },
-        toolsEnabled: { type: "boolean" }
+        toolsEnabled: { type: "boolean" },
+        text: { type: "string" },
+        textOffset: { type: "vec3" }
       },
 
       init(): void {
         this.onEnterVR = this.onEnterVR.bind(this);
         this.onExitVR = this.onExitVR.bind(this);
 
-        const camera = this.el.sceneEl.camera.el.object3DMap.camera;
-        const target = this.el.sceneEl.querySelector(this.data.targetId)
-          .object3DMap.mesh;
-        const geometry = new THREE.SphereGeometry(this.data.scale, 16, 16);
+        const data = this.data;
+        let el = this.el;
+
+        const camera = el.sceneEl.camera.el.object3DMap.camera;
+        const geometry = new THREE.SphereGeometry(data.scale, 16, 16);
         let material = new THREE.MeshBasicMaterial();
         material.color = new THREE.Color(Constants.toolColors.selected);
         const mesh = new THREE.Mesh(geometry, material);
+        let textOffset = new THREE.Vector3();
+        textOffset.x = data.textOffset.x;
+        textOffset.y = data.textOffset.y;
+        textOffset.z = data.textOffset.z;
 
-        this.el.setObject3D("mesh", mesh);
+        el.setObject3D("mesh", mesh);
 
         //#region Event Listeners
-        this.el.addEventListener("mousedown", _evt => {
+        el.addEventListener("mousedown", _evt => {
           if (this.data.toolsEnabled) {
             let state = this.state as AlToolState;
             state.mouseDown = true;
@@ -35,7 +42,7 @@ export class AlTool implements AframeRegistry {
           }
         });
 
-        this.el.addEventListener("mouseup", _evt => {
+        el.addEventListener("mouseup", _evt => {
           if (this.data.toolsEnabled) {
             let state = this.state as AlToolState;
             state.dragging = false;
@@ -44,13 +51,13 @@ export class AlTool implements AframeRegistry {
           }
         });
 
-        this.el.addEventListener("raycaster-intersected", _evt => {
+        el.addEventListener("raycaster-intersected", _evt => {
           let state = this.state as AlToolState;
           state.hovered = true;
           this.el.emit(AlToolEvents.INTERSECTION, {}, true);
         });
 
-        this.el.addEventListener("raycaster-intersected-cleared", _evt => {
+        el.addEventListener("raycaster-intersected-cleared", _evt => {
           let state = this.state as AlToolState;
           state.hovered = false;
           if (state.mouseDown && state.selected) {
@@ -59,8 +66,10 @@ export class AlTool implements AframeRegistry {
           this.el.emit(AlToolEvents.INTERSECTION_CLEARED, {}, true);
         });
 
-        let object3D = this.el.object3D as THREE.Object3D;
-        object3D.lookAt(target.position);
+        let targetPos = new THREE.Vector3();
+        targetPos.x = data.target.x;
+        targetPos.y = data.target.y;
+        targetPos.z = data.target.z;
 
         this.state = {
           selected: true,
@@ -69,20 +78,16 @@ export class AlTool implements AframeRegistry {
           material,
           mesh,
           camera,
-          target,
-          dragging: false
+          target: targetPos,
+          dragging: false,
+          text: data.text,
+          textOffset
         } as AlToolState;
       },
 
       update(): void {
         let state = this.state as AlToolState;
-        let object3D = this.el.object3D as THREE.Object3D;
-        object3D.lookAt(state.target.position);
-
-        state.target = this.el.sceneEl.querySelector(
-          this.data.targetId
-        ).object3DMap.mesh;
-
+        state.target = this.data.target;
         state.selected = this.data.selected;
       },
 
@@ -127,4 +132,5 @@ export class AlToolEvents {
   static DRAGGING: string = "al-tool-dragging";
   static CONTROLS_ENABLED: string = "al-control-enable";
   static CONTROLS_DISABLED: string = "al-control-disabled";
+  static ANIMATION_STARTED: string = "al-animation-started";
 }
