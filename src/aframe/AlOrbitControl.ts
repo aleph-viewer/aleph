@@ -39,7 +39,6 @@ export class AlOrbitControl implements AframeRegistry {
         boundingRadius: { type: "number", default: 1 }
       },
       init() {
-        console.log("init camera");
         this.onEnterVR = this.onEnterVR.bind(this);
         this.onExitVR = this.onExitVR.bind(this);
 
@@ -105,14 +104,17 @@ export class AlOrbitControl implements AframeRegistry {
           startPosition
         };
 
-        el.emit(
-          AlOrbitControlEvents.INIT,
-          {
-            controls: this.state.controls,
-            splashBack: this.state.splashBackMesh
-          },
-          true
-        );
+        // emit after 1 ms so that it happens after the scene's componentDidUpdate method has fired
+        setTimeout(() => {
+          el.emit(
+            AlOrbitControlEvents.INIT,
+            {
+              controls: this.state.controls,
+              splashBack: this.state.splashBackMesh
+            },
+            true
+          );
+        }, 1);
       },
       onEnterVR() {
         let state = this.state as AlOrbitControlState;

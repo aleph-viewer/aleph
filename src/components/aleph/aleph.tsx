@@ -267,7 +267,7 @@ export class Aleph {
     this._toolMovedEventHandler = this._toolMovedEventHandler.bind(this);
     this._controlsInitEventHandler = this._controlsInitEventHandler.bind(this);
     this._controlsEnabledHandler = this._controlsEnabledHandler.bind(this);
-    this._controlsDisabedHandler = this._controlsDisabedHandler.bind(this);
+    this._controlsDisabledHandler = this._controlsDisabledHandler.bind(this);
   }
 
   //#region Rendering Methods
@@ -413,6 +413,7 @@ export class Aleph {
       startPosition: ${ThreeUtils.vector3ToString(camData.position)};
       boundingRadius: ${radius};
     `}
+        ref={el => (this._camera = el)}
       >
         {this._renderSpinner()}
       </a-camera>
@@ -540,7 +541,7 @@ export class Aleph {
     this._tcontrols.enabled = true;
   }
 
-  private _controlsDisabedHandler(_event: CustomEvent): void {
+  private _controlsDisabledHandler(_event: CustomEvent): void {
     this._tcontrols.enabled = false;
   }
 
@@ -621,7 +622,7 @@ export class Aleph {
       );
       this._scene.addEventListener(
         AlToolEvents.CONTROLS_DISABLED,
-        this._controlsDisabedHandler,
+        this._controlsDisabledHandler,
         false
       );
       this._scene.addEventListener(
