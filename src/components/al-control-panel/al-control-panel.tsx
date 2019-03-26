@@ -1,5 +1,5 @@
 import { Component, Prop } from "@stencil/core";
-import { Tool } from "../../interfaces/interfaces";
+import { Tool } from "../../interfaces";
 import { DisplayMode } from "../../enums/DisplayMode";
 import { Orientation } from "../../enums/Orientation";
 

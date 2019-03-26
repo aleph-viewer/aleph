@@ -1,4 +1,4 @@
-import { AframeRegistry, AframeShader } from "../interfaces/interfaces";
+import { AframeRegistry, AframeShader } from "../interfaces";
 
 export class AlHalo implements AframeRegistry {
   public static getObject(): AframeShader {

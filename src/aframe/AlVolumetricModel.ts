@@ -1,4 +1,4 @@
-import { AframeRegistry, AframeComponent } from "../interfaces/interfaces";
+import { AframeRegistry, AframeComponent } from "../interfaces";
 import { VolumetricLoader } from "../utils/VolumetricLoader";
 
 export class AlVolumetricModel implements AframeRegistry {

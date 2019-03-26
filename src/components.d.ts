@@ -16,10 +16,10 @@ import {
 } from './enums/Orientation';
 import {
   Tool,
-} from './interfaces/interfaces';
+} from './interfaces';
 import {
   DisplayMode as DisplayMode2,
-} from './enums/enums';
+} from './enums';
 
 
 export namespace Components {

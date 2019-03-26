@@ -1,10 +1,6 @@
-import {
-  AframeRegistry,
-  AframeComponent,
-  AlToolState
-} from "../interfaces/interfaces";
+import { AframeRegistry, AframeComponent, AlToolState } from "../interfaces";
 import { Constants } from "../Constants";
-import { AlOrbitControl } from "./aframe";
+import { AlOrbitControl } from ".";
 
 export class AlTool implements AframeRegistry {
   public static getObject(): AframeComponent {

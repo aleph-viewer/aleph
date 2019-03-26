@@ -1,7 +1,7 @@
 import { Tool } from "../interfaces/Tool";
 import { Constants } from "../Constants";
 import { Entity } from "aframe";
-import { AlCameraState } from "../interfaces/interfaces";
+import { AlCameraState } from "../interfaces";
 
 export class GetUtils {
   static getFileExtension(file: string): string {

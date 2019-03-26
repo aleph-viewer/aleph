@@ -1,4 +1,4 @@
-import { AframeComponent, AframeShader } from "./interfaces";
+import { AframeComponent, AframeShader } from ".";
 
 /**
  * Component class definition.

@@ -189,7 +189,12 @@
 
         aleph.addEventListener(
           "onLoad",
-          function() {
+          function(e) {
+
+            const newState = e.detail;
+            state.selectedTool = newState.selectedTool;
+            state.tools = newState.tools;
+
             // move the auto-generated framerate counter to the debug col
             setTimeout(() => {
               const framerate = document.querySelector(".rs-base");

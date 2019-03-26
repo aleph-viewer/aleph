@@ -1,4 +1,4 @@
-import { Tool } from "../interfaces/interfaces";
+import { Tool } from "../interfaces";
 import {
   AlGltfModel,
   AlVolumetricModel,
@@ -7,8 +7,8 @@ import {
   AlOrbitControl,
   AlSpinner,
   AlHalo
-} from "../aframe/aframe";
-import { ThreeUtils, GetUtils } from "./utils";
+} from "../aframe";
+import { ThreeUtils, GetUtils } from ".";
 import { Constants } from "../Constants";
 
 export class CreateUtils {

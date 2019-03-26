@@ -1,5 +1,5 @@
-import { AframeRegistry, AframeComponent } from "../interfaces/interfaces";
-import { GLTFUtils } from "../utils/utils";
+import { AframeRegistry, AframeComponent } from "../interfaces";
+import { GLTFUtils } from "../utils";
 
 export class AlGltfModel implements AframeRegistry {
   public static getObject(): AframeComponent {

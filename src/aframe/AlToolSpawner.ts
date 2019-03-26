@@ -1,4 +1,4 @@
-import { AframeRegistry, AframeComponent } from "../interfaces/interfaces";
+import { AframeRegistry, AframeComponent } from "../interfaces";
 
 export class AlToolSpawner implements AframeRegistry {
   public static getObject(): AframeComponent {

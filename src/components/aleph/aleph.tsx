@@ -30,19 +30,20 @@ import {
   appSetVolumeWindowCenter,
   appSetAngleToolEnabled,
   appSetAnnotationToolEnabled,
-  appSetRulerToolEnabled
+  appSetRulerToolEnabled,
+  AppSetAngleToolEnabledAction
 } from "../../redux/actions";
 import { configureStore } from "../../redux/store";
-import { Tool, AlCameraState } from "../../interfaces/interfaces";
-import { GetUtils, ThreeUtils, CreateUtils } from "../../utils/utils";
+import { Tool, AlCameraState, AppState } from "../../interfaces";
+import { GetUtils, ThreeUtils, CreateUtils } from "../../utils";
 import { Constants } from "../../Constants";
-import { MeshFileType, Orientation, DisplayMode } from "../../enums/enums";
+import { MeshFileType, Orientation, DisplayMode } from "../../enums";
 import {
   AlToolEvents,
   AlToolSpawnerEvents,
   AlGltfModelEvents,
   AlOrbitControlEvents
-} from "../../aframe/aframe";
+} from "../../aframe";
 type Entity = import("aframe").Entity;
 type Scene = import("aframe").Scene;
 
@@ -527,7 +528,10 @@ export class Aleph {
     mesh.geometry.computeBoundingSphere();
     this._scale = mesh.geometry.boundingSphere.radius;
     this.appSetSrcLoaded(true);
-    this.onLoad.emit();
+    this.onLoad.emit({
+      selectedTool: this.selectedTool,
+      tools: this.tools
+    } as AppState);
   }
   //#endregion
 

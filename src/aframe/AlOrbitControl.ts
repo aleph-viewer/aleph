@@ -2,9 +2,9 @@ import {
   AframeRegistry,
   AframeComponent,
   AlOrbitControlState
-} from "../interfaces/interfaces";
+} from "../interfaces";
 import { Constants } from "../Constants";
-import { ThreeUtils } from "../utils/utils";
+import { ThreeUtils } from "../utils";
 import { start } from "repl";
 
 export class AlOrbitControl implements AframeRegistry {
