@@ -93,6 +93,7 @@ export class AlOrbitControl implements AframeRegistry {
 
         splashBackMesh.scale.copy(new THREE.Vector3(scaleN, scaleN, scaleN));
         splashBackMesh.position.copy(splashPos);
+        splashBackMesh.lookAt(startPosition);
 
         (this.state as AlOrbitControlState) = {
           controls,
@@ -225,6 +226,7 @@ export class AlOrbitControl implements AframeRegistry {
             new THREE.Vector3(scaleN, scaleN, scaleN)
           );
           state.splashBackMesh.position.copy(splashPos);
+          state.splashBackMesh.lookAt(lookPos);
           el.setAttribute("position", lookPos);
         }
       },
