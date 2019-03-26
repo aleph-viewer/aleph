@@ -70,6 +70,11 @@
         list-style-type: none;
       }
 
+      #debug.disabled {
+        pointer-events: none;
+        opacity: 0.4;
+      }
+
       .rs-base {
         margin-top: 20px;
         position: static;
@@ -78,7 +83,7 @@
     </style>
   </head>
   <body>
-    <div id="container">
+    <div id="container" class="disabled">
       <div id="scene">
         <uv-aleph
           draco-decoder-path="assets/"
@@ -195,6 +200,8 @@
             state.selectedTool = newState.selectedTool;
             state.tools = newState.tools;
 
+            debug.classList.remove("disabled");
+
             // move the auto-generated framerate counter to the debug col
             setTimeout(() => {
               const framerate = document.querySelector(".rs-base");
@@ -245,6 +252,7 @@
         if (changeSetIncludes(changeSet, "src")) {
           srcSelect.value = state.src;
           srcInput.value = state.src;
+          debug.classList.add("disabled");
           aleph.load(state.src);
         }
 
