@@ -5,4 +5,5 @@ export interface AlOrbitControlState {
   splashBackMesh: THREE.Mesh;
   splashBackGeom: THREE.PlaneGeometry;
   splashBackMaterial: THREE.MeshBasicMaterial;
+  startPosition: THREE.Vector3;
 }

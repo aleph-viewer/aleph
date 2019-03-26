@@ -3,6 +3,8 @@ export class Constants {
 
   static splashBackSize = 5;
 
+  static initialZoom = 4;
+
   static toolColors = {
     selected: "#76ff03",
     hovered: "#f50057",
