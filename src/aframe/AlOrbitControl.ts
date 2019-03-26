@@ -10,8 +10,6 @@ import { start } from "repl";
 export class AlOrbitControl implements AframeRegistry {
   public static getObject(): AframeComponent {
     return {
-      dependencies: ["camera"],
-
       schema: {
         startPosition: { type: "vec3" },
         autoRotate: { type: "boolean" },
@@ -107,7 +105,7 @@ export class AlOrbitControl implements AframeRegistry {
         } as AlOrbitControlState;
 
         el.emit(
-          "al-controls-init",
+          AlOrbitControlEvents.CONTROLS_INIT,
           {
             controls: this.state.controls,
             splashBack: this.state.splashBackMesh
@@ -251,7 +249,7 @@ export class AlOrbitControl implements AframeRegistry {
             .clone()
             .sub(target.clone())
             .normalize();
-          const splashPos = direction.multiplyScalar(data.targetRadius);
+          const splashPos = direction.multiplyScalar(-data.targetRadius);
           const scaleN = data.targetRadius * Constants.splashBackSize;
           state.splashBackMesh.scale.copy(
             new THREE.Vector3(scaleN, scaleN, scaleN)

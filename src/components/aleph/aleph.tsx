@@ -372,30 +372,32 @@ export class Aleph {
   }
 
   private _renderCamera(): JSX.Element {
-    let camData: AlCameraState;
+    let camData = {
+      position: new THREE.Vector3(0, 0, -1),
+      target: new THREE.Vector3(0, 0, 0)
+    } as AlCameraState;
     let mesh: THREE.Mesh;
-    let radius: number;
+    let radius: number = 1;
+    let element: JSX.Element;
 
     if (this._targetEntity) {
       camData = GetUtils.getOrbitData(this._targetEntity);
       mesh = this._targetEntity.object3DMap.mesh as THREE.Mesh;
-      radius = mesh.geometry.boundingSphere.radius;
-    } else {
-      camData = {
-        position: new THREE.Vector3(0, 0, -1),
-        target: new THREE.Vector3(0, 0, 0)
-      } as AlCameraState;
-      radius = 1;
+      if (mesh) {
+        radius = mesh.geometry.boundingSphere.radius;
+      }
     }
 
     if (this.srcLoaded) {
-      <a-camera
-        cursor="rayOrigin: mouse"
-        raycaster="objects: .collidable"
-        fov={Constants.cameraValues.fov}
-        near={Constants.cameraValues.near}
-        far={Constants.cameraValues.far}
-        al-orbit-control={`
+      element = (
+        <a-camera
+          cursor="rayOrigin: mouse"
+          raycaster="objects: .collidable"
+          fov={Constants.cameraValues.fov}
+          near={Constants.cameraValues.near}
+          far={Constants.cameraValues.far}
+          rotation="0 0 0"
+          al-orbit-control={`
           maxPolarAngle: ${Constants.cameraValues.maxPolarAngle};
           minDistance: ${Constants.cameraValues.minDistance};
           screenSpacePanning: true;
@@ -407,9 +409,10 @@ export class Aleph {
           startPosition: ${ThreeUtils.vector3ToString(camData.position)};
           targetRadius: ${radius};
         `}
-      />;
+        />
+      );
     } else {
-      return (
+      element = (
         <a-camera
           fov={Constants.cameraValues.fov}
           near={Constants.cameraValues.near}
@@ -420,6 +423,8 @@ export class Aleph {
         </a-camera>
       );
     }
+
+    return element;
   }
 
   private _renderScene(): JSX.Element {
@@ -549,6 +554,7 @@ export class Aleph {
 
   private _controlsInitEventHandler(event: CustomEvent): void {
     this._tcontrols = event.detail.controls;
+    this._tcontrols.enabled = true;
     this._splashBack = event.detail.splashBack;
     this._scene.sceneEl.object3D.add(this._splashBack);
   }
