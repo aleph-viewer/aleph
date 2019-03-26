@@ -273,11 +273,6 @@ export class Aleph {
   //#region Rendering Methods
   private _renderSpinner(): JSX.Element {
     if (!this.srcLoaded) {
-      // IF controls are loaded but source is not, look at the spinner
-      if (this._tcontrols) {
-        this._tcontrols.object.lookAt(new THREE.Vector3(0, 0, 0));
-      }
-
       return (
         <a-entity
           position="0, 0, -4"
