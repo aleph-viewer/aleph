@@ -171,24 +171,6 @@ export const app = (
         volumeWindowCenter: action.payload
       };
     }
-    case TypeKeys.APP_SET_ANGLE_TOOL_ENABLED: {
-      return {
-        ...state,
-        angleToolEnabled: action.payload
-      };
-    }
-    case TypeKeys.APP_SET_ANNOTATION_TOOL_ENABLED: {
-      return {
-        ...state,
-        annotationToolEnabled: action.payload
-      };
-    }
-    case TypeKeys.APP_SET_RULER_TOOL_ENABLED: {
-      return {
-        ...state,
-        rulerToolEnabled: action.payload
-      };
-    }
   }
 
   return state;

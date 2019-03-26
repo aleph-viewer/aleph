@@ -51,7 +51,9 @@ export class AlOrbitControl implements AframeRegistry {
 
         //#region Mesh Creation
         let splashBackGeom = new THREE.PlaneGeometry(1, 1, 1, 1);
-        let splashBackMaterial = new THREE.MeshBasicMaterial();
+        let splashBackMaterial = new THREE.MeshBasicMaterial({
+          wireframe: true
+        });
         splashBackMaterial.side = THREE.DoubleSide;
         let splashBackMesh = new THREE.Mesh(splashBackGeom, splashBackMaterial);
         //#endregion

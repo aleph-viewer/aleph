@@ -28,10 +28,7 @@ export type ActionTypes =
   | AppSetSlicesWindowCenterAction
   | AppSetVolumeStepsAction
   | AppSetVolumeWindowWidthAction
-  | AppSetVolumeWindowCenterAction
-  | AppSetAngleToolEnabledAction
-  | AppSetAnnotationToolEnabledAction
-  | AppSetRulerToolEnabledAction;
+  | AppSetVolumeWindowCenterAction;
 
 export enum TypeKeys {
   NULL = "NULL",
@@ -55,10 +52,7 @@ export enum TypeKeys {
   APP_SET_SLICES_WINDOW_CENTER = "APP_SET_SLICES_WINDOW_CENTER",
   APP_SET_VOLUME_STEPS = "APP_SET_VOLUME_STEPS",
   APP_SET_VOLUME_WINDOW_WIDTH = "APP_SET_VOLUME_WINDOW_WIDTH",
-  APP_SET_VOLUME_WINDOW_CENTER = "APP_SET_VOLUME_WINDOW_CENTER",
-  APP_SET_ANGLE_TOOL_ENABLED = "APP_SET_ANGLE_TOOL_ENABLED",
-  APP_SET_ANNOTATION_TOOL_ENABLED = "APP_SET_ANNOTATION_TOOL_ENABLED",
-  APP_SET_RULER_TOOL_ENABLED = "APP_SET_RULER_TOOL_ENABLED"
+  APP_SET_VOLUME_WINDOW_CENTER = "APP_SET_VOLUME_WINDOW_CENTER"
 }
 
 export interface AppSetSrcAction {
@@ -351,51 +345,6 @@ export const appSetVolumeWindowCenter = (payload: number) => async (
 ) => {
   return dispatch({
     type: TypeKeys.APP_SET_VOLUME_WINDOW_CENTER,
-    payload: payload
-  });
-};
-
-export interface AppSetAngleToolEnabledAction {
-  type: TypeKeys.APP_SET_ANGLE_TOOL_ENABLED;
-  payload: boolean;
-}
-
-export const appSetAngleToolEnabled = (payload: boolean) => async (
-  dispatch,
-  _getState
-) => {
-  return dispatch({
-    type: TypeKeys.APP_SET_ANGLE_TOOL_ENABLED,
-    payload: payload
-  });
-};
-
-export interface AppSetAnnotationToolEnabledAction {
-  type: TypeKeys.APP_SET_ANNOTATION_TOOL_ENABLED;
-  payload: boolean;
-}
-
-export const appSetAnnotationToolEnabled = (payload: boolean) => async (
-  dispatch,
-  _getState
-) => {
-  return dispatch({
-    type: TypeKeys.APP_SET_ANNOTATION_TOOL_ENABLED,
-    payload: payload
-  });
-};
-
-export interface AppSetRulerToolEnabledAction {
-  type: TypeKeys.APP_SET_RULER_TOOL_ENABLED;
-  payload: boolean;
-}
-
-export const appSetRulerToolEnabled = (payload: boolean) => async (
-  dispatch,
-  _getState
-) => {
-  return dispatch({
-    type: TypeKeys.APP_SET_RULER_TOOL_ENABLED,
     payload: payload
   });
 };

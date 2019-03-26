@@ -27,11 +27,7 @@ import {
   appSetSlicesWindowCenter,
   appSetVolumeSteps,
   appSetVolumeWindowWidth,
-  appSetVolumeWindowCenter,
-  appSetAngleToolEnabled,
-  appSetAnnotationToolEnabled,
-  appSetRulerToolEnabled,
-  AppSetAngleToolEnabledAction
+  appSetVolumeWindowCenter
 } from "../../redux/actions";
 import { configureStore } from "../../redux/store";
 import { AlToolSerial, AlCameraSerial, AlAppState } from "../../interfaces";
@@ -60,10 +56,11 @@ export class Aleph {
   private _targetEntity: Entity;
   private _splashBack: THREE.Mesh;
   private _scene: Scene;
-  private _scale: number;
+  private _boundingSphereRadius: number;
   private _validTarget: boolean;
   private _camera: Entity;
   private _tcontrols: THREE.OrbitControls;
+  private _spinner: Entity;
 
   private _intersectingTool: boolean;
   //#endregion
@@ -96,9 +93,6 @@ export class Aleph {
   appSetVolumeSteps: Action;
   appSetVolumeWindowWidth: Action;
   appSetVolumeWindowCenter: Action;
-  appSetAngleToolEnabled: Action;
-  appSetAnnotationToolEnabled: Action;
-  appSetRulerToolEnabled: Action;
 
   @State() src: string | null;
   @State() srcLoaded: boolean;
@@ -144,7 +138,7 @@ export class Aleph {
       this.appSetSrc(null); // shows loading spinner and resets gltf-model
       setTimeout(() => {
         this.appSetSrc(src);
-      }, 250);
+      }, 1000);
     } else {
       this.appSetSrc(src);
     }
@@ -196,10 +190,7 @@ export class Aleph {
           slicesWindowCenter,
           volumeSteps,
           volumeWindowWidth,
-          volumeWindowCenter,
-          angleToolEnabled,
-          annotationToolEnabled,
-          rulerToolEnabled
+          volumeWindowCenter
         }
       } = state;
 
@@ -221,10 +212,7 @@ export class Aleph {
         slicesWindowCenter,
         volumeSteps,
         volumeWindowWidth,
-        volumeWindowCenter,
-        angleToolEnabled,
-        annotationToolEnabled,
-        rulerToolEnabled
+        volumeWindowCenter
       };
     });
 
@@ -248,10 +236,7 @@ export class Aleph {
       appSetSlicesWindowCenter,
       appSetVolumeSteps,
       appSetVolumeWindowWidth,
-      appSetVolumeWindowCenter,
-      appSetAngleToolEnabled,
-      appSetAnnotationToolEnabled,
-      appSetRulerToolEnabled
+      appSetVolumeWindowCenter
     });
 
     // set up event handlers
@@ -276,12 +261,14 @@ export class Aleph {
     if (!this.srcLoaded) {
       return (
         <a-entity
-          position="0, 0, -4"
+          cursor
+          position="0 0 -2"
           rotation="0 0 0"
           animation="property: rotation; to: 0 120 0; loop: true; dur: 1000; easing: easeInOutQuad"
           geometry="primitive: al-spinner;"
-          scale="0.2 0.2 0.2"
+          scale="0.05 0.05 0.05"
           material={`color: ${this.spinnerColor};`}
+          ref={el => (this._spinner = el)}
         />
       );
     }
@@ -374,7 +361,7 @@ export class Aleph {
 
   private _renderCamera(): JSX.Element {
     let camData = {
-      position: new THREE.Vector3(0, 0, -1),
+      position: new THREE.Vector3(0, 0, 0),
       target: new THREE.Vector3(0, 0, 0)
     } as AlCameraSerial;
     let mesh: THREE.Mesh;
@@ -526,7 +513,7 @@ export class Aleph {
   private _srcLoaded(): void {
     const mesh: THREE.Mesh = this._targetEntity.object3DMap.mesh as THREE.Mesh;
     mesh.geometry.computeBoundingSphere();
-    this._scale = mesh.geometry.boundingSphere.radius;
+    this._boundingSphereRadius = mesh.geometry.boundingSphere.radius;
     this.appSetSrcLoaded(true);
     this.onLoad.emit({
       selectedTool: this.selectedTool,
@@ -566,7 +553,7 @@ export class Aleph {
         this.tools,
         "#" + this._targetEntity.id,
         intersection.point,
-        this._scale
+        this._boundingSphereRadius
       );
 
       this._addTool(newTool);
