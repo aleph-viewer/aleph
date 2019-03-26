@@ -83,7 +83,6 @@ export class AlOrbitControl implements AframeRegistry {
           .sub(target.clone())
           .normalize();
 
-        console.log("init:", startPosition);
         el.setAttribute("position", ThreeUtils.vector3ToString(startPosition));
 
         const splashPos = direction.multiplyScalar(this.data.targetRadius);
@@ -181,12 +180,8 @@ export class AlOrbitControl implements AframeRegistry {
         }
 
         const lookPos = el.getAttribute("position");
-        let look = new THREE.Vector3();
-        look.x = lookPos.x;
-        look.y = lookPos.y;
-        look.z = lookPos.z;
 
-        const direction: THREE.Vector3 = look
+        const direction: THREE.Vector3 = lookPos
           .clone()
           .sub(target.clone())
           .normalize();
@@ -236,16 +231,12 @@ export class AlOrbitControl implements AframeRegistry {
           controls.update();
 
           const lookPos = el.getAttribute("position");
-          let look = new THREE.Vector3();
-          look.x = lookPos.x;
-          look.y = lookPos.y;
-          look.z = lookPos.z;
           let target = new THREE.Vector3();
           target.x = state.target.x;
           target.y = state.target.y;
           target.z = state.target.z;
 
-          const direction: THREE.Vector3 = look
+          const direction: THREE.Vector3 = lookPos
             .clone()
             .sub(target.clone())
             .normalize();
