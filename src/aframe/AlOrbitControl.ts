@@ -10,6 +10,8 @@ import { start } from "repl";
 export class AlOrbitControl implements AframeRegistry {
   public static getObject(): AframeComponent {
     return {
+      dependencies: ["camera"],
+
       schema: {
         startPosition: { type: "vec3" },
         autoRotate: { type: "boolean" },
@@ -68,6 +70,8 @@ export class AlOrbitControl implements AframeRegistry {
         //#endregion
 
         //#region Positioning
+        el.setAttribute("position", data.startPosition);
+
         let startPosition = new THREE.Vector3();
         startPosition.x = data.startPosition.x;
         startPosition.y = data.startPosition.y;
@@ -82,18 +86,14 @@ export class AlOrbitControl implements AframeRegistry {
           .clone()
           .sub(target.clone())
           .normalize();
-
-        el.setAttribute("position", ThreeUtils.vector3ToString(startPosition));
-
         const splashPos = direction.multiplyScalar(this.data.targetRadius);
         const scaleN = this.data.targetRadius * Constants.splashBackSize;
-
         //#endregion
 
         splashBackMesh.scale.copy(new THREE.Vector3(scaleN, scaleN, scaleN));
         splashBackMesh.position.copy(splashPos);
 
-        this.state = {
+        (this.state as AlOrbitControlState) = {
           controls,
           oldPosition,
           target,
@@ -101,7 +101,7 @@ export class AlOrbitControl implements AframeRegistry {
           splashBackGeom,
           splashBackMaterial,
           startPosition
-        } as AlOrbitControlState;
+        };
 
         el.emit(
           AlOrbitControlEvents.CONTROLS_INIT,
@@ -152,28 +152,6 @@ export class AlOrbitControl implements AframeRegistry {
         let controls = state.controls;
         const data = this.data;
 
-        //#region Positioning
-        let stateStartPosition = new THREE.Vector3();
-        stateStartPosition.x = state.startPosition.x;
-        stateStartPosition.y = state.startPosition.y;
-        stateStartPosition.z = state.startPosition.z;
-
-        let dataStartPosition = new THREE.Vector3();
-        dataStartPosition.x = data.startPosition.x;
-        dataStartPosition.y = data.startPosition.y;
-        dataStartPosition.z = data.startPosition.z;
-        //#endregion
-
-        const lengthComparison = (dataStartPosition
-          .clone()
-          .sub(stateStartPosition.clone()) as THREE.Vector3).length();
-
-        if (lengthComparison) {
-          console.log("update:", dataStartPosition);
-          state.startPosition = data.startPosition;
-          el.setAttribute("position", dataStartPosition);
-        }
-
         controls.target = state.target.copy(data.target);
         controls.autoRotate = data.autoRotate;
         controls.autoRotateSpeed = data.autoRotateSpeed;
@@ -194,6 +172,22 @@ export class AlOrbitControl implements AframeRegistry {
         controls.rotateSpeed = data.rotateSpeed;
         controls.screenSpacePanning = data.screenSpacePanning;
         controls.zoomSpeed = data.zoomSpeed;
+
+        // If _oldData.startPosition exists, this is not the initialisation update
+        if (_oldData.startPosition) {
+          // Check the old start position against the value passed in by aleph._renderCamera()
+          // This is to check and see if the source has changed, as the startPosition for each
+          // source is determined by it's bounding sphere.
+          if (
+            _oldData.startPosition.x !== data.startPosition.x ||
+            _oldData.startPosition.y !== data.startPosition.y ||
+            _oldData.startPosition.z !== data.startPosition.z
+          ) {
+            console.log("update:", data.startPosition);
+            state.startPosition = data.startPosition;
+            el.setAttribute("position", data.startPosition);
+          }
+        }
       },
 
       tick() {
@@ -223,10 +217,12 @@ export class AlOrbitControl implements AframeRegistry {
             .normalize();
           const splashPos = direction.multiplyScalar(-data.targetRadius);
           const scaleN = data.targetRadius * Constants.splashBackSize;
+
           state.splashBackMesh.scale.copy(
             new THREE.Vector3(scaleN, scaleN, scaleN)
           );
           state.splashBackMesh.position.copy(splashPos);
+          el.setAttribute("position", lookPos);
         }
       },
 

@@ -35,7 +35,7 @@ export class AlTool implements AframeRegistry {
           if (this.data.toolsEnabled) {
             let state = this.state as AlToolState;
             state.mouseDown = true;
-            this.emit(AlToolEvents.CONTROLS_DISABLED, {}, true);
+            this.el.emit(AlToolEvents.CONTROLS_DISABLED, {}, true);
             this.el.emit(AlToolEvents.SELECTED, { id: this.el.id }, true);
           }
         });
@@ -45,7 +45,7 @@ export class AlTool implements AframeRegistry {
             let state = this.state as AlToolState;
             state.dragging = false;
             state.mouseDown = false;
-            this.emit(AlToolEvents.CONTROLS_ENABLED), {}, true;
+            this.el.emit(AlToolEvents.CONTROLS_ENABLED), {}, true;
           }
         });
 

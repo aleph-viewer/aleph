@@ -83,7 +83,7 @@ export class GetUtils {
     return geom.boundingSphere.center;
   }
 
-  static getOrbitData(entity: Entity): AlCameraState {
+  static getCameraState(entity: Entity): AlCameraState {
     const entityMap = entity.object3DMap;
     let entityMesh: THREE.Mesh = entityMap.mesh as THREE.Mesh;
 
@@ -93,12 +93,13 @@ export class GetUtils {
 
     //TODO geometry as constant
     if (entityMesh) {
-      if (!entityMesh.geometry.boundingSphere) {
-        entityMesh.geometry.computeBoundingSphere();
+      const geom = entityMesh.geometry;
+      if (!geom.boundingSphere) {
+        geom.computeBoundingSphere();
       }
       sceneCenter = entityMesh.position;
       sceneDistance =
-        (Constants.initialZoom * entityMesh.geometry.boundingSphere.radius) /
+        (Constants.initialZoom * geom.boundingSphere.radius) /
         Math.tan((Constants.cameraValues.fov * Math.PI) / 180);
 
       initialPosition = new THREE.Vector3();
@@ -109,10 +110,8 @@ export class GetUtils {
         target: sceneCenter,
         position: initialPosition
       } as AlCameraState;
-    } else {
-      console.warn(
-        "No mesh object found in object map!: " + entity.object3DMap
-      );
     }
+
+    return null;
   }
 }

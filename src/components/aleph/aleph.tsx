@@ -273,6 +273,11 @@ export class Aleph {
   //#region Rendering Methods
   private _renderSpinner(): JSX.Element {
     if (!this.srcLoaded) {
+      // IF controls are loaded but source is not, look at the spinner
+      if (this._tcontrols) {
+        this._tcontrols.object.lookAt(new THREE.Vector3(0, 0, 0));
+      }
+
       return (
         <a-entity
           position="0, 0, -4"
@@ -378,52 +383,40 @@ export class Aleph {
     } as AlCameraState;
     let mesh: THREE.Mesh;
     let radius: number = 1;
-    let element: JSX.Element;
 
     if (this._targetEntity) {
-      camData = GetUtils.getOrbitData(this._targetEntity);
-      mesh = this._targetEntity.object3DMap.mesh as THREE.Mesh;
-      if (mesh) {
+      let result = GetUtils.getCameraState(this._targetEntity);
+      if (result) {
+        camData = result;
+        mesh = this._targetEntity.object3DMap.mesh as THREE.Mesh;
         radius = mesh.geometry.boundingSphere.radius;
       }
     }
 
-    if (this.srcLoaded) {
-      element = (
-        <a-camera
-          cursor="rayOrigin: mouse"
-          raycaster="objects: .collidable"
-          fov={Constants.cameraValues.fov}
-          near={Constants.cameraValues.near}
-          far={Constants.cameraValues.far}
-          al-orbit-control={`
-          maxPolarAngle: ${Constants.cameraValues.maxPolarAngle};
-          minDistance: ${Constants.cameraValues.minDistance};
-          screenSpacePanning: true;
-          rotateSpeed: ${Constants.cameraValues.rotateSpeed};
-          zoomSpeed: ${Constants.cameraValues.zoomSpeed};
-          enableDamping: true;
-          dampingFactor: ${Constants.cameraValues.dampingFactor};
-          target: ${ThreeUtils.vector3ToString(camData.target)};
-          startPosition: ${ThreeUtils.vector3ToString(camData.position)};
-          targetRadius: ${radius};
-        `}
-        />
-      );
-    } else {
-      element = (
-        <a-camera
-          fov={Constants.cameraValues.fov}
-          near={Constants.cameraValues.near}
-          far={Constants.cameraValues.far}
-          ref={el => (this._camera = el)}
-        >
-          {this._renderSpinner()}
-        </a-camera>
-      );
-    }
-
-    return element;
+    return (
+      <a-camera
+        cursor="rayOrigin: mouse"
+        raycaster="objects: .collidable"
+        fov={Constants.cameraValues.fov}
+        near={Constants.cameraValues.near}
+        look-controls="enabled: false"
+        far={Constants.cameraValues.far}
+        al-orbit-control={`
+      maxPolarAngle: ${Constants.cameraValues.maxPolarAngle};
+      minDistance: ${Constants.cameraValues.minDistance};
+      screenSpacePanning: true;
+      rotateSpeed: ${Constants.cameraValues.rotateSpeed};
+      zoomSpeed: ${Constants.cameraValues.zoomSpeed};
+      enableDamping: true;
+      dampingFactor: ${Constants.cameraValues.dampingFactor};
+      target: ${ThreeUtils.vector3ToString(camData.target)};
+      startPosition: ${ThreeUtils.vector3ToString(camData.position)};
+      targetRadius: ${radius};
+    `}
+      >
+        {this._renderSpinner()}
+      </a-camera>
+    );
   }
 
   private _renderScene(): JSX.Element {
