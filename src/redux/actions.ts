@@ -28,7 +28,8 @@ export type ActionTypes =
   | AppSetSlicesWindowCenterAction
   | AppSetVolumeStepsAction
   | AppSetVolumeWindowWidthAction
-  | AppSetVolumeWindowCenterAction;
+  | AppSetVolumeWindowCenterAction
+  | AppSetCameraAnimatingAction;
 
 export enum TypeKeys {
   NULL = "NULL",
@@ -52,7 +53,8 @@ export enum TypeKeys {
   APP_SET_SLICES_WINDOW_CENTER = "APP_SET_SLICES_WINDOW_CENTER",
   APP_SET_VOLUME_STEPS = "APP_SET_VOLUME_STEPS",
   APP_SET_VOLUME_WINDOW_WIDTH = "APP_SET_VOLUME_WINDOW_WIDTH",
-  APP_SET_VOLUME_WINDOW_CENTER = "APP_SET_VOLUME_WINDOW_CENTER"
+  APP_SET_VOLUME_WINDOW_CENTER = "APP_SET_VOLUME_WINDOW_CENTER",
+  APP_SET_CAMERA_ANIMATING = "APP_SET_CAMERA_ANIMATING"
 }
 
 export interface AppSetSrcAction {
@@ -345,6 +347,21 @@ export const appSetVolumeWindowCenter = (payload: number) => async (
 ) => {
   return dispatch({
     type: TypeKeys.APP_SET_VOLUME_WINDOW_CENTER,
+    payload: payload
+  });
+};
+
+export interface AppSetCameraAnimatingAction {
+  type: TypeKeys.APP_SET_CAMERA_ANIMATING;
+  payload: boolean;
+}
+
+export const appSetCameraAnimating = (payload: boolean) => async (
+  dispatch,
+  _getState
+) => {
+  return dispatch({
+    type: TypeKeys.APP_SET_CAMERA_ANIMATING,
     payload: payload
   });
 };

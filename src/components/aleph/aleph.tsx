@@ -27,7 +27,8 @@ import {
   appSetSlicesWindowCenter,
   appSetVolumeSteps,
   appSetVolumeWindowWidth,
-  appSetVolumeWindowCenter
+  appSetVolumeWindowCenter,
+  appSetCameraAnimating
 } from "../../redux/actions";
 import { configureStore } from "../../redux/store";
 import { AlToolSerial, AlCameraSerial, AlAppState } from "../../interfaces";
@@ -60,10 +61,7 @@ export class Aleph {
   private _validTarget: boolean;
   private _camera: Entity;
   private _tcontrols: THREE.OrbitControls;
-  private _spinner: Entity;
-
   private _intersectingTool: boolean;
-  private _isToolAnimating: boolean;
   //#endregion
 
   //#region Redux states, props & methods
@@ -94,6 +92,7 @@ export class Aleph {
   appSetVolumeSteps: Action;
   appSetVolumeWindowWidth: Action;
   appSetVolumeWindowCenter: Action;
+  appSetCameraAnimating: Action;
 
   @State() src: string | null;
   @State() srcLoaded: boolean;
@@ -112,9 +111,7 @@ export class Aleph {
   @State() volumeSteps: number;
   @State() volumeWindowWidth: number;
   @State() volumeWindowCenter: number;
-  @State() angleToolEnabled: boolean;
-  @State() annotationToolEnabled: boolean;
-  @State() rulerToolEnabled: boolean;
+  @State() cameraAnimating: boolean;
 
   @Method()
   async load(src: string) {
@@ -190,13 +187,13 @@ export class Aleph {
           optionsVisible,
           optionsEnabled,
           boundingBoxVisible,
-          THREEJSSceneNeedsUpdate,
           slicesIndex,
           slicesWindowWidth,
           slicesWindowCenter,
           volumeSteps,
           volumeWindowWidth,
-          volumeWindowCenter
+          volumeWindowCenter,
+          cameraAnimating
         }
       } = state;
 
@@ -212,13 +209,13 @@ export class Aleph {
         optionsVisible,
         optionsEnabled,
         boundingBoxVisible,
-        THREEJSSceneNeedsUpdate,
         slicesIndex,
         slicesWindowWidth,
         slicesWindowCenter,
         volumeSteps,
         volumeWindowWidth,
-        volumeWindowCenter
+        volumeWindowCenter,
+        cameraAnimating
       };
     });
 
@@ -242,7 +239,8 @@ export class Aleph {
       appSetSlicesWindowCenter,
       appSetVolumeSteps,
       appSetVolumeWindowWidth,
-      appSetVolumeWindowCenter
+      appSetVolumeWindowCenter,
+      appSetCameraAnimating
     });
 
     // set up event handlers
@@ -261,7 +259,6 @@ export class Aleph {
     this._controlsEnabledHandler = this._controlsEnabledHandler.bind(this);
     this._controlsDisabledHandler = this._controlsDisabledHandler.bind(this);
     this._animationFinished = this._animationFinished.bind(this);
-    this._isToolAnimating = false;
   }
 
   //#region Rendering Methods
@@ -276,7 +273,6 @@ export class Aleph {
           geometry="primitive: al-spinner;"
           scale="0.05 0.05 0.05"
           material={`color: ${this.spinnerColor};`}
-          ref={el => (this._spinner = el)}
         />
       );
     }
@@ -382,7 +378,7 @@ export class Aleph {
     if (this._targetEntity) {
       // IF we're animating to a tool
       // TODO: Differentiate between Tool -> Tool && Target -> Target animations
-      if (this._isToolAnimating) {
+      if (this.cameraAnimating) {
         // Get camera state from tool and set as result
         let result = GetUtils.getCameraStateFromTool(
           GetUtils.getToolById(this.selectedTool, this.tools)
@@ -423,7 +419,7 @@ export class Aleph {
       targetPosition: ${ThreeUtils.vector3ToString(camData.target)};
       cameraPosition: ${ThreeUtils.vector3ToString(camData.position)};
       boundingRadius: ${radius};
-      animating: ${this._isToolAnimating}
+      animating: ${this.cameraAnimating}
     `}
         ref={el => (this._camera = el)}
       >
@@ -531,7 +527,9 @@ export class Aleph {
   }
 
   private _selectTool(toolId: string, animate: boolean): void {
-    this._isToolAnimating = animate;
+    if (animate) {
+      this.appSetCameraAnimating(true);
+    }
     this.appSelectTool(toolId);
     this.onSelectedToolChanged.emit(this.selectedTool);
   }
@@ -554,7 +552,7 @@ export class Aleph {
 
   //#region Event Handlers
   private _animationFinished(_event: CustomEvent): void {
-    this._isToolAnimating = false;
+    this.appSetCameraAnimating(false);
   }
 
   private _controlsEnabledHandler(_event: CustomEvent): void {

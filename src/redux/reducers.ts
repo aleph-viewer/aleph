@@ -23,7 +23,8 @@ export const getInitialState = () => {
     toolsVisible: true,
     volumeSteps: undefined,
     volumeWindowCenter: undefined,
-    volumeWindowWidth: undefined
+    volumeWindowWidth: undefined,
+    cameraAnimating: false
   };
 };
 
@@ -166,6 +167,12 @@ export const app = (
       return {
         ...state,
         volumeWindowCenter: action.payload
+      };
+    }
+    case TypeKeys.APP_SET_CAMERA_ANIMATING: {
+      return {
+        ...state,
+        cameraAnimating: action.payload
       };
     }
   }
