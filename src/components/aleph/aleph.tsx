@@ -285,6 +285,10 @@ export class Aleph {
           geometry="primitive: al-spinner;"
           scale="0.05 0.05 0.05"
           material={`color: ${this.spinnerColor};`}
+          al-fixed-to-orbit-camera={`
+            distanceFromTarget: 0.5
+            target: ${this._lastCameraTarget};
+          `}
         />
       );
     }
@@ -297,7 +301,7 @@ export class Aleph {
       return null;
     }
 
-    let backScale = 1;
+    let backScale = 0;
 
     if (this._boundingSphereRadius) {
       backScale = this._boundingSphereRadius * Constants.splashBackSize;
@@ -354,7 +358,24 @@ export class Aleph {
             `}
             position="0 0 0"
             scale="1 1 1"
-          />
+          >
+            <a-entity
+              ref={el => (this._backBoard = el)}
+              class="collidable"
+              id="back-board"
+              geometry={`primitive: plane; height: ${backScale}; width: ${backScale}`}
+              al-fixed-to-orbit-camera={`
+                distanceFromTarget: ${
+                  this._boundingSphereRadius ? this._boundingSphereRadius : 2
+                };
+                target: ${this._lastCameraTarget};
+              `}
+              material={`
+                wireframe: true;
+                side: double;
+              `}
+            />
+          </a-entity>
         );
       }
     }
