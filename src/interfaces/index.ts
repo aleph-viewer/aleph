@@ -6,6 +6,7 @@ import { AlNodeState } from "./AlNodeState";
 import { AlOrbitControlState } from "./AlOrbitControlState";
 import { AframeShader } from "./AframeShader";
 import { AlCameraSerial } from "./AlCameraSerial";
+import { AlNodeSpawnerState } from "./AlNodeSpawnerState";
 
 export {
   AlAppState,
@@ -15,5 +16,6 @@ export {
   AlNodeState,
   AlOrbitControlState,
   AframeShader,
-  AlCameraSerial
+  AlCameraSerial,
+  AlNodeSpawnerState
 };
