@@ -1,9 +1,12 @@
 export interface AlOrbitControlState {
   oldPosition: THREE.Vector3;
   controls: THREE.OrbitControls;
-  target: THREE.Vector3;
+  targetPosition: THREE.Vector3;
   splashBackMesh: THREE.Mesh;
   splashBackGeom: THREE.PlaneGeometry;
   splashBackMaterial: THREE.MeshBasicMaterial;
-  startPosition: THREE.Vector3;
+  cameraPosition: THREE.Vector3;
+  animating: boolean;
+  controlPosition: THREE.Vector3;
+  animationStep: number;
 }

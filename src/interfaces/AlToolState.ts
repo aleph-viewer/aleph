@@ -5,7 +5,9 @@ export interface AlToolState {
   material: THREE.MeshBasicMaterial;
   mesh: THREE.Mesh;
   camera: THREE.Camera;
-  target: THREE.Object3D;
+  target: THREE.Vector3;
   dragging: boolean;
   mouseDown: boolean;
+  text: string;
+  textOffset: THREE.Vector3;
 }

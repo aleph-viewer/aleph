@@ -1,6 +1,8 @@
 export interface AlToolSerial {
   id: string;
-  targetId: string;
+  target: string;
   position: string;
   scale: number;
+  text: string;
+  textOffset: string;
 }
