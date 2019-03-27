@@ -62,6 +62,8 @@ export class Aleph {
   private _camera: Entity;
   private _tcontrols: THREE.OrbitControls;
   private _intersectingTool: boolean;
+
+  private _lastCameraPosition: THREE.Vector3;
   //#endregion
 
   //#region Redux states, props & methods
@@ -259,6 +261,8 @@ export class Aleph {
     this._controlsEnabledHandler = this._controlsEnabledHandler.bind(this);
     this._controlsDisabledHandler = this._controlsDisabledHandler.bind(this);
     this._animationFinished = this._animationFinished.bind(this);
+
+    this._lastCameraPosition = new THREE.Vector3(0, 0, 0);
   }
 
   //#region Rendering Methods
@@ -368,34 +372,26 @@ export class Aleph {
 
   private _renderCamera(): JSX.Element {
     let camData = {
-      position: new THREE.Vector3(0, 0, 0),
+      position: this._lastCameraPosition,
       target: new THREE.Vector3(0, 0, 0)
     } as AlCameraSerial;
     let mesh: THREE.Mesh;
     let radius: number = 1;
 
-    // IF the target entity exsists
-    if (this._targetEntity) {
-      // IF we're animating to a tool
-      // TODO: Differentiate between Tool -> Tool && Target -> Target animations
-      if (this.cameraAnimating) {
-        // Get camera state from tool and set as result
-        let result = GetUtils.getCameraStateFromTool(
-          GetUtils.getToolById(this.selectedTool, this.tools)
-        );
-        if (result) {
-          camData = result;
-          mesh = this._targetEntity.object3DMap.mesh as THREE.Mesh;
-          radius = mesh.geometry.boundingSphere.radius;
-        }
-      } else {
-        // Get camera state from entity and set as result
-        let result = GetUtils.getCameraStateFromEntity(this._targetEntity);
-        if (result) {
-          camData = result;
-          mesh = this._targetEntity.object3DMap.mesh as THREE.Mesh;
-          radius = mesh.geometry.boundingSphere.radius;
-        }
+    // IF we're animating to a tool
+    // TODO: Differentiate between Tool -> Tool && Target -> Target animations
+    if (this.cameraAnimating) {
+      // Get camera state from tool and set as result
+      let result = GetUtils.getCameraStateFromTool(
+        GetUtils.getToolById(this.selectedTool, this.tools)
+      );
+      // If we returned a result AND the difference between the last position and the result position is not 0
+      const diff = result.position.distanceTo(this._lastCameraPosition);
+      if (result && diff !== 0) {
+        camData = result;
+        this._lastCameraPosition = camData.position;
+        mesh = this._targetEntity.object3DMap.mesh as THREE.Mesh;
+        radius = mesh.geometry.boundingSphere.radius;
       }
     }
 
@@ -419,7 +415,7 @@ export class Aleph {
       targetPosition: ${ThreeUtils.vector3ToString(camData.target)};
       cameraPosition: ${ThreeUtils.vector3ToString(camData.position)};
       boundingRadius: ${radius};
-      animating: ${this.cameraAnimating}
+      cameraAnimating: ${this.cameraAnimating}
     `}
         ref={el => (this._camera = el)}
       >
@@ -547,6 +543,10 @@ export class Aleph {
       selectedTool: this.selectedTool,
       tools: this.tools
     } as AlAppState);
+    let result = GetUtils.getCameraStateFromEntity(this._targetEntity);
+    if (result) {
+      this._lastCameraPosition = result.position;
+    }
   }
   //#endregion
 

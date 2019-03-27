@@ -3,11 +3,9 @@ export class Constants {
 
   static splashBackSize = 5;
 
-  static initialZoom = 4;
+  static initialZoom = 5;
 
-  static maxAnimationSteps = 20;
-
-  static animationZoom = Constants.initialZoom * 50;
+  static maxAnimationSteps = 100;
 
   static toolColors = {
     selected: "#76ff03",
