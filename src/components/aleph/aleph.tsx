@@ -150,7 +150,7 @@ export class Aleph {
   }
 
   @Method()
-  async loadTools(tools: any) {
+  async loadTools(tools: AlToolSerial[]) {
     this._loadTools(tools);
   }
 
@@ -162,6 +162,11 @@ export class Aleph {
   @Method()
   async setToolsEnabled(enabled: boolean) {
     this._setToolsEnabled(enabled);
+  }
+
+  @Method()
+  async setBoundingBoxVisible(visible: boolean) {
+    this._setBoundingBoxVisible(visible);
   }
 
   @Event() onLoad: EventEmitter;
@@ -455,47 +460,6 @@ export class Aleph {
     );
   }
 
-  private _renderControlPanel(): JSX.Element {
-    return null;
-    // todo: tunnel state
-    // return (
-    //   <al-control-panel
-    //     boundingBoxVisible={this.boundingBoxVisible}
-    //     displayMode={this.displayMode}
-    //     optionsEnabled={this.optionsEnabled}
-    //     optionsVisible={this.optionsVisible}
-    //     orientation={this.orientation}
-    //     selectedTool={this.selectedTool}
-    //     slicesIndex={this.slicesIndex}
-    //     slicesWindowCenter={this.slicesWindowCenter}
-    //     slicesWindowWidth={this.slicesWindowWidth}
-    //     stack={this._stack}
-    //     stackHelper={this._stackHelper}
-    //     tools={this.tools}
-    //     toolsEnabled={this.toolsEnabled}
-    //     toolsVisible={this.toolsVisible}
-    //     volumeSteps={this.volumeSteps}
-    //     volumeWindowCenter={this.volumeWindowCenter}
-    //     volumeWindowWidth={this.volumeWindowWidth}
-    //     addTool={this._addTool}
-    //     removeTool={this._removeTool}
-    //     saveTools={this._saveTools}
-    //     selectTool={this._selectTool}
-    //     setBoundingBoxVisible={this.appSetBoundingBoxVisible}
-    //     setDisplayMode={this.appSetDisplayMode}
-    //     setOptionsEnabled={this.appSetOptionsEnabled}
-    //     setOrientation={this.appSetOrientation}
-    //     setSlicesIndex={this.appSetSlicesIndex}
-    //     setSlicesWindowCenter={this.appSetSlicesWindowCenter}
-    //     setSlicesWindowWidth={this.appSetSlicesWindowWidth}
-    //     setToolsEnabled={this._setToolsEnabled}
-    //     setVolumeSteps={this.appSetVolumeSteps}
-    //     setVolumeWindowCenter={this.appSetVolumeWindowCenter}
-    //     setVolumeWindowWidth={this.appSetVolumeWindowWidth}
-    //   />
-    // );
-  }
-
   render(): JSX.Element {
     return (
       <div
@@ -522,24 +486,15 @@ export class Aleph {
     this.onToolsChanged.emit(this.tools);
   }
 
-  private _saveTools(): void {
-    this.onSave.emit(this.tools);
-  }
-
   private _addTool(tool: AlToolSerial): void {
     this.appAddTool(tool);
     this.onToolsChanged.emit(this.tools);
     this._selectTool(tool.id, false);
   }
 
-  private _removeTool(toolId: string): void {
-    this.appRemoveTool(toolId);
-    this.onToolsChanged.emit(this.tools);
-  }
-
   private _selectTool(toolId: string, animate: boolean): void {
-    if (animate) {
-      this.appSetCameraAnimating(true);
+    if (animate && toolId !== this.selectedTool) {
+      this.appSetCameraAnimating(true); // todo: can we pass boolean to appSelectTool to set cameraAnimating in the state?
     }
     this.appSelectTool(toolId);
     this.onSelectedToolChanged.emit(this.selectedTool);
@@ -547,6 +502,10 @@ export class Aleph {
 
   private _setToolsEnabled(enabled: boolean): void {
     this.appSetToolsEnabled(enabled);
+  }
+
+  private _setBoundingBoxVisible(visible: boolean): void {
+    this.appSetBoundingBoxVisible(visible);
   }
 
   private _srcLoaded(): void {

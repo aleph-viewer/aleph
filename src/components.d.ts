@@ -46,7 +46,6 @@ export namespace Components {
   interface AlControlPanelAttributes extends StencilHTMLAttributes {
     'boundingBoxVisible'?: boolean;
     'displayMode'?: DisplayMode;
-    'onOnRemoveTool'?: (event: CustomEvent) => void;
     'onOnSetBoundingBoxVisible'?: (event: CustomEvent) => void;
     'onOnSetDisplayMode'?: (event: CustomEvent) => void;
     'onOnSetOptionsEnabled'?: (event: CustomEvent) => void;
@@ -75,13 +74,24 @@ export namespace Components {
     'volumeWindowWidth'?: number;
   }
 
+  interface AlToolList {
+    'selectedTool': string | null;
+    'tools': AlToolSerial[];
+  }
+  interface AlToolListAttributes extends StencilHTMLAttributes {
+    'onOnSelectedToolChanged'?: (event: CustomEvent) => void;
+    'selectedTool'?: string | null;
+    'tools'?: AlToolSerial[];
+  }
+
   interface UvAleph {
     'debug': boolean;
     'dracoDecoderPath': string | null;
     'height': string;
     'load': (src: string) => Promise<void>;
-    'loadTools': (tools: any) => Promise<void>;
+    'loadTools': (tools: AlToolSerial[]) => Promise<void>;
     'selectTool': (toolId: string) => Promise<void>;
+    'setBoundingBoxVisible': (visible: boolean) => Promise<void>;
     'setDisplayMode': (displayMode: DisplayMode) => Promise<void>;
     'setToolsEnabled': (enabled: boolean) => Promise<void>;
     'spinnerColor': string;
@@ -103,11 +113,13 @@ export namespace Components {
 declare global {
   interface StencilElementInterfaces {
     'AlControlPanel': Components.AlControlPanel;
+    'AlToolList': Components.AlToolList;
     'UvAleph': Components.UvAleph;
   }
 
   interface StencilIntrinsicElements {
     'al-control-panel': Components.AlControlPanelAttributes;
+    'al-tool-list': Components.AlToolListAttributes;
     'uv-aleph': Components.UvAlephAttributes;
   }
 
@@ -118,6 +130,12 @@ declare global {
     new (): HTMLAlControlPanelElement;
   };
 
+  interface HTMLAlToolListElement extends Components.AlToolList, HTMLStencilElement {}
+  var HTMLAlToolListElement: {
+    prototype: HTMLAlToolListElement;
+    new (): HTMLAlToolListElement;
+  };
+
   interface HTMLUvAlephElement extends Components.UvAleph, HTMLStencilElement {}
   var HTMLUvAlephElement: {
     prototype: HTMLUvAlephElement;
@@ -126,11 +144,13 @@ declare global {
 
   interface HTMLElementTagNameMap {
     'al-control-panel': HTMLAlControlPanelElement
+    'al-tool-list': HTMLAlToolListElement
     'uv-aleph': HTMLUvAlephElement
   }
 
   interface ElementTagNameMap {
     'al-control-panel': HTMLAlControlPanelElement;
+    'al-tool-list': HTMLAlToolListElement;
     'uv-aleph': HTMLUvAlephElement;
   }
 

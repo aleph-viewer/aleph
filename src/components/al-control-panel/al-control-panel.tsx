@@ -15,9 +15,7 @@ import { Orientation } from "../../enums/Orientation";
   styleUrl: "al-control-panel.css",
   shadow: false
 })
-export class ControlPanel {
-  //@Event() onAddTool: EventEmitter;
-  @Event() onRemoveTool: EventEmitter;
+export class AlControlPanel {
   @Event() onSetBoundingBoxVisible: EventEmitter;
   @Event() onSetDisplayMode: EventEmitter;
   @Event() onSetOptionsEnabled: EventEmitter;
@@ -30,134 +28,101 @@ export class ControlPanel {
   @Event() onSetVolumeWindowCenter: EventEmitter;
   @Event() onSetVolumeWindowWidth: EventEmitter;
 
-  @State() _boundingBoxVisible: boolean;
   @Prop({ mutable: true }) boundingBoxVisible: boolean = false;
-  @Watch("boundingBoxVisible")
-  boundingBoxVisibleWatcher(newValue: boolean) {
-    this._boundingBoxVisible = newValue;
-    this.onSetBoundingBoxVisible.emit(newValue);
-  }
-
-  @State() _displayMode: DisplayMode;
   @Prop({ mutable: true }) displayMode: DisplayMode = DisplayMode.MESH;
-  @Watch("displayMode")
-  displayModeWatcher(newValue: DisplayMode) {
-    this._displayMode = newValue;
-    this.onSetDisplayMode.emit(newValue);
-  }
-
-  @State() _optionsEnabled: boolean;
   @Prop({ mutable: true }) optionsEnabled: boolean = false;
-  @Watch("displayMode")
-  optionsEnabledWatcher(newValue: boolean) {
-    this._optionsEnabled = newValue;
-    this.onSetOptionsEnabled.emit(newValue);
-  }
-
-  @State() _orientation: Orientation;
+  @Prop({ mutable: true }) optionsVisible: boolean = true;
   @Prop({ mutable: true }) orientation: Orientation = Orientation.CORONAL;
-  @Watch("orientation")
-  orientationWatcher(newValue: Orientation) {
-    this._orientation = newValue;
-    this.onSetOrientation.emit(newValue);
-  }
-
-  @State() _slicesIndex: number;
+  @Prop({ mutable: true }) selectedTool: string | null = null;
   @Prop({ mutable: true }) slicesIndex: number;
-  @Watch("slicesIndex")
-  slicesIndexWatcher(newValue: number) {
-    this._slicesIndex = newValue;
-    this.onSetSlicesIndex.emit(newValue);
-  }
-
-  @State() _slicesWindowCenter: number;
   @Prop({ mutable: true }) slicesWindowCenter: number;
-  @Watch("slicesWindowCenter")
-  slicesWindowCenterWatcher(newValue: number) {
-    this._slicesWindowCenter = newValue;
-    this.onSetSlicesWindowCenter.emit(newValue);
-  }
-
-  @State() _slicesWindowWidth: number;
   @Prop({ mutable: true }) slicesWindowWidth: number;
-  @Watch("slicesWindowWidth")
-  slicesWindowWidthWatcher(newValue: number) {
-    this._slicesWindowWidth = newValue;
-    this.onSetSlicesWindowWidth.emit(newValue);
-  }
-
-  @State() _toolsEnabled: boolean;
+  @Prop({ mutable: true }) stack: any;
+  @Prop({ mutable: true }) stackHelper: AMI.StackHelper;
+  @Prop({ mutable: true }) tools: AlToolSerial[] = [];
   @Prop({ mutable: true }) toolsEnabled: boolean = false;
-  @Watch("toolsEnabled")
-  toolsEnabledWatcher(newValue: boolean) {
-    this._toolsEnabled = newValue;
-    this.onSetToolsEnabled.emit(newValue);
+  @Prop({ mutable: true }) toolsVisible: boolean = true;
+  @Prop({ mutable: true }) volumeSteps: number;
+  @Prop({ mutable: true }) volumeWindowCenter: number;
+  @Prop({ mutable: true }) volumeWindowWidth: number;
+
+  private _boundingBoxVisible(visible: boolean) {
+    this.boundingBoxVisible = visible;
+    this.onSetBoundingBoxVisible.emit(visible);
   }
 
-  @State() _optionsVisible: boolean;
-  @Prop() optionsVisible: boolean = true;
-  @Watch("optionsVisible")
-  optionsVisibleWatcher(newValue: boolean) {
-    this._optionsVisible = newValue;
+  private _displayMode(displayMode: DisplayMode) {
+    this.displayMode = displayMode;
+    this.onSetDisplayMode.emit(displayMode);
   }
 
-  @State() _selectedTool: string | null;
-  @Prop() selectedTool: string | null = null;
-  @Watch("selectedTool")
-  selectedToolWatcher(newValue: string | null) {
-    this._selectedTool = newValue;
+  private _optionsEnabled(enabled: boolean) {
+    this.optionsEnabled = enabled;
+    this.onSetOptionsEnabled.emit(enabled);
   }
 
-  @State() _stack: any;
-  @Prop() stack: any;
-  @Watch("stack")
-  stackWatcher(newValue: any) {
-    this._stack = newValue;
+  private _optionsVisible(visible: boolean) {
+    this.optionsVisible = visible;
   }
 
-  @State() _stackHelper: AMI.StackHelper;
-  @Prop() stackHelper: AMI.StackHelper;
-  @Watch("stackHelper")
-  stackHelperWatcher(newValue: AMI.StackHelper) {
-    this._stackHelper = newValue;
+  private _orientation(orientation: Orientation) {
+    this.orientation = orientation;
+    this.onSetOrientation.emit(orientation);
   }
 
-  @State() _tools: AlToolSerial[];
-  @Prop() tools: AlToolSerial[] = [];
-  @Watch("tools")
-  toolsWatcher(newValue: AlToolSerial[]) {
-    this._tools = newValue;
+  private _selectedTool(toolId: string | null) {
+    this.selectedTool = toolId;
   }
 
-  @State() _toolsVisible: boolean;
-  @Prop() toolsVisible: boolean = true;
-  @Watch("toolsVisible")
-  toolsVisibleWatcher(newValue: boolean) {
-    this._toolsVisible = newValue;
+  private _slicesIndex(index: number) {
+    this.slicesIndex = index;
+    this.onSetSlicesIndex.emit(index);
   }
 
-  @State() _volumeSteps: number;
-  @Prop() volumeSteps: number;
-  @Watch("volumeSteps")
-  volumeStepsWatcher(newValue: number) {
-    this._volumeSteps = newValue;
-    this.onSetVolumeSteps.emit(newValue);
+  private _slicesWindowCenter(center: number) {
+    this.slicesWindowCenter = center;
+    this.onSetSlicesWindowCenter.emit(center);
   }
 
-  @State() _volumeWindowCenter: number;
-  @Prop() volumeWindowCenter: number;
-  @Watch("volumeWindowCenter")
-  volumeWindowCenterWatcher(newValue: number) {
-    this._volumeWindowCenter = newValue;
-    this.onSetVolumeWindowCenter.emit(newValue);
+  private _slicesWindowWidth(width: number) {
+    this.slicesWindowWidth = width;
+    this.onSetSlicesWindowWidth.emit(width);
   }
 
-  @State() _volumeWindowWidth: number;
-  @Prop() volumeWindowWidth: number;
-  @Watch("volumeWindowWidth")
-  volumeWindowWidthWatcher(newValue: number) {
-    this._volumeWindowWidth = newValue;
-    this.onSetVolumeWindowWidth.emit(newValue);
+  private _stack(stack: any) {
+    this._stack = stack;
+  }
+
+  private _stackHelper(helper: AMI.StackHelper) {
+    this.stackHelper = helper;
+  }
+
+  private _tools(tools: AlToolSerial[]) {
+    this.tools = tools;
+  }
+
+  private _toolsEnabled(enabled: boolean) {
+    this.toolsEnabled = enabled;
+    this.onSetToolsEnabled.emit(enabled);
+  }
+
+  private _toolsVisible(vislbe: boolean) {
+    this.toolsVisible = vislbe;
+  }
+
+  private _volumeSteps(steps: number) {
+    this.volumeSteps = steps;
+    this.onSetVolumeSteps.emit(steps);
+  }
+
+  private _volumeWindowCenter(center: number) {
+    this.volumeWindowCenter = center;
+    this.onSetVolumeWindowCenter.emit(center);
+  }
+
+  private _volumeWindowWidth(width: number) {
+    this.volumeWindowWidth = width;
+    this.onSetVolumeWindowWidth.emit(width);
   }
 
   renderDisplayModeToggle(): JSX.Element {
@@ -195,9 +160,7 @@ export class ControlPanel {
       return (
         <ion-item>
           <ion-icon name="create" />
-          <ion-toggle
-            onIonChange={e => (this.toolsEnabled = e.detail.checked)}
-          />
+          <ion-toggle onIonChange={e => this._toolsEnabled(e.detail.checked)} />
         </ion-item>
       );
     }
@@ -206,27 +169,28 @@ export class ControlPanel {
   }
 
   renderTools(): JSX.Element {
-    if (this.toolsVisible && this.toolsEnabled) {
-      return [
-        // <div class="al-list">
-        //   {this.tools.map((tool: Tool) => {
-        //     return (
-        //       <label class="block">
-        //         <input
-        //           type="radio"
-        //           checked={this.selectedTool === tool.id}
-        //           id={tool.id}
-        //           name="tool"
-        //           value={tool.id}
-        //           onChange={e => this.selectTool(e.srcElement.id)}
-        //         />
-        //         {tool.id}
-        //       </label>
-        //     );
-        //   })}
-        // </div>,
-        <ion-footer>
-          {/* <ion-item>
+    //if (this.toolsVisible && this.toolsEnabled) {
+    //return [
+    // <div class="al-list">
+    //   {this.tools.map((tool: Tool) => {
+    //     return (
+    //       <label class="block">
+    //         <input
+    //           type="radio"
+    //           checked={this.selectedTool === tool.id}
+    //           id={tool.id}
+    //           name="tool"
+    //           value={tool.id}
+    //           onChange={e => this.selectTool(e.srcElement.id)}
+    //         />
+    //         {tool.id}
+    //       </label>
+    //     );
+    //   })}
+    // </div>,
+    // <ion-footer>
+    {
+      /* <ion-item>
             <ion-label>Tool Type</ion-label>
             <select
               onChange={e =>
@@ -259,10 +223,12 @@ export class ControlPanel {
                 </option>
               ) : null}
             </select>
-          </ion-item> */}
-          <ion-toolbar>
-            <ion-buttons>
-              {/* <ion-button
+          </ion-item> */
+    }
+    // <ion-toolbar>
+    //   <ion-buttons>
+    {
+      /* <ion-button
                 onClick={() => {
                   this.addTool(
                     CreateUtils.createTool(this.tools, this.toolType)
@@ -270,15 +236,19 @@ export class ControlPanel {
                 }}
               >
                 Add
-              </ion-button> */}
-              {/* <ion-button
+              </ion-button> */
+    }
+    {
+      /* <ion-button
                 onClick={() => {
                   this.saveTools();
                 }}
               >
                 Save
-              </ion-button> */}
-              {this.selectedTool !== null ? (
+              </ion-button> */
+    }
+    {
+      /* {this.selectedTool !== null ? (
                 <ion-button
                   onClick={() => {
                     this.onRemoveTool.emit(this.selectedTool);
@@ -286,12 +256,13 @@ export class ControlPanel {
                 >
                   Delete
                 </ion-button>
-              ) : null}
-            </ion-buttons>
-          </ion-toolbar>
-        </ion-footer>
-      ];
+              ) : null} */
     }
+    //     </ion-buttons>
+    //   </ion-toolbar>
+    // </ion-footer>
+    //];
+    //}
 
     return null;
   }
@@ -302,7 +273,7 @@ export class ControlPanel {
         <ion-item>
           <ion-icon name="options" />
           <ion-toggle
-            onIonChange={e => this.onSetOptionsEnabled.emit(e.detail.checked)}
+            onIonChange={e => this._optionsEnabled(e.detail.checked)}
           />
         </ion-item>
       );
@@ -315,7 +286,7 @@ export class ControlPanel {
         <ion-label>Bounding box</ion-label>
         <ion-toggle
           checked={this.boundingBoxVisible}
-          onIonChange={e => (this.boundingBoxVisible = e.detail.checked)}
+          onIonChange={e => this._boundingBoxVisible(e.detail.checked)}
         />
       </ion-item>
     );
