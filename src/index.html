@@ -28,6 +28,7 @@
       body {
         margin: 0;
         padding: 0;
+        font-family: sans-serif;
       }
 
       #container {
@@ -73,6 +74,17 @@
       #debug.disabled {
         pointer-events: none;
         opacity: 0.4;
+      }
+
+      /* al-control-panel {
+        overflow-y: auto;
+        width: 100%;
+        max-height: 100%;
+      } */
+
+      #debug select {
+        padding: 5px;
+        font-size: 14px;
       }
 
       .rs-base {
@@ -125,25 +137,36 @@
           <input type="text" id="src-input" placeholder="src"><button id="load-src-button">Load</button>
         </section>
         <section>
-          <textarea id="tools-textarea" placeholder="tools"></textarea>
+          <textarea id="nodes-textarea" placeholder="nodes"></textarea>
         </section>
         <section>
-          <ul id="tool-list"></ul>
+          <ul id="node-list"></ul>
         </section>
         <section>
-          <button id="load-tools-button">Load</button>
+          <button id="load-nodes-button">Load</button>
+        </section>
+        <section>
+          <al-node-list>
+          </al-node-list>
+        </section>
+        <section>
+          <al-control-panel>
+          </al-control-panel>
         </section>
       </div>
     </div>
 
     <script>
 
-      let container, debug, aleph, srcSelect, srcInput, loadSrcButton, toolsTextArea, loadToolsButton, toolList;
+      let container, debug, aleph, nodeList, controlPanel, srcSelect, srcInput, loadSrcButton, nodesTextArea, loadNodesButton;
 
       let state = {
         src: null,
-        tools: [],
-        selectedTool: null
+        nodes: [],
+        selectedNode: null,
+        nodesEnabled: false,
+        optionsEnabled: false,
+        boundingBoxVisible: false
       }
 
       if (Object.observe) {
@@ -156,38 +179,39 @@
         container = document.getElementById("container");
         debug = document.getElementById("debug");
         aleph = document.querySelector("uv-aleph");
+        nodeList = document.querySelector("al-node-list");
+        controlPanel = document.querySelector("al-control-panel");
         srcSelect = document.getElementById("src-select");
         srcInput = document.getElementById("src-input");
         loadSrcButton = document.getElementById("load-src-button");
-        toolsTextArea = document.getElementById("tools-textarea");
-        loadToolsButton = document.getElementById("load-tools-button");
-        toolList = document.getElementById("tool-list");
+        nodesTextArea = document.getElementById("nodes-textarea");
+        loadNodesButton = document.getElementById("load-nodes-button");
 
         // aleph.addEventListener('onLoaded', function() {
-        //   aleph.setToolsVisible(true); // can only show them after src loaded
+        //   aleph.setNodesVisible(true); // can only show them after src loaded
         //   aleph.setOptionsVisible(true); // can only show them after src loaded
         // }, false);
 
+        // aleph.addEventListener(
+        //   "onSave",
+        //   function(e) {
+        //     state.nodes = e.detail;
+        //   },
+        //   false
+        // );
+
         aleph.addEventListener(
-          "onSave",
+          "onNodesChanged",
           function(e) {
-            state.tools = e.detail;
+            state.nodes = e.detail;
           },
           false
         );
 
         aleph.addEventListener(
-          "onToolsChanged",
+          "onSelectedNodeChanged",
           function(e) {
-            state.tools = e.detail;
-          },
-          false
-        );
-
-        aleph.addEventListener(
-          "onSelectedToolChanged",
-          function(e) {
-            state.selectedTool = e.detail;
+            state.selectedNode = e.detail;
           },
           false
         );
@@ -197,8 +221,8 @@
           function(e) {
 
             const newState = e.detail;
-            state.selectedTool = newState.selectedTool;
-            state.tools = newState.tools;
+            state.selectedNode = newState.selectedNode;
+            state.nodes = newState.nodes;
 
             debug.classList.remove("disabled");
 
@@ -209,6 +233,26 @@
                 debug.appendChild(framerate);
               }
             }, 250);
+          },
+          false
+        );
+
+        controlPanel.addEventListener("onSetNodesEnabled", function(e) {
+          state.nodesEnabled = e.detail;
+        });
+
+        controlPanel.addEventListener("onSetOptionsEnabled", function(e) {
+          state.optionsEnabled = e.detail;
+        });
+
+        controlPanel.addEventListener("onSetBoundingBoxVisible", function(e) {
+          state.boundingBoxVisible = e.detail;
+        });
+
+        nodeList.addEventListener(
+          "onSelectedNodeChanged",
+          function(e) {
+            state.selectedNode = e.detail;
           },
           false
         );
@@ -226,11 +270,11 @@
           false
         );
 
-        loadToolsButton.addEventListener(
+        loadNodesButton.addEventListener(
           "click",
           function(e) {
             e.preventDefault();
-            state.tools = JSON.parse(toolsTextArea.value);
+            state.nodes = JSON.parse(nodesTextArea.value);
           },
           false
         );
@@ -250,39 +294,26 @@
       function render(changeSet) {
 
         if (changeSetIncludes(changeSet, "src")) {
-          srcSelect.value = state.src;
-          srcInput.value = state.src;
-          debug.classList.add("disabled");
           aleph.load(state.src);
+          debug.classList.add("disabled");
         }
 
-        if (changeSetIncludes(changeSet, "tools")) {
-          toolsTextArea.value = JSON.stringify(state.tools);
-          aleph.loadTools(state.tools);
+        if (changeSetIncludes(changeSet, "nodes")) {
+          aleph.loadNodes(state.nodes);
         }
 
-        toolList.innerHTML = "";
+        if (changeSetIncludes(changeSet, "selectedNode")) {
+          aleph.selectNode(state.selectedNode);
+        }
 
-        // render tool radio button list
-        state.tools.forEach((anno) => {
-          toolList.appendChild(createElementFromString(`
-            <li>
-              <a href="#" class="tool" data-id="${anno.id}">${anno.id}</a>
-            </li>`));
-        });
+        aleph.setNodesEnabled(state.nodesEnabled);
+        aleph.setBoundingBoxVisible(state.boundingBoxVisible);
 
-        toolList.querySelectorAll("a.tool").forEach(a => {
-
-          if (a.dataset.id === state.selectedTool) {
-            a.classList.add("selected");
-          }
-
-          a.addEventListener("click", (e) => {
-            e.preventDefault();
-            aleph.selectTool(e.srcElement.dataset.id);
-          });
-        });
-
+        nodeList.nodes = state.nodes;
+        nodeList.selectedNode = state.selectedNode;
+        srcSelect.value = state.src;
+        srcInput.value = state.src;
+        nodesTextArea.value = JSON.stringify(state.nodes);
       }
 
       document.addEventListener("DOMContentLoaded", function(event) {

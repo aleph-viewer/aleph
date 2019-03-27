@@ -1,5 +1,12 @@
-import { Component, Prop } from "@stencil/core";
-import { AlToolSerial } from "../../interfaces";
+import {
+  Component,
+  Prop,
+  Event,
+  EventEmitter,
+  Watch,
+  State
+} from "@stencil/core";
+import { AlNodeSerial } from "../../interfaces";
 import { DisplayMode } from "../../enums/DisplayMode";
 import { Orientation } from "../../enums/Orientation";
 
@@ -8,43 +15,115 @@ import { Orientation } from "../../enums/Orientation";
   styleUrl: "al-control-panel.css",
   shadow: false
 })
-export class ControlPanel {
-  @Prop() angleToolEnabled: boolean;
-  @Prop() annotationToolEnabled: boolean;
-  @Prop() boundingBoxVisible: boolean;
-  @Prop() displayMode: DisplayMode;
-  @Prop() optionsEnabled: boolean;
-  @Prop() optionsVisible: boolean;
-  @Prop() orientation: Orientation;
-  @Prop() rulerToolEnabled: boolean;
-  @Prop() selectedTool: string | null;
-  @Prop() slicesIndex: number;
-  @Prop() slicesWindowCenter: number;
-  @Prop() slicesWindowWidth: number;
-  @Prop() stack: any;
-  @Prop() stackHelper: AMI.StackHelper;
-  @Prop() tools: AlToolSerial[];
-  @Prop() toolsEnabled: boolean;
-  @Prop() toolsVisible: boolean;
-  @Prop() volumeSteps: number;
-  @Prop() volumeWindowCenter: number;
-  @Prop() volumeWindowWidth: number;
+export class AlControlPanel {
+  @Event() onSetBoundingBoxVisible: EventEmitter;
+  @Event() onSetDisplayMode: EventEmitter;
+  @Event() onSetOptionsEnabled: EventEmitter;
+  @Event() onSetOrientation: EventEmitter;
+  @Event() onSetSlicesIndex: EventEmitter;
+  @Event() onSetSlicesWindowCenter: EventEmitter;
+  @Event() onSetSlicesWindowWidth: EventEmitter;
+  @Event() onSetNodesEnabled: EventEmitter;
+  @Event() onSetVolumeSteps: EventEmitter;
+  @Event() onSetVolumeWindowCenter: EventEmitter;
+  @Event() onSetVolumeWindowWidth: EventEmitter;
 
-  @Prop() addTool: (tool: AlToolSerial) => void;
-  @Prop() removeTool: (id: string) => void;
-  @Prop() saveTools: () => void;
-  @Prop() selectTool: (id: string) => void;
-  @Prop() setBoundingBoxVisible: (visible: boolean) => void;
-  @Prop() setDisplayMode: (mode: DisplayMode) => void;
-  @Prop() setOptionsEnabled: (enabled: boolean) => void;
-  @Prop() setOrientation: (orientation: Orientation) => void;
-  @Prop() setSlicesIndex: (index: number) => void;
-  @Prop() setSlicesWindowCenter: (index: number) => void;
-  @Prop() setSlicesWindowWidth: (index: number) => void;
-  @Prop() setToolsEnabled: (enabled: boolean) => void;
-  @Prop() setVolumeSteps: (steps: number) => void;
-  @Prop() setVolumeWindowCenter: (index: number) => void;
-  @Prop() setVolumeWindowWidth: (index: number) => void;
+  @Prop({ mutable: true }) boundingBoxVisible: boolean = false;
+  @Prop({ mutable: true }) displayMode: DisplayMode = DisplayMode.MESH;
+  @Prop({ mutable: true }) optionsEnabled: boolean = false;
+  @Prop({ mutable: true }) optionsVisible: boolean = true;
+  @Prop({ mutable: true }) orientation: Orientation = Orientation.CORONAL;
+  @Prop({ mutable: true }) selectedNode: string | null = null;
+  @Prop({ mutable: true }) slicesIndex: number;
+  @Prop({ mutable: true }) slicesWindowCenter: number;
+  @Prop({ mutable: true }) slicesWindowWidth: number;
+  @Prop({ mutable: true }) stack: any;
+  @Prop({ mutable: true }) stackHelper: AMI.StackHelper;
+  @Prop({ mutable: true }) nodes: AlNodeSerial[] = [];
+  @Prop({ mutable: true }) nodesEnabled: boolean = false;
+  @Prop({ mutable: true }) nodesVisible: boolean = true;
+  @Prop({ mutable: true }) volumeSteps: number;
+  @Prop({ mutable: true }) volumeWindowCenter: number;
+  @Prop({ mutable: true }) volumeWindowWidth: number;
+
+  private _boundingBoxVisible(visible: boolean) {
+    this.boundingBoxVisible = visible;
+    this.onSetBoundingBoxVisible.emit(visible);
+  }
+
+  private _displayMode(displayMode: DisplayMode) {
+    this.displayMode = displayMode;
+    this.onSetDisplayMode.emit(displayMode);
+  }
+
+  private _optionsEnabled(enabled: boolean) {
+    this.optionsEnabled = enabled;
+    this.onSetOptionsEnabled.emit(enabled);
+  }
+
+  private _optionsVisible(visible: boolean) {
+    this.optionsVisible = visible;
+  }
+
+  private _orientation(orientation: Orientation) {
+    this.orientation = orientation;
+    this.onSetOrientation.emit(orientation);
+  }
+
+  private _selectedNode(nodeId: string | null) {
+    this.selectedNode = nodeId;
+  }
+
+  private _slicesIndex(index: number) {
+    this.slicesIndex = index;
+    this.onSetSlicesIndex.emit(index);
+  }
+
+  private _slicesWindowCenter(center: number) {
+    this.slicesWindowCenter = center;
+    this.onSetSlicesWindowCenter.emit(center);
+  }
+
+  private _slicesWindowWidth(width: number) {
+    this.slicesWindowWidth = width;
+    this.onSetSlicesWindowWidth.emit(width);
+  }
+
+  private _stack(stack: any) {
+    this._stack = stack;
+  }
+
+  private _stackHelper(helper: AMI.StackHelper) {
+    this.stackHelper = helper;
+  }
+
+  private _nodes(nodes: AlNodeSerial[]) {
+    this.nodes = nodes;
+  }
+
+  private _nodesEnabled(enabled: boolean) {
+    this.nodesEnabled = enabled;
+    this.onSetNodesEnabled.emit(enabled);
+  }
+
+  private _nodesVisible(vislbe: boolean) {
+    this.nodesVisible = vislbe;
+  }
+
+  private _volumeSteps(steps: number) {
+    this.volumeSteps = steps;
+    this.onSetVolumeSteps.emit(steps);
+  }
+
+  private _volumeWindowCenter(center: number) {
+    this.volumeWindowCenter = center;
+    this.onSetVolumeWindowCenter.emit(center);
+  }
+
+  private _volumeWindowWidth(width: number) {
+    this.volumeWindowWidth = width;
+    this.onSetVolumeWindowWidth.emit(width);
+  }
 
   renderDisplayModeToggle(): JSX.Element {
     if (this.displayMode !== DisplayMode.MESH) {
@@ -53,7 +132,7 @@ export class ControlPanel {
           <ion-icon name="eye" />
           <select
             onChange={e =>
-              this.setDisplayMode(e.srcElement.nodeValue as DisplayMode)
+              (this.displayMode = e.srcElement.nodeValue as DisplayMode)
             }
           >
             <option
@@ -76,14 +155,12 @@ export class ControlPanel {
     return null;
   }
 
-  renderToolsToggle(): JSX.Element {
-    if (this.toolsVisible) {
+  renderNodesToggle(): JSX.Element {
+    if (this.nodesVisible) {
       return (
         <ion-item>
           <ion-icon name="create" />
-          <ion-toggle
-            onIonChange={e => this.setToolsEnabled(e.detail.checked)}
-          />
+          <ion-toggle onIonChange={e => this._nodesEnabled(e.detail.checked)} />
         </ion-item>
       );
     }
@@ -91,93 +168,101 @@ export class ControlPanel {
     return null;
   }
 
-  renderTools(): JSX.Element {
-    if (this.toolsVisible && this.toolsEnabled) {
-      return [
-        // <div class="al-list">
-        //   {this.tools.map((tool: Tool) => {
-        //     return (
-        //       <label class="block">
-        //         <input
-        //           type="radio"
-        //           checked={this.selectedTool === tool.id}
-        //           id={tool.id}
-        //           name="tool"
-        //           value={tool.id}
-        //           onChange={e => this.selectTool(e.srcElement.id)}
-        //         />
-        //         {tool.id}
-        //       </label>
-        //     );
-        //   })}
-        // </div>,
-        <ion-footer>
-          {/* <ion-item>
-            <ion-label>Tool Type</ion-label>
+  renderNodes(): JSX.Element {
+    //if (this.nodesVisible && this.nodesEnabled) {
+    //return [
+    // <div class="al-list">
+    //   {this.nodes.map((node: Node) => {
+    //     return (
+    //       <label class="block">
+    //         <input
+    //           type="radio"
+    //           checked={this.selectedNode === node.id}
+    //           id={node.id}
+    //           name="node"
+    //           value={node.id}
+    //           onChange={e => this.selectNode(e.srcElement.id)}
+    //         />
+    //         {node.id}
+    //       </label>
+    //     );
+    //   })}
+    // </div>,
+    // <ion-footer>
+    {
+      /* <ion-item>
+            <ion-label>Node Type</ion-label>
             <select
               onChange={e =>
-                this.setToolType((e.target as HTMLSelectElement)
-                  .value as ToolType)
+                this.setNodeType((e.target as HTMLSelectElement)
+                  .value as NodeType)
               }
             >
-              {this.angleToolEnabled ? (
+              {this.angleNodeEnabled ? (
                 <option
-                  selected={this.toolType === ToolType.ANGLE}
-                  value={ToolType.ANGLE}
+                  selected={this.nodeType === NodeType.ANGLE}
+                  value={NodeType.ANGLE}
                 >
                   Angle
                 </option>
               ) : null}
-              {this.annotationToolEnabled ? (
+              {this.annotationNodeEnabled ? (
                 <option
-                  selected={this.toolType === ToolType.ANNOTATION}
-                  value={ToolType.ANNOTATION}
+                  selected={this.nodeType === NodeType.ANNOTATION}
+                  value={NodeType.ANNOTATION}
                 >
                   Annotation
                 </option>
               ) : null}
-              {this.rulerToolEnabled ? (
+              {this.rulerNodeEnabled ? (
                 <option
-                  selected={this.toolType === ToolType.RULER}
-                  value={ToolType.RULER}
+                  selected={this.nodeType === NodeType.RULER}
+                  value={NodeType.RULER}
                 >
                   Ruler
                 </option>
               ) : null}
             </select>
-          </ion-item> */}
-          <ion-toolbar>
-            <ion-buttons>
-              {/* <ion-button
+          </ion-item> */
+    }
+    // <ion-nodebar>
+    //   <ion-buttons>
+    {
+      /* <ion-button
                 onClick={() => {
-                  this.addTool(
-                    CreateUtils.createTool(this.tools, this.toolType)
+                  this.addNode(
+                    CreateUtils.createNode(this.nodes, this.nodeType)
                   );
                 }}
               >
                 Add
-              </ion-button> */}
-              <ion-button
+              </ion-button> */
+    }
+    {
+      /* <ion-button
                 onClick={() => {
-                  this.saveTools();
+                  this.saveNodes();
                 }}
               >
                 Save
-              </ion-button>
-              {this.selectedTool !== null ? (
+              </ion-button> */
+    }
+    {
+      /* {this.selectedNode !== null ? (
                 <ion-button
                   onClick={() => {
-                    this.removeTool(this.selectedTool);
+                    this.onRemoveNode.emit(this.selectedNode);
                   }}
                 >
                   Delete
                 </ion-button>
-              ) : null}
-            </ion-buttons>
-          </ion-toolbar>
-        </ion-footer>
-      ];
+              ) : null} */
     }
+    //     </ion-buttons>
+    //   </ion-nodebar>
+    // </ion-footer>
+    //];
+    //}
 
     return null;
   }
@@ -188,7 +273,7 @@ export class ControlPanel {
         <ion-item>
           <ion-icon name="options" />
           <ion-toggle
-            onIonChange={e => this.setOptionsEnabled(e.detail.checked)}
+            onIonChange={e => this._optionsEnabled(e.detail.checked)}
           />
         </ion-item>
       );
@@ -201,7 +286,7 @@ export class ControlPanel {
         <ion-label>Bounding box</ion-label>
         <ion-toggle
           checked={this.boundingBoxVisible}
-          onIonChange={e => this.setBoundingBoxVisible(e.detail.checked)}
+          onIonChange={e => this._boundingBoxVisible(e.detail.checked)}
         />
       </ion-item>
     );
@@ -432,8 +517,8 @@ export class ControlPanel {
       <div id="al-control-panel-wrapper">
         <ion-app>
           {this.renderDisplayModeToggle()}
-          {this.renderToolsToggle()}
-          {this.renderTools()}
+          {this.renderNodesToggle()}
+          {this.renderNodes()}
           {this.renderOptionsToggle()}
           {this.renderOptions()}
         </ion-app>

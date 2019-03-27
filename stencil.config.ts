@@ -10,6 +10,11 @@ export const config: Config = {
       serviceWorker: null // disable service workers
     }
   ],
+  bundles: [
+    { components: ['uv-aleph'] },
+    { components: ['al-control-panel'] },
+    { components: ['al-node-list'] }
+  ],
   copy: [
   ],
   globalStyle: 'src/global/variables.css'

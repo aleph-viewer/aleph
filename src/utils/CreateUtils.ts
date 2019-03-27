@@ -1,9 +1,9 @@
-import { AlToolSerial } from "../interfaces";
+import { AlNodeSerial } from "../interfaces";
 import {
   AlGltfModel,
   AlVolumetricModel,
-  AlTool,
-  AlToolSpawner,
+  AlNode,
+  AlNodeSpawner,
   AlOrbitControl,
   AlSpinner,
   AlHalo
@@ -12,17 +12,19 @@ import { ThreeUtils, GetUtils } from ".";
 import { Constants } from "../Constants";
 
 export class CreateUtils {
-  static createTool(
-    tools: AlToolSerial[],
-    targetId: string,
+  static createNode(
+    nodes: AlNodeSerial[],
+    target: THREE.Vector3,
     position: THREE.Vector3,
     scale: number
-  ): AlToolSerial {
+  ): AlNodeSerial {
+    const id = GetUtils.getNextNodeId(nodes);
     return {
-      id: GetUtils.getNextToolId(tools),
-      targetId: targetId,
+      id: id,
+      target: ThreeUtils.vector3ToString(target),
       position: ThreeUtils.vector3ToString(position),
-      scale: scale / Constants.toolSize
+      scale: scale / Constants.nodeSize,
+      text: id
     };
   }
 
@@ -34,10 +36,10 @@ export class CreateUtils {
       AlVolumetricModel.getName(),
       AlVolumetricModel.getObject()
     );
-    AFRAME.registerComponent(AlTool.getName(), AlTool.getObject());
+    AFRAME.registerComponent(AlNode.getName(), AlNode.getObject());
     AFRAME.registerComponent(
-      AlToolSpawner.getName(),
-      AlToolSpawner.getObject()
+      AlNodeSpawner.getName(),
+      AlNodeSpawner.getObject()
     );
     AFRAME.registerComponent(
       AlOrbitControl.getName(),
