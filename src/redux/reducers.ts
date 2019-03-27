@@ -7,26 +7,23 @@ import { AlAppState } from "../interfaces";
 
 export const getInitialState = () => {
   return {
+    boundingBoxVisible: false,
+    displayMode: DisplayMode.MESH,
+    optionsEnabled: false,
+    optionsVisible: true,
+    orientation: Orientation.CORONAL,
+    selectedTool: null,
+    slicesIndex: undefined,
+    slicesWindowCenter: undefined,
+    slicesWindowWidth: undefined,
     src: null,
     srcLoaded: false,
-    selectedTool: null,
     tools: [],
-    displayMode: DisplayMode.MESH,
-    orientation: Orientation.CORONAL,
-    toolsVisible: true,
     toolsEnabled: false,
-    optionsVisible: true,
-    optionsEnabled: false,
-    boundingBoxVisible: false,
-    slicesIndex: undefined,
-    slicesWindowWidth: undefined,
-    slicesWindowCenter: undefined,
+    toolsVisible: true,
     volumeSteps: undefined,
-    volumeWindowWidth: undefined,
     volumeWindowCenter: undefined,
-    angleToolEnabled: true,
-    annotationToolEnabled: true,
-    rulerToolEnabled: true
+    volumeWindowWidth: undefined
   };
 };
 

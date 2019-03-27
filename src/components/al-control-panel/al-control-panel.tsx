@@ -1,4 +1,11 @@
-import { Component, Prop } from "@stencil/core";
+import {
+  Component,
+  Prop,
+  Event,
+  EventEmitter,
+  Watch,
+  State
+} from "@stencil/core";
 import { AlToolSerial } from "../../interfaces";
 import { DisplayMode } from "../../enums/DisplayMode";
 import { Orientation } from "../../enums/Orientation";
@@ -9,42 +16,149 @@ import { Orientation } from "../../enums/Orientation";
   shadow: false
 })
 export class ControlPanel {
-  @Prop() angleToolEnabled: boolean;
-  @Prop() annotationToolEnabled: boolean;
-  @Prop() boundingBoxVisible: boolean;
-  @Prop() displayMode: DisplayMode;
-  @Prop() optionsEnabled: boolean;
-  @Prop() optionsVisible: boolean;
-  @Prop() orientation: Orientation;
-  @Prop() rulerToolEnabled: boolean;
-  @Prop() selectedTool: string | null;
-  @Prop() slicesIndex: number;
-  @Prop() slicesWindowCenter: number;
-  @Prop() slicesWindowWidth: number;
-  @Prop() stack: any;
-  @Prop() stackHelper: AMI.StackHelper;
-  @Prop() tools: AlToolSerial[];
-  @Prop() toolsEnabled: boolean;
-  @Prop() toolsVisible: boolean;
-  @Prop() volumeSteps: number;
-  @Prop() volumeWindowCenter: number;
-  @Prop() volumeWindowWidth: number;
+  //@Event() onAddTool: EventEmitter;
+  @Event() onRemoveTool: EventEmitter;
+  @Event() onSetBoundingBoxVisible: EventEmitter;
+  @Event() onSetDisplayMode: EventEmitter;
+  @Event() onSetOptionsEnabled: EventEmitter;
+  @Event() onSetOrientation: EventEmitter;
+  @Event() onSetSlicesIndex: EventEmitter;
+  @Event() onSetSlicesWindowCenter: EventEmitter;
+  @Event() onSetSlicesWindowWidth: EventEmitter;
+  @Event() onSetToolsEnabled: EventEmitter;
+  @Event() onSetVolumeSteps: EventEmitter;
+  @Event() onSetVolumeWindowCenter: EventEmitter;
+  @Event() onSetVolumeWindowWidth: EventEmitter;
 
-  @Prop() addTool: (tool: AlToolSerial) => void;
-  @Prop() removeTool: (id: string) => void;
-  @Prop() saveTools: () => void;
-  @Prop() selectTool: (id: string) => void;
-  @Prop() setBoundingBoxVisible: (visible: boolean) => void;
-  @Prop() setDisplayMode: (mode: DisplayMode) => void;
-  @Prop() setOptionsEnabled: (enabled: boolean) => void;
-  @Prop() setOrientation: (orientation: Orientation) => void;
-  @Prop() setSlicesIndex: (index: number) => void;
-  @Prop() setSlicesWindowCenter: (index: number) => void;
-  @Prop() setSlicesWindowWidth: (index: number) => void;
-  @Prop() setToolsEnabled: (enabled: boolean) => void;
-  @Prop() setVolumeSteps: (steps: number) => void;
-  @Prop() setVolumeWindowCenter: (index: number) => void;
-  @Prop() setVolumeWindowWidth: (index: number) => void;
+  @State() _boundingBoxVisible: boolean;
+  @Prop({ mutable: true }) boundingBoxVisible: boolean = false;
+  @Watch("boundingBoxVisible")
+  boundingBoxVisibleWatcher(newValue: boolean) {
+    this._boundingBoxVisible = newValue;
+    this.onSetBoundingBoxVisible.emit(newValue);
+  }
+
+  @State() _displayMode: DisplayMode;
+  @Prop({ mutable: true }) displayMode: DisplayMode = DisplayMode.MESH;
+  @Watch("displayMode")
+  displayModeWatcher(newValue: DisplayMode) {
+    this._displayMode = newValue;
+    this.onSetDisplayMode.emit(newValue);
+  }
+
+  @State() _optionsEnabled: boolean;
+  @Prop({ mutable: true }) optionsEnabled: boolean = false;
+  @Watch("displayMode")
+  optionsEnabledWatcher(newValue: boolean) {
+    this._optionsEnabled = newValue;
+    this.onSetOptionsEnabled.emit(newValue);
+  }
+
+  @State() _orientation: Orientation;
+  @Prop({ mutable: true }) orientation: Orientation = Orientation.CORONAL;
+  @Watch("orientation")
+  orientationWatcher(newValue: Orientation) {
+    this._orientation = newValue;
+    this.onSetOrientation.emit(newValue);
+  }
+
+  @State() _slicesIndex: number;
+  @Prop({ mutable: true }) slicesIndex: number;
+  @Watch("slicesIndex")
+  slicesIndexWatcher(newValue: number) {
+    this._slicesIndex = newValue;
+    this.onSetSlicesIndex.emit(newValue);
+  }
+
+  @State() _slicesWindowCenter: number;
+  @Prop({ mutable: true }) slicesWindowCenter: number;
+  @Watch("slicesWindowCenter")
+  slicesWindowCenterWatcher(newValue: number) {
+    this._slicesWindowCenter = newValue;
+    this.onSetSlicesWindowCenter.emit(newValue);
+  }
+
+  @State() _slicesWindowWidth: number;
+  @Prop({ mutable: true }) slicesWindowWidth: number;
+  @Watch("slicesWindowWidth")
+  slicesWindowWidthWatcher(newValue: number) {
+    this._slicesWindowWidth = newValue;
+    this.onSetSlicesWindowWidth.emit(newValue);
+  }
+
+  @State() _toolsEnabled: boolean;
+  @Prop({ mutable: true }) toolsEnabled: boolean = false;
+  @Watch("toolsEnabled")
+  toolsEnabledWatcher(newValue: boolean) {
+    this._toolsEnabled = newValue;
+    this.onSetToolsEnabled.emit(newValue);
+  }
+
+  @State() _optionsVisible: boolean;
+  @Prop() optionsVisible: boolean = true;
+  @Watch("optionsVisible")
+  optionsVisibleWatcher(newValue: boolean) {
+    this._optionsVisible = newValue;
+  }
+
+  @State() _selectedTool: string | null;
+  @Prop() selectedTool: string | null = null;
+  @Watch("selectedTool")
+  selectedToolWatcher(newValue: string | null) {
+    this._selectedTool = newValue;
+  }
+
+  @State() _stack: any;
+  @Prop() stack: any;
+  @Watch("stack")
+  stackWatcher(newValue: any) {
+    this._stack = newValue;
+  }
+
+  @State() _stackHelper: AMI.StackHelper;
+  @Prop() stackHelper: AMI.StackHelper;
+  @Watch("stackHelper")
+  stackHelperWatcher(newValue: AMI.StackHelper) {
+    this._stackHelper = newValue;
+  }
+
+  @State() _tools: AlToolSerial[];
+  @Prop() tools: AlToolSerial[] = [];
+  @Watch("tools")
+  toolsWatcher(newValue: AlToolSerial[]) {
+    this._tools = newValue;
+  }
+
+  @State() _toolsVisible: boolean;
+  @Prop() toolsVisible: boolean = true;
+  @Watch("toolsVisible")
+  toolsVisibleWatcher(newValue: boolean) {
+    this._toolsVisible = newValue;
+  }
+
+  @State() _volumeSteps: number;
+  @Prop() volumeSteps: number;
+  @Watch("volumeSteps")
+  volumeStepsWatcher(newValue: number) {
+    this._volumeSteps = newValue;
+    this.onSetVolumeSteps.emit(newValue);
+  }
+
+  @State() _volumeWindowCenter: number;
+  @Prop() volumeWindowCenter: number;
+  @Watch("volumeWindowCenter")
+  volumeWindowCenterWatcher(newValue: number) {
+    this._volumeWindowCenter = newValue;
+    this.onSetVolumeWindowCenter.emit(newValue);
+  }
+
+  @State() _volumeWindowWidth: number;
+  @Prop() volumeWindowWidth: number;
+  @Watch("volumeWindowWidth")
+  volumeWindowWidthWatcher(newValue: number) {
+    this._volumeWindowWidth = newValue;
+    this.onSetVolumeWindowWidth.emit(newValue);
+  }
 
   renderDisplayModeToggle(): JSX.Element {
     if (this.displayMode !== DisplayMode.MESH) {
@@ -53,7 +167,7 @@ export class ControlPanel {
           <ion-icon name="eye" />
           <select
             onChange={e =>
-              this.setDisplayMode(e.srcElement.nodeValue as DisplayMode)
+              (this.displayMode = e.srcElement.nodeValue as DisplayMode)
             }
           >
             <option
@@ -82,7 +196,7 @@ export class ControlPanel {
         <ion-item>
           <ion-icon name="create" />
           <ion-toggle
-            onIonChange={e => this.setToolsEnabled(e.detail.checked)}
+            onIonChange={e => (this.toolsEnabled = e.detail.checked)}
           />
         </ion-item>
       );
@@ -157,17 +271,17 @@ export class ControlPanel {
               >
                 Add
               </ion-button> */}
-              <ion-button
+              {/* <ion-button
                 onClick={() => {
                   this.saveTools();
                 }}
               >
                 Save
-              </ion-button>
+              </ion-button> */}
               {this.selectedTool !== null ? (
                 <ion-button
                   onClick={() => {
-                    this.removeTool(this.selectedTool);
+                    this.onRemoveTool.emit(this.selectedTool);
                   }}
                 >
                   Delete
@@ -188,7 +302,7 @@ export class ControlPanel {
         <ion-item>
           <ion-icon name="options" />
           <ion-toggle
-            onIonChange={e => this.setOptionsEnabled(e.detail.checked)}
+            onIonChange={e => this.onSetOptionsEnabled.emit(e.detail.checked)}
           />
         </ion-item>
       );
@@ -201,7 +315,7 @@ export class ControlPanel {
         <ion-label>Bounding box</ion-label>
         <ion-toggle
           checked={this.boundingBoxVisible}
-          onIonChange={e => this.setBoundingBoxVisible(e.detail.checked)}
+          onIonChange={e => (this.boundingBoxVisible = e.detail.checked)}
         />
       </ion-item>
     );

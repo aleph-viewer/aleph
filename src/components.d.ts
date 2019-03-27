@@ -25,30 +25,12 @@ import {
 export namespace Components {
 
   interface AlControlPanel {
-    'addTool': (tool: AlToolSerial) => void;
-    'angleToolEnabled': boolean;
-    'annotationToolEnabled': boolean;
     'boundingBoxVisible': boolean;
     'displayMode': DisplayMode;
     'optionsEnabled': boolean;
     'optionsVisible': boolean;
     'orientation': Orientation;
-    'removeTool': (id: string) => void;
-    'rulerToolEnabled': boolean;
-    'saveTools': () => void;
-    'selectTool': (id: string) => void;
     'selectedTool': string | null;
-    'setBoundingBoxVisible': (visible: boolean) => void;
-    'setDisplayMode': (mode: DisplayMode) => void;
-    'setOptionsEnabled': (enabled: boolean) => void;
-    'setOrientation': (orientation: Orientation) => void;
-    'setSlicesIndex': (index: number) => void;
-    'setSlicesWindowCenter': (index: number) => void;
-    'setSlicesWindowWidth': (index: number) => void;
-    'setToolsEnabled': (enabled: boolean) => void;
-    'setVolumeSteps': (steps: number) => void;
-    'setVolumeWindowCenter': (index: number) => void;
-    'setVolumeWindowWidth': (index: number) => void;
     'slicesIndex': number;
     'slicesWindowCenter': number;
     'slicesWindowWidth': number;
@@ -62,30 +44,24 @@ export namespace Components {
     'volumeWindowWidth': number;
   }
   interface AlControlPanelAttributes extends StencilHTMLAttributes {
-    'addTool'?: (tool: AlToolSerial) => void;
-    'angleToolEnabled'?: boolean;
-    'annotationToolEnabled'?: boolean;
     'boundingBoxVisible'?: boolean;
     'displayMode'?: DisplayMode;
+    'onOnRemoveTool'?: (event: CustomEvent) => void;
+    'onOnSetBoundingBoxVisible'?: (event: CustomEvent) => void;
+    'onOnSetDisplayMode'?: (event: CustomEvent) => void;
+    'onOnSetOptionsEnabled'?: (event: CustomEvent) => void;
+    'onOnSetOrientation'?: (event: CustomEvent) => void;
+    'onOnSetSlicesIndex'?: (event: CustomEvent) => void;
+    'onOnSetSlicesWindowCenter'?: (event: CustomEvent) => void;
+    'onOnSetSlicesWindowWidth'?: (event: CustomEvent) => void;
+    'onOnSetToolsEnabled'?: (event: CustomEvent) => void;
+    'onOnSetVolumeSteps'?: (event: CustomEvent) => void;
+    'onOnSetVolumeWindowCenter'?: (event: CustomEvent) => void;
+    'onOnSetVolumeWindowWidth'?: (event: CustomEvent) => void;
     'optionsEnabled'?: boolean;
     'optionsVisible'?: boolean;
     'orientation'?: Orientation;
-    'removeTool'?: (id: string) => void;
-    'rulerToolEnabled'?: boolean;
-    'saveTools'?: () => void;
-    'selectTool'?: (id: string) => void;
     'selectedTool'?: string | null;
-    'setBoundingBoxVisible'?: (visible: boolean) => void;
-    'setDisplayMode'?: (mode: DisplayMode) => void;
-    'setOptionsEnabled'?: (enabled: boolean) => void;
-    'setOrientation'?: (orientation: Orientation) => void;
-    'setSlicesIndex'?: (index: number) => void;
-    'setSlicesWindowCenter'?: (index: number) => void;
-    'setSlicesWindowWidth'?: (index: number) => void;
-    'setToolsEnabled'?: (enabled: boolean) => void;
-    'setVolumeSteps'?: (steps: number) => void;
-    'setVolumeWindowCenter'?: (index: number) => void;
-    'setVolumeWindowWidth'?: (index: number) => void;
     'slicesIndex'?: number;
     'slicesWindowCenter'?: number;
     'slicesWindowWidth'?: number;
@@ -107,6 +83,7 @@ export namespace Components {
     'loadTools': (tools: any) => Promise<void>;
     'selectTool': (toolId: string) => Promise<void>;
     'setDisplayMode': (displayMode: DisplayMode) => Promise<void>;
+    'setToolsEnabled': (enabled: boolean) => Promise<void>;
     'spinnerColor': string;
     'width': string;
   }

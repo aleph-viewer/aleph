@@ -159,6 +159,11 @@ export class Aleph {
     this._selectTool(toolId);
   }
 
+  @Method()
+  async setToolsEnabled(enabled: boolean) {
+    this._setToolsEnabled(enabled);
+  }
+
   @Event() onLoad: EventEmitter;
   @Event() onSave: EventEmitter;
   @Event() onToolsChanged: EventEmitter;
@@ -420,46 +425,44 @@ export class Aleph {
   }
 
   private _renderControlPanel(): JSX.Element {
+    return null;
     // todo: tunnel state
-    return (
-      <al-control-panel
-        angleToolEnabled={this.angleToolEnabled}
-        annotationToolEnabled={this.annotationToolEnabled}
-        boundingBoxVisible={this.boundingBoxVisible}
-        displayMode={this.displayMode}
-        optionsEnabled={this.optionsEnabled}
-        optionsVisible={this.optionsVisible}
-        orientation={this.orientation}
-        rulerToolEnabled={this.rulerToolEnabled}
-        selectedTool={this.selectedTool}
-        slicesIndex={this.slicesIndex}
-        slicesWindowCenter={this.slicesWindowCenter}
-        slicesWindowWidth={this.slicesWindowWidth}
-        stack={this._stack}
-        stackHelper={this._stackHelper}
-        tools={this.tools}
-        toolsEnabled={this.toolsEnabled}
-        toolsVisible={this.toolsVisible}
-        volumeSteps={this.volumeSteps}
-        volumeWindowCenter={this.volumeWindowCenter}
-        volumeWindowWidth={this.volumeWindowWidth}
-        addTool={this._addTool.bind(this)}
-        removeTool={this._removeTool.bind(this)}
-        saveTools={this._saveTools.bind(this)}
-        selectTool={this._selectTool.bind(this)}
-        setBoundingBoxVisible={this.appSetBoundingBoxVisible}
-        setDisplayMode={this.appSetDisplayMode}
-        setOptionsEnabled={this.appSetOptionsEnabled}
-        setOrientation={this.appSetOrientation}
-        setSlicesIndex={this.appSetSlicesIndex}
-        setSlicesWindowCenter={this.appSetSlicesWindowCenter}
-        setSlicesWindowWidth={this.appSetSlicesWindowWidth}
-        setToolsEnabled={this.appSetToolsEnabled}
-        setVolumeSteps={this.appSetVolumeSteps}
-        setVolumeWindowCenter={this.appSetVolumeWindowCenter}
-        setVolumeWindowWidth={this.appSetVolumeWindowWidth}
-      />
-    );
+    // return (
+    //   <al-control-panel
+    //     boundingBoxVisible={this.boundingBoxVisible}
+    //     displayMode={this.displayMode}
+    //     optionsEnabled={this.optionsEnabled}
+    //     optionsVisible={this.optionsVisible}
+    //     orientation={this.orientation}
+    //     selectedTool={this.selectedTool}
+    //     slicesIndex={this.slicesIndex}
+    //     slicesWindowCenter={this.slicesWindowCenter}
+    //     slicesWindowWidth={this.slicesWindowWidth}
+    //     stack={this._stack}
+    //     stackHelper={this._stackHelper}
+    //     tools={this.tools}
+    //     toolsEnabled={this.toolsEnabled}
+    //     toolsVisible={this.toolsVisible}
+    //     volumeSteps={this.volumeSteps}
+    //     volumeWindowCenter={this.volumeWindowCenter}
+    //     volumeWindowWidth={this.volumeWindowWidth}
+    //     addTool={this._addTool}
+    //     removeTool={this._removeTool}
+    //     saveTools={this._saveTools}
+    //     selectTool={this._selectTool}
+    //     setBoundingBoxVisible={this.appSetBoundingBoxVisible}
+    //     setDisplayMode={this.appSetDisplayMode}
+    //     setOptionsEnabled={this.appSetOptionsEnabled}
+    //     setOrientation={this.appSetOrientation}
+    //     setSlicesIndex={this.appSetSlicesIndex}
+    //     setSlicesWindowCenter={this.appSetSlicesWindowCenter}
+    //     setSlicesWindowWidth={this.appSetSlicesWindowWidth}
+    //     setToolsEnabled={this._setToolsEnabled}
+    //     setVolumeSteps={this.appSetVolumeSteps}
+    //     setVolumeWindowCenter={this.appSetVolumeWindowCenter}
+    //     setVolumeWindowWidth={this.appSetVolumeWindowWidth}
+    //   />
+    // );
   }
 
   render(): JSX.Element {
@@ -472,7 +475,6 @@ export class Aleph {
         }}
       >
         {this._renderScene()}
-        {this._renderControlPanel()}
       </div>
     );
   }
@@ -508,6 +510,10 @@ export class Aleph {
   private _selectTool(toolId: string): void {
     this.appSelectTool(toolId);
     this.onSelectedToolChanged.emit(this.selectedTool);
+  }
+
+  private _setToolsEnabled(enabled: boolean): void {
+    this.appSetToolsEnabled(enabled);
   }
 
   private _srcLoaded(): void {
