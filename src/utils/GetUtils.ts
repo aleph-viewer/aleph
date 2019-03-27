@@ -8,31 +8,6 @@ export class GetUtils {
     return file.substring(file.lastIndexOf(".") + 1);
   }
 
-  static getRandomPosition(): THREE.Vector3 {
-    const cubeDistributionWidth: number = 20;
-    const x: number =
-      Math.random() * cubeDistributionWidth - cubeDistributionWidth / 2;
-    const y: number =
-      Math.random() * cubeDistributionWidth - cubeDistributionWidth / 2;
-    const z: number =
-      Math.random() * cubeDistributionWidth - cubeDistributionWidth;
-
-    return new THREE.Vector3(x, y, z);
-  }
-
-  static getRandomColor(): string {
-    return (
-      "#" +
-      (
-        "000000" +
-        Math.random()
-          .toString(16)
-          .slice(2, 8)
-          .toUpperCase()
-      ).slice(-6)
-    );
-  }
-
   static getToolWithHighestId(tools: AlToolSerial[]): number {
     if (tools.length) {
       return Math.max.apply(

@@ -91,6 +91,7 @@ export namespace Components {
     'load': (src: string) => Promise<void>;
     'loadTools': (tools: AlToolSerial[]) => Promise<void>;
     'selectTool': (toolId: string) => Promise<void>;
+    'setBoundingBoxVisible': (visible: boolean) => Promise<void>;
     'setDisplayMode': (displayMode: DisplayMode) => Promise<void>;
     'setToolsEnabled': (enabled: boolean) => Promise<void>;
     'spinnerColor': string;

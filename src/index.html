@@ -163,7 +163,10 @@
       let state = {
         src: null,
         tools: [],
-        selectedTool: null
+        selectedTool: null,
+        toolsEnabled: false,
+        optionsEnabled: false,
+        boundingBoxVisible: false
       }
 
       if (Object.observe) {
@@ -235,21 +238,21 @@
         );
 
         controlPanel.addEventListener("onSetToolsEnabled", function(e) {
-          aleph.setToolsEnabled(e.detail);
+          state.toolsEnabled = e.detail;
         });
 
         controlPanel.addEventListener("onSetOptionsEnabled", function(e) {
-          console.log("options enabled:", e.detail);
+          state.optionsEnabled = e.detail;
         });
 
         controlPanel.addEventListener("onSetBoundingBoxVisible", function(e) {
-          console.log("bounding box visible:", e.detail);
+          state.boundingBoxVisible = e.detail;
         });
 
         toolList.addEventListener(
           "onSelectedToolChanged",
           function(e) {
-            aleph.selectTool(e.detail);
+            state.selectedTool = e.detail;
           },
           false
         );
@@ -291,45 +294,26 @@
       function render(changeSet) {
 
         if (changeSetIncludes(changeSet, "src")) {
-          debug.classList.add("disabled");
           aleph.load(state.src);
+          debug.classList.add("disabled");
         }
 
         if (changeSetIncludes(changeSet, "tools")) {
           aleph.loadTools(state.tools);
-          toolList.tools = state.tools;
         }
 
         if (changeSetIncludes(changeSet, "selectedTool")) {
-          toolList.selectedTool = state.selectedTool;
+          aleph.selectTool(state.selectedTool);
         }
 
+        aleph.setToolsEnabled(state.toolsEnabled);
+        aleph.setBoundingBoxVisible(state.boundingBoxVisible);
+
+        toolList.tools = state.tools;
+        toolList.selectedTool = state.selectedTool;
         srcSelect.value = state.src;
         srcInput.value = state.src;
         toolsTextArea.value = JSON.stringify(state.tools);
-
-        // toolList.innerHTML = "";
-
-        // // render tool radio button list
-        // state.tools.forEach((anno) => {
-        //   toolList.appendChild(createElementFromString(`
-        //     <li>
-        //       <a href="#" class="tool" data-id="${anno.id}">${anno.id}</a>
-        //     </li>`));
-        // });
-
-        // toolList.querySelectorAll("a.tool").forEach(a => {
-
-        //   if (a.dataset.id === state.selectedTool) {
-        //     a.classList.add("selected");
-        //   }
-
-        //   a.addEventListener("click", (e) => {
-        //     e.preventDefault();
-        //     aleph.selectTool(e.srcElement.dataset.id);
-        //   });
-        // });
-
       }
 
       document.addEventListener("DOMContentLoaded", function(event) {

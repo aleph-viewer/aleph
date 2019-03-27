@@ -36,7 +36,7 @@ export class AlOrbitControl implements AframeRegistry {
         targetPosition: { type: "vec3" },
         zoomSpeed: { type: "number", default: 0.5 },
         boundingRadius: { type: "number", default: 1 },
-        animating: { type: "boolean", default: false }
+        cameraAnimating: { type: "boolean", default: false }
       },
       init() {
         //#region Bindings & Initialisation
@@ -72,19 +72,6 @@ export class AlOrbitControl implements AframeRegistry {
         });
         document.addEventListener("mouseup", () => {
           document.body.style.cursor = "grab";
-        });
-
-        el.sceneEl.addEventListener("mouseup", () => {
-          this.state.controlPosition = this.state.controls.object.position;
-          console.log("mouseup-control-position: ", this.state.controlPosition);
-        });
-        el.sceneEl.canvas.addEventListener("wheel", _evt => {
-          window.clearTimeout(this.isWheeling);
-          // Set a timeout to run after scrolling ends
-          this.isWheeling = setTimeout(() => {
-            this.state.controlPosition = this.state.controls.object.position;
-            console.log("wheel-control-position: ", this.state.controlPosition);
-          }, 50);
         });
         //#endregion
 
@@ -124,9 +111,8 @@ export class AlOrbitControl implements AframeRegistry {
           splashBackGeom,
           splashBackMaterial,
           cameraPosition,
-          animating: data.animating,
           animationStep: 0,
-          controlPosition: new THREE.Vector3()
+          controlPosition: controls.object.position
         };
 
         // emit after 1 ms so that it happens after the scene's componentDidUpdate method has fired
@@ -202,7 +188,7 @@ export class AlOrbitControl implements AframeRegistry {
         controls.screenSpacePanning = data.screenSpacePanning;
         controls.zoomSpeed = data.zoomSpeed;
 
-        // If _oldData.cameraPosition exists and we're NOT animating, this is not the initialisation update and an animation update
+        // If _oldData.cameraPosition exists and we're NOT cameraAnimating, this is not the initialisation update and an animation update
         if (_oldData.cameraPosition) {
           if (
             _oldData.cameraPosition.x !== data.cameraPosition.x ||
@@ -212,93 +198,69 @@ export class AlOrbitControl implements AframeRegistry {
             // Check the old start position against the value passed in by aleph._renderCamera()
             // This is to check and see if the source has changed, as the cameraPosition for each
             // source is determined by it's bounding sphere.
-            state.cameraPosition = data.cameraPosition;
-            el.setAttribute("position", data.cameraPosition);
+            state.cameraPosition.x = data.cameraPosition.x;
+            state.cameraPosition.y = data.cameraPosition.y;
+            state.cameraPosition.z = data.cameraPosition.z;
+            if (!data.cameraAnimating) {
+              el.setAttribute("position", data.cameraPosition);
+            } else {
+              state.controlPosition = state.controls.object.position;
+            }
           }
         }
       },
 
       tick() {
+        if (!this.data.enabled) {
+          return;
+        }
+
         let state = this.state as AlOrbitControlState;
         let el = this.el;
         let controls = state.controls;
         const data = this.data;
 
-        if (!data.enabled) {
-          return;
-        }
-
-        if (data.animating) {
-          let endPos = new THREE.Vector3();
-          endPos.x = state.cameraPosition.x;
-          endPos.y = state.cameraPosition.y;
-          endPos.z = state.cameraPosition.z;
+        if (data.cameraAnimating) {
+          let endPos = state.cameraPosition;
           let startPos = state.controlPosition;
-          console.log(
-            "start: ",
-            state.animationStep,
-            ": [",
-            startPos.x,
-            ", ",
-            startPos.y,
-            ", ",
-            startPos.z,
-            "]"
-          );
+
           if (state.animationStep <= Constants.maxAnimationSteps) {
             const percent: number =
               state.animationStep / Constants.maxAnimationSteps;
-            const res: THREE.Vector3 = ThreeUtils.slerp(
-              startPos,
-              endPos,
+            const res: THREE.Vector3 | null = ThreeUtils.slerp(
+              startPos.clone(),
+              endPos.clone(),
               percent
             );
-            console.log(
-              "res: ",
-              state.animationStep,
-              ": [",
-              res.x,
-              ", ",
-              res.y,
-              ", ",
-              res.z,
-              "]"
-            );
-            el.setAttribute("position", ThreeUtils.vector3ToString(res));
-            state.animationStep += 1;
+
+            if (res) {
+              controls.object.position.copy(res);
+              el.setAttribute("position", ThreeUtils.vector3ToString(res));
+
+              state.animationStep += 1;
+            } else {
+              el.emit(AlOrbitControlEvents.ANIMATION_FINISHED, {}, true);
+              state.animationStep = 0;
+            }
           } else {
             el.emit(AlOrbitControlEvents.ANIMATION_FINISHED, {}, true);
+            state.animationStep = 0;
           }
-
-          controls.update();
-        } else if (
-          controls.enabled &&
-          (controls.enableDamping || controls.autoRotate)
-        ) {
-          controls.update();
-          // Reset animation step
-          state.animationStep = 0;
+        } else {
+          el.setAttribute("position", controls.object.position);
         }
 
-        const lookPos = controls.object.position;
-        let targetPosition = new THREE.Vector3();
-        targetPosition.x = state.targetPosition.x;
-        targetPosition.y = state.targetPosition.y;
-        targetPosition.z = state.targetPosition.z;
+        controls.update();
 
-        const direction: THREE.Vector3 = lookPos
+        const direction: THREE.Vector3 = controls.object.position
           .clone()
-          .sub(targetPosition.clone())
+          .sub(state.targetPosition.clone())
           .normalize();
-        const splashPos = direction.multiplyScalar(-data.boundingRadius);
-        const scaleN = data.boundingRadius * Constants.splashBackSize;
-
-        state.splashBackMesh.scale.copy(
-          new THREE.Vector3(scaleN, scaleN, scaleN)
-        );
+        const splashPos = direction
+          .clone()
+          .multiplyScalar(-data.boundingRadius);
         state.splashBackMesh.position.copy(splashPos);
-        state.splashBackMesh.lookAt(lookPos);
-        el.setAttribute("position", lookPos);
+        state.splashBackMesh.lookAt(controls.object.position);
       },
 
       remove() {

@@ -32,45 +32,33 @@ export class ThreeUtils {
     return vect;
   }
 
-  // TODO: Not Working! Need to Investigate
-  // https://keithmaggio.wordpress.com/2011/02/15/math-magician-lerp-slerp-and-nlerp/
+  // https://en.wikipedia.org/wiki/Slerp
   static slerp(
     start: THREE.Vector3,
     end: THREE.Vector3,
     percent: number
-  ): THREE.Vector3 {
-    // Dot product - the cosine of the angle between 2 vectors.
-    // Returns Degrees
-    let dot: number = start.clone().dot(end.clone());
+  ): THREE.Vector3 | null {
+    const t = percent;
+    const p0 = start;
+    const p1 = end;
+    let theta = p0.angleTo(p1);
+    if (theta) {
+      theta = THREE.Math.clamp(theta, -0.99, 0.99);
 
-    // Clamp it to be in the range of Acos()
-    // This may be unnecessary, but floating point
-    // precision can be a fickle mistress.
-    dot = THREE.Math.degToRad(dot);
-    dot = Math.max(-1, Math.min(dot, 1));
+      const topP0 = Math.sin(1 - t) * theta;
+      const topP1 = Math.sin(t * theta);
+      const bot = Math.sin(theta);
 
-    // Acos(dot) returns the angle between start and end,
-    // And multiplying that by percent returns the angle between
-    // start and the final result.
-    let theta: number = Math.acos(dot) * percent;
-    let relativeVector = new THREE.Vector3();
-    relativeVector.copy(
-      end
-        .clone()
-        .sub(start.clone())
-        .multiplyScalar(dot)
-    );
-    relativeVector.normalize();
+      const p0Const = topP0 / bot;
+      const p1Const = topP1 / bot;
 
-    // Orthonormal basis
-    // The final result.
-    let result = new THREE.Vector3();
-    result.copy(
-      start
-        .clone()
-        .multiplyScalar(Math.cos(theta))
-        .add(relativeVector.clone().multiplyScalar(Math.sin(theta)))
-    );
-    return result;
+      const left = p0.clone().multiplyScalar(p0Const);
+      const right = p1.clone().multiplyScalar(p1Const);
+      const result = left.add(right);
+
+      return result;
+    } else {
+      return null;
+    }
   }
 }

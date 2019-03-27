@@ -62,6 +62,8 @@ export class Aleph {
   private _camera: Entity;
   private _tcontrols: THREE.OrbitControls;
   private _intersectingTool: boolean;
+
+  private _lastCameraPosition: THREE.Vector3;
   //#endregion
 
   //#region Redux states, props & methods
@@ -162,6 +164,11 @@ export class Aleph {
     this._setToolsEnabled(enabled);
   }
 
+  @Method()
+  async setBoundingBoxVisible(visible: boolean) {
+    this._setBoundingBoxVisible(visible);
+  }
+
   @Event() onLoad: EventEmitter;
   @Event() onSave: EventEmitter;
   @Event() onToolsChanged: EventEmitter;
@@ -259,6 +266,8 @@ export class Aleph {
     this._controlsEnabledHandler = this._controlsEnabledHandler.bind(this);
     this._controlsDisabledHandler = this._controlsDisabledHandler.bind(this);
     this._animationFinished = this._animationFinished.bind(this);
+
+    this._lastCameraPosition = new THREE.Vector3(0, 0, 0);
   }
 
   //#region Rendering Methods
@@ -368,34 +377,26 @@ export class Aleph {
 
   private _renderCamera(): JSX.Element {
     let camData = {
-      position: new THREE.Vector3(0, 0, 0),
+      position: this._lastCameraPosition,
       target: new THREE.Vector3(0, 0, 0)
     } as AlCameraSerial;
     let mesh: THREE.Mesh;
     let radius: number = 1;
 
-    // If the target entity exists
-    if (this._targetEntity) {
-      // If we're animating to a tool
-      // TODO: Differentiate between Tool -> Tool && Target -> Target animations
-      if (this.cameraAnimating && this.selectedTool !== null) {
-        // Get camera state from tool and set as result
-        let result = GetUtils.getCameraStateFromTool(
-          GetUtils.getToolById(this.selectedTool, this.tools)
-        );
-        if (result) {
-          camData = result;
-          mesh = this._targetEntity.object3DMap.mesh as THREE.Mesh;
-          radius = mesh.geometry.boundingSphere.radius;
-        }
-      } else {
-        // Get camera state from entity and set as result
-        let result = GetUtils.getCameraStateFromEntity(this._targetEntity);
-        if (result) {
-          camData = result;
-          mesh = this._targetEntity.object3DMap.mesh as THREE.Mesh;
-          radius = mesh.geometry.boundingSphere.radius;
-        }
+    // IF we're animating to a tool
+    // TODO: Differentiate between Tool -> Tool && Target -> Target animations
+    if (this.cameraAnimating) {
+      // Get camera state from tool and set as result
+      let result = GetUtils.getCameraStateFromTool(
+        GetUtils.getToolById(this.selectedTool, this.tools)
+      );
+      // If we returned a result AND the difference between the last position and the result position is not 0
+      const diff = result.position.distanceTo(this._lastCameraPosition);
+      if (result && diff !== 0) {
+        camData = result;
+        this._lastCameraPosition = camData.position;
+        mesh = this._targetEntity.object3DMap.mesh as THREE.Mesh;
+        radius = mesh.geometry.boundingSphere.radius;
       }
     }
 
@@ -419,7 +420,7 @@ export class Aleph {
       targetPosition: ${ThreeUtils.vector3ToString(camData.target)};
       cameraPosition: ${ThreeUtils.vector3ToString(camData.position)};
       boundingRadius: ${radius};
-      animating: ${this.cameraAnimating}
+      cameraAnimating: ${this.cameraAnimating}
     `}
         ref={el => (this._camera = el)}
       >
@@ -442,47 +443,6 @@ export class Aleph {
         {this._renderCamera()}
       </a-scene>
     );
-  }
-
-  private _renderControlPanel(): JSX.Element {
-    return null;
-    // todo: tunnel state
-    // return (
-    //   <al-control-panel
-    //     boundingBoxVisible={this.boundingBoxVisible}
-    //     displayMode={this.displayMode}
-    //     optionsEnabled={this.optionsEnabled}
-    //     optionsVisible={this.optionsVisible}
-    //     orientation={this.orientation}
-    //     selectedTool={this.selectedTool}
-    //     slicesIndex={this.slicesIndex}
-    //     slicesWindowCenter={this.slicesWindowCenter}
-    //     slicesWindowWidth={this.slicesWindowWidth}
-    //     stack={this._stack}
-    //     stackHelper={this._stackHelper}
-    //     tools={this.tools}
-    //     toolsEnabled={this.toolsEnabled}
-    //     toolsVisible={this.toolsVisible}
-    //     volumeSteps={this.volumeSteps}
-    //     volumeWindowCenter={this.volumeWindowCenter}
-    //     volumeWindowWidth={this.volumeWindowWidth}
-    //     addTool={this._addTool}
-    //     removeTool={this._removeTool}
-    //     saveTools={this._saveTools}
-    //     selectTool={this._selectTool}
-    //     setBoundingBoxVisible={this.appSetBoundingBoxVisible}
-    //     setDisplayMode={this.appSetDisplayMode}
-    //     setOptionsEnabled={this.appSetOptionsEnabled}
-    //     setOrientation={this.appSetOrientation}
-    //     setSlicesIndex={this.appSetSlicesIndex}
-    //     setSlicesWindowCenter={this.appSetSlicesWindowCenter}
-    //     setSlicesWindowWidth={this.appSetSlicesWindowWidth}
-    //     setToolsEnabled={this._setToolsEnabled}
-    //     setVolumeSteps={this.appSetVolumeSteps}
-    //     setVolumeWindowCenter={this.appSetVolumeWindowCenter}
-    //     setVolumeWindowWidth={this.appSetVolumeWindowWidth}
-    //   />
-    // );
   }
 
   render(): JSX.Element {
@@ -511,25 +471,13 @@ export class Aleph {
     this.onToolsChanged.emit(this.tools);
   }
 
-  // private _saveTools(): void {
-  //   this.onSave.emit(this.tools);
-  // }
-
   private _addTool(tool: AlToolSerial): void {
     this.appAddTool(tool);
     this.onToolsChanged.emit(this.tools);
     this._selectTool(tool.id, false);
   }
 
-  // private _removeTool(toolId: string): void {
-  //   this.appRemoveTool(toolId);
-  //   this.onToolsChanged.emit(this.tools);
-  // }
-
   private _selectTool(toolId: string, animate: boolean): void {
-    if (this.cameraAnimating) {
-      return;
-    }
     if (animate && toolId !== this.selectedTool) {
       this.appSetCameraAnimating(true); // todo: can we pass boolean to appSelectTool to set cameraAnimating in the state?
     }
@@ -541,6 +489,10 @@ export class Aleph {
     this.appSetToolsEnabled(enabled);
   }
 
+  private _setBoundingBoxVisible(visible: boolean): void {
+    this.appSetBoundingBoxVisible(visible);
+  }
+
   private _srcLoaded(): void {
     const mesh: THREE.Mesh = this._targetEntity.object3DMap.mesh as THREE.Mesh;
     mesh.geometry.computeBoundingSphere();
@@ -550,6 +502,10 @@ export class Aleph {
       selectedTool: this.selectedTool,
       tools: this.tools
     } as AlAppState);
+    let result = GetUtils.getCameraStateFromEntity(this._targetEntity);
+    if (result) {
+      this._lastCameraPosition = result.position;
+    }
   }
   //#endregion
 
