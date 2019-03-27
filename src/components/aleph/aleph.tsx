@@ -340,6 +340,10 @@ export class Aleph {
     for (var i = 0; i < dataTools.length; i++) {
       if (i < dataTools.length) {
         const tool: AlToolSerial = dataTools[i];
+
+        let textOffset = new THREE.Vector3(0.1, 0.1, 0.01);
+        textOffset.multiplyScalar(tool.scale);
+
         outTools.push(
           <a-entity
             class="collidable"
@@ -351,10 +355,20 @@ export class Aleph {
               scale: ${tool.scale};
               selected: ${this.selectedTool === tool.id};
               toolsEnabled: ${this.toolsEnabled};
-              text: ${tool.text};
-              textOffset: ${tool.textOffset};
             `}
-          />
+          >
+            <a-entity
+              //geometry="primitive: plane; height: auto; width: auto"
+              text={`
+                value: ${tool.text}; 
+                side: double;
+                baseline: bottom;
+                anchor: left;
+              `}
+              position={ThreeUtils.vector3ToString(textOffset)}
+              id={`${tool.id}-label"`}
+            />
+          </a-entity>
         );
       }
     }
@@ -388,7 +402,8 @@ export class Aleph {
     if (this.cameraAnimating) {
       // Get camera state from tool and set as result
       let result = GetUtils.getCameraStateFromTool(
-        GetUtils.getToolById(this.selectedTool, this.tools)
+        GetUtils.getToolById(this.selectedTool, this.tools),
+        this._boundingSphereRadius
       );
       // If we returned a result AND the difference between the last position and the result position is not 0
       const diff = result.position.distanceTo(this._lastCameraPosition);

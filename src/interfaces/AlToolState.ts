@@ -8,6 +8,4 @@ export interface AlToolState {
   target: THREE.Vector3;
   dragging: boolean;
   mouseDown: boolean;
-  text: string;
-  textOffset: THREE.Vector3;
 }

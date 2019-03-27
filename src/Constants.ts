@@ -1,9 +1,9 @@
 export class Constants {
-  static toolSize = 10;
+  static toolSize = 50;
 
   static splashBackSize = 5;
 
-  static initialZoom = 5;
+  static zoomFactor = 2.5;
 
   static maxAnimationSteps = 100;
 

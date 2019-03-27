@@ -8,9 +8,7 @@ export class AlTool implements AframeRegistry {
         target: { type: "vec3" },
         scale: { type: "number", default: 1 },
         selected: { type: "boolean" },
-        toolsEnabled: { type: "boolean" },
-        text: { type: "string" },
-        textOffset: { type: "vec3" }
+        toolsEnabled: { type: "boolean" }
       },
 
       init(): void {
@@ -25,10 +23,6 @@ export class AlTool implements AframeRegistry {
         let material = new THREE.MeshBasicMaterial();
         material.color = new THREE.Color(Constants.toolColors.selected);
         const mesh = new THREE.Mesh(geometry, material);
-        let textOffset = new THREE.Vector3();
-        textOffset.x = data.textOffset.x;
-        textOffset.y = data.textOffset.y;
-        textOffset.z = data.textOffset.z;
 
         el.setObject3D("mesh", mesh);
 
@@ -79,9 +73,7 @@ export class AlTool implements AframeRegistry {
           mesh,
           camera,
           target: targetPos,
-          dragging: false,
-          text: data.text,
-          textOffset
+          dragging: false
         } as AlToolState;
       },
 
