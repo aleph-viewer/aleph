@@ -6,7 +6,7 @@ import {
   Watch,
   State
 } from "@stencil/core";
-import { AlToolSerial } from "../../interfaces";
+import { AlNodeSerial } from "../../interfaces";
 import { DisplayMode } from "../../enums/DisplayMode";
 import { Orientation } from "../../enums/Orientation";
 
@@ -23,7 +23,7 @@ export class AlControlPanel {
   @Event() onSetSlicesIndex: EventEmitter;
   @Event() onSetSlicesWindowCenter: EventEmitter;
   @Event() onSetSlicesWindowWidth: EventEmitter;
-  @Event() onSetToolsEnabled: EventEmitter;
+  @Event() onSetNodesEnabled: EventEmitter;
   @Event() onSetVolumeSteps: EventEmitter;
   @Event() onSetVolumeWindowCenter: EventEmitter;
   @Event() onSetVolumeWindowWidth: EventEmitter;
@@ -33,15 +33,15 @@ export class AlControlPanel {
   @Prop({ mutable: true }) optionsEnabled: boolean = false;
   @Prop({ mutable: true }) optionsVisible: boolean = true;
   @Prop({ mutable: true }) orientation: Orientation = Orientation.CORONAL;
-  @Prop({ mutable: true }) selectedTool: string | null = null;
+  @Prop({ mutable: true }) selectedNode: string | null = null;
   @Prop({ mutable: true }) slicesIndex: number;
   @Prop({ mutable: true }) slicesWindowCenter: number;
   @Prop({ mutable: true }) slicesWindowWidth: number;
   @Prop({ mutable: true }) stack: any;
   @Prop({ mutable: true }) stackHelper: AMI.StackHelper;
-  @Prop({ mutable: true }) tools: AlToolSerial[] = [];
-  @Prop({ mutable: true }) toolsEnabled: boolean = false;
-  @Prop({ mutable: true }) toolsVisible: boolean = true;
+  @Prop({ mutable: true }) nodes: AlNodeSerial[] = [];
+  @Prop({ mutable: true }) nodesEnabled: boolean = false;
+  @Prop({ mutable: true }) nodesVisible: boolean = true;
   @Prop({ mutable: true }) volumeSteps: number;
   @Prop({ mutable: true }) volumeWindowCenter: number;
   @Prop({ mutable: true }) volumeWindowWidth: number;
@@ -70,8 +70,8 @@ export class AlControlPanel {
     this.onSetOrientation.emit(orientation);
   }
 
-  private _selectedTool(toolId: string | null) {
-    this.selectedTool = toolId;
+  private _selectedNode(nodeId: string | null) {
+    this.selectedNode = nodeId;
   }
 
   private _slicesIndex(index: number) {
@@ -97,17 +97,17 @@ export class AlControlPanel {
     this.stackHelper = helper;
   }
 
-  private _tools(tools: AlToolSerial[]) {
-    this.tools = tools;
+  private _nodes(nodes: AlNodeSerial[]) {
+    this.nodes = nodes;
   }
 
-  private _toolsEnabled(enabled: boolean) {
-    this.toolsEnabled = enabled;
-    this.onSetToolsEnabled.emit(enabled);
+  private _nodesEnabled(enabled: boolean) {
+    this.nodesEnabled = enabled;
+    this.onSetNodesEnabled.emit(enabled);
   }
 
-  private _toolsVisible(vislbe: boolean) {
-    this.toolsVisible = vislbe;
+  private _nodesVisible(vislbe: boolean) {
+    this.nodesVisible = vislbe;
   }
 
   private _volumeSteps(steps: number) {
@@ -155,12 +155,12 @@ export class AlControlPanel {
     return null;
   }
 
-  renderToolsToggle(): JSX.Element {
-    if (this.toolsVisible) {
+  renderNodesToggle(): JSX.Element {
+    if (this.nodesVisible) {
       return (
         <ion-item>
           <ion-icon name="create" />
-          <ion-toggle onIonChange={e => this._toolsEnabled(e.detail.checked)} />
+          <ion-toggle onIonChange={e => this._nodesEnabled(e.detail.checked)} />
         </ion-item>
       );
     }
@@ -168,22 +168,22 @@ export class AlControlPanel {
     return null;
   }
 
-  renderTools(): JSX.Element {
-    //if (this.toolsVisible && this.toolsEnabled) {
+  renderNodes(): JSX.Element {
+    //if (this.nodesVisible && this.nodesEnabled) {
     //return [
     // <div class="al-list">
-    //   {this.tools.map((tool: Tool) => {
+    //   {this.nodes.map((node: Node) => {
     //     return (
     //       <label class="block">
     //         <input
     //           type="radio"
-    //           checked={this.selectedTool === tool.id}
-    //           id={tool.id}
-    //           name="tool"
-    //           value={tool.id}
-    //           onChange={e => this.selectTool(e.srcElement.id)}
+    //           checked={this.selectedNode === node.id}
+    //           id={node.id}
+    //           name="node"
+    //           value={node.id}
+    //           onChange={e => this.selectNode(e.srcElement.id)}
     //         />
-    //         {tool.id}
+    //         {node.id}
     //       </label>
     //     );
     //   })}
@@ -191,33 +191,33 @@ export class AlControlPanel {
     // <ion-footer>
     {
       /* <ion-item>
-            <ion-label>Tool Type</ion-label>
+            <ion-label>Node Type</ion-label>
             <select
               onChange={e =>
-                this.setToolType((e.target as HTMLSelectElement)
-                  .value as ToolType)
+                this.setNodeType((e.target as HTMLSelectElement)
+                  .value as NodeType)
               }
             >
-              {this.angleToolEnabled ? (
+              {this.angleNodeEnabled ? (
                 <option
-                  selected={this.toolType === ToolType.ANGLE}
-                  value={ToolType.ANGLE}
+                  selected={this.nodeType === NodeType.ANGLE}
+                  value={NodeType.ANGLE}
                 >
                   Angle
                 </option>
               ) : null}
-              {this.annotationToolEnabled ? (
+              {this.annotationNodeEnabled ? (
                 <option
-                  selected={this.toolType === ToolType.ANNOTATION}
-                  value={ToolType.ANNOTATION}
+                  selected={this.nodeType === NodeType.ANNOTATION}
+                  value={NodeType.ANNOTATION}
                 >
                   Annotation
                 </option>
               ) : null}
-              {this.rulerToolEnabled ? (
+              {this.rulerNodeEnabled ? (
                 <option
-                  selected={this.toolType === ToolType.RULER}
-                  value={ToolType.RULER}
+                  selected={this.nodeType === NodeType.RULER}
+                  value={NodeType.RULER}
                 >
                   Ruler
                 </option>
@@ -225,13 +225,13 @@ export class AlControlPanel {
             </select>
           </ion-item> */
     }
-    // <ion-toolbar>
+    // <ion-nodebar>
     //   <ion-buttons>
     {
       /* <ion-button
                 onClick={() => {
-                  this.addTool(
-                    CreateUtils.createTool(this.tools, this.toolType)
+                  this.addNode(
+                    CreateUtils.createNode(this.nodes, this.nodeType)
                   );
                 }}
               >
@@ -241,17 +241,17 @@ export class AlControlPanel {
     {
       /* <ion-button
                 onClick={() => {
-                  this.saveTools();
+                  this.saveNodes();
                 }}
               >
                 Save
               </ion-button> */
     }
     {
-      /* {this.selectedTool !== null ? (
+      /* {this.selectedNode !== null ? (
                 <ion-button
                   onClick={() => {
-                    this.onRemoveTool.emit(this.selectedTool);
+                    this.onRemoveNode.emit(this.selectedNode);
                   }}
                 >
                   Delete
@@ -259,7 +259,7 @@ export class AlControlPanel {
               ) : null} */
     }
     //     </ion-buttons>
-    //   </ion-toolbar>
+    //   </ion-nodebar>
     // </ion-footer>
     //];
     //}
@@ -517,8 +517,8 @@ export class AlControlPanel {
       <div id="al-control-panel-wrapper">
         <ion-app>
           {this.renderDisplayModeToggle()}
-          {this.renderToolsToggle()}
-          {this.renderTools()}
+          {this.renderNodesToggle()}
+          {this.renderNodes()}
           {this.renderOptionsToggle()}
           {this.renderOptions()}
         </ion-app>

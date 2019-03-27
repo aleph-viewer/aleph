@@ -1,4 +1,4 @@
-import { AlToolSerial } from "../interfaces/AlToolSerial";
+import { AlNodeSerial } from "../interfaces/AlNodeSerial";
 import { DisplayMode } from "../enums/DisplayMode";
 import { Orientation } from "../enums/Orientation";
 
@@ -11,15 +11,15 @@ export type ActionTypes =
   | NullAction
   | AppSetSrcAction
   | AppSetSrcLoadedAction
-  | AppAddToolAction
-  | AppRemoveToolAction
-  | AppSelectToolAction
-  | AppUpdateToolAction
-  | AppLoadToolsAction
+  | AppAddNodeAction
+  | AppRemoveNodeAction
+  | AppSelectNodeAction
+  | AppUpdateNodeAction
+  | AppLoadNodesAction
   | AppSetDisplayModeAction
   | AppSetOrientationAction
-  | AppSetToolsVisibleAction
-  | AppSetToolsEnabledAction
+  | AppSetNodesVisibleAction
+  | AppSetNodesEnabledAction
   | AppSetOptionsVisibleAction
   | AppSetOptionsEnabledAction
   | AppSetBoundingBoxVisibleAction
@@ -84,12 +84,12 @@ export const appSetSrcLoaded = (payload: boolean) => async (
   });
 };
 
-export interface AppAddToolAction {
+export interface AppAddNodeAction {
   type: TypeKeys.APP_ADD_TOOL;
-  payload: AlToolSerial;
+  payload: AlNodeSerial;
 }
 
-export const appAddTool = (payload: AlToolSerial) => async (
+export const appAddNode = (payload: AlNodeSerial) => async (
   dispatch,
   _getState
 ) => {
@@ -99,12 +99,12 @@ export const appAddTool = (payload: AlToolSerial) => async (
   });
 };
 
-export interface AppRemoveToolAction {
+export interface AppRemoveNodeAction {
   type: TypeKeys.APP_REMOVE_TOOL;
   payload: string | null;
 }
 
-export const appRemoveTool = (payload: number) => async (
+export const appRemoveNode = (payload: number) => async (
   dispatch,
   _getState
 ) => {
@@ -114,12 +114,12 @@ export const appRemoveTool = (payload: number) => async (
   });
 };
 
-export interface AppSelectToolAction {
+export interface AppSelectNodeAction {
   type: TypeKeys.APP_SELECT_TOOL;
   payload: number;
 }
 
-export const appSelectTool = (payload: number) => async (
+export const appSelectNode = (payload: number) => async (
   dispatch,
   _getState
 ) => {
@@ -129,12 +129,12 @@ export const appSelectTool = (payload: number) => async (
   });
 };
 
-export interface AppUpdateToolAction {
+export interface AppUpdateNodeAction {
   type: TypeKeys.APP_UPDATE_TOOL;
-  payload: AlToolSerial;
+  payload: AlNodeSerial;
 }
 
-export const appUpdateTool = (payload: AlToolSerial) => async (
+export const appUpdateNode = (payload: AlNodeSerial) => async (
   dispatch,
   _getState
 ) => {
@@ -144,12 +144,12 @@ export const appUpdateTool = (payload: AlToolSerial) => async (
   });
 };
 
-export interface AppLoadToolsAction {
+export interface AppLoadNodesAction {
   type: TypeKeys.APP_LOAD_TOOLS;
   payload: any;
 }
 
-export const appLoadTools = (payload: void) => async (dispatch, _getState) => {
+export const appLoadNodes = (payload: void) => async (dispatch, _getState) => {
   return dispatch({
     type: TypeKeys.APP_LOAD_TOOLS,
     payload: payload
@@ -186,12 +186,12 @@ export const appSetOrientation = (payload: Orientation) => async (
   });
 };
 
-export interface AppSetToolsVisibleAction {
+export interface AppSetNodesVisibleAction {
   type: TypeKeys.APP_SET_TOOLS_VISIBLE;
   payload: boolean;
 }
 
-export const appSetToolsVisible = (payload: boolean) => async (
+export const appSetNodesVisible = (payload: boolean) => async (
   dispatch,
   _getState
 ) => {
@@ -201,12 +201,12 @@ export const appSetToolsVisible = (payload: boolean) => async (
   });
 };
 
-export interface AppSetToolsEnabledAction {
+export interface AppSetNodesEnabledAction {
   type: TypeKeys.APP_SET_TOOLS_ENABLED;
   payload: boolean;
 }
 
-export const appSetToolsEnabled = (payload: boolean) => async (
+export const appSetNodesEnabled = (payload: boolean) => async (
   dispatch,
   _getState
 ) => {

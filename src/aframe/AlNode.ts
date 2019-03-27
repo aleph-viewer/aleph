@@ -1,15 +1,15 @@
-import { AframeRegistry, AframeComponent, AlToolState } from "../interfaces";
+import { AframeRegistry, AframeComponent, AlNodeState } from "../interfaces";
 import { Constants } from "../Constants";
 import { AlOrbitControlEvents } from ".";
 
-export class AlTool implements AframeRegistry {
+export class AlNode implements AframeRegistry {
   public static getObject(): AframeComponent {
     return {
       schema: {
         target: { type: "vec3" },
         scale: { type: "number", default: 1 },
         selected: { type: "boolean" },
-        toolsEnabled: { type: "boolean" }
+        nodesEnabled: { type: "boolean" }
       },
 
       init(): void {
@@ -22,43 +22,43 @@ export class AlTool implements AframeRegistry {
         const camera = el.sceneEl.camera.el.object3DMap.camera;
         const geometry = new THREE.SphereGeometry(data.scale, 16, 16);
         let material = new THREE.MeshBasicMaterial();
-        material.color = new THREE.Color(Constants.toolColors.selected);
+        material.color = new THREE.Color(Constants.nodeColors.selected);
         const mesh = new THREE.Mesh(geometry, material);
 
         el.setObject3D("mesh", mesh);
 
         //#region Event Listeners
         el.addEventListener("mousedown", _evt => {
-          if (this.data.toolsEnabled) {
-            let state = this.state as AlToolState;
+          if (this.data.nodesEnabled) {
+            let state = this.state as AlNodeState;
             state.mouseDown = true;
-            this.el.emit(AlToolEvents.CONTROLS_DISABLED, {}, true);
-            this.el.emit(AlToolEvents.SELECTED, { id: this.el.id }, true);
+            this.el.emit(AlNodeEvents.CONTROLS_DISABLED, {}, true);
+            this.el.emit(AlNodeEvents.SELECTED, { id: this.el.id }, true);
           }
         });
 
         el.addEventListener("mouseup", _evt => {
-          if (this.data.toolsEnabled) {
-            let state = this.state as AlToolState;
+          if (this.data.nodesEnabled) {
+            let state = this.state as AlNodeState;
             state.dragging = false;
             state.mouseDown = false;
-            this.el.emit(AlToolEvents.CONTROLS_ENABLED), {}, true;
+            this.el.emit(AlNodeEvents.CONTROLS_ENABLED), {}, true;
           }
         });
 
         el.addEventListener("raycaster-intersected", _evt => {
-          let state = this.state as AlToolState;
+          let state = this.state as AlNodeState;
           state.hovered = true;
-          this.el.emit(AlToolEvents.INTERSECTION, {}, true);
+          this.el.emit(AlNodeEvents.INTERSECTION, {}, true);
         });
 
         el.addEventListener("raycaster-intersected-cleared", _evt => {
-          let state = this.state as AlToolState;
+          let state = this.state as AlNodeState;
           state.hovered = false;
           if (state.mouseDown && state.selected) {
             state.dragging = true;
           }
-          this.el.emit(AlToolEvents.INTERSECTION_CLEARED, {}, true);
+          this.el.emit(AlNodeEvents.INTERSECTION_CLEARED, {}, true);
         });
 
         let targetPos = new THREE.Vector3();
@@ -80,27 +80,27 @@ export class AlTool implements AframeRegistry {
           target: targetPos,
           dragging: false,
           lastCameraPosition: lookPos
-        } as AlToolState;
+        } as AlNodeState;
       },
 
       update(): void {
-        let state = this.state as AlToolState;
+        let state = this.state as AlNodeState;
         state.target = this.data.target;
         state.selected = this.data.selected;
       },
 
       tick(): void {
-        let state = this.state as AlToolState;
-        if (this.data.toolsEnabled && state.dragging) {
-          this.el.emit(AlToolEvents.DRAGGING, { id: this.el.id }, true);
+        let state = this.state as AlNodeState;
+        if (this.data.nodesEnabled && state.dragging) {
+          this.el.emit(AlNodeEvents.DRAGGING, { id: this.el.id }, true);
         }
 
         if (state.hovered || state.dragging) {
-          state.material.color = new THREE.Color(Constants.toolColors.hovered);
+          state.material.color = new THREE.Color(Constants.nodeColors.hovered);
         } else if (state.selected) {
-          state.material.color = new THREE.Color(Constants.toolColors.selected);
+          state.material.color = new THREE.Color(Constants.nodeColors.selected);
         } else {
-          state.material.color = new THREE.Color(Constants.toolColors.normal);
+          state.material.color = new THREE.Color(Constants.nodeColors.normal);
         }
 
         if (!state.lastCameraPosition.equals(state.camera.position)) {
@@ -125,15 +125,15 @@ export class AlTool implements AframeRegistry {
   }
 
   public static getName(): string {
-    return "al-tool";
+    return "al-node";
   }
 }
 
-export class AlToolEvents {
-  static SELECTED: string = "al-tool-selected";
-  static INTERSECTION: string = "al-tool-intersection";
-  static INTERSECTION_CLEARED: string = "al-tool-intersection-cleared";
-  static DRAGGING: string = "al-tool-dragging";
+export class AlNodeEvents {
+  static SELECTED: string = "al-node-selected";
+  static INTERSECTION: string = "al-node-intersection";
+  static INTERSECTION_CLEARED: string = "al-node-intersection-cleared";
+  static DRAGGING: string = "al-node-dragging";
   static CONTROLS_ENABLED: string = "al-control-enable";
   static CONTROLS_DISABLED: string = "al-control-disabled";
   static ANIMATION_STARTED: string = "al-animation-started";

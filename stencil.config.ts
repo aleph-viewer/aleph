@@ -13,7 +13,7 @@ export const config: Config = {
   bundles: [
     { components: ['uv-aleph'] },
     { components: ['al-control-panel'] },
-    { components: ['al-tool-list'] }
+    { components: ['al-node-list'] }
   ],
   copy: [
   ],

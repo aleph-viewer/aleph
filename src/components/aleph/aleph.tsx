@@ -10,15 +10,15 @@ import { Store, Action } from "@stencil/redux";
 import {
   appSetSrc,
   appSetSrcLoaded,
-  appAddTool,
-  appRemoveTool,
-  appSelectTool,
-  appUpdateTool,
-  appLoadTools,
+  appAddNode,
+  appRemoveNode,
+  appSelectNode,
+  appUpdateNode,
+  appLoadNodes,
   appSetDisplayMode,
   appSetOrientation,
-  appSetToolsVisible,
-  appSetToolsEnabled,
+  appSetNodesVisible,
+  appSetNodesEnabled,
   appSetOptionsVisible,
   appSetOptionsEnabled,
   appSetBoundingBoxVisible,
@@ -31,13 +31,13 @@ import {
   appSetCameraAnimating
 } from "../../redux/actions";
 import { configureStore } from "../../redux/store";
-import { AlToolSerial, AlCameraSerial, AlAppState } from "../../interfaces";
+import { AlNodeSerial, AlCameraSerial, AlAppState } from "../../interfaces";
 import { GetUtils, ThreeUtils, CreateUtils } from "../../utils";
 import { Constants } from "../../Constants";
 import { MeshFileType, Orientation, DisplayMode } from "../../enums";
 import {
-  AlToolEvents,
-  AlToolSpawnerEvents,
+  AlNodeEvents,
+  AlNodeSpawnerEvents,
   AlGltfModelEvents,
   AlOrbitControlEvents
 } from "../../aframe";
@@ -61,7 +61,7 @@ export class Aleph {
   private _validTarget: boolean;
   private _camera: Entity;
   private _tcontrols: THREE.OrbitControls;
-  private _intersectingTool: boolean;
+  private _intersectingNode: boolean;
 
   private _lastCameraPosition: THREE.Vector3;
   //#endregion
@@ -76,15 +76,15 @@ export class Aleph {
 
   appSetSrc: Action;
   appSetSrcLoaded: Action;
-  appAddTool: Action;
-  appRemoveTool: Action;
-  appSelectTool: Action;
-  appUpdateTool: Action;
-  appLoadTools: Action;
+  appAddNode: Action;
+  appRemoveNode: Action;
+  appSelectNode: Action;
+  appUpdateNode: Action;
+  appLoadNodes: Action;
   appSetDisplayMode: Action;
   appSetOrientation: Action;
-  appSetToolsVisible: Action;
-  appSetToolsEnabled: Action;
+  appSetNodesVisible: Action;
+  appSetNodesEnabled: Action;
   appSetOptionsVisible: Action;
   appSetOptionsEnabled: Action;
   appSetBoundingBoxVisible: Action;
@@ -98,12 +98,12 @@ export class Aleph {
 
   @State() src: string | null;
   @State() srcLoaded: boolean;
-  @State() selectedTool: string;
-  @State() tools: AlToolSerial[];
+  @State() selectedNode: string;
+  @State() nodes: AlNodeSerial[];
   @State() displayMode: DisplayMode;
   @State() orientation: Orientation;
-  @State() toolsVisible: boolean;
-  @State() toolsEnabled: boolean;
+  @State() nodesVisible: boolean;
+  @State() nodesEnabled: boolean;
   @State() optionsVisible: boolean;
   @State() optionsEnabled: boolean;
   @State() boundingBoxVisible: boolean;
@@ -150,18 +150,18 @@ export class Aleph {
   }
 
   @Method()
-  async loadTools(tools: AlToolSerial[]) {
-    this._loadTools(tools);
+  async loadNodes(nodes: AlNodeSerial[]) {
+    this._loadNodes(nodes);
   }
 
   @Method()
-  async selectTool(toolId: string) {
-    this._selectTool(toolId, true);
+  async selectNode(nodeId: string) {
+    this._selectNode(nodeId, true);
   }
 
   @Method()
-  async setToolsEnabled(enabled: boolean) {
-    this._setToolsEnabled(enabled);
+  async setNodesEnabled(enabled: boolean) {
+    this._setNodesEnabled(enabled);
   }
 
   @Method()
@@ -171,8 +171,8 @@ export class Aleph {
 
   @Event() onLoad: EventEmitter;
   @Event() onSave: EventEmitter;
-  @Event() onToolsChanged: EventEmitter;
-  @Event() onSelectedToolChanged: EventEmitter;
+  @Event() onNodesChanged: EventEmitter;
+  @Event() onSelectedNodeChanged: EventEmitter;
   //#endregion
 
   componentWillLoad() {
@@ -185,12 +185,12 @@ export class Aleph {
         app: {
           src,
           srcLoaded,
-          selectedTool,
-          tools,
+          selectedNode,
+          nodes,
           displayMode,
           orientation,
-          toolsVisible,
-          toolsEnabled,
+          nodesVisible,
+          nodesEnabled,
           optionsVisible,
           optionsEnabled,
           boundingBoxVisible,
@@ -207,12 +207,12 @@ export class Aleph {
       return {
         src,
         srcLoaded,
-        selectedTool,
-        tools,
+        selectedNode,
+        nodes,
         displayMode,
         orientation,
-        toolsVisible,
-        toolsEnabled,
+        nodesVisible,
+        nodesEnabled,
         optionsVisible,
         optionsEnabled,
         boundingBoxVisible,
@@ -229,15 +229,15 @@ export class Aleph {
     this.store.mapDispatchToProps(this, {
       appSetSrc,
       appSetSrcLoaded,
-      appAddTool,
-      appRemoveTool,
-      appSelectTool,
-      appUpdateTool,
-      appLoadTools,
+      appAddNode,
+      appRemoveNode,
+      appSelectNode,
+      appUpdateNode,
+      appLoadNodes,
       appSetDisplayMode,
       appSetOrientation,
-      appSetToolsVisible,
-      appSetToolsEnabled,
+      appSetNodesVisible,
+      appSetNodesEnabled,
       appSetOptionsVisible,
       appSetOptionsEnabled,
       appSetBoundingBoxVisible,
@@ -252,16 +252,16 @@ export class Aleph {
 
     // set up event handlers
     this._srcLoaded = this._srcLoaded.bind(this);
-    this._addToolEventHandler = this._addToolEventHandler.bind(this);
+    this._addNodeEventHandler = this._addNodeEventHandler.bind(this);
     this._validTargetEventHandler = this._validTargetEventHandler.bind(this);
-    this._toolSelectedEventHandler = this._toolSelectedEventHandler.bind(this);
-    this._intersectingToolEventHandler = this._intersectingToolEventHandler.bind(
+    this._nodeSelectedEventHandler = this._nodeSelectedEventHandler.bind(this);
+    this._intersectingNodeEventHandler = this._intersectingNodeEventHandler.bind(
       this
     );
     this._intersectionClearedEventHandler = this._intersectionClearedEventHandler.bind(
       this
     );
-    this._toolMovedEventHandler = this._toolMovedEventHandler.bind(this);
+    this._nodeMovedEventHandler = this._nodeMovedEventHandler.bind(this);
     this._controlsInitEventHandler = this._controlsInitEventHandler.bind(this);
     this._controlsEnabledHandler = this._controlsEnabledHandler.bind(this);
     this._controlsDisabledHandler = this._controlsDisabledHandler.bind(this);
@@ -298,8 +298,8 @@ export class Aleph {
       case DisplayMode.MESH: {
         return (
           <a-entity
-            al-tool-spawner={`
-              toolsEnabled: ${this.toolsEnabled};
+            al-node-spawner={`
+              nodesEnabled: ${this.nodesEnabled};
             `}
             class="collidable"
             id="target-entity"
@@ -316,8 +316,8 @@ export class Aleph {
       default: {
         return (
           <a-entity
-            al-tool-spawner={`
-            toolsEnabled: ${this.toolsEnabled};
+            al-node-spawner={`
+            nodesEnabled: ${this.nodesEnabled};
           `}
             class="collidable"
             id="target-entity"
@@ -333,46 +333,46 @@ export class Aleph {
     }
   }
 
-  private _renderTools(): JSX.Element {
-    const outTools: JSX.Element[] = [];
-    const dataTools: AlToolSerial[] = this.tools;
+  private _renderNodes(): JSX.Element {
+    const outNodes: JSX.Element[] = [];
+    const dataNodes: AlNodeSerial[] = this.nodes;
 
-    for (var i = 0; i < dataTools.length; i++) {
-      if (i < dataTools.length) {
-        const tool: AlToolSerial = dataTools[i];
+    for (var i = 0; i < dataNodes.length; i++) {
+      if (i < dataNodes.length) {
+        const node: AlNodeSerial = dataNodes[i];
 
         let textOffset = new THREE.Vector3(0.1, 0.1, 0.01);
-        textOffset.multiplyScalar(tool.scale);
+        textOffset.multiplyScalar(node.scale);
 
-        outTools.push(
+        outNodes.push(
           <a-entity
             class="collidable"
-            id={tool.id}
+            id={node.id}
             rotation="0 0 0"
-            position={tool.position}
-            al-tool={`
-              target: ${tool.target};
-              scale: ${tool.scale};
-              selected: ${this.selectedTool === tool.id};
-              toolsEnabled: ${this.toolsEnabled};
+            position={node.position}
+            al-node={`
+              target: ${node.target};
+              scale: ${node.scale};
+              selected: ${this.selectedNode === node.id};
+              nodesEnabled: ${this.nodesEnabled};
             `}
           >
             <a-entity
               //geometry="primitive: plane; height: auto; width: auto"
               text={`
-                value: ${tool.text}; 
+                value: ${node.text}; 
                 side: double;
                 baseline: bottom;
                 anchor: left;
               `}
               position={ThreeUtils.vector3ToString(textOffset)}
-              id={`${tool.id}-label"`}
+              id={`${node.id}-label"`}
             />
           </a-entity>
         );
       }
     }
-    return outTools;
+    return outNodes;
   }
 
   private _renderLights(): JSX.Element {
@@ -397,12 +397,12 @@ export class Aleph {
     let mesh: THREE.Mesh;
     let radius: number = 1;
 
-    // IF we're animating to a tool
-    // TODO: Differentiate between Tool -> Tool && Target -> Target animations
+    // IF we're animating to a node
+    // TODO: Differentiate between Node -> Node && Target -> Target animations
     if (this.cameraAnimating) {
-      // Get camera state from tool and set as result
-      let result = GetUtils.getCameraStateFromTool(
-        GetUtils.getToolById(this.selectedTool, this.tools),
+      // Get camera state from node and set as result
+      let result = GetUtils.getCameraStateFromNode(
+        GetUtils.getNodeById(this.selectedNode, this.nodes),
         this._boundingSphereRadius
       );
       // If we returned a result AND the difference between the last position and the result position is not 0
@@ -453,7 +453,7 @@ export class Aleph {
         ref={el => (this._scene = el)}
       >
         {this._renderSrc()}
-        {this._renderTools()}
+        {this._renderNodes()}
         {this._renderLights()}
         {this._renderCamera()}
       </a-scene>
@@ -476,32 +476,32 @@ export class Aleph {
   //#endregion
 
   //#region Private methods
-  private _loadTools(tools: AlToolSerial[]): void {
-    // remove all existing tools
-    while (this.tools.length) {
-      this.appRemoveTool(this.tools[this.tools.length - 1].id);
+  private _loadNodes(nodes: AlNodeSerial[]): void {
+    // remove all existing nodes
+    while (this.nodes.length) {
+      this.appRemoveNode(this.nodes[this.nodes.length - 1].id);
     }
 
-    this.appLoadTools(tools);
-    this.onToolsChanged.emit(this.tools);
+    this.appLoadNodes(nodes);
+    this.onNodesChanged.emit(this.nodes);
   }
 
-  private _addTool(tool: AlToolSerial): void {
-    this.appAddTool(tool);
-    this.onToolsChanged.emit(this.tools);
-    this._selectTool(tool.id, false);
+  private _addNode(node: AlNodeSerial): void {
+    this.appAddNode(node);
+    this.onNodesChanged.emit(this.nodes);
+    this._selectNode(node.id, false);
   }
 
-  private _selectTool(toolId: string, animate: boolean): void {
-    if (animate && toolId !== this.selectedTool) {
-      this.appSetCameraAnimating(true); // todo: can we pass boolean to appSelectTool to set cameraAnimating in the state?
+  private _selectNode(nodeId: string, animate: boolean): void {
+    if (animate && nodeId !== this.selectedNode) {
+      this.appSetCameraAnimating(true); // todo: can we pass boolean to appSelectNode to set cameraAnimating in the state?
     }
-    this.appSelectTool(toolId);
-    this.onSelectedToolChanged.emit(this.selectedTool);
+    this.appSelectNode(nodeId);
+    this.onSelectedNodeChanged.emit(this.selectedNode);
   }
 
-  private _setToolsEnabled(enabled: boolean): void {
-    this.appSetToolsEnabled(enabled);
+  private _setNodesEnabled(enabled: boolean): void {
+    this.appSetNodesEnabled(enabled);
   }
 
   private _setBoundingBoxVisible(visible: boolean): void {
@@ -514,8 +514,8 @@ export class Aleph {
     this._boundingSphereRadius = mesh.geometry.boundingSphere.radius;
     this.appSetSrcLoaded(true);
     this.onLoad.emit({
-      selectedTool: this.selectedTool,
-      tools: this.tools
+      selectedNode: this.selectedNode,
+      nodes: this.nodes
     } as AlAppState);
     let result = GetUtils.getCameraStateFromEntity(this._targetEntity);
     if (result) {
@@ -544,25 +544,25 @@ export class Aleph {
   }
 
   private _intersectionClearedEventHandler(_evt): void {
-    this._intersectingTool = false;
+    this._intersectingNode = false;
   }
 
-  private _intersectingToolEventHandler(_evt): void {
-    this._intersectingTool = true;
+  private _intersectingNodeEventHandler(_evt): void {
+    this._intersectingNode = true;
   }
 
-  private _addToolEventHandler(event: CustomEvent): void {
-    if (this.toolsEnabled && this._validTarget && !this._intersectingTool) {
+  private _addNodeEventHandler(event: CustomEvent): void {
+    if (this.nodesEnabled && this._validTarget && !this._intersectingNode) {
       let intersection: THREE.Intersection = event.detail.detail.intersection;
 
-      const newTool: AlToolSerial = CreateUtils.createTool(
-        this.tools,
+      const newNode: AlNodeSerial = CreateUtils.createNode(
+        this.nodes,
         this._targetEntity.object3D.position,
         intersection.point,
         this._boundingSphereRadius
       );
 
-      this._addTool(newTool);
+      this._addNode(newNode);
     }
   }
 
@@ -570,12 +570,12 @@ export class Aleph {
     this._validTarget = event.detail.payload;
   }
 
-  private _toolSelectedEventHandler(event: CustomEvent): void {
-    this._selectTool(event.detail.id, false);
+  private _nodeSelectedEventHandler(event: CustomEvent): void {
+    this._selectNode(event.detail.id, false);
   }
 
-  private _toolMovedEventHandler(event: CustomEvent): void {
-    const toolId: string = event.detail.id;
+  private _nodeMovedEventHandler(event: CustomEvent): void {
+    const nodeId: string = event.detail.id;
     const raycaster = this._camera.components.raycaster as any;
 
     // First try target
@@ -591,8 +591,8 @@ export class Aleph {
     }
 
     if (intersection) {
-      this.appUpdateTool({
-        id: toolId,
+      this.appUpdateNode({
+        id: nodeId,
         position: ThreeUtils.vector3ToString(intersection.point)
       });
     } else {
@@ -613,32 +613,32 @@ export class Aleph {
         false
       );
       this._scene.addEventListener(
-        AlToolEvents.CONTROLS_ENABLED,
+        AlNodeEvents.CONTROLS_ENABLED,
         this._controlsEnabledHandler,
         false
       );
       this._scene.addEventListener(
-        AlToolEvents.CONTROLS_DISABLED,
+        AlNodeEvents.CONTROLS_DISABLED,
         this._controlsDisabledHandler,
         false
       );
       this._scene.addEventListener(
-        AlToolEvents.DRAGGING,
-        this._toolMovedEventHandler,
+        AlNodeEvents.DRAGGING,
+        this._nodeMovedEventHandler,
         false
       );
       this._scene.addEventListener(
-        AlToolSpawnerEvents.ADD_TOOL,
-        this._addToolEventHandler,
+        AlNodeSpawnerEvents.ADD_TOOL,
+        this._addNodeEventHandler,
         false
       );
       this._scene.addEventListener(
-        AlToolEvents.SELECTED,
-        this._toolSelectedEventHandler,
+        AlNodeEvents.SELECTED,
+        this._nodeSelectedEventHandler,
         false
       );
       this._scene.addEventListener(
-        AlToolSpawnerEvents.VALID_TARGET,
+        AlNodeSpawnerEvents.VALID_TARGET,
         this._validTargetEventHandler,
         false
       );
@@ -653,12 +653,12 @@ export class Aleph {
 
       if (this._camera) {
         this._camera.addEventListener(
-          AlToolEvents.INTERSECTION,
-          this._intersectingToolEventHandler,
+          AlNodeEvents.INTERSECTION,
+          this._intersectingNodeEventHandler,
           false
         );
         this._camera.addEventListener(
-          AlToolEvents.INTERSECTION_CLEARED,
+          AlNodeEvents.INTERSECTION_CLEARED,
           this._intersectionClearedEventHandler,
           false
         );

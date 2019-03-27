@@ -1,4 +1,4 @@
-import { AlToolSerial } from "./index";
+import { AlNodeSerial } from "./index";
 import { DisplayMode, Orientation } from "../enums";
 
 export interface AlAppState {
@@ -6,14 +6,14 @@ export interface AlAppState {
   displayMode: DisplayMode;
   optionsEnabled: boolean;
   orientation: Orientation;
-  selectedTool: string | null;
+  selectedNode: string | null;
   slicesIndex: number;
   slicesWindowCenter: number;
   slicesWindowWidth: number;
   src: string | null;
   srcLoaded: boolean;
-  tools: AlToolSerial[];
-  toolsEnabled: boolean;
+  nodes: AlNodeSerial[];
+  nodesEnabled: boolean;
   volumeSteps: number;
   volumeWindowCenter: number;
   volumeWindowWidth: number;

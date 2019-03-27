@@ -1,4 +1,4 @@
-export interface AlToolSerial {
+export interface AlNodeSerial {
   id: string;
   target: string;
   position: string;

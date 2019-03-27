@@ -1,5 +1,5 @@
 export class Constants {
-  static toolSize = 50;
+  static nodeSize = 50;
 
   static splashBackSize = 5;
 
@@ -7,7 +7,7 @@ export class Constants {
 
   static maxAnimationSteps = 100;
 
-  static toolColors = {
+  static nodeColors = {
     selected: "#76ff03",
     hovered: "#f50057",
     normal: "#00b0ff"

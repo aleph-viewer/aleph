@@ -1,4 +1,4 @@
-export interface AlToolState {
+export interface AlNodeState {
   selected: boolean;
   hovered: boolean;
   geometry: THREE.SphereGeometry;

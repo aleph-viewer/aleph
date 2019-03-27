@@ -1,12 +1,12 @@
 import { AframeRegistry, AframeComponent } from "../interfaces";
 
-export class AlToolSpawner implements AframeRegistry {
+export class AlNodeSpawner implements AframeRegistry {
   public static getObject(): AframeComponent {
     return {
       dependencies: ["raycaster"],
 
       schema: {
-        toolsEnabled: { type: "boolean" }
+        nodesEnabled: { type: "boolean" }
       },
 
       init(): void {
@@ -14,7 +14,7 @@ export class AlToolSpawner implements AframeRegistry {
         this.onExitVR = this.onExitVR.bind(this);
 
         this.el.addEventListener("mousedown", () => {
-          if (this.data.toolsEnabled) {
+          if (this.data.nodesEnabled) {
             this.el.sceneEl.camera.el.setAttribute(
               "al-orbit-control",
               "enabled: false"
@@ -23,7 +23,7 @@ export class AlToolSpawner implements AframeRegistry {
         });
 
         this.el.addEventListener("mouseup", () => {
-          if (this.data.toolsEnabled) {
+          if (this.data.nodesEnabled) {
             this.el.sceneEl.camera.el.setAttribute(
               "al-orbit-control",
               "enabled: true"
@@ -33,7 +33,7 @@ export class AlToolSpawner implements AframeRegistry {
 
         this.el.addEventListener("raycaster-intersected", () => {
           this.el.emit(
-            AlToolSpawnerEvents.VALID_TARGET,
+            AlNodeSpawnerEvents.VALID_TARGET,
             { payload: true },
             true
           );
@@ -41,14 +41,14 @@ export class AlToolSpawner implements AframeRegistry {
 
         this.el.addEventListener("raycaster-intersected-cleared", () => {
           this.el.emit(
-            AlToolSpawnerEvents.VALID_TARGET,
+            AlNodeSpawnerEvents.VALID_TARGET,
             { payload: false },
             true
           );
         });
 
         this.el.addEventListener("click", evt => {
-          this.el.emit(AlToolSpawnerEvents.ADD_TOOL, evt, true);
+          this.el.emit(AlNodeSpawnerEvents.ADD_TOOL, evt, true);
         });
         //#endregion
       },
@@ -70,11 +70,11 @@ export class AlToolSpawner implements AframeRegistry {
   }
 
   public static getName(): string {
-    return "al-tool-spawner";
+    return "al-node-spawner";
   }
 }
 
-export class AlToolSpawnerEvents {
+export class AlNodeSpawnerEvents {
   static VALID_TARGET: string = "al-valid-target";
-  static ADD_TOOL: string = "al-add-tool";
+  static ADD_TOOL: string = "al-add-node";
 }
