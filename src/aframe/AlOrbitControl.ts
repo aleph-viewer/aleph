@@ -83,9 +83,6 @@ export class AlOrbitControl implements AframeRegistry {
             },
             true
           );
-
-          console.log("lastPos: ", controls.object.position);
-          console.log("lastTarg: ", controls.target);
         });
         //#endregion
 
@@ -142,15 +139,16 @@ export class AlOrbitControl implements AframeRegistry {
         }, 10);
       },
       onEnterVR() {
-        let state = this.state as AlOrbitControlState;
-        let el = this.el;
-
         if (
           !AFRAME.utils.device.checkHeadsetConnected() &&
           !AFRAME.utils.device.isMobile()
         ) {
           return;
         }
+
+        let state = this.state as AlOrbitControlState;
+        let el = this.el;
+
         state.controls.enabled = false;
         if (el.hasAttribute("look-controls")) {
           el.setAttribute("look-controls", "enabled", true);
@@ -159,15 +157,16 @@ export class AlOrbitControl implements AframeRegistry {
         }
       },
       onExitVR() {
-        let state = this.state as AlOrbitControlState;
-        let el = this.el;
-
         if (
           !AFRAME.utils.device.checkHeadsetConnected() &&
           !AFRAME.utils.device.isMobile()
         ) {
           return;
         }
+
+        let state = this.state as AlOrbitControlState;
+        let el = this.el;
+
         state.controls.enabled = true;
         el.getObject3D("camera").position.copy(state.oldPosition);
         if (el.hasAttribute("look-controls")) {
@@ -209,8 +208,6 @@ export class AlOrbitControl implements AframeRegistry {
             _oldData.cameraPosition.y !== data.cameraPosition.y ||
             _oldData.cameraPosition.z !== data.cameraPosition.z
           ) {
-            console.log("update: ", data.cameraPosition);
-            console.log("updateTarg: ", controls.target);
             // Check the old start position against the value passed in by aleph._renderCamera()
             // This is to check and see if the source has changed, as the cameraPosition for each
             // source is determined by it's bounding sphere.
