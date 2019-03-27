@@ -1,5 +1,6 @@
 import { AframeRegistry, AframeComponent, AlToolState } from "../interfaces";
 import { Constants } from "../Constants";
+import { AlOrbitControlEvents } from ".";
 
 export class AlTool implements AframeRegistry {
   public static getObject(): AframeComponent {
@@ -65,6 +66,10 @@ export class AlTool implements AframeRegistry {
         targetPos.y = data.target.y;
         targetPos.z = data.target.z;
 
+        let lookPos = new THREE.Vector3();
+        lookPos.copy(camera.position);
+        el.object3D.lookAt(lookPos);
+
         this.state = {
           selected: true,
           hovered: false,
@@ -73,7 +78,8 @@ export class AlTool implements AframeRegistry {
           mesh,
           camera,
           target: targetPos,
-          dragging: false
+          dragging: false,
+          lastCameraPosition: lookPos
         } as AlToolState;
       },
 
@@ -95,6 +101,12 @@ export class AlTool implements AframeRegistry {
           state.material.color = new THREE.Color(Constants.toolColors.selected);
         } else {
           state.material.color = new THREE.Color(Constants.toolColors.normal);
+        }
+
+        if (!state.lastCameraPosition.equals(state.camera.position)) {
+          const currentCameraPosition = state.camera.position;
+          this.el.object3D.lookAt(currentCameraPosition);
+          state.lastCameraPosition.copy(currentCameraPosition);
         }
       },
 

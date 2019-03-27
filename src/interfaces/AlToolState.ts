@@ -8,4 +8,5 @@ export interface AlToolState {
   target: THREE.Vector3;
   dragging: boolean;
   mouseDown: boolean;
+  lastCameraPosition: THREE.Vector3;
 }

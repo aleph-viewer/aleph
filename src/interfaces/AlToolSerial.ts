@@ -4,5 +4,4 @@ export interface AlToolSerial {
   position: string;
   scale: number;
   text: string;
-  textOffset: string;
 }

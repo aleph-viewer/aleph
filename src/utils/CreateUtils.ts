@@ -24,8 +24,7 @@ export class CreateUtils {
       target: ThreeUtils.vector3ToString(target),
       position: ThreeUtils.vector3ToString(position),
       scale: scale / Constants.toolSize,
-      text: id,
-      textOffset: ThreeUtils.vector3ToString(position.clone().addScalar(scale))
+      text: id
     };
   }
 
