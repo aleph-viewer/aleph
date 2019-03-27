@@ -140,25 +140,23 @@
           <textarea id="tools-textarea" placeholder="tools"></textarea>
         </section>
         <section>
-          <ul id="tool-list"></ul>
-        </section>
-        <section>
           <button id="load-tools-button">Load</button>
         </section>
         <section>
-          <al-tool-list>
-          </al-tool-list>
+          <al-tool-list />
         </section>
         <section>
-          <al-control-panel>
-          </al-control-panel>
+          <al-tool-editor />
+        </section>
+        <section>
+          <al-control-panel />
         </section>
       </div>
     </div>
 
     <script>
 
-      let container, debug, aleph, toolList, controlPanel, srcSelect, srcInput, loadSrcButton, toolsTextArea, loadToolsButton;
+      let container, debug, aleph, toolList, toolEditor, controlPanel, srcSelect, srcInput, loadSrcButton, toolsTextArea, loadToolsButton;
 
       let state = {
         src: null,
@@ -180,6 +178,7 @@
         debug = document.getElementById("debug");
         aleph = document.querySelector("uv-aleph");
         toolList = document.querySelector("al-tool-list");
+        toolEditor = document.querySelector("al-tool-editor");
         controlPanel = document.querySelector("al-control-panel");
         srcSelect = document.getElementById("src-select");
         srcInput = document.getElementById("src-input");
@@ -257,6 +256,14 @@
           false
         );
 
+        toolEditor.addEventListener(
+          "onRemoveTool",
+          function(e) {
+            console.log("remove:", e.detail);
+          },
+          false
+        );
+
         srcSelect.addEventListener("change", function() {
           state.src = srcSelect.value;
         }, false);
@@ -311,6 +318,9 @@
 
         toolList.tools = state.tools;
         toolList.selectedTool = state.selectedTool;
+        toolEditor.tool = state.tools.find((tool) => {
+          return tool.id === state.selectedTool;
+        });
         srcSelect.value = state.src;
         srcInput.value = state.src;
         toolsTextArea.value = JSON.stringify(state.tools);

@@ -1,12 +1,4 @@
-import {
-  Component,
-  Prop,
-  Event,
-  EventEmitter,
-  Watch,
-  State,
-  Method
-} from "@stencil/core";
+import { Component, Prop, Event, EventEmitter } from "@stencil/core";
 import { AlToolSerial } from "../../interfaces";
 
 @Component({

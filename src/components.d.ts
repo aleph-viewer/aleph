@@ -74,6 +74,14 @@ export namespace Components {
     'volumeWindowWidth'?: number;
   }
 
+  interface AlToolEditor {
+    'tool': AlToolSerial | null;
+  }
+  interface AlToolEditorAttributes extends StencilHTMLAttributes {
+    'onOnRemoveTool'?: (event: CustomEvent) => void;
+    'tool'?: AlToolSerial | null;
+  }
+
   interface AlToolList {
     'selectedTool': string | null;
     'tools': AlToolSerial[];
@@ -113,12 +121,14 @@ export namespace Components {
 declare global {
   interface StencilElementInterfaces {
     'AlControlPanel': Components.AlControlPanel;
+    'AlToolEditor': Components.AlToolEditor;
     'AlToolList': Components.AlToolList;
     'UvAleph': Components.UvAleph;
   }
 
   interface StencilIntrinsicElements {
     'al-control-panel': Components.AlControlPanelAttributes;
+    'al-tool-editor': Components.AlToolEditorAttributes;
     'al-tool-list': Components.AlToolListAttributes;
     'uv-aleph': Components.UvAlephAttributes;
   }
@@ -128,6 +138,12 @@ declare global {
   var HTMLAlControlPanelElement: {
     prototype: HTMLAlControlPanelElement;
     new (): HTMLAlControlPanelElement;
+  };
+
+  interface HTMLAlToolEditorElement extends Components.AlToolEditor, HTMLStencilElement {}
+  var HTMLAlToolEditorElement: {
+    prototype: HTMLAlToolEditorElement;
+    new (): HTMLAlToolEditorElement;
   };
 
   interface HTMLAlToolListElement extends Components.AlToolList, HTMLStencilElement {}
@@ -144,12 +160,14 @@ declare global {
 
   interface HTMLElementTagNameMap {
     'al-control-panel': HTMLAlControlPanelElement
+    'al-tool-editor': HTMLAlToolEditorElement
     'al-tool-list': HTMLAlToolListElement
     'uv-aleph': HTMLUvAlephElement
   }
 
   interface ElementTagNameMap {
     'al-control-panel': HTMLAlControlPanelElement;
+    'al-tool-editor': HTMLAlToolEditorElement;
     'al-tool-list': HTMLAlToolListElement;
     'uv-aleph': HTMLUvAlephElement;
   }

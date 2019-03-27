@@ -360,7 +360,7 @@ export class Aleph {
             <a-entity
               //geometry="primitive: plane; height: auto; width: auto"
               text={`
-                value: ${tool.text}; 
+                value: ${tool.text};
                 side: double;
                 baseline: bottom;
                 anchor: left;
