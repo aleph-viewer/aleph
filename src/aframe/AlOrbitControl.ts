@@ -245,8 +245,8 @@ export class AlOrbitControl implements AframeRegistry {
             startPos.z,
             "]"
           );
-          if (state.animationStep <= Constants.dollySteps) {
-            const percent: number = state.animationStep / Constants.dollySteps;
+          if (state.animationStep <= Constants.maxAnimationSteps) {
+            const percent: number = state.animationStep / Constants.maxAnimationSteps;
             const res: THREE.Vector3 = ThreeUtils.slerp(
               startPos,
               endPos,

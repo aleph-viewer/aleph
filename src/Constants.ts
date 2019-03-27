@@ -5,9 +5,9 @@ export class Constants {
 
   static initialZoom = 4;
 
-  static dollySteps = 20;
+  static maxAnimationSteps = 20;
 
-  static dollyZoom = Constants.initialZoom * 50;
+  static animationZoom = Constants.initialZoom * 50;
 
   static toolColors = {
     selected: "#76ff03",
