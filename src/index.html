@@ -234,6 +234,14 @@
           aleph.setToolsEnabled(e.detail);
         });
 
+        controlPanel.addEventListener("onSetOptionsEnabled", function(e) {
+          console.log("options enabled:", e.detail);
+        });
+
+        controlPanel.addEventListener("onSetBoundingBoxVisible", function(e) {
+          console.log("bounding box visible:", e.detail);
+        });
+
         srcSelect.addEventListener("change", function() {
           state.src = srcSelect.value;
         }, false);

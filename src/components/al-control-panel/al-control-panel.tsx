@@ -48,7 +48,7 @@ export class ControlPanel {
 
   @State() _optionsEnabled: boolean;
   @Prop({ mutable: true }) optionsEnabled: boolean = false;
-  @Watch("displayMode")
+  @Watch("optionsEnabled")
   optionsEnabledWatcher(newValue: boolean) {
     this._optionsEnabled = newValue;
     this.onSetOptionsEnabled.emit(newValue);
@@ -206,27 +206,28 @@ export class ControlPanel {
   }
 
   renderTools(): JSX.Element {
-    if (this.toolsVisible && this.toolsEnabled) {
-      return [
-        // <div class="al-list">
-        //   {this.tools.map((tool: Tool) => {
-        //     return (
-        //       <label class="block">
-        //         <input
-        //           type="radio"
-        //           checked={this.selectedTool === tool.id}
-        //           id={tool.id}
-        //           name="tool"
-        //           value={tool.id}
-        //           onChange={e => this.selectTool(e.srcElement.id)}
-        //         />
-        //         {tool.id}
-        //       </label>
-        //     );
-        //   })}
-        // </div>,
-        <ion-footer>
-          {/* <ion-item>
+    //if (this.toolsVisible && this.toolsEnabled) {
+    //return [
+    // <div class="al-list">
+    //   {this.tools.map((tool: Tool) => {
+    //     return (
+    //       <label class="block">
+    //         <input
+    //           type="radio"
+    //           checked={this.selectedTool === tool.id}
+    //           id={tool.id}
+    //           name="tool"
+    //           value={tool.id}
+    //           onChange={e => this.selectTool(e.srcElement.id)}
+    //         />
+    //         {tool.id}
+    //       </label>
+    //     );
+    //   })}
+    // </div>,
+    // <ion-footer>
+    {
+      /* <ion-item>
             <ion-label>Tool Type</ion-label>
             <select
               onChange={e =>
@@ -259,10 +260,12 @@ export class ControlPanel {
                 </option>
               ) : null}
             </select>
-          </ion-item> */}
-          <ion-toolbar>
-            <ion-buttons>
-              {/* <ion-button
+          </ion-item> */
+    }
+    // <ion-toolbar>
+    //   <ion-buttons>
+    {
+      /* <ion-button
                 onClick={() => {
                   this.addTool(
                     CreateUtils.createTool(this.tools, this.toolType)
@@ -270,15 +273,19 @@ export class ControlPanel {
                 }}
               >
                 Add
-              </ion-button> */}
-              {/* <ion-button
+              </ion-button> */
+    }
+    {
+      /* <ion-button
                 onClick={() => {
                   this.saveTools();
                 }}
               >
                 Save
-              </ion-button> */}
-              {this.selectedTool !== null ? (
+              </ion-button> */
+    }
+    {
+      /* {this.selectedTool !== null ? (
                 <ion-button
                   onClick={() => {
                     this.onRemoveTool.emit(this.selectedTool);
@@ -286,12 +293,13 @@ export class ControlPanel {
                 >
                   Delete
                 </ion-button>
-              ) : null}
-            </ion-buttons>
-          </ion-toolbar>
-        </ion-footer>
-      ];
+              ) : null} */
     }
+    //     </ion-buttons>
+    //   </ion-toolbar>
+    // </ion-footer>
+    //];
+    //}
 
     return null;
   }
@@ -302,7 +310,7 @@ export class ControlPanel {
         <ion-item>
           <ion-icon name="options" />
           <ion-toggle
-            onIonChange={e => this.onSetOptionsEnabled.emit(e.detail.checked)}
+            onIonChange={e => (this.optionsEnabled = e.detail.checked)}
           />
         </ion-item>
       );
