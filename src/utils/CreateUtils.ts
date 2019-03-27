@@ -6,7 +6,8 @@ import {
   AlNodeSpawner,
   AlOrbitControl,
   AlSpinner,
-  AlHalo
+  AlHalo,
+  AlFixedToOrbitCamera
 } from "../aframe";
 import { ThreeUtils, GetUtils } from ".";
 import { Constants } from "../Constants";
@@ -44,6 +45,10 @@ export class CreateUtils {
     AFRAME.registerComponent(
       AlOrbitControl.getName(),
       AlOrbitControl.getObject()
+    );
+    AFRAME.registerComponent(
+      AlFixedToOrbitCamera.getName(),
+      AlFixedToOrbitCamera.getObject()
     );
   }
 }

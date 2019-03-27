@@ -1,4 +1,16 @@
 export class ThreeUtils {
+  static objectToVector3(vec: {
+    x: number;
+    y: number;
+    z: number;
+  }): THREE.Vector3 {
+    let res = new THREE.Vector3();
+    res.x = vec.x;
+    res.y = vec.y;
+    res.z = vec.z;
+    return res;
+  }
+
   static worldToScreen(
     worldCoordinate: THREE.Vector3,
     camera: THREE.Camera,

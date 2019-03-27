@@ -55,7 +55,7 @@ export class Aleph {
   private _stackHelper: AMI.StackHelper;
 
   private _targetEntity: Entity;
-  private _splashBack: THREE.Mesh;
+  private _backBoard: Entity;
   private _scene: Scene;
   private _boundingSphereRadius: number;
   private _validTarget: boolean;
@@ -297,6 +297,13 @@ export class Aleph {
       return null;
     }
 
+    let backScale = 1;
+
+    if (this._boundingSphereRadius) {
+      backScale = this._boundingSphereRadius * Constants.splashBackSize;
+      console.log(backScale);
+    }
+
     switch (this.displayMode) {
       case DisplayMode.MESH: {
         return (
@@ -313,7 +320,24 @@ export class Aleph {
             `}
             position="0 0 0"
             scale="1 1 1"
-          />
+          >
+            <a-entity
+              ref={el => (this._backBoard = el)}
+              class="collidable"
+              id="back-board"
+              geometry={`primitive: plane; height: ${backScale}; width: ${backScale}`}
+              al-fixed-to-orbit-camera={`
+                distanceFromTarget: ${
+                  this._boundingSphereRadius ? this._boundingSphereRadius : 2
+                };
+                target: ${this._lastCameraTarget};
+              `}
+              material={`
+                wireframe: true;
+                side: double;
+              `}
+            />
+          </a-entity>
         );
       }
       default: {
@@ -548,8 +572,6 @@ export class Aleph {
 
   private _controlsInitEventHandler(event: CustomEvent): void {
     this._tcontrols = event.detail.controls;
-    this._splashBack = event.detail.splashBack;
-    this._scene.sceneEl.object3D.add(this._splashBack);
   }
 
   private _intersectionClearedEventHandler(_evt): void {
@@ -593,10 +615,9 @@ export class Aleph {
     ) as THREE.Intersection;
 
     if (!intersection) {
-      // Next try splashback
-      intersection = (raycaster.raycaster as THREE.Raycaster).intersectObject(
-        this._splashBack
-      )[0];
+      intersection = raycaster.getIntersection(
+        this._backBoard
+      ) as THREE.Intersection;
     }
 
     if (intersection) {

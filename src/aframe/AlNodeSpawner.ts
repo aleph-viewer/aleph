@@ -1,8 +1,8 @@
-import {
-  AframeRegistry,
-  AframeComponent,
-  AlNodeSpawnerState
-} from "../interfaces";
+import { AframeRegistry, AframeComponent } from "../interfaces";
+
+interface AlNodeSpawnerState {
+  left: boolean;
+}
 
 export class AlNodeSpawner implements AframeRegistry {
   public static getObject(): AframeComponent {

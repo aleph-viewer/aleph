@@ -1,6 +1,19 @@
-import { AframeRegistry, AframeComponent, AlNodeState } from "../interfaces";
+import { AframeRegistry, AframeComponent } from "../interfaces";
 import { Constants } from "../Constants";
-import { AlOrbitControlEvents } from ".";
+import { ThreeUtils } from "../utils";
+
+interface AlNodeState {
+  selected: boolean;
+  hovered: boolean;
+  geometry: THREE.SphereGeometry;
+  material: THREE.MeshBasicMaterial;
+  mesh: THREE.Mesh;
+  camera: THREE.Camera;
+  target: THREE.Vector3;
+  dragging: boolean;
+  mouseDown: boolean;
+  lastCameraPosition: THREE.Vector3;
+}
 
 export class AlNode implements AframeRegistry {
   public static getObject(): AframeComponent {
@@ -61,10 +74,7 @@ export class AlNode implements AframeRegistry {
           this.el.emit(AlNodeEvents.INTERSECTION_CLEARED, {}, true);
         });
 
-        let targetPos = new THREE.Vector3();
-        targetPos.x = data.target.x;
-        targetPos.y = data.target.y;
-        targetPos.z = data.target.z;
+        let targetPos = ThreeUtils.objectToVector3(data.target);
 
         let lookPos = new THREE.Vector3();
         lookPos.copy(camera.position);

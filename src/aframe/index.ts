@@ -5,6 +5,7 @@ import { AlNodeSpawner, AlNodeSpawnerEvents } from "./AlNodeSpawner";
 import { AlOrbitControl, AlOrbitControlEvents } from "./AlOrbitControl";
 import { AlHalo } from "./AlHalo";
 import { AlSpinner } from "./AlSpinner";
+import { AlFixedToOrbitCamera } from "./AlFixedToOrbitCamera";
 
 export {
   AlGltfModel,
@@ -17,5 +18,6 @@ export {
   AlNodeSpawnerEvents,
   AlGltfModelEvents,
   AlOrbitControlEvents,
-  AlNodeEvents
+  AlNodeEvents,
+  AlFixedToOrbitCamera
 };
