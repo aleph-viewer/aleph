@@ -73,7 +73,7 @@ export class GetUtils {
       }
       sceneCenter = entityMesh.position;
       sceneDistance =
-        (Constants.initialZoom * geom.boundingSphere.radius) /
+        (Constants.zoomFactor * geom.boundingSphere.radius) /
         Math.tan((Constants.cameraValues.fov * Math.PI) / 180);
 
       initialPosition = new THREE.Vector3();
@@ -89,7 +89,10 @@ export class GetUtils {
     return null;
   }
 
-  static getCameraStateFromTool(tool: AlToolSerial): AlCameraSerial {
+  static getCameraStateFromTool(
+    tool: AlToolSerial,
+    radius: number
+  ): AlCameraSerial {
     let targ = new THREE.Vector3();
     targ.copy(ThreeUtils.stringToVector3(tool.target));
 
@@ -105,7 +108,7 @@ export class GetUtils {
     camPos.copy(pos);
 
     // Add {defaultZoom} intervals of dir to camPos
-    camPos.add(dir.clone().multiplyScalar(Constants.initialZoom));
+    camPos.add(dir.clone().multiplyScalar(radius * Constants.zoomFactor));
 
     return {
       target: targ,
