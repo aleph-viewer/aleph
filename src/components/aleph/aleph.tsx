@@ -55,7 +55,7 @@ export class Aleph {
   private _stackHelper: AMI.StackHelper;
 
   private _targetEntity: Entity;
-  private _splashBack: THREE.Mesh;
+  private _backBoard: Entity;
   private _scene: Scene;
   private _boundingSphereRadius: number;
   private _validTarget: boolean;
@@ -64,6 +64,7 @@ export class Aleph {
   private _intersectingNode: boolean;
 
   private _lastCameraPosition: THREE.Vector3;
+  private _lastCameraTarget: THREE.Vector3;
   //#endregion
 
   //#region Redux states, props & methods
@@ -266,8 +267,10 @@ export class Aleph {
     this._controlsEnabledHandler = this._controlsEnabledHandler.bind(this);
     this._controlsDisabledHandler = this._controlsDisabledHandler.bind(this);
     this._animationFinished = this._animationFinished.bind(this);
+    this._controlsMoved = this._controlsMoved.bind(this);
 
     this._lastCameraPosition = new THREE.Vector3(0, 0, 0);
+    this._lastCameraTarget = new THREE.Vector3(0, 0, 0);
   }
 
   //#region Rendering Methods
@@ -282,6 +285,10 @@ export class Aleph {
           geometry="primitive: al-spinner;"
           scale="0.05 0.05 0.05"
           material={`color: ${this.spinnerColor};`}
+          al-fixed-to-orbit-camera={`
+            distanceFromTarget: 0.5
+            target: ${this._lastCameraTarget};
+          `}
         />
       );
     }
@@ -292,6 +299,13 @@ export class Aleph {
   private _renderSrc(): JSX.Element {
     if (!this.src) {
       return null;
+    }
+
+    let backScale = 0;
+
+    if (this._boundingSphereRadius) {
+      backScale = this._boundingSphereRadius * Constants.splashBackSize;
+      console.log(backScale);
     }
 
     switch (this.displayMode) {
@@ -310,7 +324,24 @@ export class Aleph {
             `}
             position="0 0 0"
             scale="1 1 1"
-          />
+          >
+            <a-entity
+              ref={el => (this._backBoard = el)}
+              class="collidable"
+              id="back-board"
+              geometry={`primitive: plane; height: ${backScale}; width: ${backScale}`}
+              al-fixed-to-orbit-camera={`
+                distanceFromTarget: ${
+                  this._boundingSphereRadius ? this._boundingSphereRadius : 2
+                };
+                target: ${this._lastCameraTarget};
+              `}
+              material={`
+                wireframe: true;
+                side: double;
+              `}
+            />
+          </a-entity>
         );
       }
       default: {
@@ -327,7 +358,24 @@ export class Aleph {
             `}
             position="0 0 0"
             scale="1 1 1"
-          />
+          >
+            <a-entity
+              ref={el => (this._backBoard = el)}
+              class="collidable"
+              id="back-board"
+              geometry={`primitive: plane; height: ${backScale}; width: ${backScale}`}
+              al-fixed-to-orbit-camera={`
+                distanceFromTarget: ${
+                  this._boundingSphereRadius ? this._boundingSphereRadius : 2
+                };
+                target: ${this._lastCameraTarget};
+              `}
+              material={`
+                wireframe: true;
+                side: double;
+              `}
+            />
+          </a-entity>
         );
       }
     }
@@ -392,7 +440,7 @@ export class Aleph {
   private _renderCamera(): JSX.Element {
     let camData = {
       position: this._lastCameraPosition,
-      target: new THREE.Vector3(0, 0, 0)
+      target: this._lastCameraTarget
     } as AlCameraSerial;
     let mesh: THREE.Mesh;
     let radius: number = 1;
@@ -406,10 +454,12 @@ export class Aleph {
         this._boundingSphereRadius
       );
       // If we returned a result AND the difference between the last position and the result position is not 0
-      const diff = result.position.distanceTo(this._lastCameraPosition);
-      if (result && diff !== 0) {
+      const diffPos = result.position.distanceTo(this._lastCameraPosition);
+      const diffTarg = result.target.distanceTo(this._lastCameraTarget);
+      if (result && diffPos !== 0 && diffTarg !== 0) {
         camData = result;
         this._lastCameraPosition = camData.position;
+        this._lastCameraTarget = camData.target;
         mesh = this._targetEntity.object3DMap.mesh as THREE.Mesh;
         radius = mesh.geometry.boundingSphere.radius;
       }
@@ -525,6 +575,10 @@ export class Aleph {
   //#endregion
 
   //#region Event Handlers
+  private _controlsMoved(event: CustomEvent): void {
+    this._lastCameraPosition = event.detail.position;
+    this._lastCameraTarget = event.detail.target;
+  }
   private _animationFinished(_event: CustomEvent): void {
     this.appSetCameraAnimating(false);
   }
@@ -539,8 +593,6 @@ export class Aleph {
 
   private _controlsInitEventHandler(event: CustomEvent): void {
     this._tcontrols = event.detail.controls;
-    this._splashBack = event.detail.splashBack;
-    this._scene.sceneEl.object3D.add(this._splashBack);
   }
 
   private _intersectionClearedEventHandler(_evt): void {
@@ -584,10 +636,9 @@ export class Aleph {
     ) as THREE.Intersection;
 
     if (!intersection) {
-      // Next try splashback
-      intersection = (raycaster.raycaster as THREE.Raycaster).intersectObject(
-        this._splashBack
-      )[0];
+      intersection = raycaster.getIntersection(
+        this._backBoard
+      ) as THREE.Intersection;
     }
 
     if (intersection) {
@@ -602,6 +653,11 @@ export class Aleph {
 
   private _addEventListeners(): void {
     if (this._scene) {
+      this._scene.addEventListener(
+        AlOrbitControlEvents.HAS_MOVED,
+        this._controlsMoved,
+        false
+      );
       this._scene.addEventListener(
         AlOrbitControlEvents.ANIMATION_FINISHED,
         this._animationFinished,

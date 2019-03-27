@@ -1,5 +1,9 @@
 import { AframeRegistry, AframeComponent } from "../interfaces";
 
+interface AlNodeSpawnerState {
+  left: boolean;
+}
+
 export class AlNodeSpawner implements AframeRegistry {
   public static getObject(): AframeComponent {
     return {
@@ -12,6 +16,14 @@ export class AlNodeSpawner implements AframeRegistry {
       init(): void {
         this.onEnterVR = this.onEnterVR.bind(this);
         this.onExitVR = this.onExitVR.bind(this);
+
+        this.state = {
+          left: false
+        } as AlNodeSpawnerState;
+
+        window.addEventListener("mousedown", evt => {
+          this.state.left = evt.button === 0;
+        });
 
         this.el.addEventListener("mousedown", () => {
           if (this.data.nodesEnabled) {
@@ -48,7 +60,10 @@ export class AlNodeSpawner implements AframeRegistry {
         });
 
         this.el.addEventListener("click", evt => {
-          this.el.emit(AlNodeSpawnerEvents.ADD_TOOL, evt, true);
+          if (this.state.left) {
+            this.el.emit(AlNodeSpawnerEvents.ADD_TOOL, evt, true);
+            this.state.left = false;
+          }
         });
         //#endregion
       },
