@@ -73,6 +73,20 @@ export class AlOrbitControl implements AframeRegistry {
         document.addEventListener("mouseup", () => {
           document.body.style.cursor = "grab";
         });
+
+        el.addEventListener("mouseup", () => {
+          el.emit(
+            AlOrbitControlEvents.HAS_MOVED,
+            {
+              position: controls.object.position,
+              target: controls.target
+            },
+            true
+          );
+
+          console.log("lastPos: ", controls.object.position);
+          console.log("lastTarg: ", controls.target);
+        });
         //#endregion
 
         //#region Positioning
@@ -195,6 +209,8 @@ export class AlOrbitControl implements AframeRegistry {
             _oldData.cameraPosition.y !== data.cameraPosition.y ||
             _oldData.cameraPosition.z !== data.cameraPosition.z
           ) {
+            console.log("update: ", data.cameraPosition);
+            console.log("updateTarg: ", controls.target);
             // Check the old start position against the value passed in by aleph._renderCamera()
             // This is to check and see if the source has changed, as the cameraPosition for each
             // source is determined by it's bounding sphere.
@@ -291,4 +307,5 @@ export class AlOrbitControl implements AframeRegistry {
 export class AlOrbitControlEvents {
   static INIT: string = "al-controls-init";
   static ANIMATION_FINISHED: string = "al-animation-finished";
+  static HAS_MOVED: string = "al-has-moved";
 }

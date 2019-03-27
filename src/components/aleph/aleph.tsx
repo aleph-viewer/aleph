@@ -64,6 +64,7 @@ export class Aleph {
   private _intersectingNode: boolean;
 
   private _lastCameraPosition: THREE.Vector3;
+  private _lastCameraTarget: THREE.Vector3;
   //#endregion
 
   //#region Redux states, props & methods
@@ -266,8 +267,10 @@ export class Aleph {
     this._controlsEnabledHandler = this._controlsEnabledHandler.bind(this);
     this._controlsDisabledHandler = this._controlsDisabledHandler.bind(this);
     this._animationFinished = this._animationFinished.bind(this);
+    this._controlsMoved = this._controlsMoved.bind(this);
 
     this._lastCameraPosition = new THREE.Vector3(0, 0, 0);
+    this._lastCameraTarget = new THREE.Vector3(0, 0, 0);
   }
 
   //#region Rendering Methods
@@ -392,7 +395,7 @@ export class Aleph {
   private _renderCamera(): JSX.Element {
     let camData = {
       position: this._lastCameraPosition,
-      target: new THREE.Vector3(0, 0, 0)
+      target: this._lastCameraTarget
     } as AlCameraSerial;
     let mesh: THREE.Mesh;
     let radius: number = 1;
@@ -406,10 +409,12 @@ export class Aleph {
         this._boundingSphereRadius
       );
       // If we returned a result AND the difference between the last position and the result position is not 0
-      const diff = result.position.distanceTo(this._lastCameraPosition);
-      if (result && diff !== 0) {
+      const diffPos = result.position.distanceTo(this._lastCameraPosition);
+      const diffTarg = result.target.distanceTo(this._lastCameraTarget);
+      if (result && diffPos !== 0 && diffTarg !== 0) {
         camData = result;
         this._lastCameraPosition = camData.position;
+        this._lastCameraTarget = camData.target;
         mesh = this._targetEntity.object3DMap.mesh as THREE.Mesh;
         radius = mesh.geometry.boundingSphere.radius;
       }
@@ -525,6 +530,10 @@ export class Aleph {
   //#endregion
 
   //#region Event Handlers
+  private _controlsMoved(event: CustomEvent): void {
+    this._lastCameraPosition = event.detail.position;
+    this._lastCameraTarget = event.detail.target;
+  }
   private _animationFinished(_event: CustomEvent): void {
     this.appSetCameraAnimating(false);
   }
@@ -602,6 +611,11 @@ export class Aleph {
 
   private _addEventListeners(): void {
     if (this._scene) {
+      this._scene.addEventListener(
+        AlOrbitControlEvents.HAS_MOVED,
+        this._controlsMoved,
+        false
+      );
       this._scene.addEventListener(
         AlOrbitControlEvents.ANIMATION_FINISHED,
         this._animationFinished,
