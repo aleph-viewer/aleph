@@ -148,7 +148,7 @@ export class Aleph {
   }
 
   @Method()
-  async loadTools(tools: any) {
+  async loadTools(tools: AlToolSerial[]) {
     this._loadTools(tools);
   }
 
@@ -374,11 +374,11 @@ export class Aleph {
     let mesh: THREE.Mesh;
     let radius: number = 1;
 
-    // IF the target entity exsists
+    // If the target entity exists
     if (this._targetEntity) {
-      // IF we're animating to a tool
+      // If we're animating to a tool
       // TODO: Differentiate between Tool -> Tool && Target -> Target animations
-      if (this.cameraAnimating) {
+      if (this.cameraAnimating && this.selectedTool !== null) {
         // Get camera state from tool and set as result
         let result = GetUtils.getCameraStateFromTool(
           GetUtils.getToolById(this.selectedTool, this.tools)
@@ -511,9 +511,9 @@ export class Aleph {
     this.onToolsChanged.emit(this.tools);
   }
 
-  private _saveTools(): void {
-    this.onSave.emit(this.tools);
-  }
+  // private _saveTools(): void {
+  //   this.onSave.emit(this.tools);
+  // }
 
   private _addTool(tool: AlToolSerial): void {
     this.appAddTool(tool);
@@ -521,14 +521,17 @@ export class Aleph {
     this._selectTool(tool.id, false);
   }
 
-  private _removeTool(toolId: string): void {
-    this.appRemoveTool(toolId);
-    this.onToolsChanged.emit(this.tools);
-  }
+  // private _removeTool(toolId: string): void {
+  //   this.appRemoveTool(toolId);
+  //   this.onToolsChanged.emit(this.tools);
+  // }
 
   private _selectTool(toolId: string, animate: boolean): void {
-    if (animate) {
-      this.appSetCameraAnimating(true);
+    if (this.cameraAnimating) {
+      return;
+    }
+    if (animate && toolId !== this.selectedTool) {
+      this.appSetCameraAnimating(true); // todo: can we pass boolean to appSelectTool to set cameraAnimating in the state?
     }
     this.appSelectTool(toolId);
     this.onSelectedToolChanged.emit(this.selectedTool);
