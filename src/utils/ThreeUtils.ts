@@ -40,11 +40,13 @@ export class ThreeUtils {
     percent: number
   ): THREE.Vector3 {
     // Dot product - the cosine of the angle between 2 vectors.
+    // Returns Degrees
     let dot: number = start.clone().dot(end.clone());
 
     // Clamp it to be in the range of Acos()
     // This may be unnecessary, but floating point
     // precision can be a fickle mistress.
+    dot = THREE.Math.degToRad(dot);
     dot = Math.max(-1, Math.min(dot, 1));
 
     // Acos(dot) returns the angle between start and end,

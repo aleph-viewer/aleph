@@ -428,8 +428,8 @@ export class Aleph {
       zoomSpeed: ${Constants.cameraValues.zoomSpeed};
       enableDamping: true;
       dampingFactor: ${Constants.cameraValues.dampingFactor};
-      target: ${ThreeUtils.vector3ToString(camData.target)};
-      inPosition: ${ThreeUtils.vector3ToString(camData.position)};
+      targetPosition: ${ThreeUtils.vector3ToString(camData.target)};
+      cameraPosition: ${ThreeUtils.vector3ToString(camData.position)};
       boundingRadius: ${radius};
       animating: ${this._isToolAnimating}
     `}
