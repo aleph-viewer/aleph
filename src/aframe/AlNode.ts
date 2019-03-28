@@ -104,9 +104,6 @@ export class AlNode implements AframeRegistry {
       },
 
       init(): void {
-        this.onEnterVR = this.onEnterVR.bind(this);
-        this.onExitVR = this.onExitVR.bind(this);
-
         const data = this.data;
         let el = this.el;
 

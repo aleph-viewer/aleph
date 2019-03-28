@@ -62,6 +62,9 @@ export class Aleph {
   private _camera: Entity;
   private _tcontrols: THREE.OrbitControls;
   private _intersectingNode: boolean;
+  private _container: HTMLElement;
+
+  private _mouseDownDebounced: boolean;
 
   private _lastCameraPosition: THREE.Vector3;
   private _lastCameraTarget: THREE.Vector3;
@@ -271,6 +274,7 @@ export class Aleph {
 
     this._lastCameraPosition = new THREE.Vector3(0, 0, 0);
     this._lastCameraTarget = new THREE.Vector3(0, 0, 0);
+    this._mouseDownDebounced = false;
   }
 
   //#region Rendering Methods
@@ -513,7 +517,8 @@ export class Aleph {
   render(): JSX.Element {
     return (
       <div
-        id="al-wrapper"
+        ref={el => (this._container = el)}
+        id="al-container"
         style={{
           width: this.width,
           height: this.height
@@ -723,7 +728,30 @@ export class Aleph {
   }
   //#endregion
 
-  componentDidLoad() {}
+  componentDidLoad() {
+    console.log("didLoad");
+    this._container.addEventListener(
+      "mousedown",
+      (event: MouseEvent) => {
+        if (!this._mouseDownDebounced) {
+          this._mouseDownDebounced = true;
+          window.setTimeout(() => {
+            this._mouseDownDebounced = false;
+          }, 10);
+
+          let eventBody = {
+            detail: {
+              button: event.button
+            }
+          };
+          window.dispatchEvent(
+            new CustomEvent("al-container-mousedown", eventBody)
+          );
+        }
+      },
+      { capture: false, once: false, passive: false }
+    );
+  }
 
   componentDidUpdate() {
     this._addEventListeners();

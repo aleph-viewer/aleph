@@ -163,7 +163,7 @@ export class AlOrbitControl implements AframeRegistry {
           controlPosition: controls.object.position
         };
 
-        // emit after 1 ms so that it happens after the scene's componentDidUpdate method has fired
+        // emit after 10 ms so that it happens after the scene's componentDidUpdate method has fired
         setTimeout(() => {
           el.emit(
             AlOrbitControlEvents.INIT,

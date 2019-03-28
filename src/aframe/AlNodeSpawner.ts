@@ -9,7 +9,7 @@ interface AlNodeSpawnerObject extends AframeComponent {
   bindListeners(): void;
   addListeners(): void;
   removeListeners(): void;
-  windowMouseDown(event: MouseEvent): void;
+  containerMouseDown(event: CustomEvent): void;
   elMouseDown(event: CustomEvent): void;
   elMouseUp(event: CustomEvent): void;
   elRaycasterIntersected(event: CustomEvent): void;
@@ -27,7 +27,7 @@ export class AlNodeSpawner implements AframeRegistry {
       },
 
       bindListeners() {
-        this.windowMouseDown = this.windowMouseDown.bind(this);
+        this.containerMouseDown = this.containerMouseDown.bind(this);
         this.elMouseDown = this.elMouseDown.bind(this);
         this.elMouseUp = this.elMouseUp.bind(this);
         this.elRaycasterIntersected = this.elRaycasterIntersected.bind(this);
@@ -38,7 +38,10 @@ export class AlNodeSpawner implements AframeRegistry {
       },
 
       addListeners() {
-        window.addEventListener("mousedown", this.windowMouseDown);
+        this.el.addEventListener(
+          "al-container-mousedown",
+          this.containerMouseDown
+        );
         this.el.addEventListener("mousedown", this.elMouseDown);
         this.el.addEventListener("mouseup", this.elMouseUp);
         this.el.addEventListener(
@@ -53,7 +56,10 @@ export class AlNodeSpawner implements AframeRegistry {
       },
 
       removeListeners() {
-        window.removeEventListener("mousedown", this.windowMouseDown);
+        this.el.removeEventListener(
+          "al-container-mousedown",
+          this.containerMouseDown
+        );
         this.el.removeEventListener("mousedown", this.elMouseDown);
         this.el.removeEventListener("mouseup", this.mouseup);
         this.el.removeEventListener(
@@ -67,9 +73,9 @@ export class AlNodeSpawner implements AframeRegistry {
         this.el.removeEventListener("click", this.elClick);
       },
 
-      windowMouseDown(event: MouseEvent) {
-        this.state.left = event.button === 0;
-        console.log("left!");
+      containerMouseDown(event: CustomEvent) {
+        this.state.left = event.detail.button === 0;
+        console.log("container: mouse down left!");
       },
 
       elMouseDown(_event: CustomEvent) {
