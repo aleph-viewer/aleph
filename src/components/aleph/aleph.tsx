@@ -62,10 +62,8 @@ export class Aleph {
   private _camera: Entity;
   private _tcontrols: THREE.OrbitControls;
   private _intersectingNode: boolean;
-  private _container: HTMLElement;
 
-  private _mouseDownDebounced: boolean;
-
+  // TODO: Put In Reducer
   private _lastCameraPosition: THREE.Vector3;
   private _lastCameraTarget: THREE.Vector3;
   //#endregion
@@ -279,7 +277,6 @@ export class Aleph {
 
     this._lastCameraPosition = new THREE.Vector3(0, 0, 0);
     this._lastCameraTarget = new THREE.Vector3(0, 0, 0);
-    this._mouseDownDebounced = false;
   }
 
   //#region Rendering Methods
@@ -341,6 +338,7 @@ export class Aleph {
             al-node-spawner={`
               nodesEnabled: ${this.nodesEnabled};
             `}
+            al-edge-spawner
             class="collidable"
             id="target-entity"
             ref={(el: Entity) => (this._targetEntity = el)}
@@ -359,8 +357,9 @@ export class Aleph {
         return (
           <a-entity
             al-node-spawner={`
-            nodesEnabled: ${this.nodesEnabled};
-          `}
+              nodesEnabled: ${this.nodesEnabled};
+            `}
+            al-edge-spawner
             class="collidable"
             id="target-entity"
             ref={(el: Entity) => (this._targetEntity = el)}
@@ -526,7 +525,6 @@ export class Aleph {
   render(): JSX.Element {
     return (
       <div
-        ref={el => (this._container = el)}
         id="al-container"
         style={{
           width: this.width,

@@ -1,4 +1,4 @@
-import { AlNodeSerial } from "../interfaces";
+import { AlNodeSerial, AlEdgeSerial } from "../interfaces";
 import {
   AlGltfModel,
   AlVolumetricModel,
@@ -11,6 +11,7 @@ import {
 } from "../aframe";
 import { ThreeUtils, GetUtils } from ".";
 import { Constants } from "../Constants";
+import { AlEdgeSpawner } from "../aframe/AlEdgeSpawner";
 
 export class CreateUtils {
   static createNode(
@@ -26,6 +27,15 @@ export class CreateUtils {
       position: ThreeUtils.vector3ToString(position),
       scale: scale / Constants.nodeSize,
       text: id
+    };
+  }
+
+  static createEdge(startNode: string, endNode: string): AlEdgeSerial {
+    const id = "[" + startNode + "]_[" + endNode + "]";
+    return {
+      id: id,
+      startNode,
+      endNode
     };
   }
 
@@ -49,6 +59,10 @@ export class CreateUtils {
     AFRAME.registerComponent(
       AlFixedToOrbitCamera.getName(),
       AlFixedToOrbitCamera.getObject()
+    );
+    AFRAME.registerComponent(
+      AlEdgeSpawner.getName(),
+      AlEdgeSpawner.getObject()
     );
   }
 }

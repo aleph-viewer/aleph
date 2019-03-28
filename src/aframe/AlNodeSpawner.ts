@@ -83,7 +83,6 @@ export class AlNodeSpawner implements AframeRegistry {
 
       canvasMouseDown(event: MouseEvent) {
         this.state.left = event.button === 0;
-        console.log("spawner-shifting: ", event.shiftKey);
       },
 
       canvasMouseUp(_event: MouseEvent) {

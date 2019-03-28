@@ -13,6 +13,7 @@ interface AlNodeState {
   dragging: boolean;
   mouseDown: boolean;
   lastCameraPosition: THREE.Vector3;
+  shifted: boolean;
 }
 
 interface AlNodeObject extends AframeComponent {
@@ -91,13 +92,33 @@ export class AlNode implements AframeRegistry {
         );
       },
 
+      canvasMouseDown(event: MouseEvent) {
+        console.log(event.shiftKey);
+        this.state.shifted = event.shiftKey;
+      },
+
+      canvasMouseUp(_event: MouseEvent) {
+        this.state.shifted = false;
+      },
+
       elMouseDown(_event: CustomEvent): void {
-        if (this.data.nodesEnabled) {
-          let state = this.state as AlNodeState;
-          state.mouseDown = true;
-          this.el.emit(AlNodeEvents.CONTROLS_DISABLED, {}, true);
-          this.el.emit(AlNodeEvents.SELECTED, { id: this.el.id }, true);
-        }
+        window.setTimeout(() => {
+          if (this.data.nodesEnabled) {
+            let state = this.state as AlNodeState;
+            state.mouseDown = true;
+            this.el.emit(AlNodeEvents.CONTROLS_DISABLED, {}, true);
+            this.el.emit(AlNodeEvents.SELECTED, { id: this.el.id }, true);
+
+            // TODO: Emitting properly, butn ot being recieved by the EdgeSpawner
+            if (this.state.shifted && this.state.hovered) {
+              this.el.twoemit(
+                AlNodeEvents.NODE_SHIFT_CLICKED,
+                { id: this.el.id },
+                true
+              );
+            }
+          }
+        }, Constants.minTimeForCameraThrottle);
       },
 
       elMouseUp(_event: CustomEvent): void {
@@ -123,12 +144,6 @@ export class AlNode implements AframeRegistry {
         }
         this.el.emit(AlNodeEvents.INTERSECTION_CLEARED, {}, true);
       },
-
-      canvasMouseDown(event: MouseEvent) {
-        console.log("node-shifting: ", event.shiftKey);
-      },
-
-      canvasMouseUp(_event: MouseEvent) {},
 
       init(): void {
         this.tickFunction = AFRAME.utils.throttle(
@@ -165,7 +180,8 @@ export class AlNode implements AframeRegistry {
           camera,
           target: targetPos,
           dragging: false,
-          lastCameraPosition: lookPos
+          lastCameraPosition: lookPos,
+          shifted: false
         } as AlNodeState;
       },
 
@@ -220,4 +236,5 @@ export class AlNodeEvents {
   static CONTROLS_ENABLED: string = "al-control-enable";
   static CONTROLS_DISABLED: string = "al-control-disabled";
   static ANIMATION_STARTED: string = "al-animation-started";
+  static NODE_SHIFT_CLICKED: string = "al-node-shift-clicked";
 }
