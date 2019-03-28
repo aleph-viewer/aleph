@@ -30,31 +30,32 @@ export class AlNodeList {
         </ion-radio-group>
       </ion-list>
     );
-
-    // return (
-    //   <div>
-    //     <ul>
-    //       {this.nodes.map((node: AlNodeSerial) => {
-    //         return (
-    //           <li>
-    //             <label class="block">
-    //               <input
-    //                 type="radio"
-    //                 checked={this.selectedNode === node.id}
-    //                 id={node.id}
-    //                 name="node"
-    //                 value={node.id}
-    //                 onChange={e =>
-    //                   this.onSelectedNodeChanged.emit(e.srcElement.id)
-    //                 }
-    //               />
-    //               {node.id}
-    //             </label>
-    //           </li>
-    //         );
-    //       })}
-    //     </ul>
-    //   </div>
-    // );
   }
+
+  // return (
+  //   <div>
+  //     <ul>
+  //       {this.nodes.map((node: AlNodeSerial) => {
+  //         return (
+  //           <li>
+  //             <label class="block">
+  //               <input
+  //                 type="radio"
+  //                 checked={this.selectedNode === node.id}
+  //                 id={node.id}
+  //                 name="node"
+  //                 value={node.id}
+  //                 onChange={e =>
+  //                   this.onSelectedNodeChanged.emit(e.srcElement.id)
+  //                 }
+  //               />
+  //               {node.id}
+  //             </label>
+  //           </li>
+  //         );
+  //       })}
+  //     </ul>
+  //   </div>
+  // );
+  //}
 }
