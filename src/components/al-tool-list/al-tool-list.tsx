@@ -36,15 +36,6 @@ export class AlToolList {
             );
           })}
         </ul>
-        {/* {this.selectedTool !== null ? (
-        <ion-button
-          onClick={() => {
-            this.onRemoveTool.emit(this.selectedTool);
-          }}
-        >
-          Delete
-        </ion-button>
-      ) : null} */}
       </div>
     );
   }
