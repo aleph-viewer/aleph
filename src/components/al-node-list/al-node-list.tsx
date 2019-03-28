@@ -18,7 +18,7 @@ export class AlNodeList {
         <ion-radio-group value={this.selectedNode}>
           {this.nodes.map((node: AlNodeSerial) => {
             return (
-              <ion-item>
+              <ion-item no-padding>
                 <ion-label>{node.text}</ion-label>
                 <ion-radio
                   value={node.id}
