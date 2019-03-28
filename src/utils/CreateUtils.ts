@@ -14,7 +14,7 @@ import { Constants } from "../Constants";
 
 export class CreateUtils {
   static createNode(
-    nodes: AlNodeSerial[],
+    nodes: Map<string, AlNodeSerial>,
     target: THREE.Vector3,
     position: THREE.Vector3,
     scale: number

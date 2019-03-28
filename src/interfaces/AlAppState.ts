@@ -1,5 +1,5 @@
-import { AlNodeSerial } from "./index";
 import { DisplayMode, Orientation } from "../enums";
+import { AlNodeSerial } from ".";
 
 export interface AlAppState {
   boundingBoxVisible: boolean;
@@ -12,7 +12,7 @@ export interface AlAppState {
   slicesWindowWidth: number;
   src: string | null;
   srcLoaded: boolean;
-  nodes: AlNodeSerial[];
+  nodes: Map<string, AlNodeSerial>;
   nodesEnabled: boolean;
   volumeSteps: number;
   volumeWindowCenter: number;

@@ -10,11 +10,10 @@ import { Store, Action } from "@stencil/redux";
 import {
   appSetSrc,
   appSetSrcLoaded,
-  appAddNode,
-  appRemoveNode,
+  appSetNode,
+  appDeleteNode,
   appSelectNode,
-  appUpdateNode,
-  appLoadNodes,
+  appClearNodes,
   appSetDisplayMode,
   appSetOrientation,
   appSetNodesVisible,
@@ -62,10 +61,6 @@ export class Aleph {
   private _camera: Entity;
   private _tcontrols: THREE.OrbitControls;
   private _intersectingNode: boolean;
-  private _container: HTMLElement;
-
-  private _mouseDownDebounced: boolean;
-
   private _lastCameraPosition: THREE.Vector3;
   private _lastCameraTarget: THREE.Vector3;
   //#endregion
@@ -80,11 +75,10 @@ export class Aleph {
 
   appSetSrc: Action;
   appSetSrcLoaded: Action;
-  appAddNode: Action;
-  appRemoveNode: Action;
+  appSetNode: Action;
+  appDeleteNode: Action;
   appSelectNode: Action;
-  appUpdateNode: Action;
-  appLoadNodes: Action;
+  appClearNodes: Action;
   appSetDisplayMode: Action;
   appSetOrientation: Action;
   appSetNodesVisible: Action;
@@ -103,7 +97,7 @@ export class Aleph {
   @State() src: string | null;
   @State() srcLoaded: boolean;
   @State() selectedNode: string;
-  @State() nodes: AlNodeSerial[];
+  @State() nodes: Map<string, AlNodeSerial>;
   @State() displayMode: DisplayMode;
   @State() orientation: Orientation;
   @State() nodesVisible: boolean;
@@ -154,8 +148,8 @@ export class Aleph {
   }
 
   @Method()
-  async loadNodes(nodes: AlNodeSerial[]): Promise<void> {
-    this._loadNodes(nodes);
+  async clearNodes(): Promise<void> {
+    this._clearNodes();
   }
 
   @Method()
@@ -174,18 +168,21 @@ export class Aleph {
   }
 
   @Method()
-  async removeNode(nodeId: string): Promise<void> {
-    this._removeNode(nodeId);
+  async deleteNode(nodeId: string): Promise<void> {
+    this._deleteNode(nodeId);
   }
 
   @Method()
-  async updateNode(node: AlNodeSerial): Promise<void> {
-    this._updateNode(node);
+  async setNode(node: AlNodeSerial): Promise<void> {
+    this._setNode(node);
   }
 
-  //@Event() onLoad: EventEmitter;
+  @Method()
+  async setNodes(nodes: Map<string, AlNodeSerial>): Promise<void> {
+    this._setNodes(nodes);
+  }
+
   @Event() onChanged: EventEmitter;
-  //@Event() onSelectedNodeChanged: EventEmitter;
   //#endregion
 
   componentWillLoad() {
@@ -243,10 +240,9 @@ export class Aleph {
       appSetSrc,
       appSetSrcLoaded,
       appSelectNode,
-      appAddNode,
-      appRemoveNode,
-      appUpdateNode,
-      appLoadNodes,
+      appSetNode,
+      appDeleteNode,
+      appClearNodes,
       appSetDisplayMode,
       appSetOrientation,
       appSetNodesVisible,
@@ -265,7 +261,7 @@ export class Aleph {
 
     // set up event handlers
     this._srcLoaded = this._srcLoaded.bind(this);
-    this._addNodeEventHandler = this._addNodeEventHandler.bind(this);
+    this._setNodeEventHandler = this._setNodeEventHandler.bind(this);
     this._validTargetEventHandler = this._validTargetEventHandler.bind(this);
     this._nodeSelectedEventHandler = this._nodeSelectedEventHandler.bind(this);
     this._intersectingNodeEventHandler = this._intersectingNodeEventHandler.bind(
@@ -283,7 +279,6 @@ export class Aleph {
 
     this._lastCameraPosition = new THREE.Vector3(0, 0, 0);
     this._lastCameraTarget = new THREE.Vector3(0, 0, 0);
-    this._mouseDownDebounced = false;
   }
 
   //#region Rendering Methods
@@ -314,15 +309,14 @@ export class Aleph {
       return null;
     }
 
-    let backScale = 0;
-    let backBoard = null;
+    let backScale: number = 0;
+    let backBoard: JSX.Element | null = null;
 
     if (this._boundingSphereRadius) {
       backScale = this._boundingSphereRadius * Constants.splashBackSize;
 
       backBoard = (
         <a-entity
-          ref={el => (this._backBoard = el)}
           class="collidable"
           id="back-board"
           geometry={`primitive: plane; height: ${backScale}; width: ${backScale}`}
@@ -334,6 +328,7 @@ export class Aleph {
           wireframe: true;
           side: double;
         `}
+          ref={el => (this._backBoard = el)}
         />
       );
     }
@@ -347,13 +342,13 @@ export class Aleph {
             `}
             class="collidable"
             id="target-entity"
-            ref={(el: Entity) => (this._targetEntity = el)}
             al-gltf-model={`
               src: url(${this.src});
               dracoDecoderPath: ${this.dracoDecoderPath};
             `}
             position="0 0 0"
             scale="1 1 1"
+            ref={(el: Entity) => (this._targetEntity = el)}
           />,
           backBoard
         ];
@@ -367,15 +362,14 @@ export class Aleph {
           `}
             class="collidable"
             id="target-entity"
-            ref={(el: Entity) => (this._targetEntity = el)}
             al-volumetric-model={`
               src: url(${this.src});
             `}
             position="0 0 0"
             scale="1 1 1"
+            ref={(el: Entity) => (this._targetEntity = el)}
           >
             <a-entity
-              ref={el => (this._backBoard = el)}
               class="collidable"
               id="back-board"
               geometry={`primitive: plane; height: ${backScale}; width: ${backScale}`}
@@ -389,6 +383,7 @@ export class Aleph {
                 wireframe: true;
                 side: double;
               `}
+              ref={el => (this._backBoard = el)}
             />
           </a-entity>
         );
@@ -397,45 +392,43 @@ export class Aleph {
   }
 
   private _renderNodes(): JSX.Element {
-    const outNodes: JSX.Element[] = [];
-    const dataNodes: AlNodeSerial[] = this.nodes;
+    //const renderNodes: JSX.Element[] = [];
+    //const nodes: Map<string, AlNodeSerial> = this.nodes;
 
-    for (var i = 0; i < dataNodes.length; i++) {
-      if (i < dataNodes.length) {
-        const node: AlNodeSerial = dataNodes[i];
+    return [...this.nodes].map((n: [string, AlNodeSerial]) => {
+      const nodeId: string = n[0];
+      const node: AlNodeSerial = n[1];
 
-        let textOffset = new THREE.Vector3(0.1, 0.1, 0.01);
-        textOffset.multiplyScalar(node.scale);
+      let textOffset = new THREE.Vector3(0.1, 0.1, 0.01);
+      textOffset.multiplyScalar(node.scale);
 
-        outNodes.push(
+      return (
+        <a-entity
+          class="collidable"
+          id={nodeId}
+          rotation="0 0 0"
+          position={node.position}
+          al-node={`
+            target: ${node.target};
+            scale: ${node.scale};
+            selected: ${this.selectedNode === nodeId};
+            nodesEnabled: ${this.nodesEnabled};
+          `}
+        >
           <a-entity
-            class="collidable"
-            id={node.id}
-            rotation="0 0 0"
-            position={node.position}
-            al-node={`
-              target: ${node.target};
-              scale: ${node.scale};
-              selected: ${this.selectedNode === node.id};
-              nodesEnabled: ${this.nodesEnabled};
+            //geometry="primitive: plane; height: auto; width: auto"
+            text={`
+              value: ${node.text};
+              side: double;
+              baseline: bottom;
+              anchor: left;
             `}
-          >
-            <a-entity
-              //geometry="primitive: plane; height: auto; width: auto"
-              text={`
-                value: ${node.text};
-                side: double;
-                baseline: bottom;
-                anchor: left;
-              `}
-              position={ThreeUtils.vector3ToString(textOffset)}
-              id={`${node.id}-label"`}
-            />
-          </a-entity>
-        );
-      }
-    }
-    return outNodes;
+            position={ThreeUtils.vector3ToString(textOffset)}
+            id={`${nodeId}-label"`}
+          />
+        </a-entity>
+      );
+    });
   }
 
   private _renderLights(): JSX.Element {
@@ -465,7 +458,7 @@ export class Aleph {
     if (this.cameraAnimating) {
       // Get camera state from node and set as result
       let result: AlCameraSerial | null = GetUtils.getCameraStateFromNode(
-        GetUtils.getNodeById(this.selectedNode, this.nodes),
+        this.nodes.get(this.selectedNode),
         this._boundingSphereRadius
       );
 
@@ -537,7 +530,6 @@ export class Aleph {
   render(): JSX.Element {
     return (
       <div
-        ref={el => (this._container = el)}
         id="al-container"
         style={{
           width: this.width,
@@ -555,28 +547,25 @@ export class Aleph {
     return this.store.getState().app;
   }
 
-  private _loadNodes(nodes: AlNodeSerial[]): void {
-    // remove all existing nodes
-    while (this.nodes.length) {
-      this._removeNode(this.nodes[this.nodes.length - 1].id);
-    }
-
-    this.appLoadNodes(nodes);
+  private _clearNodes(): void {
+    this.appClearNodes();
     this.onChanged.emit(this._getAppState());
   }
 
-  private _addNode(node: AlNodeSerial): void {
-    this.appAddNode(node);
+  private _setNodes(nodes: Map<string, AlNodeSerial>): void {
+    nodes.forEach((node: AlNodeSerial) => {
+      this.appSetNode(node);
+    });
     this.onChanged.emit(this._getAppState());
   }
 
-  private _removeNode(nodeId: string): void {
-    this.appRemoveNode(nodeId);
+  private _deleteNode(nodeId: string): void {
+    this.appDeleteNode(nodeId);
     this.onChanged.emit(this._getAppState());
   }
 
-  private _updateNode(node: AlNodeSerial): void {
-    this.appUpdateNode(node);
+  private _setNode(node: AlNodeSerial): void {
+    this.appSetNode(node);
     this.onChanged.emit(this._getAppState());
   }
 
@@ -611,9 +600,11 @@ export class Aleph {
 
   //#region Event Handlers
   private _controlsMoved(event: CustomEvent): void {
+    // todo: add to redux store
     this._lastCameraPosition = event.detail.position;
     this._lastCameraTarget = event.detail.target;
   }
+
   private _animationFinished(_event: CustomEvent): void {
     this.appSetCameraAnimating(false);
   }
@@ -638,7 +629,7 @@ export class Aleph {
     this._intersectingNode = true;
   }
 
-  private _addNodeEventHandler(event: CustomEvent): void {
+  private _setNodeEventHandler(event: CustomEvent): void {
     if (this.nodesEnabled && this._validTarget && !this._intersectingNode) {
       let intersection: THREE.Intersection = event.detail.detail.intersection;
 
@@ -649,7 +640,7 @@ export class Aleph {
         this._boundingSphereRadius
       );
 
-      this._addNode(newNode);
+      this._setNode(newNode);
     }
   }
 
@@ -677,7 +668,7 @@ export class Aleph {
     }
 
     if (intersection) {
-      this.appUpdateNode({
+      this.appSetNode({
         id: nodeId,
         position: ThreeUtils.vector3ToString(intersection.point)
       });
@@ -720,7 +711,7 @@ export class Aleph {
       );
       this._scene.addEventListener(
         AlNodeSpawnerEvents.ADD_NODE,
-        this._addNodeEventHandler,
+        this._setNodeEventHandler,
         false
       );
       this._scene.addEventListener(

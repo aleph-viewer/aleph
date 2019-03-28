@@ -161,7 +161,7 @@
       let state = {
         src: null,
         srcLoaded: false,
-        nodes: [],
+        nodes: new Map(),
         selectedNode: null
       }
 
@@ -218,7 +218,7 @@
         nodeEditor.addEventListener(
           "onDelete",
           function(e) {
-            aleph.removeNode(e.detail.id); // todo: change state.nodes
+            aleph.deleteNode(e.detail.id);
           },
           false
         );
@@ -226,7 +226,7 @@
         nodeEditor.addEventListener(
           "onSave",
           function(e) {
-            aleph.updateNode(e.detail); // todo: change state.nodes
+            aleph.setNode(e.detail);
           },
           false
         );
@@ -246,7 +246,8 @@
         loadNodesButton.addEventListener(
           "click",
           function(e) {
-            aleph.loadNodes(JSON.parse(nodesTextArea.value));
+            aleph.clearNodes();
+            aleph.setNodes(new Map(JSON.parse(nodesTextArea.value)));
           },
           false
         );
@@ -276,12 +277,10 @@
 
         nodeList.nodes = state.nodes;
         nodeList.selectedNode = state.selectedNode;
-        nodeEditor.node = state.nodes.find((node) => {
-          return node.id === state.selectedNode;
-        });
+        //nodeEditor.node = state.nodes.get(state.selectedNode);
         srcSelect.value = state.src;
         srcInput.value = state.src;
-        nodesTextArea.value = JSON.stringify(state.nodes);
+        nodesTextArea.value = JSON.stringify([...state.nodes]);
 
         debug.classList.remove("disabled");
       }

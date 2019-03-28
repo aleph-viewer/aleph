@@ -9,20 +9,25 @@ import { AlNodeSerial } from "../../interfaces";
 export class AlNodeList {
   @Event() onSelectedNodeChanged: EventEmitter;
 
-  @Prop({ mutable: true }) nodes: AlNodeSerial[] = [];
+  @Prop({ mutable: true }) nodes: Map<string, AlNodeSerial> = new Map<
+    string,
+    AlNodeSerial
+  >();
   @Prop({ mutable: true }) selectedNode: string | null = null;
 
   render(): JSX.Element {
     return (
       <ion-list>
         <ion-radio-group value={this.selectedNode}>
-          {this.nodes.map((node: AlNodeSerial) => {
+          {[...this.nodes].map((value: [string, AlNodeSerial]) => {
+            const nodeId: string = value[0];
+            const node: AlNodeSerial = value[1];
             return (
               <ion-item no-padding>
                 <ion-label>{node.text}</ion-label>
                 <ion-radio
-                  value={node.id}
-                  onClick={() => this.onSelectedNodeChanged.emit(node.id)}
+                  value={nodeId}
+                  onClick={() => this.onSelectedNodeChanged.emit(nodeId)}
                 />
               </ion-item>
             );

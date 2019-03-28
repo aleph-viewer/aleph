@@ -11,11 +11,10 @@ export type ActionTypes =
   | NullAction
   | AppSetSrcAction
   | AppSetSrcLoadedAction
-  | AppAddNodeAction
-  | AppRemoveNodeAction
+  | AppSetNodeAction
+  | AppDeleteNodeAction
   | AppSelectNodeAction
-  | AppUpdateNodeAction
-  | AppLoadNodesAction
+  | AppClearNodesAction
   | AppSetDisplayModeAction
   | AppSetOrientationAction
   | AppSetNodesVisibleAction
@@ -36,11 +35,10 @@ export enum TypeKeys {
   ERROR = "ERROR",
   APP_SET_SRC = "APP_SET_SRC",
   APP_SET_SRC_LOADED = "APP_SET_SRC_LOADED",
-  APP_ADD_NODE = "APP_ADD_NODE",
-  APP_REMOVE_NODE = "APP_REMOVE_NODE",
+  APP_SET_NODE = "APP_SET_NODE",
+  APP_DELETE_NODE = "APP_DELETE_NODE",
   APP_SELECT_NODE = "APP_SELECT_NODE",
-  APP_UPDATE_NODE = "APP_UPDATE_NODE",
-  APP_LOAD_NODES = "APP_LOAD_NODES",
+  APP_CLEAR_NODES = "APP_LOAD_NODES",
   APP_SET_DISPLAY_MODE = "APP_SET_DISPLAY_MODE",
   APP_SET_ORIENTATION = "APP_SET_ORIENTATION",
   APP_SET_NODES_VISIBLE = "APP_SET_NODES_VISIBLE",
@@ -84,32 +82,32 @@ export const appSetSrcLoaded = (payload: boolean) => async (
   });
 };
 
-export interface AppAddNodeAction {
-  type: TypeKeys.APP_ADD_NODE;
+export interface AppSetNodeAction {
+  type: TypeKeys.APP_SET_NODE;
   payload: AlNodeSerial;
 }
 
-export const appAddNode = (payload: AlNodeSerial) => async (
+export const appSetNode = (payload: AlNodeSerial) => async (
   dispatch,
   _getState
 ) => {
   return dispatch({
-    type: TypeKeys.APP_ADD_NODE,
+    type: TypeKeys.APP_SET_NODE,
     payload: payload
   });
 };
 
-export interface AppRemoveNodeAction {
-  type: TypeKeys.APP_REMOVE_NODE;
+export interface AppDeleteNodeAction {
+  type: TypeKeys.APP_DELETE_NODE;
   payload: string | null;
 }
 
-export const appRemoveNode = (payload: string) => async (
+export const appDeleteNode = (payload: string) => async (
   dispatch,
   _getState
 ) => {
   return dispatch({
-    type: TypeKeys.APP_REMOVE_NODE,
+    type: TypeKeys.APP_DELETE_NODE,
     payload: payload
   });
 };
@@ -129,29 +127,14 @@ export const appSelectNode = (payload: string) => async (
   });
 };
 
-export interface AppUpdateNodeAction {
-  type: TypeKeys.APP_UPDATE_NODE;
-  payload: AlNodeSerial;
+export interface AppClearNodesAction {
+  type: TypeKeys.APP_CLEAR_NODES;
+  payload: void;
 }
 
-export const appUpdateNode = (payload: AlNodeSerial) => async (
-  dispatch,
-  _getState
-) => {
+export const appClearNodes = (payload: void) => async (dispatch, _getState) => {
   return dispatch({
-    type: TypeKeys.APP_UPDATE_NODE,
-    payload: payload
-  });
-};
-
-export interface AppLoadNodesAction {
-  type: TypeKeys.APP_LOAD_NODES;
-  payload: any;
-}
-
-export const appLoadNodes = (payload: void) => async (dispatch, _getState) => {
-  return dispatch({
-    type: TypeKeys.APP_LOAD_NODES,
+    type: TypeKeys.APP_CLEAR_NODES,
     payload: payload
   });
 };

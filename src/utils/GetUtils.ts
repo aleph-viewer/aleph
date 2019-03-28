@@ -8,12 +8,12 @@ export class GetUtils {
     return file.substring(file.lastIndexOf(".") + 1);
   }
 
-  static getNodeWithHighestId(nodes: AlNodeSerial[]): number {
-    if (nodes.length) {
+  static getNodeWithHighestId(nodes: Map<string, AlNodeSerial>): number {
+    if (nodes.size) {
       return Math.max.apply(
         Math,
-        nodes.map(node => {
-          return this.getNodeIdNumber(node.id);
+        [...nodes].map((value: [string, AlNodeSerial]) => {
+          return this.getNodeIdNumber(value[0]);
         })
       );
     }
@@ -25,25 +25,25 @@ export class GetUtils {
     return Number(nodeId.split("-")[1]);
   }
 
-  static getNextNodeId(nodes: AlNodeSerial[]): string {
+  static getNextNodeId(nodes: Map<string, AlNodeSerial>): string {
     return "node-" + Number(this.getNodeWithHighestId(nodes) + 1);
   }
 
-  static getNodeIndex(id: string, nodes: AlNodeSerial[]): number {
-    return nodes.findIndex((node: AlNodeSerial) => {
-      return this.getNodeIdNumber(node.id) === this.getNodeIdNumber(id);
-    });
-  }
+  // static getNodeIndex(id: string, nodes: AlNodeSerial[]): number {
+  //   return nodes.findIndex((node: AlNodeSerial) => {
+  //     return this.getNodeIdNumber(node.id) === this.getNodeIdNumber(id);
+  //   });
+  // }
 
-  static getNodeById(id: string, nodes: AlNodeSerial[]): AlNodeSerial | null {
-    let node: AlNodeSerial | null = null;
+  // static getNodeById(id: string, nodes: Map<string, AlNodeSerial>): AlNodeSerial | null {
+  //   let node: AlNodeSerial | null = null;
 
-    node = nodes.find((node: AlNodeSerial) => {
-      return node.id === id;
-    });
+  //   node = nodes.find((node: AlNodeSerial) => {
+  //     return node.id === id;
+  //   });
 
-    return node;
-  }
+  //   return node;
+  // }
 
   static getGeometryCenter(
     geometry: THREE.Geometry | THREE.BufferGeometry

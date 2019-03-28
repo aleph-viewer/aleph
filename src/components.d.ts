@@ -27,7 +27,7 @@ export namespace Components {
   interface AlControlPanel {
     'boundingBoxVisible': boolean;
     'displayMode': DisplayMode;
-    'nodes': AlNodeSerial[];
+    'nodes': Map<string, AlNodeSerial>;
     'nodesEnabled': boolean;
     'nodesVisible': boolean;
     'optionsEnabled': boolean;
@@ -46,7 +46,7 @@ export namespace Components {
   interface AlControlPanelAttributes extends StencilHTMLAttributes {
     'boundingBoxVisible'?: boolean;
     'displayMode'?: DisplayMode;
-    'nodes'?: AlNodeSerial[];
+    'nodes'?: Map<string, AlNodeSerial>;
     'nodesEnabled'?: boolean;
     'nodesVisible'?: boolean;
     'onOnSetBoundingBoxVisible'?: (event: CustomEvent) => void;
@@ -84,28 +84,29 @@ export namespace Components {
   }
 
   interface AlNodeList {
-    'nodes': AlNodeSerial[];
+    'nodes': Map<string, AlNodeSerial>;
     'selectedNode': string | null;
   }
   interface AlNodeListAttributes extends StencilHTMLAttributes {
-    'nodes'?: AlNodeSerial[];
+    'nodes'?: Map<string, AlNodeSerial>;
     'onOnSelectedNodeChanged'?: (event: CustomEvent) => void;
     'selectedNode'?: string | null;
   }
 
   interface UvAleph {
+    'clearNodes': () => Promise<void>;
     'debug': boolean;
+    'deleteNode': (nodeId: string) => Promise<void>;
     'dracoDecoderPath': string | null;
     'height': string;
     'load': (src: string) => Promise<void>;
-    'loadNodes': (nodes: AlNodeSerial[]) => Promise<void>;
-    'removeNode': (nodeId: string) => Promise<void>;
     'selectNode': (nodeId: string) => Promise<void>;
     'setBoundingBoxVisible': (visible: boolean) => Promise<void>;
     'setDisplayMode': (displayMode: DisplayMode) => Promise<void>;
+    'setNode': (node: AlNodeSerial) => Promise<void>;
+    'setNodes': (nodes: Map<string, AlNodeSerial>) => Promise<void>;
     'setNodesEnabled': (enabled: boolean) => Promise<void>;
     'spinnerColor': string;
-    'updateNode': (node: AlNodeSerial) => Promise<void>;
     'width': string;
   }
   interface UvAlephAttributes extends StencilHTMLAttributes {

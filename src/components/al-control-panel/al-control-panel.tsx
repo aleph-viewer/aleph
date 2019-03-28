@@ -39,7 +39,10 @@ export class AlControlPanel {
   @Prop({ mutable: true }) slicesWindowWidth: number;
   @Prop({ mutable: true }) stack: any;
   @Prop({ mutable: true }) stackHelper: AMI.StackHelper;
-  @Prop({ mutable: true }) nodes: AlNodeSerial[] = [];
+  @Prop({ mutable: true }) nodes: Map<string, AlNodeSerial> = new Map<
+    string,
+    AlNodeSerial
+  >();
   @Prop({ mutable: true }) nodesEnabled: boolean = false;
   @Prop({ mutable: true }) nodesVisible: boolean = true;
   @Prop({ mutable: true }) volumeSteps: number;
@@ -97,7 +100,7 @@ export class AlControlPanel {
     this.stackHelper = helper;
   }
 
-  private _nodes(nodes: AlNodeSerial[]) {
+  private _nodes(nodes: Map<string, AlNodeSerial>) {
     this.nodes = nodes;
   }
 

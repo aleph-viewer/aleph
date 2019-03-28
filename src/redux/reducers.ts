@@ -1,9 +1,8 @@
 import { combineReducers } from "redux";
 import { ActionTypes, TypeKeys } from "./actions";
-import { GetUtils } from "../utils";
 import { DisplayMode } from "../enums/DisplayMode";
 import { Orientation } from "../enums/Orientation";
-import { AlAppState } from "../interfaces";
+import { AlAppState, AlNodeSerial } from "../interfaces";
 
 export const getInitialState = () => {
   return {
@@ -18,7 +17,7 @@ export const getInitialState = () => {
     slicesWindowWidth: undefined,
     src: null,
     srcLoaded: false,
-    nodes: [],
+    nodes: new Map<string, AlNodeSerial>(),
     nodesEnabled: false,
     nodesVisible: true,
     volumeSteps: undefined,
@@ -38,7 +37,7 @@ export const app = (
         ...state,
         src: action.payload,
         srcLoaded: false,
-        nodes: []
+        nodes: new Map<string, AlNodeSerial>()
       };
     }
     case TypeKeys.APP_SET_SRC_LOADED: {
@@ -47,21 +46,23 @@ export const app = (
         srcLoaded: action.payload
       };
     }
-    case TypeKeys.APP_ADD_NODE: {
-      console.log("add node", action.payload.id);
+    case TypeKeys.APP_SET_NODE: {
+      // updates a node if it already exists, otherwise adds it.
+      // if it already exists, the current selectedNode is kept, otherwise it's set to the new node's id.
       return {
         ...state,
-        selectedNode: action.payload.id,
-        nodes: [...state.nodes, action.payload]
+        selectedNode: state.nodes.has(action.payload.id)
+          ? state.selectedNode
+          : action.payload.id,
+        nodes: new Map(state.nodes).set(action.payload.id, action.payload)
       };
     }
-    case TypeKeys.APP_REMOVE_NODE: {
-      const index: number = GetUtils.getNodeIndex(action.payload, state.nodes);
+    case TypeKeys.APP_DELETE_NODE: {
       return {
         ...state,
         selectedNode:
           state.selectedNode === action.payload ? null : state.selectedNode,
-        nodes: [...state.nodes.slice(0, index), ...state.nodes.slice(index + 1)]
+        nodes: new Map(state.nodes).delete(action.payload)
       };
     }
     case TypeKeys.APP_SELECT_NODE: {
@@ -70,25 +71,10 @@ export const app = (
         selectedNode: action.payload
       };
     }
-    case TypeKeys.APP_UPDATE_NODE: {
+    case TypeKeys.APP_CLEAR_NODES: {
       return {
         ...state,
-        nodes: state.nodes.map(node => {
-          if (node.id !== action.payload.id) {
-            return node;
-          }
-
-          return {
-            ...node,
-            ...action.payload
-          };
-        })
-      };
-    }
-    case TypeKeys.APP_LOAD_NODES: {
-      return {
-        ...state,
-        nodes: action.payload
+        nodes: new Map<string, AlNodeSerial>()
       };
     }
     case TypeKeys.APP_SET_DISPLAY_MODE: {
