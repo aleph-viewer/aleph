@@ -27,6 +27,8 @@ interface AlNodeObject extends AframeComponent {
   elMouseUp(_event: CustomEvent): void;
   elRaycasterIntersected(_event: CustomEvent): void;
   elRaycasterIntersectedCleared(_event: CustomEvent): void;
+  canvasMouseDown(_event: MouseEvent): void;
+  canvasMouseUp(_event: MouseEvent): void;
 }
 
 export class AlNode implements AframeRegistry {
@@ -40,6 +42,8 @@ export class AlNode implements AframeRegistry {
       },
 
       bindListeners(): void {
+        this.canvasMouseDown = this.canvasMouseDown.bind(this);
+        this.canvasMouseUp = this.canvasMouseUp.bind(this);
         this.elMouseDown = this.elMouseDown.bind(this);
         this.elMouseUp = this.elMouseUp.bind(this);
         this.elRaycasterIntersected = this.elRaycasterIntersected.bind(this);
@@ -49,6 +53,11 @@ export class AlNode implements AframeRegistry {
       },
 
       addListeners(): void {
+        this.el.sceneEl.canvas.addEventListener(
+          "mousedown",
+          this.canvasMouseDown
+        );
+        this.el.sceneEl.canvas.addEventListener("mouseup", this.canvasMouseUp);
         this.el.addEventListener("mousedown", this.elMouseDown);
         this.el.addEventListener("mouseup", this.elMouseUp);
         this.el.addEventListener(
@@ -62,6 +71,14 @@ export class AlNode implements AframeRegistry {
       },
 
       removeListeners(): void {
+        this.el.sceneEl.canvas.removeEventListener(
+          "mousedown",
+          this.canvasMouseDown
+        );
+        this.el.sceneEl.canvas.removeEventListener(
+          "mouseup",
+          this.canvasMouseUp
+        );
         this.el.removeEventListener("mousedown", this.elMouseDown);
         this.el.removeEventListener("mouseup", this.elMouseUp);
         this.el.removeEventListener(
@@ -107,10 +124,16 @@ export class AlNode implements AframeRegistry {
         this.el.emit(AlNodeEvents.INTERSECTION_CLEARED, {}, true);
       },
 
+      canvasMouseDown(event: MouseEvent) {
+        console.log("node-shifting: ", event.shiftKey);
+      },
+
+      canvasMouseUp(_event: MouseEvent) {},
+
       init(): void {
         this.tickFunction = AFRAME.utils.throttle(
           this.tickFunction,
-          Constants.minTimeForThrottle,
+          Constants.minTimeForCameraThrottle,
           this
         );
         this.bindListeners();
