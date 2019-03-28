@@ -16,6 +16,9 @@ interface AlNodeState {
 }
 
 interface AlNodeObject extends AframeComponent {
+  update(oldData): void;
+  tick(): void;
+  remove(): void;
   bindListeners(): void;
   addListeners(): void;
   removeListeners(): void;

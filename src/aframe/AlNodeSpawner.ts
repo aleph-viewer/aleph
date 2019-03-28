@@ -9,6 +9,7 @@ interface AlNodeSpawnerObject extends AframeComponent {
   bindListeners(): void;
   addListeners(): void;
   removeListeners(): void;
+  remove(): void;
   canvasMouseDown(event: MouseEvent): void;
   canvasMouseUp(event: MouseEvent): void;
   elMouseDown(event: CustomEvent): void;
@@ -133,10 +134,6 @@ export class AlNodeSpawner implements AframeRegistry {
           left: false
         } as AlNodeSpawnerState;
       },
-
-      update(): void {},
-
-      tick(): void {},
 
       remove(): void {
         this.removeListeners();

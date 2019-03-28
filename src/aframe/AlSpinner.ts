@@ -17,12 +17,7 @@ export class AlSpinner implements AframeRegistry {
           )
         );
       },
-
-      update(): void {},
-
-      tick(): void {},
-
-      remove(): void {}
+      
     } as AframeComponent;
   }
 

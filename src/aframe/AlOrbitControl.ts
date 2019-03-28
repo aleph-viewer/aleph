@@ -15,6 +15,9 @@ interface AlOrbitControlObject extends AframeComponent {
   dependencies: string[];
   onEnterVR: () => void;
   onExitVR: () => void;
+  update(_oldData): void;
+  tick(): void;
+  remove(): void;
   bindListeners(): void;
   addListeners(): void;
   removeListeners(): void;
