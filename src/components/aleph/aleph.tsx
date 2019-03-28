@@ -355,6 +355,7 @@ export class Aleph {
         ];
       }
       default: {
+        // TODO: Update this to new method
         return (
           <a-entity
             al-node-spawner={`

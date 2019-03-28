@@ -7,7 +7,7 @@ export class Constants {
 
   static maxAnimationSteps = 100;
 
-  static minTimeForCameraThrottle = 10;
+  static minTimeForCameraThrottle = 20;
 
   static minTimeForThrottle = Constants.minTimeForCameraThrottle * 5;
 
