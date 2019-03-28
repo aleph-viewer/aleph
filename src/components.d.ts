@@ -79,7 +79,8 @@ export namespace Components {
   }
   interface AlNodeEditorAttributes extends StencilHTMLAttributes {
     'node'?: AlNodeSerial;
-    'onOnRemoveNode'?: (event: CustomEvent) => void;
+    'onOnDelete'?: (event: CustomEvent) => void;
+    'onOnSave'?: (event: CustomEvent) => void;
   }
 
   interface AlNodeList {
@@ -104,16 +105,14 @@ export namespace Components {
     'setDisplayMode': (displayMode: DisplayMode) => Promise<void>;
     'setNodesEnabled': (enabled: boolean) => Promise<void>;
     'spinnerColor': string;
+    'updateNode': (node: AlNodeSerial) => Promise<void>;
     'width': string;
   }
   interface UvAlephAttributes extends StencilHTMLAttributes {
     'debug'?: boolean;
     'dracoDecoderPath'?: string | null;
     'height'?: string;
-    'onOnLoad'?: (event: CustomEvent) => void;
-    'onOnNodesChanged'?: (event: CustomEvent) => void;
-    'onOnSave'?: (event: CustomEvent) => void;
-    'onOnSelectedNodeChanged'?: (event: CustomEvent) => void;
+    'onOnChanged'?: (event: CustomEvent) => void;
     'spinnerColor'?: string;
     'width'?: string;
   }

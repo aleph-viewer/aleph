@@ -176,10 +176,14 @@ export class Aleph {
     this._removeNode(nodeId);
   }
 
-  @Event() onLoad: EventEmitter;
-  @Event() onSave: EventEmitter;
-  @Event() onNodesChanged: EventEmitter;
-  @Event() onSelectedNodeChanged: EventEmitter;
+  @Method()
+  async updateNode(node: AlNodeSerial): Promise<void> {
+    this._updateNode(node);
+  }
+
+  //@Event() onLoad: EventEmitter;
+  @Event() onChanged: EventEmitter;
+  //@Event() onSelectedNodeChanged: EventEmitter;
   //#endregion
 
   componentWillLoad() {
@@ -236,9 +240,9 @@ export class Aleph {
     this.store.mapDispatchToProps(this, {
       appSetSrc,
       appSetSrcLoaded,
+      appSelectNode,
       appAddNode,
       appRemoveNode,
-      appSelectNode,
       appUpdateNode,
       appLoadNodes,
       appSetDisplayMode,
@@ -459,21 +463,28 @@ export class Aleph {
     // TODO: Differentiate between Node -> Node && Target -> Target animations
     if (this.cameraAnimating) {
       // Get camera state from node and set as result
-      let result = GetUtils.getCameraStateFromNode(
+      let result: AlCameraSerial | null = GetUtils.getCameraStateFromNode(
         GetUtils.getNodeById(this.selectedNode, this.nodes),
         this._boundingSphereRadius
       );
-      // If we returned a result AND the difference between the last position and the result position is not 0
-      const diffPos: number = result.position.distanceTo(
-        this._lastCameraPosition
-      );
-      const diffTarg: number = result.target.distanceTo(this._lastCameraTarget);
-      if (result && (diffPos !== 0 || diffTarg !== 0)) {
-        camData = result;
-        this._lastCameraPosition = camData.position;
-        this._lastCameraTarget = camData.target;
-        mesh = this._targetEntity.object3DMap.mesh as THREE.Mesh;
-        radius = mesh.geometry.boundingSphere.radius;
+
+      if (result) {
+        // If we returned a result AND the difference between the last position and the result position is not 0
+        const diffPos: number = result.position.distanceTo(
+          this._lastCameraPosition
+        );
+
+        const diffTarg: number = result.target.distanceTo(
+          this._lastCameraTarget
+        );
+
+        if (diffPos !== 0 || diffTarg !== 0) {
+          camData = result;
+          this._lastCameraPosition = camData.position;
+          this._lastCameraTarget = camData.target;
+          mesh = this._targetEntity.object3DMap.mesh as THREE.Mesh;
+          radius = mesh.geometry.boundingSphere.radius;
+        }
       }
     }
 
@@ -538,6 +549,10 @@ export class Aleph {
   //#endregion
 
   //#region Private methods
+  private _getAppState(): AlAppState {
+    return this.store.getState().app;
+  }
+
   private _loadNodes(nodes: AlNodeSerial[]): void {
     // remove all existing nodes
     while (this.nodes.length) {
@@ -545,18 +560,22 @@ export class Aleph {
     }
 
     this.appLoadNodes(nodes);
-    this.onNodesChanged.emit(this.nodes);
+    this.onChanged.emit(this._getAppState());
   }
 
   private _addNode(node: AlNodeSerial): void {
     this.appAddNode(node);
-    this._selectNode(node.id, false);
-    this.onNodesChanged.emit(this.nodes);
+    this.onChanged.emit(this._getAppState());
   }
 
   private _removeNode(nodeId: string): void {
     this.appRemoveNode(nodeId);
-    this.onNodesChanged.emit(this.nodes);
+    this.onChanged.emit(this._getAppState());
+  }
+
+  private _updateNode(node: AlNodeSerial): void {
+    this.appUpdateNode(node);
+    this.onChanged.emit(this._getAppState());
   }
 
   private _selectNode(nodeId: string, animate: boolean): void {
@@ -564,7 +583,7 @@ export class Aleph {
       this.appSetCameraAnimating(true); // todo: can we pass boolean to appSelectNode to set cameraAnimating in the state?
     }
     this.appSelectNode(nodeId);
-    this.onSelectedNodeChanged.emit(this.selectedNode);
+    this.onChanged.emit(this._getAppState());
   }
 
   private _setNodesEnabled(enabled: boolean): void {
@@ -580,10 +599,7 @@ export class Aleph {
     mesh.geometry.computeBoundingSphere();
     this._boundingSphereRadius = mesh.geometry.boundingSphere.radius;
     this.appSetSrcLoaded(true);
-    this.onLoad.emit({
-      selectedNode: this.selectedNode,
-      nodes: this.nodes
-    } as AlAppState);
+    this.onChanged.emit(this._getAppState());
     let result = GetUtils.getCameraStateFromEntity(this._targetEntity);
     if (result) {
       this._lastCameraPosition = result.position;

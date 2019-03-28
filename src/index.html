@@ -46,6 +46,8 @@
         flex: 20%;
         min-width: 350px;
         padding: 1rem;
+        overflow-y: auto;
+        max-height: 100%;
       }
 
       #debug h1 {
@@ -75,12 +77,6 @@
         pointer-events: none;
         opacity: 0.4;
       }
-
-      /* al-control-panel {
-        overflow-y: auto;
-        width: 100%;
-        max-height: 100%;
-      } */
 
       #debug select {
         padding: 5px;
@@ -147,6 +143,7 @@
         </section>
         <section>
           <ion-app>
+            <ion-item-divider></ion-item-divider>
             <al-node-list></al-node-list>
             <ion-item-divider></ion-item-divider>
             <al-node-editor></al-node-editor>
@@ -163,11 +160,9 @@
 
       let state = {
         src: null,
+        srcLoaded: false,
         nodes: [],
-        selectedNode: null,
-        nodesEnabled: false,
-        optionsEnabled: false,
-        boundingBoxVisible: false
+        selectedNode: null
       }
 
       if (Object.observe) {
@@ -194,75 +189,44 @@
         //   aleph.setOptionsVisible(true); // can only show them after src loaded
         // }, false);
 
-        // aleph.addEventListener(
-        //   "onSave",
-        //   function(e) {
-        //     state.nodes = e.detail;
-        //   },
-        //   false
-        // );
-
         aleph.addEventListener(
-          "onNodesChanged",
+          "onChanged",
           function(e) {
-            state.nodes = e.detail;
-          },
-          false
-        );
-
-        aleph.addEventListener(
-          "onSelectedNodeChanged",
-          function(e) {
-            state.selectedNode = e.detail;
-          },
-          false
-        );
-
-        aleph.addEventListener(
-          "onLoad",
-          function(e) {
-
-            const newState = e.detail;
-            state.selectedNode = newState.selectedNode;
-            state.nodes = newState.nodes;
-
-            debug.classList.remove("disabled");
-
-            // move the auto-generated framerate counter to the debug col
-            setTimeout(() => {
-              const framerate = document.querySelector(".rs-base");
-              if (framerate) {
-                debug.appendChild(framerate);
-              }
-            }, 250);
+            state.srcLoaded = e.detail.srcLoaded;
+            state.nodes = e.detail.nodes;
+            state.selectedNode = e.detail.selectedNode;
           },
           false
         );
 
         controlPanel.addEventListener("onSetNodesEnabled", function(e) {
-          state.nodesEnabled = e.detail;
-        });
-
-        controlPanel.addEventListener("onSetOptionsEnabled", function(e) {
-          state.optionsEnabled = e.detail;
-        });
+          aleph.setNodesEnabled(e.detail);
+        }, false);
 
         controlPanel.addEventListener("onSetBoundingBoxVisible", function(e) {
-          state.boundingBoxVisible = e.detail;
-        });
+          aleph.setBoundingBoxVisible(e.detail);
+        }, false);
 
         nodeList.addEventListener(
           "onSelectedNodeChanged",
           function(e) {
-            state.selectedNode = e.detail;
+            aleph.selectNode(e.detail);
           },
           false
         );
 
         nodeEditor.addEventListener(
-          "onRemoveNode",
+          "onDelete",
           function(e) {
-            aleph.removeNode(e.detail.id);
+            aleph.removeNode(e.detail.id); // todo: change state.nodes
+          },
+          false
+        );
+
+        nodeEditor.addEventListener(
+          "onSave",
+          function(e) {
+            aleph.updateNode(e.detail); // todo: change state.nodes
           },
           false
         );
@@ -274,7 +238,6 @@
         loadSrcButton.addEventListener(
           "click",
           function(e) {
-            e.preventDefault();
             state.src = srcInput.value;
           },
           false
@@ -283,18 +246,10 @@
         loadNodesButton.addEventListener(
           "click",
           function(e) {
-            e.preventDefault();
-            state.nodes = JSON.parse(nodesTextArea.value);
+            aleph.loadNodes(JSON.parse(nodesTextArea.value));
           },
           false
         );
-      }
-
-      function createElementFromString(htmlString) {
-        const div = document.createElement('div');
-        div.innerHTML = htmlString.trim();
-        // Change this to div.childNodes to support multiple top-level nodes
-        return div.firstChild;
       }
 
       function changeSetIncludes(changeSet, name) {
@@ -306,18 +261,18 @@
         if (changeSetIncludes(changeSet, "src")) {
           aleph.load(state.src);
           debug.classList.add("disabled");
+          return;
         }
 
-        if (changeSetIncludes(changeSet, "nodes")) {
-          aleph.loadNodes(state.nodes);
-        }
-
-        if (changeSetIncludes(changeSet, "selectedNode")) {
-          aleph.selectNode(state.selectedNode);
-        }
-
-        aleph.setNodesEnabled(state.nodesEnabled);
-        aleph.setBoundingBoxVisible(state.boundingBoxVisible);
+        // if (state.srcLoaded) {
+        //   // move the auto-generated framerate counter to the debug col
+        //   setTimeout(() => {
+        //     const framerate = document.querySelector(".rs-base");
+        //     if (framerate) {
+        //       debug.appendChild(framerate);
+        //     }
+        //   }, 250);
+        // }
 
         nodeList.nodes = state.nodes;
         nodeList.selectedNode = state.selectedNode;
@@ -327,6 +282,8 @@
         srcSelect.value = state.src;
         srcInput.value = state.src;
         nodesTextArea.value = JSON.stringify(state.nodes);
+
+        debug.classList.remove("disabled");
       }
 
       document.addEventListener("DOMContentLoaded", function(event) {
@@ -336,7 +293,7 @@
 
         aleph.componentOnReady().then(function() {
           //component.setDisplayMode("slices");
-          state.src = srcSelect.value;
+          state.src = srcSelect.value; // load src when component ready
         });
 
       });

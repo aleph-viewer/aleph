@@ -1,4 +1,4 @@
-import { Component, Prop, Event, EventEmitter } from "@stencil/core";
+import { Component, Prop, Event, EventEmitter, State } from "@stencil/core";
 import { AlNodeSerial } from "../../interfaces";
 
 @Component({
@@ -7,7 +7,8 @@ import { AlNodeSerial } from "../../interfaces";
   shadow: false
 })
 export class AlNodeEditor {
-  @Event() onRemoveNode: EventEmitter;
+  @Event() onDelete: EventEmitter;
+  @Event() onSave: EventEmitter;
 
   @Prop({ mutable: true }) node: AlNodeSerial;
 
@@ -15,15 +16,26 @@ export class AlNodeEditor {
     if (this.node) {
       return [
         <ion-item>
-          <ion-textarea value={this.node.text} />,
+          <ion-textarea
+            value={this.node.text}
+            onIonChange={e => (this.node.text = e.detail.value)}
+          />
+          ,
         </ion-item>,
         <ion-button
           onClick={() => {
-            this.onRemoveNode.emit(this.node);
+            this.onDelete.emit(this.node);
             this.node = null;
           }}
         >
           Delete
+        </ion-button>,
+        <ion-button
+          onClick={() => {
+            this.onSave.emit(this.node);
+          }}
+        >
+          Save
         </ion-button>
       ];
     }

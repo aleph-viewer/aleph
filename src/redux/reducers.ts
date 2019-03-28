@@ -48,8 +48,10 @@ export const app = (
       };
     }
     case TypeKeys.APP_ADD_NODE: {
+      console.log("add node", action.payload.id);
       return {
         ...state,
+        selectedNode: action.payload.id,
         nodes: [...state.nodes, action.payload]
       };
     }
