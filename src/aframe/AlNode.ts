@@ -125,7 +125,10 @@ export class AlNode implements AframeRegistry {
       },
 
       canvasMouseDown(event: MouseEvent) {
-        console.log("node-shifting: ", event.shiftKey);
+        let state = this.state as AlNodeState;
+        if (state.selected) {
+          console.log("node-shifting: ", event.shiftKey);
+        }
       },
 
       canvasMouseUp(_event: MouseEvent) {},
