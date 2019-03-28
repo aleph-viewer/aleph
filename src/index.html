@@ -46,6 +46,8 @@
         flex: 20%;
         min-width: 350px;
         padding: 1rem;
+        overflow-y: auto;
+        max-height: 100%;
       }
 
       #debug h1 {
@@ -75,12 +77,6 @@
         pointer-events: none;
         opacity: 0.4;
       }
-
-      /* al-control-panel {
-        overflow-y: auto;
-        width: 100%;
-        max-height: 100%;
-      } */
 
       #debug select {
         padding: 5px;
@@ -147,6 +143,7 @@
         </section>
         <section>
           <ion-app>
+            <ion-item-divider></ion-item-divider>
             <al-node-list></al-node-list>
             <ion-item-divider></ion-item-divider>
             <al-node-editor></al-node-editor>

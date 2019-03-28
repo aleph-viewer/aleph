@@ -92,15 +92,19 @@ export class GetUtils {
   static getCameraStateFromNode(
     node: AlNodeSerial,
     radius: number
-  ): AlCameraSerial {
-    let targ = new THREE.Vector3();
+  ): AlCameraSerial | null {
+    if (!node) {
+      return null;
+    }
+
+    let targ: THREE.Vector3 = new THREE.Vector3();
     targ.copy(ThreeUtils.stringToVector3(node.target));
 
-    let pos = new THREE.Vector3();
+    let pos: THREE.Vector3 = new THREE.Vector3();
     pos.copy(ThreeUtils.stringToVector3(node.position));
 
     // (Position -> Target)
-    let dir = pos
+    let dir: THREE.Vector3 = pos
       .clone()
       .sub(targ.clone())
       .normalize();

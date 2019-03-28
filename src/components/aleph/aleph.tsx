@@ -464,21 +464,28 @@ export class Aleph {
     // TODO: Differentiate between Node -> Node && Target -> Target animations
     if (this.cameraAnimating) {
       // Get camera state from node and set as result
-      let result = GetUtils.getCameraStateFromNode(
+      let result: AlCameraSerial | null = GetUtils.getCameraStateFromNode(
         GetUtils.getNodeById(this.selectedNode, this.nodes),
         this._boundingSphereRadius
       );
-      // If we returned a result AND the difference between the last position and the result position is not 0
-      const diffPos: number = result.position.distanceTo(
-        this._lastCameraPosition
-      );
-      const diffTarg: number = result.target.distanceTo(this._lastCameraTarget);
-      if (result && (diffPos !== 0 || diffTarg !== 0)) {
-        camData = result;
-        this._lastCameraPosition = camData.position;
-        this._lastCameraTarget = camData.target;
-        mesh = this._targetEntity.object3DMap.mesh as THREE.Mesh;
-        radius = mesh.geometry.boundingSphere.radius;
+
+      if (result) {
+        // If we returned a result AND the difference between the last position and the result position is not 0
+        const diffPos: number = result.position.distanceTo(
+          this._lastCameraPosition
+        );
+
+        const diffTarg: number = result.target.distanceTo(
+          this._lastCameraTarget
+        );
+
+        if (diffPos !== 0 || diffTarg !== 0) {
+          camData = result;
+          this._lastCameraPosition = camData.position;
+          this._lastCameraTarget = camData.target;
+          mesh = this._targetEntity.object3DMap.mesh as THREE.Mesh;
+          radius = mesh.geometry.boundingSphere.radius;
+        }
       }
     }
 
