@@ -7,7 +7,9 @@ export class Constants {
 
   static maxAnimationSteps = 100;
 
-  static minTimeForThrottle = 50;
+  static minTimeForCameraThrottle = 10;
+
+  static minTimeForThrottle = Constants.minTimeForCameraThrottle * 5;
 
   static nodeColors = {
     selected: "#76ff03",
