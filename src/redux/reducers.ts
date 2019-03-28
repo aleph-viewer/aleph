@@ -47,13 +47,13 @@ export const app = (
         srcLoaded: action.payload
       };
     }
-    case TypeKeys.APP_ADD_TOOL: {
+    case TypeKeys.APP_ADD_NODE: {
       return {
         ...state,
         nodes: [...state.nodes, action.payload]
       };
     }
-    case TypeKeys.APP_REMOVE_TOOL: {
+    case TypeKeys.APP_REMOVE_NODE: {
       const index: number = GetUtils.getNodeIndex(action.payload, state.nodes);
       return {
         ...state,
@@ -62,13 +62,13 @@ export const app = (
         nodes: [...state.nodes.slice(0, index), ...state.nodes.slice(index + 1)]
       };
     }
-    case TypeKeys.APP_SELECT_TOOL: {
+    case TypeKeys.APP_SELECT_NODE: {
       return {
         ...state,
         selectedNode: action.payload
       };
     }
-    case TypeKeys.APP_UPDATE_TOOL: {
+    case TypeKeys.APP_UPDATE_NODE: {
       return {
         ...state,
         nodes: state.nodes.map(node => {
@@ -83,7 +83,7 @@ export const app = (
         })
       };
     }
-    case TypeKeys.APP_LOAD_TOOLS: {
+    case TypeKeys.APP_LOAD_NODES: {
       return {
         ...state,
         nodes: action.payload
@@ -103,13 +103,13 @@ export const app = (
         orientation: action.payload
       };
     }
-    case TypeKeys.APP_SET_TOOLS_VISIBLE: {
+    case TypeKeys.APP_SET_NODES_VISIBLE: {
       return {
         ...state,
         nodesVisible: action.payload
       };
     }
-    case TypeKeys.APP_SET_TOOLS_ENABLED: {
+    case TypeKeys.APP_SET_NODES_ENABLED: {
       return {
         ...state,
         nodesEnabled: action.payload

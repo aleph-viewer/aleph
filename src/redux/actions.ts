@@ -36,15 +36,15 @@ export enum TypeKeys {
   ERROR = "ERROR",
   APP_SET_SRC = "APP_SET_SRC",
   APP_SET_SRC_LOADED = "APP_SET_SRC_LOADED",
-  APP_ADD_TOOL = "APP_ADD_TOOL",
-  APP_REMOVE_TOOL = "APP_REMOVE_TOOL",
-  APP_SELECT_TOOL = "APP_SELECT_TOOL",
-  APP_UPDATE_TOOL = "APP_UPDATE_TOOL",
-  APP_LOAD_TOOLS = "APP_LOAD_TOOLS",
+  APP_ADD_NODE = "APP_ADD_NODE",
+  APP_REMOVE_NODE = "APP_REMOVE_NODE",
+  APP_SELECT_NODE = "APP_SELECT_NODE",
+  APP_UPDATE_NODE = "APP_UPDATE_NODE",
+  APP_LOAD_NODES = "APP_LOAD_NODES",
   APP_SET_DISPLAY_MODE = "APP_SET_DISPLAY_MODE",
   APP_SET_ORIENTATION = "APP_SET_ORIENTATION",
-  APP_SET_TOOLS_VISIBLE = "APP_SET_TOOLS_VISIBLE",
-  APP_SET_TOOLS_ENABLED = "APP_SET_TOOLS_ENABLED",
+  APP_SET_NODES_VISIBLE = "APP_SET_NODES_VISIBLE",
+  APP_SET_NODES_ENABLED = "APP_SET_NODES_ENABLED",
   APP_SET_OPTIONS_VISIBLE = "APP_SET_OPTIONS_VISIBLE",
   APP_SET_OPTIONS_ENABLED = "APP_SET_OPTIONS_ENABLED",
   APP_SET_BOUNDINGBOX_VISIBLE = "APP_SET_BOUNDINGBOX_VISIBLE",
@@ -85,7 +85,7 @@ export const appSetSrcLoaded = (payload: boolean) => async (
 };
 
 export interface AppAddNodeAction {
-  type: TypeKeys.APP_ADD_TOOL;
+  type: TypeKeys.APP_ADD_NODE;
   payload: AlNodeSerial;
 }
 
@@ -94,43 +94,43 @@ export const appAddNode = (payload: AlNodeSerial) => async (
   _getState
 ) => {
   return dispatch({
-    type: TypeKeys.APP_ADD_TOOL,
+    type: TypeKeys.APP_ADD_NODE,
     payload: payload
   });
 };
 
 export interface AppRemoveNodeAction {
-  type: TypeKeys.APP_REMOVE_TOOL;
+  type: TypeKeys.APP_REMOVE_NODE;
   payload: string | null;
 }
 
-export const appRemoveNode = (payload: number) => async (
+export const appRemoveNode = (payload: string) => async (
   dispatch,
   _getState
 ) => {
   return dispatch({
-    type: TypeKeys.APP_REMOVE_TOOL,
+    type: TypeKeys.APP_REMOVE_NODE,
     payload: payload
   });
 };
 
 export interface AppSelectNodeAction {
-  type: TypeKeys.APP_SELECT_TOOL;
-  payload: number;
+  type: TypeKeys.APP_SELECT_NODE;
+  payload: string;
 }
 
-export const appSelectNode = (payload: number) => async (
+export const appSelectNode = (payload: string) => async (
   dispatch,
   _getState
 ) => {
   return dispatch({
-    type: TypeKeys.APP_SELECT_TOOL,
+    type: TypeKeys.APP_SELECT_NODE,
     payload: payload
   });
 };
 
 export interface AppUpdateNodeAction {
-  type: TypeKeys.APP_UPDATE_TOOL;
+  type: TypeKeys.APP_UPDATE_NODE;
   payload: AlNodeSerial;
 }
 
@@ -139,19 +139,19 @@ export const appUpdateNode = (payload: AlNodeSerial) => async (
   _getState
 ) => {
   return dispatch({
-    type: TypeKeys.APP_UPDATE_TOOL,
+    type: TypeKeys.APP_UPDATE_NODE,
     payload: payload
   });
 };
 
 export interface AppLoadNodesAction {
-  type: TypeKeys.APP_LOAD_TOOLS;
+  type: TypeKeys.APP_LOAD_NODES;
   payload: any;
 }
 
 export const appLoadNodes = (payload: void) => async (dispatch, _getState) => {
   return dispatch({
-    type: TypeKeys.APP_LOAD_TOOLS,
+    type: TypeKeys.APP_LOAD_NODES,
     payload: payload
   });
 };
@@ -187,7 +187,7 @@ export const appSetOrientation = (payload: Orientation) => async (
 };
 
 export interface AppSetNodesVisibleAction {
-  type: TypeKeys.APP_SET_TOOLS_VISIBLE;
+  type: TypeKeys.APP_SET_NODES_VISIBLE;
   payload: boolean;
 }
 
@@ -196,13 +196,13 @@ export const appSetNodesVisible = (payload: boolean) => async (
   _getState
 ) => {
   return dispatch({
-    type: TypeKeys.APP_SET_TOOLS_VISIBLE,
+    type: TypeKeys.APP_SET_NODES_VISIBLE,
     payload: payload
   });
 };
 
 export interface AppSetNodesEnabledAction {
-  type: TypeKeys.APP_SET_TOOLS_ENABLED;
+  type: TypeKeys.APP_SET_NODES_ENABLED;
   payload: boolean;
 }
 
@@ -211,7 +211,7 @@ export const appSetNodesEnabled = (payload: boolean) => async (
   _getState
 ) => {
   return dispatch({
-    type: TypeKeys.APP_SET_TOOLS_ENABLED,
+    type: TypeKeys.APP_SET_NODES_ENABLED,
     payload: payload
   });
 };

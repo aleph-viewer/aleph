@@ -1,12 +1,4 @@
-import {
-  Component,
-  Prop,
-  Event,
-  EventEmitter,
-  Watch,
-  State,
-  Method
-} from "@stencil/core";
+import { Component, Prop, Event, EventEmitter } from "@stencil/core";
 import { AlNodeSerial } from "../../interfaces";
 
 @Component({
@@ -22,38 +14,47 @@ export class AlNodeList {
 
   render(): JSX.Element {
     return (
-      <div>
-        <ul>
+      <ion-list>
+        <ion-radio-group value={this.selectedNode}>
           {this.nodes.map((node: AlNodeSerial) => {
             return (
-              <li>
-                <label class="block">
-                  <input
-                    type="radio"
-                    checked={this.selectedNode === node.id}
-                    id={node.id}
-                    name="node"
-                    value={node.id}
-                    onChange={e =>
-                      this.onSelectedNodeChanged.emit(e.srcElement.id)
-                    }
-                  />
-                  {node.id}
-                </label>
-              </li>
+              <ion-item>
+                <ion-label>{node.text}</ion-label>
+                <ion-radio
+                  value={node.id}
+                  onClick={() => this.onSelectedNodeChanged.emit(node.id)}
+                />
+              </ion-item>
             );
           })}
-        </ul>
-        {/* {this.selectedNode !== null ? (
-        <ion-button
-          onClick={() => {
-            this.onRemoveNode.emit(this.selectedNode);
-          }}
-        >
-          Delete
-        </ion-button>
-      ) : null} */}
-      </div>
+        </ion-radio-group>
+      </ion-list>
     );
+
+    // return (
+    //   <div>
+    //     <ul>
+    //       {this.nodes.map((node: AlNodeSerial) => {
+    //         return (
+    //           <li>
+    //             <label class="block">
+    //               <input
+    //                 type="radio"
+    //                 checked={this.selectedNode === node.id}
+    //                 id={node.id}
+    //                 name="node"
+    //                 value={node.id}
+    //                 onChange={e =>
+    //                   this.onSelectedNodeChanged.emit(e.srcElement.id)
+    //                 }
+    //               />
+    //               {node.id}
+    //             </label>
+    //           </li>
+    //         );
+    //       })}
+    //     </ul>
+    //   </div>
+    // );
   }
 }

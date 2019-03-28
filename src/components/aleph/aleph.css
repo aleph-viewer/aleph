@@ -1,9 +1,9 @@
-#al-wrapper {
+#al-container {
   position: relative;
   font-family: sans-serif;
 }
 
-#al-wrapper a-scene {
+#al-container a-scene {
   background-color: var(--app-background-color);
   display: block;
   width: 100%;
@@ -16,23 +16,23 @@
   }
 } */
 
-#al-wrapper #lut-container {
+#al-container #lut-container {
   display: none;
 }
 
-#al-wrapper .progress.container {
+#al-container .progress.container {
   position: absolute;
   top: auto !important;
   bottom: 0 !important;
 }
 
-#al-wrapper .progress.container .load.progress {
+#al-container .progress.container .load.progress {
   border: none !important;
   height: 4px !important;
   background-color: #ffffff !important;
 }
 
-#al-wrapper .progress.container .parse.progress {
+#al-container .progress.container .parse.progress {
   border: none !important;
   height: 4px !important;
   background-color: #fff !important;

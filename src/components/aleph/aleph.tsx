@@ -62,6 +62,9 @@ export class Aleph {
   private _camera: Entity;
   private _tcontrols: THREE.OrbitControls;
   private _intersectingNode: boolean;
+  private _container: HTMLElement;
+
+  private _mouseDownDebounced: boolean;
 
   private _lastCameraPosition: THREE.Vector3;
   private _lastCameraTarget: THREE.Vector3;
@@ -117,7 +120,7 @@ export class Aleph {
   @State() cameraAnimating: boolean;
 
   @Method()
-  async load(src: string) {
+  async load(src: string): Promise<void> {
     // validate
     const fileExtension: string = GetUtils.getFileExtension(src);
 
@@ -146,28 +149,33 @@ export class Aleph {
   }
 
   @Method()
-  async setDisplayMode(displayMode: DisplayMode) {
+  async setDisplayMode(displayMode: DisplayMode): Promise<void> {
     this.appSetDisplayMode(displayMode);
   }
 
   @Method()
-  async loadNodes(nodes: AlNodeSerial[]) {
+  async loadNodes(nodes: AlNodeSerial[]): Promise<void> {
     this._loadNodes(nodes);
   }
 
   @Method()
-  async selectNode(nodeId: string) {
+  async selectNode(nodeId: string): Promise<void> {
     this._selectNode(nodeId, true);
   }
 
   @Method()
-  async setNodesEnabled(enabled: boolean) {
+  async setNodesEnabled(enabled: boolean): Promise<void> {
     this._setNodesEnabled(enabled);
   }
 
   @Method()
-  async setBoundingBoxVisible(visible: boolean) {
+  async setBoundingBoxVisible(visible: boolean): Promise<void> {
     this._setBoundingBoxVisible(visible);
+  }
+
+  @Method()
+  async removeNode(nodeId: string): Promise<void> {
+    this._removeNode(nodeId);
   }
 
   @Event() onLoad: EventEmitter;
@@ -271,6 +279,7 @@ export class Aleph {
 
     this._lastCameraPosition = new THREE.Vector3(0, 0, 0);
     this._lastCameraTarget = new THREE.Vector3(0, 0, 0);
+    this._mouseDownDebounced = false;
   }
 
   //#region Rendering Methods
@@ -302,15 +311,32 @@ export class Aleph {
     }
 
     let backScale = 0;
+    let backBoard = null;
 
     if (this._boundingSphereRadius) {
       backScale = this._boundingSphereRadius * Constants.splashBackSize;
-      console.log(backScale);
+
+      backBoard = (
+        <a-entity
+          ref={el => (this._backBoard = el)}
+          class="collidable"
+          id="back-board"
+          geometry={`primitive: plane; height: ${backScale}; width: ${backScale}`}
+          al-fixed-to-orbit-camera={`
+          distanceFromTarget: ${this._boundingSphereRadius};
+          target: ${this._lastCameraTarget};
+        `}
+          material={`
+          wireframe: true;
+          side: double;
+        `}
+        />
+      );
     }
 
     switch (this.displayMode) {
       case DisplayMode.MESH: {
-        return (
+        return [
           <a-entity
             al-node-spawner={`
               nodesEnabled: ${this.nodesEnabled};
@@ -324,27 +350,12 @@ export class Aleph {
             `}
             position="0 0 0"
             scale="1 1 1"
-          >
-            <a-entity
-              ref={el => (this._backBoard = el)}
-              class="collidable"
-              id="back-board"
-              geometry={`primitive: plane; height: ${backScale}; width: ${backScale}`}
-              al-fixed-to-orbit-camera={`
-                distanceFromTarget: ${
-                  this._boundingSphereRadius ? this._boundingSphereRadius : 2
-                };
-                target: ${this._lastCameraTarget};
-              `}
-              material={`
-                wireframe: true;
-                side: double;
-              `}
-            />
-          </a-entity>
-        );
+          />,
+          backBoard
+        ];
       }
       default: {
+        // TODO: Update this to new method
         return (
           <a-entity
             al-node-spawner={`
@@ -408,7 +419,7 @@ export class Aleph {
             <a-entity
               //geometry="primitive: plane; height: auto; width: auto"
               text={`
-                value: ${node.text}; 
+                value: ${node.text};
                 side: double;
                 baseline: bottom;
                 anchor: left;
@@ -454,9 +465,11 @@ export class Aleph {
         this._boundingSphereRadius
       );
       // If we returned a result AND the difference between the last position and the result position is not 0
-      const diffPos = result.position.distanceTo(this._lastCameraPosition);
-      const diffTarg = result.target.distanceTo(this._lastCameraTarget);
-      if (result && diffPos !== 0 && diffTarg !== 0) {
+      const diffPos: number = result.position.distanceTo(
+        this._lastCameraPosition
+      );
+      const diffTarg: number = result.target.distanceTo(this._lastCameraTarget);
+      if (result && (diffPos !== 0 || diffTarg !== 0)) {
         camData = result;
         this._lastCameraPosition = camData.position;
         this._lastCameraTarget = camData.target;
@@ -513,7 +526,8 @@ export class Aleph {
   render(): JSX.Element {
     return (
       <div
-        id="al-wrapper"
+        ref={el => (this._container = el)}
+        id="al-container"
         style={{
           width: this.width,
           height: this.height
@@ -529,7 +543,7 @@ export class Aleph {
   private _loadNodes(nodes: AlNodeSerial[]): void {
     // remove all existing nodes
     while (this.nodes.length) {
-      this.appRemoveNode(this.nodes[this.nodes.length - 1].id);
+      this._removeNode(this.nodes[this.nodes.length - 1].id);
     }
 
     this.appLoadNodes(nodes);
@@ -538,8 +552,13 @@ export class Aleph {
 
   private _addNode(node: AlNodeSerial): void {
     this.appAddNode(node);
-    this.onNodesChanged.emit(this.nodes);
     this._selectNode(node.id, false);
+    this.onNodesChanged.emit(this.nodes);
+  }
+
+  private _removeNode(nodeId: string): void {
+    this.appRemoveNode(nodeId);
+    this.onNodesChanged.emit(this.nodes);
   }
 
   private _selectNode(nodeId: string, animate: boolean): void {
@@ -684,7 +703,7 @@ export class Aleph {
         false
       );
       this._scene.addEventListener(
-        AlNodeSpawnerEvents.ADD_TOOL,
+        AlNodeSpawnerEvents.ADD_NODE,
         this._addNodeEventHandler,
         false
       );

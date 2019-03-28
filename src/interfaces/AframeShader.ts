@@ -3,9 +3,4 @@ export interface AframeShader {
   vertexShader: string;
   fragmentShader: string;
   init: (data?: any) => void;
-  update: (oldData) => void;
-  tick: () => void;
-  remove: () => void;
-  pause: () => void;
-  play: () => void;
 }

@@ -1,13 +1,19 @@
 import { AframeRegistry, AframeComponent } from "../interfaces";
 import { ThreeUtils } from "../utils";
-
+import { Constants } from "../Constants";
 interface AlFixedToOrbitCameraState {
   distanceFromTarget: number;
   target: THREE.Vector3;
 }
 
+interface AlFixedToOrbitCameraObject extends AframeComponent {
+  update(oldData): void;
+  tickFunction(): void;
+  tick(): void;
+}
+
 export class AlFixedToOrbitCamera implements AframeRegistry {
-  public static getObject(): AframeComponent {
+  public static getObject(): AlFixedToOrbitCameraObject {
     return {
       schema: {
         distanceFromTarget: { type: "number", default: 0.1 },
@@ -15,6 +21,28 @@ export class AlFixedToOrbitCamera implements AframeRegistry {
       },
 
       init(_data?: any) {
+        this.tickFunction = AFRAME.utils.throttle(
+          this.tickFunction,
+          Constants.minTimeForCameraThrottle,
+          this
+        );
+
+        if (this.data.target) {
+          let targ = ThreeUtils.objectToVector3(this.data.target);
+
+          this.state = {
+            distanceFromTarget: this.data.distanceFromTarget,
+            target: targ
+          } as AlFixedToOrbitCameraState;
+        } else {
+          this.state = {
+            distanceFromTarget: this.data.distanceFromTarget,
+            target: new THREE.Vector3(0, 0, 0)
+          } as AlFixedToOrbitCameraState;
+        }
+      },
+
+      update(_oldData) {
         let targ = ThreeUtils.objectToVector3(this.data.target);
 
         this.state = {
@@ -23,13 +51,7 @@ export class AlFixedToOrbitCamera implements AframeRegistry {
         } as AlFixedToOrbitCameraState;
       },
 
-      onEnterVR() {},
-
-      onExitVR() {},
-
-      update(_oldData) {},
-
-      tick() {
+      tickFunction() {
         let el = this.el;
         let state = this.state;
 
@@ -42,12 +64,10 @@ export class AlFixedToOrbitCamera implements AframeRegistry {
         el.object3D.lookAt(camPos);
       },
 
-      remove() {},
-
-      pause() {},
-
-      play() {}
-    };
+      tick() {
+        this.tickFunction();
+      }
+    } as AlFixedToOrbitCameraObject;
   }
   public static getName(): string {
     return "al-fixed-to-orbit-camera";

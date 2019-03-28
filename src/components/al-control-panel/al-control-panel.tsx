@@ -513,16 +513,12 @@ export class AlControlPanel {
   // }
 
   render(): JSX.Element {
-    return (
-      <div id="al-control-panel-wrapper">
-        <ion-app>
-          {this.renderDisplayModeToggle()}
-          {this.renderNodesToggle()}
-          {this.renderNodes()}
-          {this.renderOptionsToggle()}
-          {this.renderOptions()}
-        </ion-app>
-      </div>
-    );
+    return [
+      this.renderDisplayModeToggle(),
+      this.renderNodesToggle(),
+      this.renderNodes(),
+      this.renderOptionsToggle(),
+      this.renderOptions()
+    ];
   }
 }

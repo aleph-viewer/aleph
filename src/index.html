@@ -146,19 +146,20 @@
           <button id="load-nodes-button">Load</button>
         </section>
         <section>
-          <al-node-list>
-          </al-node-list>
-        </section>
-        <section>
-          <al-control-panel>
-          </al-control-panel>
+          <ion-app>
+            <al-node-list></al-node-list>
+            <ion-item-divider></ion-item-divider>
+            <al-node-editor></al-node-editor>
+            <ion-item-divider></ion-item-divider>
+            <al-control-panel></al-control-panel>
+          </ion-app>
         </section>
       </div>
     </div>
 
     <script>
 
-      let container, debug, aleph, nodeList, controlPanel, srcSelect, srcInput, loadSrcButton, nodesTextArea, loadNodesButton;
+      let container, debug, aleph, nodeList, nodeEditor, controlPanel, srcSelect, srcInput, loadSrcButton, nodesTextArea, loadNodesButton;
 
       let state = {
         src: null,
@@ -180,6 +181,7 @@
         debug = document.getElementById("debug");
         aleph = document.querySelector("uv-aleph");
         nodeList = document.querySelector("al-node-list");
+        nodeEditor = document.querySelector("al-node-editor");
         controlPanel = document.querySelector("al-control-panel");
         srcSelect = document.getElementById("src-select");
         srcInput = document.getElementById("src-input");
@@ -257,6 +259,14 @@
           false
         );
 
+        nodeEditor.addEventListener(
+          "onRemoveNode",
+          function(e) {
+            aleph.removeNode(e.detail.id);
+          },
+          false
+        );
+
         srcSelect.addEventListener("change", function() {
           state.src = srcSelect.value;
         }, false);
@@ -311,6 +321,9 @@
 
         nodeList.nodes = state.nodes;
         nodeList.selectedNode = state.selectedNode;
+        nodeEditor.node = state.nodes.find((node) => {
+          return node.id === state.selectedNode;
+        });
         srcSelect.value = state.src;
         srcInput.value = state.src;
         nodesTextArea.value = JSON.stringify(state.nodes);

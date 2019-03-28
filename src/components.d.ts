@@ -74,6 +74,14 @@ export namespace Components {
     'volumeWindowWidth'?: number;
   }
 
+  interface AlNodeEditor {
+    'node': AlNodeSerial;
+  }
+  interface AlNodeEditorAttributes extends StencilHTMLAttributes {
+    'node'?: AlNodeSerial;
+    'onOnRemoveNode'?: (event: CustomEvent) => void;
+  }
+
   interface AlNodeList {
     'nodes': AlNodeSerial[];
     'selectedNode': string | null;
@@ -90,6 +98,7 @@ export namespace Components {
     'height': string;
     'load': (src: string) => Promise<void>;
     'loadNodes': (nodes: AlNodeSerial[]) => Promise<void>;
+    'removeNode': (nodeId: string) => Promise<void>;
     'selectNode': (nodeId: string) => Promise<void>;
     'setBoundingBoxVisible': (visible: boolean) => Promise<void>;
     'setDisplayMode': (displayMode: DisplayMode) => Promise<void>;
@@ -113,12 +122,14 @@ export namespace Components {
 declare global {
   interface StencilElementInterfaces {
     'AlControlPanel': Components.AlControlPanel;
+    'AlNodeEditor': Components.AlNodeEditor;
     'AlNodeList': Components.AlNodeList;
     'UvAleph': Components.UvAleph;
   }
 
   interface StencilIntrinsicElements {
     'al-control-panel': Components.AlControlPanelAttributes;
+    'al-node-editor': Components.AlNodeEditorAttributes;
     'al-node-list': Components.AlNodeListAttributes;
     'uv-aleph': Components.UvAlephAttributes;
   }
@@ -128,6 +139,12 @@ declare global {
   var HTMLAlControlPanelElement: {
     prototype: HTMLAlControlPanelElement;
     new (): HTMLAlControlPanelElement;
+  };
+
+  interface HTMLAlNodeEditorElement extends Components.AlNodeEditor, HTMLStencilElement {}
+  var HTMLAlNodeEditorElement: {
+    prototype: HTMLAlNodeEditorElement;
+    new (): HTMLAlNodeEditorElement;
   };
 
   interface HTMLAlNodeListElement extends Components.AlNodeList, HTMLStencilElement {}
@@ -144,12 +161,14 @@ declare global {
 
   interface HTMLElementTagNameMap {
     'al-control-panel': HTMLAlControlPanelElement
+    'al-node-editor': HTMLAlNodeEditorElement
     'al-node-list': HTMLAlNodeListElement
     'uv-aleph': HTMLUvAlephElement
   }
 
   interface ElementTagNameMap {
     'al-control-panel': HTMLAlControlPanelElement;
+    'al-node-editor': HTMLAlNodeEditorElement;
     'al-node-list': HTMLAlNodeListElement;
     'uv-aleph': HTMLUvAlephElement;
   }
