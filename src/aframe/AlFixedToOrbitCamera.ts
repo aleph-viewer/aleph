@@ -27,12 +27,16 @@ export class AlFixedToOrbitCamera implements AframeRegistry {
             target: new THREE.Vector3(0, 0, 0)
           } as AlFixedToOrbitCameraState;
         }
-
-        this.el.setAttribute("position", "0, 0, 0");
-        this.el.setAttribute("rotation", "0, 0, 0");
       },
 
-      update(_oldData) {},
+      update(_oldData) {
+        let targ = ThreeUtils.objectToVector3(this.data.target);
+
+        this.state = {
+          distanceFromTarget: this.data.distanceFromTarget,
+          target: targ
+        } as AlFixedToOrbitCameraState;
+      },
 
       tick() {
         let el = this.el;

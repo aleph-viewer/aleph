@@ -128,6 +128,9 @@ export class AlOrbitControl implements AframeRegistry {
       },
 
       init() {
+        this.bindListeners();
+        this.addListeners();
+
         let el = this.el;
         let oldPosition = new THREE.Vector3();
         let controls = new THREE.OrbitControls(
@@ -137,9 +140,6 @@ export class AlOrbitControl implements AframeRegistry {
         let data = this.data;
 
         document.body.style.cursor = "grab";
-
-        this.bindListeners();
-        this.addListeners();
 
         // Convert the cameraPosition & targetPosition Objects into THREE.Vector3
         let cameraPosition = ThreeUtils.objectToVector3(data.cameraPosition);

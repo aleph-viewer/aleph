@@ -104,6 +104,9 @@ export class AlNode implements AframeRegistry {
       },
 
       init(): void {
+        this.bindListeners();
+        this.addListeners();
+
         const data = this.data;
         let el = this.el;
 

@@ -126,12 +126,12 @@ export class AlNodeSpawner implements AframeRegistry {
       },
 
       init(): void {
+        this.bindListeners();
+        this.addListeners();
+
         this.state = {
           left: false
         } as AlNodeSpawnerState;
-
-        this.bindListeners();
-        this.addListeners();
       },
 
       update(): void {},

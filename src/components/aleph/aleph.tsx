@@ -311,15 +311,32 @@ export class Aleph {
     }
 
     let backScale = 0;
+    let backBoard = null;
 
     if (this._boundingSphereRadius) {
       backScale = this._boundingSphereRadius * Constants.splashBackSize;
-      console.log("backScale: ", backScale);
+
+      backBoard = (
+        <a-entity
+          ref={el => (this._backBoard = el)}
+          class="collidable"
+          id="back-board"
+          geometry={`primitive: plane; height: ${backScale}; width: ${backScale}`}
+          al-fixed-to-orbit-camera={`
+          distanceFromTarget: ${this._boundingSphereRadius};
+          target: ${this._lastCameraTarget};
+        `}
+          material={`
+          wireframe: true;
+          side: double;
+        `}
+        />
+      );
     }
 
     switch (this.displayMode) {
       case DisplayMode.MESH: {
-        return (
+        return [
           <a-entity
             al-node-spawner={`
               nodesEnabled: ${this.nodesEnabled};
@@ -333,25 +350,9 @@ export class Aleph {
             `}
             position="0 0 0"
             scale="1 1 1"
-          >
-            <a-entity
-              ref={el => (this._backBoard = el)}
-              class="collidable"
-              id="back-board"
-              geometry={`primitive: plane; height: ${backScale}; width: ${backScale}`}
-              al-fixed-to-orbit-camera={`
-                distanceFromTarget: ${
-                  this._boundingSphereRadius ? this._boundingSphereRadius : 2
-                };
-                target: ${this._lastCameraTarget};
-              `}
-              material={`
-                wireframe: true;
-                side: double;
-              `}
-            />
-          </a-entity>
-        );
+          />,
+          backBoard
+        ];
       }
       default: {
         return (
