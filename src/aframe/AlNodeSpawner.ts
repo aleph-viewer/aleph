@@ -9,7 +9,8 @@ interface AlNodeSpawnerObject extends AframeComponent {
   bindListeners(): void;
   addListeners(): void;
   removeListeners(): void;
-  containerMouseDown(event: CustomEvent): void;
+  canvasMouseDown(event: MouseEvent): void;
+  canvasMouseUp(event: MouseEvent): void;
   elMouseDown(event: CustomEvent): void;
   elMouseUp(event: CustomEvent): void;
   elRaycasterIntersected(event: CustomEvent): void;
@@ -27,7 +28,7 @@ export class AlNodeSpawner implements AframeRegistry {
       },
 
       bindListeners() {
-        this.containerMouseDown = this.containerMouseDown.bind(this);
+        this.canvasMouseDown = this.canvasMouseDown.bind(this);
         this.elMouseDown = this.elMouseDown.bind(this);
         this.elMouseUp = this.elMouseUp.bind(this);
         this.elRaycasterIntersected = this.elRaycasterIntersected.bind(this);
@@ -35,13 +36,15 @@ export class AlNodeSpawner implements AframeRegistry {
           this
         );
         this.elClick = this.elClick.bind(this);
+        this.canvasMouseUp = this.canvasMouseUp.bind(this);
       },
 
       addListeners() {
         this.el.sceneEl.canvas.addEventListener(
           "mousedown",
-          this.containerMouseDown
+          this.canvasMouseDown
         );
+        this.el.sceneEl.canvas.addEventListener("mouseup", this.canvasMouseUp);
         this.el.addEventListener("mousedown", this.elMouseDown);
         this.el.addEventListener("mouseup", this.elMouseUp);
         this.el.addEventListener(
@@ -56,9 +59,13 @@ export class AlNodeSpawner implements AframeRegistry {
       },
 
       removeListeners() {
-        this.el.removeEventListener(
-          "al-container-mousedown",
-          this.containerMouseDown
+        this.el.sceneEl.canvas.removeEventListener(
+          "mousedown",
+          this.canvasMouseDown
+        );
+        this.el.sceneEl.canvas.removeEventListener(
+          "mouseup",
+          this.canvasMouseUp
         );
         this.el.removeEventListener("mousedown", this.elMouseDown);
         this.el.removeEventListener("mouseup", this.mouseup);
@@ -73,9 +80,12 @@ export class AlNodeSpawner implements AframeRegistry {
         this.el.removeEventListener("click", this.elClick);
       },
 
-      containerMouseDown(event: CustomEvent) {
-        this.state.left = event.detail.button === 0;
-        console.log("container: mouse down left!");
+      canvasMouseDown(event: MouseEvent) {
+        this.state.left = event.button === 0;
+      },
+
+      canvasMouseUp(_event: MouseEvent) {
+        this.state.left = false;
       },
 
       elMouseDown(_event: CustomEvent) {

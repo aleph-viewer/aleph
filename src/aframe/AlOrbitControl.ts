@@ -19,8 +19,7 @@ interface AlOrbitControlObject extends AframeComponent {
   addListeners(): void;
   removeListeners(): void;
   elMouseUp(event: CustomEvent): void;
-  documentMouseDown(event: MouseEvent): void;
-  documentMouseUp(event: MouseEvent): void;
+  elMouseDown(event: CustomEvent): void;
 }
 
 export class AlOrbitControl implements AframeRegistry {
@@ -60,24 +59,21 @@ export class AlOrbitControl implements AframeRegistry {
         this.onEnterVR = this.onEnterVR.bind(this);
         this.onExitVR = this.onExitVR.bind(this);
         this.elMouseUp = this.elMouseUp.bind(this);
-        this.documentMouseDown = this.documentMouseDown.bind(this);
-        this.documentMouseUp = this.documentMouseUp.bind(this);
+        this.elMouseDown = this.elMouseDown.bind(this);
       },
 
       addListeners() {
         this.el.sceneEl.addEventListener("enter-vr", this.onEnterVR);
         this.el.sceneEl.addEventListener("exit-vr", this.onExitVR);
         this.el.addEventListener("mouseup", this.elMouseUp);
-        document.addEventListener("mousedown", this.documentMouseDown);
-        document.addEventListener("mouseup", this.documentMouseUp);
+        this.el.addEventListener("mousedown", this.elMouseDown);
       },
 
       removeListeners() {
         this.el.sceneEl.removeEventListener("enter-vr", this.onEnterVR);
         this.el.sceneEl.removeEventListener("exit-vr", this.onExitVR);
         this.el.removeEventListener("mouseup", this.elMouseUp);
-        document.removeEventListener("mousedown", this.documentMouseDown);
-        document.removeEventListener("mouseup", this.documentMouseUp);
+        this.el.removeEventListener("mousedown", this.elMouseDown);
       },
       onEnterVR() {
         if (
@@ -116,6 +112,7 @@ export class AlOrbitControl implements AframeRegistry {
       },
 
       elMouseUp(_event: CustomEvent) {
+        document.body.style.cursor = "grab";
         this.el.emit(
           AlOrbitControlEvents.HAS_MOVED,
           {
@@ -126,12 +123,8 @@ export class AlOrbitControl implements AframeRegistry {
         );
       },
 
-      documentMouseDown(_event: MouseEvent) {
+      elMouseDown(_event: CustomEvent) {
         document.body.style.cursor = "grabbing";
-      },
-
-      documentMouseUp(_event: MouseEvent) {
-        document.body.style.cursor = "grab";
       },
 
       init() {
@@ -148,9 +141,7 @@ export class AlOrbitControl implements AframeRegistry {
         this.bindListeners();
         this.addListeners();
 
-        //#region Positioning
-
-        // Convert the cameraPosition & targetPosition Objects into THREE.Vector3 s
+        // Convert the cameraPosition & targetPosition Objects into THREE.Vector3
         let cameraPosition = ThreeUtils.objectToVector3(data.cameraPosition);
         let targetPosition = ThreeUtils.objectToVector3(data.targetPosition);
 

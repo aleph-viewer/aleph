@@ -314,7 +314,7 @@ export class Aleph {
 
     if (this._boundingSphereRadius) {
       backScale = this._boundingSphereRadius * Constants.splashBackSize;
-      console.log(backScale);
+      console.log("backScale: ", backScale);
     }
 
     switch (this.displayMode) {
