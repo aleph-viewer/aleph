@@ -10,9 +10,6 @@ export class AlGltfModel implements AframeRegistry {
       },
 
       init(): void {
-        this.onEnterVR = this.onEnterVR.bind(this);
-        this.onExitVR = this.onExitVR.bind(this);
-
         this.model = null;
         this.loader = new THREE.GLTFLoader();
         (THREE as any).DRACOLoader.setDecoderPath(this.data.dracoDecoderPath);
@@ -20,9 +17,9 @@ export class AlGltfModel implements AframeRegistry {
       },
 
       update(): void {
-        var self = this;
-        var el = this.el;
-        var src = this.data.src;
+        let self = this;
+        let el = this.el;
+        let src = this.data.src;
 
         if (!src) {
           return;
@@ -48,7 +45,7 @@ export class AlGltfModel implements AframeRegistry {
           },
           undefined /* onProgress */,
           function gltfFailed(error) {
-            var message =
+            let message =
               error && error.message
                 ? error.message
                 : "Failed to load glTF model";
@@ -65,15 +62,7 @@ export class AlGltfModel implements AframeRegistry {
           return;
         }
         this.el.removeObject3D("mesh");
-      },
-
-      pause(): void {},
-
-      play(): void {},
-
-      onEnterVR(): void {},
-
-      onExitVR(): void {}
+      }
     } as AframeComponent;
   }
 

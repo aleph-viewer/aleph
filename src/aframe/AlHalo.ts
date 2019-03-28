@@ -31,9 +31,7 @@ export class AlHalo implements AframeRegistry {
       init(): void {},
       update(): void {},
       tick(): void {},
-      remove(): void {},
-      pause(): void {},
-      play(): void {}
+      remove(): void {}
     } as AframeShader;
   }
 

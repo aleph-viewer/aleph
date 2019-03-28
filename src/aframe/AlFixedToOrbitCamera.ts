@@ -1,6 +1,5 @@
 import { AframeRegistry, AframeComponent } from "../interfaces";
 import { ThreeUtils } from "../utils";
-
 interface AlFixedToOrbitCameraState {
   distanceFromTarget: number;
   target: THREE.Vector3;
@@ -15,17 +14,23 @@ export class AlFixedToOrbitCamera implements AframeRegistry {
       },
 
       init(_data?: any) {
-        let targ = ThreeUtils.objectToVector3(this.data.target);
+        if (this.data.target) {
+          let targ = ThreeUtils.objectToVector3(this.data.target);
 
-        this.state = {
-          distanceFromTarget: this.data.distanceFromTarget,
-          target: targ
-        } as AlFixedToOrbitCameraState;
+          this.state = {
+            distanceFromTarget: this.data.distanceFromTarget,
+            target: targ
+          } as AlFixedToOrbitCameraState;
+        } else {
+          this.state = {
+            distanceFromTarget: this.data.distanceFromTarget,
+            target: new THREE.Vector3(0, 0, 0)
+          } as AlFixedToOrbitCameraState;
+        }
+
+        this.el.setAttribute("position", "0, 0, 0");
+        this.el.setAttribute("rotation", "0, 0, 0");
       },
-
-      onEnterVR() {},
-
-      onExitVR() {},
 
       update(_oldData) {},
 
@@ -42,11 +47,7 @@ export class AlFixedToOrbitCamera implements AframeRegistry {
         el.object3D.lookAt(camPos);
       },
 
-      remove() {},
-
-      pause() {},
-
-      play() {}
+      remove() {}
     };
   }
   public static getName(): string {

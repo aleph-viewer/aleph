@@ -26,9 +26,9 @@ export class AlVolumetricModel implements AframeRegistry {
       },
 
       update(): void {
-        //var self = this;
-        var el = this.el;
-        var src = this.data.src;
+        //let  self = this;
+        let el = this.el;
+        let src = this.data.src;
 
         if (!src) {
           return;

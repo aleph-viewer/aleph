@@ -9,9 +9,6 @@ export class AlSpinner implements AframeRegistry {
       },
 
       init(data): void {
-        this.onEnterVR = this.onEnterVR.bind(this);
-        this.onExitVR = this.onExitVR.bind(this);
-
         this.geometry = new THREE.TetrahedronGeometry(data.radius, data.detail);
         this.geometry.applyMatrix(
           new THREE.Matrix4().makeRotationAxis(
@@ -25,15 +22,7 @@ export class AlSpinner implements AframeRegistry {
 
       tick(): void {},
 
-      remove(): void {},
-
-      pause(): void {},
-
-      play(): void {},
-
-      onEnterVR(): void {},
-
-      onExitVR(): void {}
+      remove(): void {}
     } as AframeComponent;
   }
 

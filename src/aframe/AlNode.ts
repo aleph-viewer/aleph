@@ -15,8 +15,18 @@ interface AlNodeState {
   lastCameraPosition: THREE.Vector3;
 }
 
+interface AlNodeObject extends AframeComponent {
+  bindListeners(): void;
+  addListeners(): void;
+  removeListeners(): void;
+  elMouseDown(_event: CustomEvent): void;
+  elMouseUp(_event: CustomEvent): void;
+  elRaycasterIntersected(_event: CustomEvent): void;
+  elRaycasterIntersectedCleared(_event: CustomEvent): void;
+}
+
 export class AlNode implements AframeRegistry {
-  public static getObject(): AframeComponent {
+  public static getObject(): AlNodeObject {
     return {
       schema: {
         target: { type: "vec3" },
@@ -25,10 +35,75 @@ export class AlNode implements AframeRegistry {
         nodesEnabled: { type: "boolean" }
       },
 
-      init(): void {
-        this.onEnterVR = this.onEnterVR.bind(this);
-        this.onExitVR = this.onExitVR.bind(this);
+      bindListeners(): void {
+        this.elMouseDown = this.elMouseDown.bind(this);
+        this.elMouseUp = this.elMouseUp.bind(this);
+        this.elRaycasterIntersected = this.elRaycasterIntersected.bind(this);
+        this.elRaycasterIntersectedCleared = this.elRaycasterIntersectedCleared.bind(
+          this
+        );
+      },
 
+      addListeners(): void {
+        this.el.addEventListener("mousedown", this.elMouseDown);
+        this.el.addEventListener("mouseup", this.elMouseUp);
+        this.el.addEventListener(
+          "raycaster-intersected",
+          this.elRaycasterIntersected
+        );
+        this.el.addEventListener(
+          "raycaster-intersected-cleared",
+          this.elRaycasterIntersectedCleared
+        );
+      },
+
+      removeListeners(): void {
+        this.el.removeEventListener("mousedown", this.elMouseDown);
+        this.el.removeEventListener("mouseup", this.elMouseUp);
+        this.el.removeEventListener(
+          "raycaster-intersected",
+          this.elRaycasterIntersected
+        );
+        this.el.removeEventListener(
+          "raycaster-intersected-cleared",
+          this.elRaycasterIntersectedCleared
+        );
+      },
+
+      elMouseDown(_event: CustomEvent): void {
+        if (this.data.nodesEnabled) {
+          let state = this.state as AlNodeState;
+          state.mouseDown = true;
+          this.el.emit(AlNodeEvents.CONTROLS_DISABLED, {}, true);
+          this.el.emit(AlNodeEvents.SELECTED, { id: this.el.id }, true);
+        }
+      },
+
+      elMouseUp(_event: CustomEvent): void {
+        if (this.data.nodesEnabled) {
+          let state = this.state as AlNodeState;
+          state.dragging = false;
+          state.mouseDown = false;
+          this.el.emit(AlNodeEvents.CONTROLS_ENABLED), {}, true;
+        }
+      },
+
+      elRaycasterIntersected(_event: CustomEvent): void {
+        let state = this.state as AlNodeState;
+        state.hovered = true;
+        this.el.emit(AlNodeEvents.INTERSECTION, {}, true);
+      },
+
+      elRaycasterIntersectedCleared(_event: CustomEvent): void {
+        let state = this.state as AlNodeState;
+        state.hovered = false;
+        if (state.mouseDown && state.selected) {
+          state.dragging = true;
+        }
+        this.el.emit(AlNodeEvents.INTERSECTION_CLEARED, {}, true);
+      },
+
+      init(): void {
         const data = this.data;
         let el = this.el;
 
@@ -39,40 +114,6 @@ export class AlNode implements AframeRegistry {
         const mesh = new THREE.Mesh(geometry, material);
 
         el.setObject3D("mesh", mesh);
-
-        //#region Event Listeners
-        el.addEventListener("mousedown", _evt => {
-          if (this.data.nodesEnabled) {
-            let state = this.state as AlNodeState;
-            state.mouseDown = true;
-            this.el.emit(AlNodeEvents.CONTROLS_DISABLED, {}, true);
-            this.el.emit(AlNodeEvents.SELECTED, { id: this.el.id }, true);
-          }
-        });
-
-        el.addEventListener("mouseup", _evt => {
-          if (this.data.nodesEnabled) {
-            let state = this.state as AlNodeState;
-            state.dragging = false;
-            state.mouseDown = false;
-            this.el.emit(AlNodeEvents.CONTROLS_ENABLED), {}, true;
-          }
-        });
-
-        el.addEventListener("raycaster-intersected", _evt => {
-          let state = this.state as AlNodeState;
-          state.hovered = true;
-          this.el.emit(AlNodeEvents.INTERSECTION, {}, true);
-        });
-
-        el.addEventListener("raycaster-intersected-cleared", _evt => {
-          let state = this.state as AlNodeState;
-          state.hovered = false;
-          if (state.mouseDown && state.selected) {
-            state.dragging = true;
-          }
-          this.el.emit(AlNodeEvents.INTERSECTION_CLEARED, {}, true);
-        });
 
         let targetPos = ThreeUtils.objectToVector3(data.target);
 
@@ -121,17 +162,10 @@ export class AlNode implements AframeRegistry {
       },
 
       remove(): void {
+        this.removeListeners();
         this.el.removeObject3D("mesh");
-      },
-
-      pause(): void {},
-
-      play(): void {},
-
-      onEnterVR(): void {},
-
-      onExitVR(): void {}
-    } as AframeComponent;
+      }
+    } as AlNodeObject;
   }
 
   public static getName(): string {
