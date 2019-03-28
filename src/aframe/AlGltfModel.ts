@@ -6,7 +6,6 @@ interface AlGltfModelObject extends AframeComponent {
   remove(): void;
 }
 
-
 export class AlGltfModel implements AframeRegistry {
   public static getObject(): AlGltfModelObject {
     return {

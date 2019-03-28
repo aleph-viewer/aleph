@@ -9,8 +9,15 @@ interface AlEdgeState {
   endNode: string;
 }
 
+interface AlEdgeObject extends AframeComponent {
+  update(): void;
+  tickFunction(): void;
+  tick(): void;
+  remove(): void;
+}
+
 export class AlNode implements AframeRegistry {
-  public static getObject(): AframeComponent {
+  public static getObject(): AlEdgeObject {
     return {
       schema: {
         startNode: { type: "string" },
@@ -18,8 +25,11 @@ export class AlNode implements AframeRegistry {
       },
 
       init(): void {
-        this.onEnterVR = this.onEnterVR.bind(this);
-        this.onExitVR = this.onExitVR.bind(this);
+        this.tickFunction = AFRAME.utils.throttle(
+          this.tickFunction,
+          Constants.minTimeForThrottle,
+          this
+        );
 
         const start: THREE.Vector3 = document
           .querySelector("#" + this.data.startNode)
@@ -52,14 +62,18 @@ export class AlNode implements AframeRegistry {
         let state = this.state as AlEdgeState;
       },
 
-      tick(): void {
+      tickFunction() {
         let state = this.state as AlEdgeState;
+      },
+
+      tick(): void {
+        this.tickFunction();
       },
 
       remove(): void {
         this.el.removeObject3D("mesh");
       }
-    } as AframeComponent;
+    } as AlEdgeObject;
   }
 
   public static getName(): string {

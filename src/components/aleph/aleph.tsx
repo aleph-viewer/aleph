@@ -594,6 +594,7 @@ export class Aleph {
 
   //#region Event Handlers
   private _controlsMoved(event: CustomEvent): void {
+    console.log("controls-moved: ", event.detail.target);
     this._lastCameraPosition = event.detail.position;
     this._lastCameraTarget = event.detail.target;
   }

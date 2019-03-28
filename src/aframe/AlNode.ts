@@ -17,6 +17,7 @@ interface AlNodeState {
 
 interface AlNodeObject extends AframeComponent {
   update(oldData): void;
+  tickFunction(): void;
   tick(): void;
   remove(): void;
   bindListeners(): void;
@@ -107,6 +108,11 @@ export class AlNode implements AframeRegistry {
       },
 
       init(): void {
+        this.tickFunction = AFRAME.utils.throttle(
+          this.tickFunction,
+          Constants.minTimeForThrottle,
+          this
+        );
         this.bindListeners();
         this.addListeners();
 
@@ -146,7 +152,7 @@ export class AlNode implements AframeRegistry {
         state.selected = this.data.selected;
       },
 
-      tick(): void {
+      tickFunction(): void {
         let state = this.state as AlNodeState;
         if (this.data.nodesEnabled && state.dragging) {
           this.el.emit(AlNodeEvents.DRAGGING, { id: this.el.id }, true);
@@ -165,6 +171,10 @@ export class AlNode implements AframeRegistry {
           this.el.object3D.lookAt(currentCameraPosition);
           state.lastCameraPosition.copy(currentCameraPosition);
         }
+      },
+
+      tick() {
+        this.tickFunction();
       },
 
       remove(): void {

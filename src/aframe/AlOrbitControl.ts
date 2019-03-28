@@ -16,6 +16,7 @@ interface AlOrbitControlObject extends AframeComponent {
   onEnterVR: () => void;
   onExitVR: () => void;
   update(_oldData): void;
+  tickFunction(): void;
   tick(): void;
   remove(): void;
   bindListeners(): void;
@@ -131,6 +132,11 @@ export class AlOrbitControl implements AframeRegistry {
       },
 
       init() {
+        this.tickFunction = AFRAME.utils.throttle(
+          this.tickFunction,
+          Constants.minTimeForThrottle,
+          this
+        );
         this.bindListeners();
         this.addListeners();
 
@@ -215,7 +221,7 @@ export class AlOrbitControl implements AframeRegistry {
         }
       },
 
-      tick() {
+      tickFunction() {
         if (!this.data.enabled) {
           return;
         }
@@ -251,6 +257,10 @@ export class AlOrbitControl implements AframeRegistry {
           }
         }
         controls.update();
+      },
+
+      tick() {
+        this.tickFunction();
       },
 
       remove() {

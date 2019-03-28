@@ -7,6 +7,8 @@ export class Constants {
 
   static maxAnimationSteps = 100;
 
+  static minTimeForThrottle = 50;
+
   static nodeColors = {
     selected: "#76ff03",
     hovered: "#f50057",

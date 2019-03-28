@@ -28,8 +28,7 @@ export class AlHalo implements AframeRegistry {
           gl_FragColor = vec4(r, g, b, a) * intensity;
       }`,
 
-      init(): void {},
-      
+      init(): void {}
     } as AframeShader;
   }
 

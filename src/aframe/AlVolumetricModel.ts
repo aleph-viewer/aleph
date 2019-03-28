@@ -7,7 +7,7 @@ interface AlVolumetricModelObject extends AframeComponent {
 }
 
 export class AlVolumetricModel implements AframeRegistry {
-  public static getObject(): AframeComponent {
+  public static getObject(): AlVolumetricModelObject {
     return {
       schema: {
         src: { type: "model", default: "" }
@@ -51,8 +51,8 @@ export class AlVolumetricModel implements AframeRegistry {
           return;
         }
         this.el.removeObject3D("mesh");
-      },
-    } as AframeComponent;
+      }
+    } as AlVolumetricModelObject;
   }
 
   public static getName(): string {
