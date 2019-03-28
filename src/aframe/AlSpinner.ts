@@ -16,13 +16,7 @@ export class AlSpinner implements AframeRegistry {
             Math.atan(Math.sqrt(2))
           )
         );
-      },
-
-      update(): void {},
-
-      tick(): void {},
-
-      remove(): void {}
+      }
     } as AframeComponent;
   }
 

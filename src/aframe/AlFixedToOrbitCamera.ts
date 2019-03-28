@@ -1,12 +1,19 @@
 import { AframeRegistry, AframeComponent } from "../interfaces";
 import { ThreeUtils } from "../utils";
+import { Constants } from "../Constants";
 interface AlFixedToOrbitCameraState {
   distanceFromTarget: number;
   target: THREE.Vector3;
 }
 
+interface AlFixedToOrbitCameraObject extends AframeComponent {
+  update(oldData): void;
+  tickFunction(): void;
+  tick(): void;
+}
+
 export class AlFixedToOrbitCamera implements AframeRegistry {
-  public static getObject(): AframeComponent {
+  public static getObject(): AlFixedToOrbitCameraObject {
     return {
       schema: {
         distanceFromTarget: { type: "number", default: 0.1 },
@@ -14,6 +21,12 @@ export class AlFixedToOrbitCamera implements AframeRegistry {
       },
 
       init(_data?: any) {
+        this.tickFunction = AFRAME.utils.throttle(
+          this.tickFunction,
+          Constants.minTimeForCameraThrottle,
+          this
+        );
+
         if (this.data.target) {
           let targ = ThreeUtils.objectToVector3(this.data.target);
 
@@ -38,7 +51,7 @@ export class AlFixedToOrbitCamera implements AframeRegistry {
         } as AlFixedToOrbitCameraState;
       },
 
-      tick() {
+      tickFunction() {
         let el = this.el;
         let state = this.state;
 
@@ -51,8 +64,10 @@ export class AlFixedToOrbitCamera implements AframeRegistry {
         el.object3D.lookAt(camPos);
       },
 
-      remove() {}
-    };
+      tick() {
+        this.tickFunction();
+      }
+    } as AlFixedToOrbitCameraObject;
   }
   public static getName(): string {
     return "al-fixed-to-orbit-camera";
