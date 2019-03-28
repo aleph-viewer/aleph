@@ -137,32 +137,35 @@
           <input type="text" id="src-input" placeholder="src"><button id="load-src-button">Load</button>
         </section>
         <section>
-          <textarea id="tools-textarea" placeholder="tools"></textarea>
+          <textarea id="nodes-textarea" placeholder="nodes"></textarea>
         </section>
         <section>
-          <button id="load-tools-button">Load</button>
+          <ul id="node-list"></ul>
         </section>
         <section>
-          <al-tool-list />
+          <button id="load-nodes-button">Load</button>
         </section>
         <section>
-          <al-tool-editor />
-        </section>
-        <section>
-          <al-control-panel />
+          <ion-app>
+            <al-node-list></al-node-list>
+            <ion-item-divider></ion-item-divider>
+            <al-node-editor></al-node-editor>
+            <ion-item-divider></ion-item-divider>
+            <al-control-panel></al-control-panel>
+          </ion-app>
         </section>
       </div>
     </div>
 
     <script>
 
-      let container, debug, aleph, toolList, toolEditor, controlPanel, srcSelect, srcInput, loadSrcButton, toolsTextArea, loadToolsButton;
+      let container, debug, aleph, nodeList, nodeEditor, controlPanel, srcSelect, srcInput, loadSrcButton, nodesTextArea, loadNodesButton;
 
       let state = {
         src: null,
-        tools: [],
-        selectedTool: null,
-        toolsEnabled: false,
+        nodes: [],
+        selectedNode: null,
+        nodesEnabled: false,
         optionsEnabled: false,
         boundingBoxVisible: false
       }
@@ -177,40 +180,40 @@
         container = document.getElementById("container");
         debug = document.getElementById("debug");
         aleph = document.querySelector("uv-aleph");
-        toolList = document.querySelector("al-tool-list");
-        toolEditor = document.querySelector("al-tool-editor");
+        nodeList = document.querySelector("al-node-list");
+        nodeEditor = document.querySelector("al-node-editor");
         controlPanel = document.querySelector("al-control-panel");
         srcSelect = document.getElementById("src-select");
         srcInput = document.getElementById("src-input");
         loadSrcButton = document.getElementById("load-src-button");
-        toolsTextArea = document.getElementById("tools-textarea");
-        loadToolsButton = document.getElementById("load-tools-button");
+        nodesTextArea = document.getElementById("nodes-textarea");
+        loadNodesButton = document.getElementById("load-nodes-button");
 
         // aleph.addEventListener('onLoaded', function() {
-        //   aleph.setToolsVisible(true); // can only show them after src loaded
+        //   aleph.setNodesVisible(true); // can only show them after src loaded
         //   aleph.setOptionsVisible(true); // can only show them after src loaded
         // }, false);
 
         // aleph.addEventListener(
         //   "onSave",
         //   function(e) {
-        //     state.tools = e.detail;
+        //     state.nodes = e.detail;
         //   },
         //   false
         // );
 
         aleph.addEventListener(
-          "onToolsChanged",
+          "onNodesChanged",
           function(e) {
-            state.tools = e.detail;
+            state.nodes = e.detail;
           },
           false
         );
 
         aleph.addEventListener(
-          "onSelectedToolChanged",
+          "onSelectedNodeChanged",
           function(e) {
-            state.selectedTool = e.detail;
+            state.selectedNode = e.detail;
           },
           false
         );
@@ -220,8 +223,8 @@
           function(e) {
 
             const newState = e.detail;
-            state.selectedTool = newState.selectedTool;
-            state.tools = newState.tools;
+            state.selectedNode = newState.selectedNode;
+            state.nodes = newState.nodes;
 
             debug.classList.remove("disabled");
 
@@ -236,8 +239,8 @@
           false
         );
 
-        controlPanel.addEventListener("onSetToolsEnabled", function(e) {
-          state.toolsEnabled = e.detail;
+        controlPanel.addEventListener("onSetNodesEnabled", function(e) {
+          state.nodesEnabled = e.detail;
         });
 
         controlPanel.addEventListener("onSetOptionsEnabled", function(e) {
@@ -248,18 +251,18 @@
           state.boundingBoxVisible = e.detail;
         });
 
-        toolList.addEventListener(
-          "onSelectedToolChanged",
+        nodeList.addEventListener(
+          "onSelectedNodeChanged",
           function(e) {
-            state.selectedTool = e.detail;
+            state.selectedNode = e.detail;
           },
           false
         );
 
-        toolEditor.addEventListener(
-          "onRemoveTool",
+        nodeEditor.addEventListener(
+          "onRemoveNode",
           function(e) {
-            aleph.removeTool(e.detail);
+            aleph.removeNode(e.detail.id);
           },
           false
         );
@@ -277,11 +280,11 @@
           false
         );
 
-        loadToolsButton.addEventListener(
+        loadNodesButton.addEventListener(
           "click",
           function(e) {
             e.preventDefault();
-            state.tools = JSON.parse(toolsTextArea.value);
+            state.nodes = JSON.parse(nodesTextArea.value);
           },
           false
         );
@@ -305,25 +308,25 @@
           debug.classList.add("disabled");
         }
 
-        if (changeSetIncludes(changeSet, "tools")) {
-          aleph.loadTools(state.tools);
+        if (changeSetIncludes(changeSet, "nodes")) {
+          aleph.loadNodes(state.nodes);
         }
 
-        if (changeSetIncludes(changeSet, "selectedTool")) {
-          aleph.selectTool(state.selectedTool);
+        if (changeSetIncludes(changeSet, "selectedNode")) {
+          aleph.selectNode(state.selectedNode);
         }
 
-        aleph.setToolsEnabled(state.toolsEnabled);
+        aleph.setNodesEnabled(state.nodesEnabled);
         aleph.setBoundingBoxVisible(state.boundingBoxVisible);
 
-        toolList.tools = state.tools;
-        toolList.selectedTool = state.selectedTool;
-        toolEditor.tool = state.tools.find((tool) => {
-          return tool.id === state.selectedTool;
+        nodeList.nodes = state.nodes;
+        nodeList.selectedNode = state.selectedNode;
+        nodeEditor.node = state.nodes.find((node) => {
+          return node.id === state.selectedNode;
         });
         srcSelect.value = state.src;
         srcInput.value = state.src;
-        toolsTextArea.value = JSON.stringify(state.tools);
+        nodesTextArea.value = JSON.stringify(state.nodes);
       }
 
       document.addEventListener("DOMContentLoaded", function(event) {

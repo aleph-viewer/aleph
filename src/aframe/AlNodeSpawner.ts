@@ -1,20 +1,32 @@
 import { AframeRegistry, AframeComponent } from "../interfaces";
 
-export class AlToolSpawner implements AframeRegistry {
+interface AlNodeSpawnerState {
+  left: boolean;
+}
+
+export class AlNodeSpawner implements AframeRegistry {
   public static getObject(): AframeComponent {
     return {
       dependencies: ["raycaster"],
 
       schema: {
-        toolsEnabled: { type: "boolean" }
+        nodesEnabled: { type: "boolean" }
       },
 
       init(): void {
         this.onEnterVR = this.onEnterVR.bind(this);
         this.onExitVR = this.onExitVR.bind(this);
 
+        this.state = {
+          left: false
+        } as AlNodeSpawnerState;
+
+        window.addEventListener("mousedown", evt => {
+          this.state.left = evt.button === 0;
+        });
+
         this.el.addEventListener("mousedown", () => {
-          if (this.data.toolsEnabled) {
+          if (this.data.nodesEnabled) {
             this.el.sceneEl.camera.el.setAttribute(
               "al-orbit-control",
               "enabled: false"
@@ -23,7 +35,7 @@ export class AlToolSpawner implements AframeRegistry {
         });
 
         this.el.addEventListener("mouseup", () => {
-          if (this.data.toolsEnabled) {
+          if (this.data.nodesEnabled) {
             this.el.sceneEl.camera.el.setAttribute(
               "al-orbit-control",
               "enabled: true"
@@ -33,7 +45,7 @@ export class AlToolSpawner implements AframeRegistry {
 
         this.el.addEventListener("raycaster-intersected", () => {
           this.el.emit(
-            AlToolSpawnerEvents.VALID_TARGET,
+            AlNodeSpawnerEvents.VALID_TARGET,
             { payload: true },
             true
           );
@@ -41,14 +53,17 @@ export class AlToolSpawner implements AframeRegistry {
 
         this.el.addEventListener("raycaster-intersected-cleared", () => {
           this.el.emit(
-            AlToolSpawnerEvents.VALID_TARGET,
+            AlNodeSpawnerEvents.VALID_TARGET,
             { payload: false },
             true
           );
         });
 
         this.el.addEventListener("click", evt => {
-          this.el.emit(AlToolSpawnerEvents.ADD_TOOL, evt, true);
+          if (this.state.left) {
+            this.el.emit(AlNodeSpawnerEvents.ADD_NODE, evt, true);
+            this.state.left = false;
+          }
         });
         //#endregion
       },
@@ -70,11 +85,11 @@ export class AlToolSpawner implements AframeRegistry {
   }
 
   public static getName(): string {
-    return "al-tool-spawner";
+    return "al-node-spawner";
   }
 }
 
-export class AlToolSpawnerEvents {
+export class AlNodeSpawnerEvents {
   static VALID_TARGET: string = "al-valid-target";
-  static ADD_TOOL: string = "al-add-tool";
+  static ADD_NODE: string = "al-add-node";
 }

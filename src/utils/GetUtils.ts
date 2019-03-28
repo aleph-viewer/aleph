@@ -1,4 +1,4 @@
-import { AlToolSerial, AlCameraSerial } from "../interfaces";
+import { AlNodeSerial, AlCameraSerial } from "../interfaces";
 import { Constants } from "../Constants";
 import { Entity } from "aframe";
 import { ThreeUtils } from ".";
@@ -8,12 +8,12 @@ export class GetUtils {
     return file.substring(file.lastIndexOf(".") + 1);
   }
 
-  static getToolWithHighestId(tools: AlToolSerial[]): number {
-    if (tools.length) {
+  static getNodeWithHighestId(nodes: AlNodeSerial[]): number {
+    if (nodes.length) {
       return Math.max.apply(
         Math,
-        tools.map(tool => {
-          return this.getToolIdNumber(tool.id);
+        nodes.map(node => {
+          return this.getNodeIdNumber(node.id);
         })
       );
     }
@@ -21,28 +21,28 @@ export class GetUtils {
     return -1;
   }
 
-  static getToolIdNumber(toolId: string): number {
-    return Number(toolId.split("-")[1]);
+  static getNodeIdNumber(nodeId: string): number {
+    return Number(nodeId.split("-")[1]);
   }
 
-  static getNextToolId(tools: AlToolSerial[]): string {
-    return "tool-" + Number(this.getToolWithHighestId(tools) + 1);
+  static getNextNodeId(nodes: AlNodeSerial[]): string {
+    return "node-" + Number(this.getNodeWithHighestId(nodes) + 1);
   }
 
-  static getToolIndex(id: string, tools: AlToolSerial[]): number {
-    return tools.findIndex((tool: AlToolSerial) => {
-      return this.getToolIdNumber(tool.id) === this.getToolIdNumber(id);
+  static getNodeIndex(id: string, nodes: AlNodeSerial[]): number {
+    return nodes.findIndex((node: AlNodeSerial) => {
+      return this.getNodeIdNumber(node.id) === this.getNodeIdNumber(id);
     });
   }
 
-  static getToolById(id: string, tools: AlToolSerial[]): AlToolSerial | null {
-    let tool: AlToolSerial | null = null;
+  static getNodeById(id: string, nodes: AlNodeSerial[]): AlNodeSerial | null {
+    let node: AlNodeSerial | null = null;
 
-    tool = tools.find((tool: AlToolSerial) => {
-      return tool.id === id;
+    node = nodes.find((node: AlNodeSerial) => {
+      return node.id === id;
     });
 
-    return tool;
+    return node;
   }
 
   static getGeometryCenter(
@@ -89,15 +89,15 @@ export class GetUtils {
     return null;
   }
 
-  static getCameraStateFromTool(
-    tool: AlToolSerial,
+  static getCameraStateFromNode(
+    node: AlNodeSerial,
     radius: number
   ): AlCameraSerial {
     let targ = new THREE.Vector3();
-    targ.copy(ThreeUtils.stringToVector3(tool.target));
+    targ.copy(ThreeUtils.stringToVector3(node.target));
 
     let pos = new THREE.Vector3();
-    pos.copy(ThreeUtils.stringToVector3(tool.position));
+    pos.copy(ThreeUtils.stringToVector3(node.position));
 
     // (Position -> Target)
     let dir = pos

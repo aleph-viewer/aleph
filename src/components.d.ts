@@ -15,7 +15,7 @@ import {
   Orientation,
 } from './enums/Orientation';
 import {
-  AlToolSerial,
+  AlNodeSerial,
 } from './interfaces';
 import {
   DisplayMode as DisplayMode2,
@@ -27,18 +27,18 @@ export namespace Components {
   interface AlControlPanel {
     'boundingBoxVisible': boolean;
     'displayMode': DisplayMode;
+    'nodes': AlNodeSerial[];
+    'nodesEnabled': boolean;
+    'nodesVisible': boolean;
     'optionsEnabled': boolean;
     'optionsVisible': boolean;
     'orientation': Orientation;
-    'selectedTool': string | null;
+    'selectedNode': string | null;
     'slicesIndex': number;
     'slicesWindowCenter': number;
     'slicesWindowWidth': number;
     'stack': any;
     'stackHelper': AMI.StackHelper;
-    'tools': AlToolSerial[];
-    'toolsEnabled': boolean;
-    'toolsVisible': boolean;
     'volumeSteps': number;
     'volumeWindowCenter': number;
     'volumeWindowWidth': number;
@@ -46,50 +46,50 @@ export namespace Components {
   interface AlControlPanelAttributes extends StencilHTMLAttributes {
     'boundingBoxVisible'?: boolean;
     'displayMode'?: DisplayMode;
+    'nodes'?: AlNodeSerial[];
+    'nodesEnabled'?: boolean;
+    'nodesVisible'?: boolean;
     'onOnSetBoundingBoxVisible'?: (event: CustomEvent) => void;
     'onOnSetDisplayMode'?: (event: CustomEvent) => void;
+    'onOnSetNodesEnabled'?: (event: CustomEvent) => void;
     'onOnSetOptionsEnabled'?: (event: CustomEvent) => void;
     'onOnSetOrientation'?: (event: CustomEvent) => void;
     'onOnSetSlicesIndex'?: (event: CustomEvent) => void;
     'onOnSetSlicesWindowCenter'?: (event: CustomEvent) => void;
     'onOnSetSlicesWindowWidth'?: (event: CustomEvent) => void;
-    'onOnSetToolsEnabled'?: (event: CustomEvent) => void;
     'onOnSetVolumeSteps'?: (event: CustomEvent) => void;
     'onOnSetVolumeWindowCenter'?: (event: CustomEvent) => void;
     'onOnSetVolumeWindowWidth'?: (event: CustomEvent) => void;
     'optionsEnabled'?: boolean;
     'optionsVisible'?: boolean;
     'orientation'?: Orientation;
-    'selectedTool'?: string | null;
+    'selectedNode'?: string | null;
     'slicesIndex'?: number;
     'slicesWindowCenter'?: number;
     'slicesWindowWidth'?: number;
     'stack'?: any;
     'stackHelper'?: AMI.StackHelper;
-    'tools'?: AlToolSerial[];
-    'toolsEnabled'?: boolean;
-    'toolsVisible'?: boolean;
     'volumeSteps'?: number;
     'volumeWindowCenter'?: number;
     'volumeWindowWidth'?: number;
   }
 
-  interface AlToolEditor {
-    'tool': AlToolSerial | null;
+  interface AlNodeEditor {
+    'node': AlNodeSerial;
   }
-  interface AlToolEditorAttributes extends StencilHTMLAttributes {
-    'onOnRemoveTool'?: (event: CustomEvent) => void;
-    'tool'?: AlToolSerial | null;
+  interface AlNodeEditorAttributes extends StencilHTMLAttributes {
+    'node'?: AlNodeSerial;
+    'onOnRemoveNode'?: (event: CustomEvent) => void;
   }
 
-  interface AlToolList {
-    'selectedTool': string | null;
-    'tools': AlToolSerial[];
+  interface AlNodeList {
+    'nodes': AlNodeSerial[];
+    'selectedNode': string | null;
   }
-  interface AlToolListAttributes extends StencilHTMLAttributes {
-    'onOnSelectedToolChanged'?: (event: CustomEvent) => void;
-    'selectedTool'?: string | null;
-    'tools'?: AlToolSerial[];
+  interface AlNodeListAttributes extends StencilHTMLAttributes {
+    'nodes'?: AlNodeSerial[];
+    'onOnSelectedNodeChanged'?: (event: CustomEvent) => void;
+    'selectedNode'?: string | null;
   }
 
   interface UvAleph {
@@ -97,11 +97,12 @@ export namespace Components {
     'dracoDecoderPath': string | null;
     'height': string;
     'load': (src: string) => Promise<void>;
-    'loadTools': (tools: AlToolSerial[]) => Promise<void>;
-    'selectTool': (toolId: string) => Promise<void>;
+    'loadNodes': (nodes: AlNodeSerial[]) => Promise<void>;
+    'removeNode': (nodeId: string) => Promise<void>;
+    'selectNode': (nodeId: string) => Promise<void>;
     'setBoundingBoxVisible': (visible: boolean) => Promise<void>;
     'setDisplayMode': (displayMode: DisplayMode) => Promise<void>;
-    'setToolsEnabled': (enabled: boolean) => Promise<void>;
+    'setNodesEnabled': (enabled: boolean) => Promise<void>;
     'spinnerColor': string;
     'width': string;
   }
@@ -110,9 +111,9 @@ export namespace Components {
     'dracoDecoderPath'?: string | null;
     'height'?: string;
     'onOnLoad'?: (event: CustomEvent) => void;
+    'onOnNodesChanged'?: (event: CustomEvent) => void;
     'onOnSave'?: (event: CustomEvent) => void;
-    'onOnSelectedToolChanged'?: (event: CustomEvent) => void;
-    'onOnToolsChanged'?: (event: CustomEvent) => void;
+    'onOnSelectedNodeChanged'?: (event: CustomEvent) => void;
     'spinnerColor'?: string;
     'width'?: string;
   }
@@ -121,15 +122,15 @@ export namespace Components {
 declare global {
   interface StencilElementInterfaces {
     'AlControlPanel': Components.AlControlPanel;
-    'AlToolEditor': Components.AlToolEditor;
-    'AlToolList': Components.AlToolList;
+    'AlNodeEditor': Components.AlNodeEditor;
+    'AlNodeList': Components.AlNodeList;
     'UvAleph': Components.UvAleph;
   }
 
   interface StencilIntrinsicElements {
     'al-control-panel': Components.AlControlPanelAttributes;
-    'al-tool-editor': Components.AlToolEditorAttributes;
-    'al-tool-list': Components.AlToolListAttributes;
+    'al-node-editor': Components.AlNodeEditorAttributes;
+    'al-node-list': Components.AlNodeListAttributes;
     'uv-aleph': Components.UvAlephAttributes;
   }
 
@@ -140,16 +141,16 @@ declare global {
     new (): HTMLAlControlPanelElement;
   };
 
-  interface HTMLAlToolEditorElement extends Components.AlToolEditor, HTMLStencilElement {}
-  var HTMLAlToolEditorElement: {
-    prototype: HTMLAlToolEditorElement;
-    new (): HTMLAlToolEditorElement;
+  interface HTMLAlNodeEditorElement extends Components.AlNodeEditor, HTMLStencilElement {}
+  var HTMLAlNodeEditorElement: {
+    prototype: HTMLAlNodeEditorElement;
+    new (): HTMLAlNodeEditorElement;
   };
 
-  interface HTMLAlToolListElement extends Components.AlToolList, HTMLStencilElement {}
-  var HTMLAlToolListElement: {
-    prototype: HTMLAlToolListElement;
-    new (): HTMLAlToolListElement;
+  interface HTMLAlNodeListElement extends Components.AlNodeList, HTMLStencilElement {}
+  var HTMLAlNodeListElement: {
+    prototype: HTMLAlNodeListElement;
+    new (): HTMLAlNodeListElement;
   };
 
   interface HTMLUvAlephElement extends Components.UvAleph, HTMLStencilElement {}
@@ -160,15 +161,15 @@ declare global {
 
   interface HTMLElementTagNameMap {
     'al-control-panel': HTMLAlControlPanelElement
-    'al-tool-editor': HTMLAlToolEditorElement
-    'al-tool-list': HTMLAlToolListElement
+    'al-node-editor': HTMLAlNodeEditorElement
+    'al-node-list': HTMLAlNodeListElement
     'uv-aleph': HTMLUvAlephElement
   }
 
   interface ElementTagNameMap {
     'al-control-panel': HTMLAlControlPanelElement;
-    'al-tool-editor': HTMLAlToolEditorElement;
-    'al-tool-list': HTMLAlToolListElement;
+    'al-node-editor': HTMLAlNodeEditorElement;
+    'al-node-list': HTMLAlNodeListElement;
     'uv-aleph': HTMLUvAlephElement;
   }
 

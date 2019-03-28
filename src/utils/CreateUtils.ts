@@ -1,31 +1,31 @@
-import { AlToolSerial } from "../interfaces";
+import { AlNodeSerial } from "../interfaces";
 import {
   AlGltfModel,
   AlVolumetricModel,
-  AlTool,
-  AlToolSpawner,
+  AlNode,
+  AlNodeSpawner,
   AlOrbitControl,
   AlSpinner,
-  AlHalo
+  AlHalo,
+  AlFixedToOrbitCamera
 } from "../aframe";
 import { ThreeUtils, GetUtils } from ".";
 import { Constants } from "../Constants";
 
 export class CreateUtils {
-  static createTool(
-    tools: AlToolSerial[],
+  static createNode(
+    nodes: AlNodeSerial[],
     target: THREE.Vector3,
     position: THREE.Vector3,
     scale: number
-  ): AlToolSerial {
-    const id = GetUtils.getNextToolId(tools);
+  ): AlNodeSerial {
+    const id = GetUtils.getNextNodeId(nodes);
     return {
       id: id,
       target: ThreeUtils.vector3ToString(target),
       position: ThreeUtils.vector3ToString(position),
-      scale: scale / Constants.toolSize,
-      text: id,
-      textOffset: ThreeUtils.vector3ToString(position.clone().addScalar(scale))
+      scale: scale / Constants.nodeSize,
+      text: id
     };
   }
 
@@ -37,14 +37,18 @@ export class CreateUtils {
       AlVolumetricModel.getName(),
       AlVolumetricModel.getObject()
     );
-    AFRAME.registerComponent(AlTool.getName(), AlTool.getObject());
+    AFRAME.registerComponent(AlNode.getName(), AlNode.getObject());
     AFRAME.registerComponent(
-      AlToolSpawner.getName(),
-      AlToolSpawner.getObject()
+      AlNodeSpawner.getName(),
+      AlNodeSpawner.getObject()
     );
     AFRAME.registerComponent(
       AlOrbitControl.getName(),
       AlOrbitControl.getObject()
+    );
+    AFRAME.registerComponent(
+      AlFixedToOrbitCamera.getName(),
+      AlFixedToOrbitCamera.getObject()
     );
   }
 }

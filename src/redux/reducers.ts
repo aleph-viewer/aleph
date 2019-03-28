@@ -12,15 +12,15 @@ export const getInitialState = () => {
     optionsEnabled: false,
     optionsVisible: true,
     orientation: Orientation.CORONAL,
-    selectedTool: null,
+    selectedNode: null,
     slicesIndex: undefined,
     slicesWindowCenter: undefined,
     slicesWindowWidth: undefined,
     src: null,
     srcLoaded: false,
-    tools: [],
-    toolsEnabled: false,
-    toolsVisible: true,
+    nodes: [],
+    nodesEnabled: false,
+    nodesVisible: true,
     volumeSteps: undefined,
     volumeWindowCenter: undefined,
     volumeWindowWidth: undefined,
@@ -38,7 +38,7 @@ export const app = (
         ...state,
         src: action.payload,
         srcLoaded: false,
-        tools: []
+        nodes: []
       };
     }
     case TypeKeys.APP_SET_SRC_LOADED: {
@@ -47,46 +47,46 @@ export const app = (
         srcLoaded: action.payload
       };
     }
-    case TypeKeys.APP_ADD_TOOL: {
+    case TypeKeys.APP_ADD_NODE: {
       return {
         ...state,
-        tools: [...state.tools, action.payload]
+        nodes: [...state.nodes, action.payload]
       };
     }
-    case TypeKeys.APP_REMOVE_TOOL: {
-      const index: number = GetUtils.getToolIndex(action.payload, state.tools);
+    case TypeKeys.APP_REMOVE_NODE: {
+      const index: number = GetUtils.getNodeIndex(action.payload, state.nodes);
       return {
         ...state,
-        selectedTool:
-          state.selectedTool === action.payload ? null : state.selectedTool,
-        tools: [...state.tools.slice(0, index), ...state.tools.slice(index + 1)]
+        selectedNode:
+          state.selectedNode === action.payload ? null : state.selectedNode,
+        nodes: [...state.nodes.slice(0, index), ...state.nodes.slice(index + 1)]
       };
     }
-    case TypeKeys.APP_SELECT_TOOL: {
+    case TypeKeys.APP_SELECT_NODE: {
       return {
         ...state,
-        selectedTool: action.payload
+        selectedNode: action.payload
       };
     }
-    case TypeKeys.APP_UPDATE_TOOL: {
+    case TypeKeys.APP_UPDATE_NODE: {
       return {
         ...state,
-        tools: state.tools.map(tool => {
-          if (tool.id !== action.payload.id) {
-            return tool;
+        nodes: state.nodes.map(node => {
+          if (node.id !== action.payload.id) {
+            return node;
           }
 
           return {
-            ...tool,
+            ...node,
             ...action.payload
           };
         })
       };
     }
-    case TypeKeys.APP_LOAD_TOOLS: {
+    case TypeKeys.APP_LOAD_NODES: {
       return {
         ...state,
-        tools: action.payload
+        nodes: action.payload
       };
     }
     case TypeKeys.APP_SET_DISPLAY_MODE: {
@@ -103,16 +103,16 @@ export const app = (
         orientation: action.payload
       };
     }
-    case TypeKeys.APP_SET_TOOLS_VISIBLE: {
+    case TypeKeys.APP_SET_NODES_VISIBLE: {
       return {
         ...state,
-        toolsVisible: action.payload
+        nodesVisible: action.payload
       };
     }
-    case TypeKeys.APP_SET_TOOLS_ENABLED: {
+    case TypeKeys.APP_SET_NODES_ENABLED: {
       return {
         ...state,
-        toolsEnabled: action.payload
+        nodesEnabled: action.payload
       };
     }
     case TypeKeys.APP_SET_OPTIONS_VISIBLE: {
