@@ -11,8 +11,20 @@ interface AlOrbitControlState {
   animationStep: number;
 }
 
+interface AlOrbitControlObject extends AframeComponent {
+  dependencies: string[];
+  onEnterVR: () => void;
+  onExitVR: () => void;
+  bindListeners(): void;
+  addListeners(): void;
+  removeListeners(): void;
+  elMouseUp(event: CustomEvent): void;
+  documentMouseDown(event: MouseEvent): void;
+  documentMouseUp(event: MouseEvent): void;
+}
+
 export class AlOrbitControl implements AframeRegistry {
-  public static getObject(): AframeComponent {
+  public static getObject(): AlOrbitControlObject {
     return {
       dependencies: ["camera"],
 
@@ -43,70 +55,29 @@ export class AlOrbitControl implements AframeRegistry {
         boundingRadius: { type: "number", default: 1 },
         cameraAnimating: { type: "boolean", default: false }
       },
-      init() {
-        //#region Bindings & Initialisation
+
+      bindListeners() {
         this.onEnterVR = this.onEnterVR.bind(this);
         this.onExitVR = this.onExitVR.bind(this);
+        this.elMouseUp = this.elMouseUp.bind(this);
+        this.documentMouseDown = this.documentMouseDown.bind(this);
+        this.documentMouseUp = this.documentMouseUp.bind(this);
+      },
 
-        let el = this.el;
-        let oldPosition = new THREE.Vector3();
-        let controls = new THREE.OrbitControls(
-          el.getObject3D("camera"),
-          el.sceneEl.renderer.domElement
-        );
-        let data = this.data;
+      addListeners() {
+        this.el.sceneEl.addEventListener("enter-vr", this.onEnterVR);
+        this.el.sceneEl.addEventListener("exit-vr", this.onExitVR);
+        this.el.addEventListener("mouseup", this.elMouseUp);
+        document.addEventListener("mousedown", this.documentMouseDown);
+        document.addEventListener("mouseup", this.documentMouseUp);
+      },
 
-        //#endregion
-
-        //#region Event Handlers
-        el.sceneEl.addEventListener("enter-vr", this.onEnterVR);
-        el.sceneEl.addEventListener("exit-vr", this.onExitVR);
-
-        document.body.style.cursor = "grab";
-        document.addEventListener("mousedown", () => {
-          document.body.style.cursor = "grabbing";
-        });
-        document.addEventListener("mouseup", () => {
-          document.body.style.cursor = "grab";
-        });
-
-        el.addEventListener("mouseup", () => {
-          el.emit(
-            AlOrbitControlEvents.HAS_MOVED,
-            {
-              position: controls.object.position,
-              target: controls.target
-            },
-            true
-          );
-        });
-        //#endregion
-
-        //#region Positioning
-
-        // Convert the cameraPosition & targetPosition Objects into THREE.Vector3 s
-        let cameraPosition = ThreeUtils.objectToVector3(data.cameraPosition);
-        let targetPosition = ThreeUtils.objectToVector3(data.targetPosition);
-
-        (this.state as AlOrbitControlState) = {
-          controls,
-          oldPosition,
-          targetPosition,
-          cameraPosition,
-          animationStep: 0,
-          controlPosition: controls.object.position
-        };
-
-        // emit after 1 ms so that it happens after the scene's componentDidUpdate method has fired
-        setTimeout(() => {
-          el.emit(
-            AlOrbitControlEvents.INIT,
-            {
-              controls: this.state.controls
-            },
-            true
-          );
-        }, 10);
+      removeListeners() {
+        this.el.sceneEl.removeEventListener("enter-vr", this.onEnterVR);
+        this.el.sceneEl.removeEventListener("exit-vr", this.onExitVR);
+        this.el.removeEventListener("mouseup", this.elMouseUp);
+        document.removeEventListener("mousedown", this.documentMouseDown);
+        document.removeEventListener("mouseup", this.documentMouseUp);
       },
       onEnterVR() {
         if (
@@ -142,6 +113,66 @@ export class AlOrbitControl implements AframeRegistry {
         if (el.hasAttribute("look-controls")) {
           el.setAttribute("look-controls", "enabled", false);
         }
+      },
+
+      elMouseUp(_event: CustomEvent) {
+        this.el.emit(
+          AlOrbitControlEvents.HAS_MOVED,
+          {
+            position: this.state.controls.object.position,
+            target: this.state.controls.target
+          },
+          true
+        );
+      },
+
+      documentMouseDown(_event: MouseEvent) {
+        document.body.style.cursor = "grabbing";
+      },
+
+      documentMouseUp(_event: MouseEvent) {
+        document.body.style.cursor = "grab";
+      },
+
+      init() {
+        let el = this.el;
+        let oldPosition = new THREE.Vector3();
+        let controls = new THREE.OrbitControls(
+          el.getObject3D("camera"),
+          el.sceneEl.renderer.domElement
+        );
+        let data = this.data;
+
+        document.body.style.cursor = "grab";
+
+        this.bindListeners();
+        this.addListeners();
+
+        //#region Positioning
+
+        // Convert the cameraPosition & targetPosition Objects into THREE.Vector3 s
+        let cameraPosition = ThreeUtils.objectToVector3(data.cameraPosition);
+        let targetPosition = ThreeUtils.objectToVector3(data.targetPosition);
+
+        (this.state as AlOrbitControlState) = {
+          controls,
+          oldPosition,
+          targetPosition,
+          cameraPosition,
+          animationStep: 0,
+          controlPosition: controls.object.position
+        };
+
+        // emit after 1 ms so that it happens after the scene's componentDidUpdate method has fired
+        setTimeout(() => {
+          el.emit(
+            AlOrbitControlEvents.INIT,
+            {
+              controls: this.state.controls
+            },
+            true
+          );
+        }, 10);
       },
 
       update(_oldData) {
@@ -229,17 +260,12 @@ export class AlOrbitControl implements AframeRegistry {
       },
 
       remove() {
+        this.removeEventListener();
         let state = this.state as AlOrbitControlState;
         state.controls.dispose();
         state = null;
-        this.el.sceneEl.removeEventListener("enter-vr", this.onEnterVR);
-        this.el.sceneEl.removeEventListener("exit-vr", this.onExitVR);
-      },
-
-      pause() {},
-
-      play() {}
-    } as AframeComponent;
+      }
+    } as AlOrbitControlObject;
   }
 
   public static getName(): string {

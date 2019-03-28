@@ -684,7 +684,7 @@ export class Aleph {
         false
       );
       this._scene.addEventListener(
-        AlNodeSpawnerEvents.ADD_TOOL,
+        AlNodeSpawnerEvents.ADD_NODE,
         this._addNodeEventHandler,
         false
       );

@@ -6,6 +6,4 @@ export interface AframeShader {
   update: (oldData) => void;
   tick: () => void;
   remove: () => void;
-  pause: () => void;
-  play: () => void;
 }

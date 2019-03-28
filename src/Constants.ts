@@ -13,6 +13,12 @@ export class Constants {
     normal: "#00b0ff"
   };
 
+  static edgeColors = {
+    selected: "#c0ff8c",
+    hovered: "#ff89b3",
+    normal: "8cdbff"
+  };
+
   static colorValues = {
     red: "#f50057",
     blue: "#00b0ff",
