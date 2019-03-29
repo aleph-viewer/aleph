@@ -316,12 +316,20 @@ export class Aleph {
     });
 
     this.store.mapDispatchToProps(this, {
+      appClearAngles,
+      appClearEdges,
       appClearNodes,
+      appDeleteAngle,
+      appDeleteEdge,
       appDeleteNode,
+      appSelectAngle,
+      appSelectEdge,
       appSelectNode,
+      appSetAngle,
       appSetBoundingBoxVisible,
       appSetCameraAnimating,
       appSetDisplayMode,
+      appSetEdge,
       appSetNode,
       appSetNodesEnabled,
       appSetNodesVisible,

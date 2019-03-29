@@ -233,12 +233,14 @@
 
         srcSelect.addEventListener("change", function() {
           state.src = srcSelect.value;
+          state.nodes = null;
         }, false);
 
         loadSrcButton.addEventListener(
           "click",
           function(e) {
             state.src = srcInput.value;
+            state.nodes = null;
           },
           false
         );
@@ -278,12 +280,22 @@
 
         nodeList.nodes = state.nodes;
         nodeList.selectedNode = state.selectedNode;
-        nodeEditor.node = state.selectedNode ? [state.selectedNode, state.nodes.get(state.selectedNode)] : null;
+        nodeEditor.node = getSelectedNode();
         srcSelect.value = state.src;
         srcInput.value = state.src;
-        nodesTextArea.value = JSON.stringify([...state.nodes]);
+        nodesTextArea.value = state.nodes ? JSON.stringify([...state.nodes]) : "";
 
         debug.classList.remove("disabled");
+      }
+
+      function getSelectedNode() {
+        if (state.selectedNode && state.nodes) {
+          const n = state.nodes.get(state.selectedNode);
+          if (n) {
+            return [state.selectedNode, n];
+          }
+        }
+        return null;
       }
 
       document.addEventListener("DOMContentLoaded", function(event) {
