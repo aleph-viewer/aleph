@@ -1,5 +1,6 @@
 import { AframeRegistry, AframeComponent } from "../interfaces";
 import { Constants } from "../Constants";
+import { THREE } from "aframe";
 
 interface AlEdgeState {
   geometry: THREE.Geometry;
@@ -10,6 +11,7 @@ interface AlEdgeState {
   node1Event: string;
   node2Event: string;
   titleId: string;
+  color: THREE.Color;
 }
 
 interface AlEdgeObject extends AframeComponent {
@@ -37,6 +39,15 @@ export class AlNode implements AframeRegistry {
         const end: THREE.Vector3 = document
           .querySelector("#" + this.data.endNodeId)
           .getAttribute("position");
+
+        this.el.setAttribute(
+          "line",
+          `
+          start: ${start} 
+          end: ${end}; 
+          color: ${this.state.color}"
+        `
+        );
 
         document.querySelector("#" + this.state.titleId).setAttribute(
           "text",
@@ -81,21 +92,11 @@ export class AlNode implements AframeRegistry {
         );
       },
 
-      node1Listener(event: CustomEvent) {
-        let geom = this.state.geometry as THREE.Geometry;
-
-        geom.vertices[0].copy(event.detail.newPosition);
-        geom.verticesNeedUpdate = true;
-
+      node1Listener(_event: CustomEvent) {
         this.updateDistance();
       },
 
-      node2Listener(event: CustomEvent) {
-        let geom = this.state.geometry as THREE.Geometry;
-
-        geom.vertices[1].copy(event.detail.newPosition);
-        geom.verticesNeedUpdate = true;
-
+      node2Listener(_event: CustomEvent) {
         this.updateDistance();
       },
 
@@ -115,31 +116,17 @@ export class AlNode implements AframeRegistry {
           .querySelector("#" + this.data.endNodeId)
           .getAttribute("position");
 
-        const geometry = new THREE.Geometry();
-        geometry.vertices.push(start, end);
-        geometry.verticesNeedUpdate = true;
-
-        let material = new THREE.LineBasicMaterial({
-          color: new THREE.Color(Constants.edgeColors.normal)
-        });
-        material.color = new THREE.Color(Constants.nodeColors.selected);
-        const line = new THREE.Line(geometry, material);
-
-        this.el.setObject3D("mesh", line);
-
         const node1Event = this.data.node1 + Constants.movedEventString;
         const node2Event = this.data.node2 + Constants.movedEventString;
         const titleId = this.el.id + Constants.titleIdString;
 
         this.state = {
-          geometry,
-          material,
-          line,
           node1: this.data.node1,
           node2: this.data.node2,
           node1Event,
           node2Event,
-          titleId
+          titleId,
+          color: new THREE.Color(Constants.edgeColors.normal)
         } as AlEdgeState;
 
         document.querySelector("#" + this.state.titleId).setAttribute(
@@ -149,6 +136,15 @@ export class AlNode implements AframeRegistry {
           side: double;
           baseline: bottom;
           anchor: center;
+        `
+        );
+
+        this.el.setAttribute(
+          "line",
+          `
+          start: ${start} 
+          end: ${end}; 
+          color: ${this.state.color}"
         `
         );
       },

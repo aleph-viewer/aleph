@@ -519,6 +519,7 @@ export class Aleph {
   }
 
   private _renderEdges(): JSX.Element {
+    console.log(this.edges);
     return [...this.edges].map((n: [string, AlEdgeSerial]) => {
       const [edgeId, edge] = n;
 
@@ -838,7 +839,7 @@ export class Aleph {
         }
       ]);
       const eventName = nodeId + Constants.movedEventString;
-      this._scene.emit(eventName, { newPosition: intersection.point }, true);
+      this._scene.emit(eventName, {}, true);
     } else {
       console.log("No intersection!");
     }
