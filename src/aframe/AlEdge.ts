@@ -20,8 +20,8 @@ export class AlNode implements AframeRegistry {
   public static getObject(): AlEdgeObject {
     return {
       schema: {
-        startNode: { type: "string" },
-        endNode: { type: "string" }
+        startNodeId: { type: "string" },
+        endNodeId: { type: "string" }
       },
 
       init(): void {
@@ -53,8 +53,8 @@ export class AlNode implements AframeRegistry {
           geometry,
           material,
           line,
-          startNode: this.data.startNode,
-          endNode: this.data.endNode
+          startNode: this.data.startNodeId,
+          endNode: this.data.endNodeId
         } as AlEdgeState;
       },
 
