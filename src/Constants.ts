@@ -1,4 +1,6 @@
 export class Constants {
+  static movedString = "-moved";
+
   static nodeSize = 50;
 
   static splashBackSize = 5;

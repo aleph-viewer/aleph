@@ -673,6 +673,7 @@ export class Aleph {
       ) as THREE.Intersection;
     }
 
+    // TODO: Add Edge Position event
     if (intersection) {
       this.appSetNode([
         nodeId,
@@ -680,6 +681,8 @@ export class Aleph {
           position: ThreeUtils.vector3ToString(intersection.point)
         }
       ]);
+      const eventName = nodeId + Constants.movedString;
+      this._scene.emit(eventName, {newPosition: intersection.point}, true);
     } else {
       console.log("No intersection!");
     }
