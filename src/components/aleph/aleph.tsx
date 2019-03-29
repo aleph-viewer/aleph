@@ -550,6 +550,7 @@ export class Aleph {
   }
 
   private _setNodes(nodes: Map<string, AlNodeSerial>): void {
+    this._clearNodes();
     nodes.forEach((node: AlNodeSerial) => {
       this.appSetNode(node);
     });
