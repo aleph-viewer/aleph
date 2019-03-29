@@ -496,7 +496,6 @@ export class Aleph {
           `}
         >
           <a-entity
-            //geometry="primitive: plane; height: auto; width: auto"
             text={`
               value: ${node.text};
               side: double;
@@ -523,7 +522,9 @@ export class Aleph {
             node1: ${edge.node1};
             node2: ${edge.node2};
           `}
-        />
+        >
+          <a-entity id={`${edgeId}-title`} />
+        </a-entity>
       );
     });
   }
@@ -828,7 +829,7 @@ export class Aleph {
           position: ThreeUtils.vector3ToString(intersection.point)
         }
       ]);
-      const eventName = nodeId + Constants.movedString;
+      const eventName = nodeId + Constants.movedEventString;
       this._scene.emit(eventName, { newPosition: intersection.point }, true);
     } else {
       console.log("No intersection!");

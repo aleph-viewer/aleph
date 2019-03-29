@@ -7,20 +7,19 @@ interface AlEdgeState {
   line: THREE.Line;
   node2: string;
   node1: string;
-  node1String: string;
-  node2String: string;
+  node1Event: string;
+  node2Event: string;
+  titleId: string;
 }
 
 interface AlEdgeObject extends AframeComponent {
   bindListeners(): void;
   addListeners(): void;
   removeListeners(): void;
-  update(): void;
-  tickFunction(): void;
-  tick(): void;
   remove(): void;
   node1Listener(event: CustomEvent): void;
   node2Listener(event: CustomEvent): void;
+  updateDistance(): void;
 }
 
 export class AlNode implements AframeRegistry {
@@ -31,19 +30,39 @@ export class AlNode implements AframeRegistry {
         node2: { type: "string" }
       },
 
+      updateDistance() {
+        const start: THREE.Vector3 = document
+          .querySelector("#" + this.data.startNodeId)
+          .getAttribute("position");
+        const end: THREE.Vector3 = document
+          .querySelector("#" + this.data.endNodeId)
+          .getAttribute("position");
+
+        document.querySelector("#" + this.state.titleId).setAttribute(
+          "text",
+          `
+        value: ${start.distanceTo(end).toString() + " units"};
+        side: double;
+        baseline: bottom;
+        anchor: center;
+      `
+        );
+      },
+
       bindListeners() {
         this.node1Listener = this.node1Listener.bind(this);
         this.node2Listener = this.node2Listener.bind(this);
+        this.updateDistance = this.updateDistance.bind(this);
       },
 
       addListeners() {
         this.el.addEventListener(
-          this.state.node1String,
+          this.state.node1Event,
           this.node1Listener,
           false
         );
         this.el.addEventListener(
-          this.state.node2String,
+          this.state.node2Event,
           this.node2Listener,
           false
         );
@@ -51,12 +70,12 @@ export class AlNode implements AframeRegistry {
 
       removeListeners() {
         this.el.removeEventListener(
-          this.state.node1String,
+          this.state.node1Event,
           this.node1Listener,
           false
         );
         this.el.removeEventListener(
-          this.state.node2String,
+          this.state.node2Event,
           this.node2Listener,
           false
         );
@@ -67,6 +86,8 @@ export class AlNode implements AframeRegistry {
 
         geom.vertices[0].copy(event.detail.newPosition);
         geom.verticesNeedUpdate = true;
+
+        this.updateDistance();
       },
 
       node2Listener(event: CustomEvent) {
@@ -74,6 +95,8 @@ export class AlNode implements AframeRegistry {
 
         geom.vertices[1].copy(event.detail.newPosition);
         geom.verticesNeedUpdate = true;
+
+        this.updateDistance();
       },
 
       init(): void {
@@ -104,8 +127,9 @@ export class AlNode implements AframeRegistry {
 
         this.el.setObject3D("mesh", line);
 
-        const node1String = this.data.node1 + Constants.movedString;
-        const node2String = this.data.node2 + Constants.movedString;
+        const node1Event = this.data.node1 + Constants.movedEventString;
+        const node2Event = this.data.node2 + Constants.movedEventString;
+        const titleId = this.el.id + Constants.titleIdString;
 
         this.state = {
           geometry,
@@ -113,21 +137,20 @@ export class AlNode implements AframeRegistry {
           line,
           node1: this.data.node1,
           node2: this.data.node2,
-          node1String,
-          node2String
+          node1Event,
+          node2Event,
+          titleId
         } as AlEdgeState;
-      },
 
-      update(): void {
-        let state = this.state as AlEdgeState;
-      },
-
-      tickFunction() {
-        let state = this.state as AlEdgeState;
-      },
-
-      tick(): void {
-        this.tickFunction();
+        document.querySelector("#" + this.state.titleId).setAttribute(
+          "text",
+          `
+          value: ${start.distanceTo(end).toString() + " units"};
+          side: double;
+          baseline: bottom;
+          anchor: center;
+        `
+        );
       },
 
       remove(): void {

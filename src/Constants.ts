@@ -1,5 +1,7 @@
 export class Constants {
-  static movedString = "-moved";
+  static movedEventString = "-moved";
+
+  static titleIdString = "-title";
 
   static nodeSize = 50;
 
