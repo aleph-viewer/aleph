@@ -5,8 +5,8 @@ interface AlEdgeState {
   geometry: THREE.Geometry;
   material: THREE.MeshBasicMaterial;
   line: THREE.Line;
-  startNode: string;
-  endNode: string;
+  startNodeId: string;
+  endNodeId: string;
 }
 
 interface AlEdgeObject extends AframeComponent {
@@ -32,10 +32,10 @@ export class AlNode implements AframeRegistry {
         );
 
         const start: THREE.Vector3 = document
-          .querySelector("#" + this.data.startNode)
+          .querySelector("#" + this.data.startNodeId)
           .getAttribute("position");
         const end: THREE.Vector3 = document
-          .querySelector("#" + this.data.endNode)
+          .querySelector("#" + this.data.endNodeId)
           .getAttribute("position");
 
         const geometry = new THREE.Geometry();
@@ -53,8 +53,8 @@ export class AlNode implements AframeRegistry {
           geometry,
           material,
           line,
-          startNode: this.data.startNodeId,
-          endNode: this.data.endNodeId
+          startNodeId: this.data.startNodeId,
+          endNodeId: this.data.endNodeId
         } as AlEdgeState;
       },
 
