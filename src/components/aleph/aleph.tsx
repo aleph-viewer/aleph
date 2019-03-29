@@ -62,6 +62,8 @@ export class Aleph {
   private _camera: Entity;
   private _tcontrols: THREE.OrbitControls;
   private _intersectingNode: boolean;
+
+  // TODO: Put In Reducer
   private _lastCameraPosition: THREE.Vector3;
   private _lastCameraTarget: THREE.Vector3;
   //#endregion
@@ -341,6 +343,7 @@ export class Aleph {
             al-node-spawner={`
               nodesEnabled: ${this.nodesEnabled};
             `}
+            al-edge-spawner
             class="collidable"
             id="target-entity"
             al-gltf-model={`
@@ -359,8 +362,9 @@ export class Aleph {
         return (
           <a-entity
             al-node-spawner={`
-            nodesEnabled: ${this.nodesEnabled};
-          `}
+              nodesEnabled: ${this.nodesEnabled};
+            `}
+            al-edge-spawner
             class="collidable"
             id="target-entity"
             al-volumetric-model={`
