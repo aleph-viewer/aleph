@@ -16,23 +16,26 @@ export class AlNodeList {
   @Prop({ mutable: true }) selectedNode: string | null = null;
 
   render(): JSX.Element {
-    return (
-      <ion-list>
-        <ion-radio-group value={this.selectedNode}>
-          {[...this.nodes].map(([nodeId, node]) => {
-            return (
-              <ion-item no-padding>
-                <ion-label>{node.text}</ion-label>
-                <ion-radio
-                  value={nodeId}
-                  onClick={() => this.onSelectedNodeChanged.emit(nodeId)}
-                />
-              </ion-item>
-            );
-          })}
-        </ion-radio-group>
-      </ion-list>
-    );
+    if (this.nodes) {
+      return (
+        <ion-list>
+          <ion-radio-group value={this.selectedNode}>
+            {[...this.nodes].map(([nodeId, node]) => {
+              return (
+                <ion-item no-padding>
+                  <ion-label>{node.text}</ion-label>
+                  <ion-radio
+                    value={nodeId}
+                    onClick={() => this.onSelectedNodeChanged.emit(nodeId)}
+                  />
+                </ion-item>
+              );
+            })}
+          </ion-radio-group>
+        </ion-list>
+      );
+    }
+    return null;
   }
 
   // return (
