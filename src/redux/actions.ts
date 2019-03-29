@@ -84,10 +84,10 @@ export const appSetSrcLoaded = (payload: boolean) => async (
 
 export interface AppSetNodeAction {
   type: TypeKeys.APP_SET_NODE;
-  payload: AlNodeSerial;
+  payload: [string, AlNodeSerial];
 }
 
-export const appSetNode = (payload: AlNodeSerial) => async (
+export const appSetNode = (payload: [string, AlNodeSerial]) => async (
   dispatch,
   _getState
 ) => {

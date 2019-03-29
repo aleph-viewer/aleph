@@ -10,21 +10,23 @@ export class AlNodeEditor {
   @Event() onDelete: EventEmitter;
   @Event() onSave: EventEmitter;
 
-  @Prop({ mutable: true }) node: AlNodeSerial;
+  @Prop({ mutable: true }) node: [string, AlNodeSerial];
 
   render(): JSX.Element {
     if (this.node) {
+      const [nodeId, node] = this.node;
+
       return [
         <ion-item>
           <ion-textarea
-            value={this.node.text}
-            onIonChange={e => (this.node.text = e.detail.value)}
+            value={node.text}
+            onIonChange={e => (node.text = e.detail.value)}
           />
           ,
         </ion-item>,
         <ion-button
           onClick={() => {
-            this.onDelete.emit(this.node);
+            this.onDelete.emit(nodeId);
             this.node = null;
           }}
         >
@@ -32,7 +34,7 @@ export class AlNodeEditor {
         </ion-button>,
         <ion-button
           onClick={() => {
-            this.onSave.emit(this.node);
+            this.onSave.emit([nodeId, node]);
           }}
         >
           Save

@@ -218,7 +218,7 @@
         nodeEditor.addEventListener(
           "onDelete",
           function(e) {
-            aleph.deleteNode(e.detail.id);
+            aleph.deleteNode(e.detail);
           },
           false
         );
@@ -278,7 +278,7 @@
 
         nodeList.nodes = state.nodes;
         nodeList.selectedNode = state.selectedNode;
-        nodeEditor.node = state.nodes.get(state.selectedNode);
+        nodeEditor.node = state.selectedNode ? [state.selectedNode, state.nodes.get(state.selectedNode)] : null;
         srcSelect.value = state.src;
         srcInput.value = state.src;
         nodesTextArea.value = JSON.stringify([...state.nodes]);

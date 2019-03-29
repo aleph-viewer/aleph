@@ -75,10 +75,10 @@ export namespace Components {
   }
 
   interface AlNodeEditor {
-    'node': AlNodeSerial;
+    'node': [string, AlNodeSerial];
   }
   interface AlNodeEditorAttributes extends StencilHTMLAttributes {
-    'node'?: AlNodeSerial;
+    'node'?: [string, AlNodeSerial];
     'onOnDelete'?: (event: CustomEvent) => void;
     'onOnSave'?: (event: CustomEvent) => void;
   }
@@ -103,7 +103,7 @@ export namespace Components {
     'selectNode': (nodeId: string) => Promise<void>;
     'setBoundingBoxVisible': (visible: boolean) => Promise<void>;
     'setDisplayMode': (displayMode: DisplayMode) => Promise<void>;
-    'setNode': (node: AlNodeSerial) => Promise<void>;
+    'setNode': (node: [string, AlNodeSerial]) => Promise<void>;
     'setNodes': (nodes: Map<string, AlNodeSerial>) => Promise<void>;
     'setNodesEnabled': (enabled: boolean) => Promise<void>;
     'spinnerColor': string;

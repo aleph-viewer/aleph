@@ -49,12 +49,12 @@ export const app = (
     case TypeKeys.APP_SET_NODE: {
       // updates a node if it already exists, otherwise adds it.
       // if it already exists, the current selectedNode is kept, otherwise it's set to the new node's id.
+      const [nodeId, node] = action.payload;
+
       return {
         ...state,
-        selectedNode: state.nodes.has(action.payload.id)
-          ? state.selectedNode
-          : action.payload.id,
-        nodes: new Map(state.nodes).set(action.payload.id, action.payload)
+        selectedNode: state.nodes.has(nodeId) ? state.selectedNode : nodeId,
+        nodes: new Map(state.nodes).set(nodeId, node)
       };
     }
     case TypeKeys.APP_DELETE_NODE: {

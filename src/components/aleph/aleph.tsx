@@ -4,7 +4,8 @@ import {
   State,
   Method,
   Event,
-  EventEmitter
+  EventEmitter,
+  Watch
 } from "@stencil/core";
 import { Store, Action } from "@stencil/redux";
 import {
@@ -173,7 +174,7 @@ export class Aleph {
   }
 
   @Method()
-  async setNode(node: AlNodeSerial): Promise<void> {
+  async setNode(node: [string, AlNodeSerial]): Promise<void> {
     this._setNode(node);
   }
 
@@ -393,10 +394,9 @@ export class Aleph {
 
   private _renderNodes(): JSX.Element {
     return [...this.nodes].map((n: [string, AlNodeSerial]) => {
-      const nodeId: string = n[0];
-      const node: AlNodeSerial = n[1];
+      const [nodeId, node] = n;
 
-      let textOffset = new THREE.Vector3(0.1, 0.1, 0.01);
+      let textOffset: THREE.Vector3 = new THREE.Vector3(0.1, 0.1, 0.01);
       textOffset.multiplyScalar(node.scale);
 
       return (
@@ -541,6 +541,7 @@ export class Aleph {
 
   //#region Private methods
   private _getAppState(): AlAppState {
+    // todo: can we watch the store object?
     return this.store.getState().app;
   }
 
@@ -550,8 +551,8 @@ export class Aleph {
   }
 
   private _setNodes(nodes: Map<string, AlNodeSerial>): void {
-    nodes.forEach((node: AlNodeSerial) => {
-      this.appSetNode(node);
+    nodes.forEach((value: AlNodeSerial, key: string) => {
+      this.appSetNode([key, value]);
     });
     this.onChanged.emit(this._getAppState());
   }
@@ -561,7 +562,7 @@ export class Aleph {
     this.onChanged.emit(this._getAppState());
   }
 
-  private _setNode(node: AlNodeSerial): void {
+  private _setNode(node: [string, AlNodeSerial]): void {
     this.appSetNode(node);
     this.onChanged.emit(this._getAppState());
   }
@@ -630,14 +631,18 @@ export class Aleph {
     if (this.nodesEnabled && this._validTarget && !this._intersectingNode) {
       let intersection: THREE.Intersection = event.detail.detail.intersection;
 
-      const newNode: AlNodeSerial = CreateUtils.createNode(
-        this.nodes,
-        this._targetEntity.object3D.position,
-        intersection.point,
-        this._boundingSphereRadius
-      );
+      const nodeId: string = GetUtils.getNextNodeId(this.nodes);
 
-      this._setNode(newNode);
+      const newNode: AlNodeSerial = {
+        target: ThreeUtils.vector3ToString(
+          this._targetEntity.object3D.position
+        ),
+        position: ThreeUtils.vector3ToString(intersection.point),
+        scale: this._boundingSphereRadius / Constants.nodeSize,
+        text: nodeId
+      };
+
+      this._setNode([nodeId, newNode]);
     }
   }
 
@@ -665,10 +670,12 @@ export class Aleph {
     }
 
     if (intersection) {
-      this.appSetNode({
-        id: nodeId,
-        position: ThreeUtils.vector3ToString(intersection.point)
-      });
+      this.appSetNode([
+        nodeId,
+        {
+          position: ThreeUtils.vector3ToString(intersection.point)
+        }
+      ]);
     } else {
       console.log("No intersection!");
     }
