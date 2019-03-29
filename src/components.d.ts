@@ -15,6 +15,7 @@ import {
   Orientation,
 } from './enums/Orientation';
 import {
+  AlEdgeSerial,
   AlNodeSerial,
 } from './interfaces';
 import {
@@ -103,6 +104,7 @@ export namespace Components {
     'selectNode': (nodeId: string) => Promise<void>;
     'setBoundingBoxVisible': (visible: boolean) => Promise<void>;
     'setDisplayMode': (displayMode: DisplayMode) => Promise<void>;
+    'setEdge': (edge: [string, AlEdgeSerial]) => Promise<void>;
     'setNode': (node: [string, AlNodeSerial]) => Promise<void>;
     'setNodes': (nodes: Map<string, AlNodeSerial>) => Promise<void>;
     'setNodesEnabled': (enabled: boolean) => Promise<void>;

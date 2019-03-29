@@ -10,12 +10,20 @@ import {
 } from "@stencil/core";
 import { Store, Action } from "@stencil/redux";
 import {
+  appClearAngles,
+  appClearEdges,
   appClearNodes,
+  appDeleteAngle,
+  appDeleteEdge,
   appDeleteNode,
+  appSelectAngle,
+  appSelectEdge,
   appSelectNode,
+  appSetAngle,
   appSetBoundingBoxVisible,
   appSetCameraAnimating,
   appSetDisplayMode,
+  appSetEdge,
   appSetNode,
   appSetNodesEnabled,
   appSetNodesVisible,
@@ -200,6 +208,33 @@ export class Aleph {
 
   //#endregion
 
+  //#region Edge Methods
+  @Method()
+  async setEdge(edge: [string, AlEdgeSerial]): Promise<void> {
+    this._setEdge(edge);
+  }
+
+  // @Method()
+  // async setEdges(edges: Map<string, AlEdgeSerial>): Promise<void> {
+  //   this._setEdges(edges);
+  // }
+
+  // @Method()
+  // async deleteEdge(edgeId: string): Promise<void> {
+  //   this._deleteEdge(edgeId);
+  // }
+
+  // @Method()
+  // async clearEdges(): Promise<void> {
+  //   this._clearEdges();
+  // }
+
+  // @Method()
+  // async selectEdge(edgeId: string): Promise<void> {
+  //   this._selectEdge(edgeId, true);
+  // }
+  //#endregion
+
   //#region control panel methods
 
   @Method()
@@ -325,6 +360,7 @@ export class Aleph {
 
     this._lastCameraPosition = new THREE.Vector3(0, 0, 0);
     this._lastCameraTarget = new THREE.Vector3(0, 0, 0);
+    this._intersectingNode = null;
   }
 
   //#region Rendering Methods
@@ -713,12 +749,12 @@ export class Aleph {
     this._tcontrols = event.detail.controls;
   }
 
-  private _intersectionClearedEventHandler(evt): void {
-    this._intersectingNode = evt.detail.id;
+  private _intersectionClearedEventHandler(_event): void {
+    this._intersectingNode = null;
   }
 
-  private _intersectingNodeEventHandler(_evt): void {
-    this._intersectingNode = null;
+  private _intersectingNodeEventHandler(event): void {
+    this._intersectingNode = event.detail.id;
   }
 
   private _setNodeEventHandler(event: CustomEvent): void {

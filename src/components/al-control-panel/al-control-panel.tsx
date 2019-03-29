@@ -491,28 +491,28 @@ export class AlControlPanel {
     }
   }
 
-  // private _slicesIndexChanged(evt: MouseEvent) {
-  //   this.setSlicesIndex((evt.srcElement as any).value);
+  // private _slicesIndexChanged(event: MouseEvent) {
+  //   this.setSlicesIndex((event.srcElement as any).value);
   // }
 
-  // private _slicesWindowCenterChanged(evt: MouseEvent) {
-  //   this.setSlicesWindowCenter((evt.srcElement as any).value);
+  // private _slicesWindowCenterChanged(event: MouseEvent) {
+  //   this.setSlicesWindowCenter((event.srcElement as any).value);
   // }
 
-  // private _slicesWindowWidthChanged(evt: MouseEvent) {
-  //   this.setSlicesWindowWidth((evt.srcElement as any).value);
+  // private _slicesWindowWidthChanged(event: MouseEvent) {
+  //   this.setSlicesWindowWidth((event.srcElement as any).value);
   // }
 
-  // private _volumeStepsChanged(evt: MouseEvent) {
-  //   this.setVolumeSteps((evt.srcElement as any).value);
+  // private _volumeStepsChanged(event: MouseEvent) {
+  //   this.setVolumeSteps((event.srcElement as any).value);
   // }
 
-  // private _volumeWindowCenterChanged(evt: MouseEvent) {
-  //   this.setVolumeWindowCenter((evt.srcElement as any).value);
+  // private _volumeWindowCenterChanged(event: MouseEvent) {
+  //   this.setVolumeWindowCenter((event.srcElement as any).value);
   // }
 
-  // private _volumeWindowWidthChanged(evt: MouseEvent) {
-  //   this.setVolumeWindowWidth((evt.srcElement as any).value);
+  // private _volumeWindowWidthChanged(event: MouseEvent) {
+  //   this.setVolumeWindowWidth((event.srcElement as any).value);
   // }
 
   render(): JSX.Element {
