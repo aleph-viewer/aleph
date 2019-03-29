@@ -3,7 +3,7 @@ import { Constants } from "../Constants";
 
 interface AlEdgeState {
   geometry: THREE.Geometry;
-  material: THREE.MeshBasicMaterial;
+  material: THREE.LineBasicMaterial;
   line: THREE.Line;
   startNodeId: string;
   endNodeId: string;
@@ -41,7 +41,7 @@ export class AlNode implements AframeRegistry {
         const geometry = new THREE.Geometry();
         geometry.vertices.push(start, end);
 
-        let material = new THREE.MeshBasicMaterial({
+        let material = new THREE.LineBasicMaterial({
           color: new THREE.Color(Constants.edgeColors.normal)
         });
         material.color = new THREE.Color(Constants.nodeColors.selected);
