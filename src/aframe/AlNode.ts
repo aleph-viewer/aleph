@@ -82,7 +82,7 @@ export class AlNode implements AframeRegistry {
             this.el.emit(AlNodeEvents.CONTROLS_DISABLED, {}, true);
             this.el.emit(AlNodeEvents.SELECTED, { id: this.el.id }, true);
           }
-        }, Constants.minTimeForCameraThrottle);
+        }, Constants.minFrameMS);
       },
 
       elMouseUp(_event: CustomEvent): void {
@@ -112,7 +112,7 @@ export class AlNode implements AframeRegistry {
       init(): void {
         this.tickFunction = AFRAME.utils.throttle(
           this.tickFunction,
-          Constants.minTimeForCameraThrottle,
+          Constants.minFrameMS,
           this
         );
         this.bindListeners();

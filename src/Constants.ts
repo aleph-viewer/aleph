@@ -11,9 +11,9 @@ export class Constants {
 
   static maxAnimationSteps = 100;
 
-  static minTimeForCameraThrottle = 15; // Should never be higher than the returned frame time
+  static minFrameMS = 15; // Should never be higher than the returned frame time
 
-  static minTimeForThrottle = Constants.minTimeForCameraThrottle * 5;
+  static minTimeForThrottle = Constants.minFrameMS * 5;
 
   static nodeColors = {
     selected: "#76ff03",

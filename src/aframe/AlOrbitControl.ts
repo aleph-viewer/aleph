@@ -134,7 +134,7 @@ export class AlOrbitControl implements AframeRegistry {
       init() {
         this.tickFunction = AFRAME.utils.throttle(
           this.tickFunction,
-          Constants.minTimeForCameraThrottle,
+          Constants.minFrameMS,
           this
         );
         this.bindListeners();
@@ -163,7 +163,7 @@ export class AlOrbitControl implements AframeRegistry {
           controlPosition: controls.object.position
         };
 
-        // emit after 10 ms so that it happens after the scene's componentDidUpdate method has fired
+        // emit after a frame so that it happens after the scene's componentDidUpdate method has fired
         setTimeout(() => {
           el.emit(
             AlOrbitControlEvents.INIT,
@@ -172,7 +172,7 @@ export class AlOrbitControl implements AframeRegistry {
             },
             true
           );
-        }, 10);
+        }, Constants.minFrameMS);
       },
 
       update(_oldData) {
