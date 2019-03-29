@@ -1,3 +1,4 @@
+//#region Imports
 import {
   Component,
   Prop,
@@ -31,7 +32,13 @@ import {
   appSetVolumeWindowWidth
 } from "../../redux/actions";
 import { configureStore } from "../../redux/store";
-import { AlNodeSerial, AlCameraSerial, AlAppState } from "../../interfaces";
+import {
+  AlNodeSerial,
+  AlCameraSerial,
+  AlAppState,
+  AlEdgeSerial,
+  AlAngleSerial
+} from "../../interfaces";
 import { GetUtils, ThreeUtils, CreateUtils } from "../../utils";
 import { Constants } from "../../Constants";
 import { MeshFileType, Orientation, DisplayMode } from "../../enums";
@@ -43,6 +50,7 @@ import {
 } from "../../aframe";
 type Entity = import("aframe").Entity;
 type Scene = import("aframe").Scene;
+//#endregion
 
 @Component({
   tag: "uv-aleph",
@@ -107,9 +115,11 @@ export class Aleph {
   //#endregion
 
   //#region state
+  @State() angles: Map<string, AlAngleSerial>;
   @State() boundingBoxVisible: boolean;
   @State() cameraAnimating: boolean;
   @State() displayMode: DisplayMode;
+  @State() edges: Map<string, AlEdgeSerial>;
   @State() nodes: Map<string, AlNodeSerial>;
   @State() nodesEnabled: boolean;
   @State() nodesVisible: boolean;
@@ -462,6 +472,23 @@ export class Aleph {
     });
   }
 
+  private _renderEdges(): JSX.Element {
+    return [...this.edges].map((n: [string, AlEdgeSerial]) => {
+      const [edgeId, edge] = n;
+
+      return (
+        <a-entity
+          class="collidable"
+          id={edgeId}
+          al-edge={`
+            node1: ${edge.node1};
+            node2: ${edge.node2};
+          `}
+        />
+      );
+    });
+  }
+
   private _renderLights(): JSX.Element {
     return [
       <a-entity
@@ -552,6 +579,7 @@ export class Aleph {
       >
         {this._renderSrc()}
         {this._renderNodes()}
+        {this._renderEdges()}
         {this._renderLights()}
         {this._renderCamera()}
       </a-scene>
