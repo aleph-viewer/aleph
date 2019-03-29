@@ -46,7 +46,10 @@ export const app = (
         ...state,
         src: action.payload,
         srcLoaded: false,
-        nodes: new Map<string, AlNodeSerial>()
+        selectedNode: null,
+        nodes: new Map<string, AlNodeSerial>(),
+        edges: new Map<string, AlEdgeSerial>(),
+        angles: new Map<string, AlAngleSerial>()
       };
     }
     case TypeKeys.APP_SET_SRC_LOADED: {
