@@ -9,26 +9,26 @@ import {
 } from "@stencil/core";
 import { Store, Action } from "@stencil/redux";
 import {
-  appSetSrc,
-  appSetSrcLoaded,
-  appSetNode,
+  appClearNodes,
   appDeleteNode,
   appSelectNode,
-  appClearNodes,
-  appSetDisplayMode,
-  appSetOrientation,
-  appSetNodesVisible,
-  appSetNodesEnabled,
-  appSetOptionsVisible,
-  appSetOptionsEnabled,
   appSetBoundingBoxVisible,
+  appSetCameraAnimating,
+  appSetDisplayMode,
+  appSetNode,
+  appSetNodesEnabled,
+  appSetNodesVisible,
+  appSetOptionsEnabled,
+  appSetOptionsVisible,
+  appSetOrientation,
   appSetSlicesIndex,
-  appSetSlicesWindowWidth,
   appSetSlicesWindowCenter,
+  appSetSlicesWindowWidth,
+  appSetSrc,
+  appSetSrcLoaded,
   appSetVolumeSteps,
-  appSetVolumeWindowWidth,
   appSetVolumeWindowCenter,
-  appSetCameraAnimating
+  appSetVolumeWindowWidth
 } from "../../redux/actions";
 import { configureStore } from "../../redux/store";
 import { AlNodeSerial, AlCameraSerial, AlAppState } from "../../interfaces";
@@ -36,9 +36,9 @@ import { GetUtils, ThreeUtils, CreateUtils } from "../../utils";
 import { Constants } from "../../Constants";
 import { MeshFileType, Orientation, DisplayMode } from "../../enums";
 import {
+  AlGltfModelEvents,
   AlNodeEvents,
   AlNodeSpawnerEvents,
-  AlGltfModelEvents,
   AlOrbitControlEvents
 } from "../../aframe";
 type Entity = import("aframe").Entity;
@@ -68,7 +68,6 @@ export class Aleph {
   private _lastCameraTarget: THREE.Vector3;
   //#endregion
 
-  //#region Redux states, props & methods
   @Prop({ context: "store" }) store: Store;
   @Prop() dracoDecoderPath: string | null;
   @Prop() width: string = "640px";
@@ -76,45 +75,59 @@ export class Aleph {
   @Prop() debug: boolean = false;
   @Prop() spinnerColor: string = "#fff";
 
+  //#region actions
+  appClearAngles: Action;
+  appClearEdges: Action;
+  appClearNodes: Action;
+  appDeleteAngle: Action;
+  appDeleteEdge: Action;
+  appDeleteNode: Action;
+  appSelectAngle: Action;
+  appSelectEdge: Action;
+  appSelectNode: Action;
+  appSetAngle: Action;
+  appSetBoundingBoxVisible: Action;
+  appSetCameraAnimating: Action;
+  appSetDisplayMode: Action;
+  appSetEdge: Action;
+  appSetNode: Action;
+  appSetNodesEnabled: Action;
+  appSetNodesVisible: Action;
+  appSetOptionsEnabled: Action;
+  appSetOptionsVisible: Action;
+  appSetOrientation: Action;
+  appSetSlicesIndex: Action;
+  appSetSlicesWindowCenter: Action;
+  appSetSlicesWindowWidth: Action;
   appSetSrc: Action;
   appSetSrcLoaded: Action;
-  appSetNode: Action;
-  appDeleteNode: Action;
-  appSelectNode: Action;
-  appClearNodes: Action;
-  appSetDisplayMode: Action;
-  appSetOrientation: Action;
-  appSetNodesVisible: Action;
-  appSetNodesEnabled: Action;
-  appSetOptionsVisible: Action;
-  appSetOptionsEnabled: Action;
-  appSetBoundingBoxVisible: Action;
-  appSetSlicesIndex: Action;
-  appSetSlicesWindowWidth: Action;
-  appSetSlicesWindowCenter: Action;
   appSetVolumeSteps: Action;
-  appSetVolumeWindowWidth: Action;
   appSetVolumeWindowCenter: Action;
-  appSetCameraAnimating: Action;
+  appSetVolumeWindowWidth: Action;
+  //#endregion
 
+  //#region state
+  @State() boundingBoxVisible: boolean;
+  @State() cameraAnimating: boolean;
+  @State() displayMode: DisplayMode;
+  @State() nodes: Map<string, AlNodeSerial>;
+  @State() nodesEnabled: boolean;
+  @State() nodesVisible: boolean;
+  @State() optionsEnabled: boolean;
+  @State() optionsVisible: boolean;
+  @State() orientation: Orientation;
+  @State() selectedNode: string;
+  @State() slicesIndex: number;
+  @State() slicesWindowCenter: number;
+  @State() slicesWindowWidth: number;
   @State() src: string | null;
   @State() srcLoaded: boolean;
-  @State() selectedNode: string;
-  @State() nodes: Map<string, AlNodeSerial>;
-  @State() displayMode: DisplayMode;
-  @State() orientation: Orientation;
-  @State() nodesVisible: boolean;
-  @State() nodesEnabled: boolean;
-  @State() optionsVisible: boolean;
-  @State() optionsEnabled: boolean;
-  @State() boundingBoxVisible: boolean;
-  @State() slicesIndex: number;
-  @State() slicesWindowWidth: number;
-  @State() slicesWindowCenter: number;
   @State() volumeSteps: number;
-  @State() volumeWindowWidth: number;
   @State() volumeWindowCenter: number;
-  @State() cameraAnimating: boolean;
+  @State() volumeWindowWidth: number;
+  //#endregion
+
+  //#region src methods
 
   @Method()
   async load(src: string): Promise<void> {
@@ -139,15 +152,29 @@ export class Aleph {
       this.appSetSrc(null); // shows loading spinner and resets gltf-model
       setTimeout(() => {
         this.appSetSrc(src);
-      }, 1000);
+      }, 500);
     } else {
       this.appSetSrc(src);
     }
   }
 
+  //#endregion
+
+  //#region node methods
+
   @Method()
-  async setDisplayMode(displayMode: DisplayMode): Promise<void> {
-    this.appSetDisplayMode(displayMode);
+  async setNode(node: [string, AlNodeSerial]): Promise<void> {
+    this._setNode(node);
+  }
+
+  @Method()
+  async setNodes(nodes: Map<string, AlNodeSerial>): Promise<void> {
+    this._setNodes(nodes);
+  }
+
+  @Method()
+  async deleteNode(nodeId: string): Promise<void> {
+    this._deleteNode(nodeId);
   }
 
   @Method()
@@ -160,6 +187,15 @@ export class Aleph {
     this._selectNode(nodeId, true);
   }
 
+  //#endregion
+
+  //#region control panel methods
+
+  @Method()
+  async setDisplayMode(displayMode: DisplayMode): Promise<void> {
+    this.appSetDisplayMode(displayMode);
+  }
+
   @Method()
   async setNodesEnabled(enabled: boolean): Promise<void> {
     this._setNodesEnabled(enabled);
@@ -170,23 +206,9 @@ export class Aleph {
     this._setBoundingBoxVisible(visible);
   }
 
-  @Method()
-  async deleteNode(nodeId: string): Promise<void> {
-    this._deleteNode(nodeId);
-  }
-
-  @Method()
-  async setNode(node: [string, AlNodeSerial]): Promise<void> {
-    this._setNode(node);
-  }
-
-  @Method()
-  async setNodes(nodes: Map<string, AlNodeSerial>): Promise<void> {
-    this._setNodes(nodes);
-  }
+  //#endregion
 
   @Event() onChanged: EventEmitter;
-  //#endregion
 
   componentWillLoad() {
     CreateUtils.createAframeComponents();
@@ -196,70 +218,78 @@ export class Aleph {
     this.store.mapStateToProps(this, state => {
       const {
         app: {
+          angles,
+          boundingBoxVisible,
+          cameraAnimating,
+          displayMode,
+          edges,
+          nodes,
+          nodesEnabled,
+          nodesVisible,
+          optionsEnabled,
+          optionsVisible,
+          orientation,
+          selectedAngle,
+          selectedEdge,
+          selectedNode,
+          slicesIndex,
+          slicesWindowCenter,
+          slicesWindowWidth,
           src,
           srcLoaded,
-          selectedNode,
-          nodes,
-          displayMode,
-          orientation,
-          nodesVisible,
-          nodesEnabled,
-          optionsVisible,
-          optionsEnabled,
-          boundingBoxVisible,
-          slicesIndex,
-          slicesWindowWidth,
-          slicesWindowCenter,
           volumeSteps,
-          volumeWindowWidth,
           volumeWindowCenter,
-          cameraAnimating
+          volumeWindowWidth
         }
       } = state;
 
       return {
+        angles,
+        boundingBoxVisible,
+        cameraAnimating,
+        displayMode,
+        edges,
+        nodes,
+        nodesEnabled,
+        nodesVisible,
+        optionsEnabled,
+        optionsVisible,
+        orientation,
+        selectedAngle,
+        selectedEdge,
+        selectedNode,
+        slicesIndex,
+        slicesWindowCenter,
+        slicesWindowWidth,
         src,
         srcLoaded,
-        selectedNode,
-        nodes,
-        displayMode,
-        orientation,
-        nodesVisible,
-        nodesEnabled,
-        optionsVisible,
-        optionsEnabled,
-        boundingBoxVisible,
-        slicesIndex,
-        slicesWindowWidth,
-        slicesWindowCenter,
         volumeSteps,
-        volumeWindowWidth,
         volumeWindowCenter,
-        cameraAnimating
+        volumeWindowWidth
       };
     });
 
     this.store.mapDispatchToProps(this, {
+      appClearNodes,
+      appDeleteNode,
+      appSelectNode,
+      appSetBoundingBoxVisible,
+      appSetCameraAnimating,
+      appSetDisplayMode,
+      appSetNode,
+      appSetNodesEnabled,
+      appSetNodesVisible,
+      appSetOptionsEnabled,
+      appSetOptionsVisible,
+      appSetOrientation,
+      appSetSlicesIndex,
+      appSetSlicesWindowCenter,
+      appSetSlicesWindowWidth,
       appSetSrc,
       appSetSrcLoaded,
-      appSelectNode,
-      appSetNode,
-      appDeleteNode,
-      appClearNodes,
-      appSetDisplayMode,
-      appSetOrientation,
-      appSetNodesVisible,
-      appSetNodesEnabled,
-      appSetOptionsVisible,
-      appSetOptionsEnabled,
-      appSetBoundingBoxVisible,
-      appSetSlicesIndex,
-      appSetSlicesWindowWidth,
-      appSetSlicesWindowCenter,
       appSetVolumeSteps,
-      appSetVolumeWindowWidth,
       appSetVolumeWindowCenter,
-      appSetCameraAnimating
+      appSetVolumeWindowWidth
     });
 
     // set up event handlers
@@ -543,7 +573,7 @@ export class Aleph {
   }
   //#endregion
 
-  //#region Private methods
+  //#region Private Methods
   private _getAppState(): AlAppState {
     // todo: can we watch the store object?
     return this.store.getState().app;

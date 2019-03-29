@@ -5,6 +5,7 @@ import { AframeRegistry } from "./AframeRegistry";
 import { AframeShader } from "./AframeShader";
 import { AlCameraSerial } from "./AlCameraSerial";
 import { AlEdgeSerial } from "./AlEdgeSerial";
+import { AlAngleSerial } from "./AlAngleSerial";
 
 export {
   AlAppState,
@@ -13,5 +14,6 @@ export {
   AframeRegistry,
   AframeShader,
   AlCameraSerial,
-  AlEdgeSerial
+  AlEdgeSerial,
+  AlAngleSerial
 };

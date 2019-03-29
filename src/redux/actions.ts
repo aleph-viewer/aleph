@@ -17,6 +17,14 @@ export type ActionTypes =
   | AppDeleteNodeAction
   | AppSelectNodeAction
   | AppClearNodesAction
+  | AppSetEdgeAction
+  | AppDeleteEdgeAction
+  | AppSelectEdgeAction
+  | AppClearEdgesAction
+  | AppSetAngleAction
+  | AppDeleteAngleAction
+  | AppSelectAngleAction
+  | AppClearAnglesAction
   | AppSetDisplayModeAction
   | AppSetOrientationAction
   | AppSetNodesVisibleAction
@@ -189,7 +197,7 @@ export const appDeleteEdge = (payload: string) => async (
   });
 };
 
-export interface AppSelectEdgection {
+export interface AppSelectEdgeAction {
   type: TypeKeys.APP_SELECT_EDGE;
   payload: string;
 }
@@ -283,7 +291,6 @@ export const appClearAngles = (payload: void) => async (
 //#endregion
 
 //#region control panel
-
 export interface AppSetDisplayModeAction {
   type: TypeKeys.APP_SET_DISPLAY_MODE;
   payload: DisplayMode;
@@ -370,20 +377,6 @@ export const appSetBoundingBoxVisible = (payload: boolean) => async (
 ) => {
   return dispatch({
     type: TypeKeys.APP_SET_BOUNDINGBOX_VISIBLE,
-    payload: payload
-  });
-};
-
-//#endregion
-
-//#region animation
-
-export const appSetCameraAnimating = (payload: boolean) => async (
-  dispatch,
-  _getState
-) => {
-  return dispatch({
-    type: TypeKeys.APP_SET_CAMERA_ANIMATING,
     payload: payload
   });
 };
@@ -501,5 +494,19 @@ export interface AppSetCameraAnimatingAction {
   type: TypeKeys.APP_SET_CAMERA_ANIMATING;
   payload: boolean;
 }
+
+//#endregion
+
+//#region animation
+
+export const appSetCameraAnimating = (payload: boolean) => async (
+  dispatch,
+  _getState
+) => {
+  return dispatch({
+    type: TypeKeys.APP_SET_CAMERA_ANIMATING,
+    payload: payload
+  });
+};
 
 //#endregion

@@ -2,28 +2,37 @@ import { combineReducers } from "redux";
 import { ActionTypes, TypeKeys } from "./actions";
 import { DisplayMode } from "../enums/DisplayMode";
 import { Orientation } from "../enums/Orientation";
-import { AlAppState, AlNodeSerial } from "../interfaces";
+import {
+  AlAppState,
+  AlNodeSerial,
+  AlEdgeSerial,
+  AlAngleSerial
+} from "../interfaces";
 
 export const getInitialState = () => {
   return {
+    angles: new Map<string, AlAngleSerial>(),
     boundingBoxVisible: false,
+    cameraAnimating: false,
     displayMode: DisplayMode.MESH,
+    edges: new Map<string, AlEdgeSerial>(),
+    nodes: new Map<string, AlNodeSerial>(),
+    nodesEnabled: false,
+    nodesVisible: true,
     optionsEnabled: false,
     optionsVisible: true,
     orientation: Orientation.CORONAL,
+    selectedAngle: null,
+    selectedEdge: null,
     selectedNode: null,
     slicesIndex: undefined,
     slicesWindowCenter: undefined,
     slicesWindowWidth: undefined,
     src: null,
     srcLoaded: false,
-    nodes: new Map<string, AlNodeSerial>(),
-    nodesEnabled: false,
-    nodesVisible: true,
     volumeSteps: undefined,
     volumeWindowCenter: undefined,
-    volumeWindowWidth: undefined,
-    cameraAnimating: false
+    volumeWindowWidth: undefined
   };
 };
 
@@ -32,6 +41,7 @@ export const app = (
   action: ActionTypes
 ) => {
   switch (action.type) {
+    //#region src
     case TypeKeys.APP_SET_SRC: {
       return {
         ...state,
@@ -46,6 +56,8 @@ export const app = (
         srcLoaded: action.payload
       };
     }
+    //#endregion
+    //#region nodes
     case TypeKeys.APP_SET_NODE: {
       // updates a node if it already exists, otherwise adds it.
       // if it already exists, the current selectedNode is kept, otherwise it's set to the new node's id.
@@ -79,6 +91,80 @@ export const app = (
         nodes: new Map<string, AlNodeSerial>()
       };
     }
+    //#endregion
+    //#region edges
+    case TypeKeys.APP_SET_EDGE: {
+      // updates an edge if it already exists, otherwise adds it.
+      // if it already exists, the current selectedEdge is kept, otherwise it's set to the new edge's id.
+      const [edgeId, edge] = action.payload;
+
+      return {
+        ...state,
+        selectedEdge: state.edges.has(edgeId) ? state.selectedEdge : edgeId,
+        edges: new Map(state.edges).set(edgeId, edge)
+      };
+    }
+    case TypeKeys.APP_DELETE_EDGE: {
+      return {
+        ...state,
+        selectedEdge:
+          state.selectedEdge === action.payload ? null : state.selectedEdge,
+        edges: new Map(
+          [...state.edges].filter(([edgeId]) => edgeId !== action.payload)
+        )
+      };
+    }
+    case TypeKeys.APP_SELECT_EDGE: {
+      return {
+        ...state,
+        selectedEdge: action.payload
+      };
+    }
+    case TypeKeys.APP_CLEAR_EDGES: {
+      return {
+        ...state,
+        edges: new Map<string, AlEdgeSerial>()
+      };
+    }
+    //#endregion
+    //#region angles
+    case TypeKeys.APP_SET_ANGLE: {
+      // updates an angle if it already exists, otherwise adds it.
+      // if it already exists, the current selectedAngle is kept, otherwise it's set to the new angle's id.
+      const [angleId, angle] = action.payload;
+
+      return {
+        ...state,
+        selectedAngle: state.angles.has(angleId)
+          ? state.selectedAngle
+          : angleId,
+        angles: new Map(state.angles).set(angleId, angle)
+      };
+    }
+    case TypeKeys.APP_DELETE_ANGLE: {
+      return {
+        ...state,
+        selectedAngle:
+          state.selectedAngle === action.payload ? null : state.selectedAngle,
+        angles: new Map(
+          [...state.angles].filter(([angleId]) => angleId !== action.payload)
+        )
+      };
+    }
+    case TypeKeys.APP_SELECT_ANGLE: {
+      return {
+        ...state,
+        selectedAngle: action.payload
+      };
+    }
+    case TypeKeys.APP_CLEAR_ANGLES: {
+      return {
+        ...state,
+        angles: new Map<string, AlAngleSerial>()
+      };
+    }
+    //#endregion
+    //#region control panel
     case TypeKeys.APP_SET_DISPLAY_MODE: {
       return {
         ...state,
@@ -123,6 +209,8 @@ export const app = (
         boundingBoxVisible: action.payload
       };
     }
+    //#endregion
+    //#region volumes
     case TypeKeys.APP_SET_SLICES_INDEX: {
       return {
         ...state,
@@ -159,12 +247,15 @@ export const app = (
         volumeWindowCenter: action.payload
       };
     }
+    //#endregion
+    //#region animation
     case TypeKeys.APP_SET_CAMERA_ANIMATING: {
       return {
         ...state,
         cameraAnimating: action.payload
       };
     }
+    //#endregion
   }
 
   return state;
