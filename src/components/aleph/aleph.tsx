@@ -517,12 +517,24 @@ export class Aleph {
         <a-entity
           class="collidable"
           id={edgeId}
-          al-edge={`
+          /*al-edge={`
             node1: ${edge.node1};
             node2: ${edge.node2};
+          `}*/
+          line={`
+            start: ${this.nodes.get(edge.node1).position}
+            end: ${this.nodes.get(edge.node2).position}
           `}
         >
-          <a-entity id={`${edgeId}-title`} al-look-to-camera />
+          <a-entity 
+            id={`${edgeId}-title`} 
+            al-look-to-camera
+            text={`
+            value: ${edgeId}
+            side: double;
+            baseline: bottom;
+            anchor: center;
+          `} />
         </a-entity>
       );
     });
