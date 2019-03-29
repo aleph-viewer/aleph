@@ -1,4 +1,4 @@
 export interface AlEdgeSerial {
-  startNodeId: string;
-  endNodeId: string;
+  node1: string;
+  node2: string;
 }
