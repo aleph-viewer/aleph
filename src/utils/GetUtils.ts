@@ -12,8 +12,8 @@ export class GetUtils {
     if (nodes.size) {
       return Math.max.apply(
         Math,
-        [...nodes].map((value: [string, AlNodeSerial]) => {
-          return this.getNodeIdNumber(value[0]);
+        [...nodes].map(([nodeId]) => {
+          return this.getNodeIdNumber(nodeId);
         })
       );
     }
@@ -28,22 +28,6 @@ export class GetUtils {
   static getNextNodeId(nodes: Map<string, AlNodeSerial>): string {
     return "node-" + Number(this.getNodeWithHighestId(nodes) + 1);
   }
-
-  // static getNodeIndex(id: string, nodes: AlNodeSerial[]): number {
-  //   return nodes.findIndex((node: AlNodeSerial) => {
-  //     return this.getNodeIdNumber(node.id) === this.getNodeIdNumber(id);
-  //   });
-  // }
-
-  // static getNodeById(id: string, nodes: Map<string, AlNodeSerial>): AlNodeSerial | null {
-  //   let node: AlNodeSerial | null = null;
-
-  //   node = nodes.find((node: AlNodeSerial) => {
-  //     return node.id === id;
-  //   });
-
-  //   return node;
-  // }
 
   static getGeometryCenter(
     geometry: THREE.Geometry | THREE.BufferGeometry

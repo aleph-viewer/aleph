@@ -62,7 +62,9 @@ export const app = (
         ...state,
         selectedNode:
           state.selectedNode === action.payload ? null : state.selectedNode,
-        nodes: new Map(state.nodes).delete(action.payload)
+        nodes: new Map(
+          [...state.nodes].filter(([nodeId]) => nodeId !== action.payload)
+        )
       };
     }
     case TypeKeys.APP_SELECT_NODE: {

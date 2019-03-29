@@ -392,9 +392,6 @@ export class Aleph {
   }
 
   private _renderNodes(): JSX.Element {
-    //const renderNodes: JSX.Element[] = [];
-    //const nodes: Map<string, AlNodeSerial> = this.nodes;
-
     return [...this.nodes].map((n: [string, AlNodeSerial]) => {
       const nodeId: string = n[0];
       const node: AlNodeSerial = n[1];

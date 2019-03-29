@@ -277,7 +277,7 @@
 
         nodeList.nodes = state.nodes;
         nodeList.selectedNode = state.selectedNode;
-        //nodeEditor.node = state.nodes.get(state.selectedNode);
+        nodeEditor.node = state.nodes.get(state.selectedNode);
         srcSelect.value = state.src;
         srcInput.value = state.src;
         nodesTextArea.value = JSON.stringify([...state.nodes]);
