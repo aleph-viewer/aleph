@@ -76,13 +76,13 @@ export class Aleph {
   private _boundingSphereRadius: number;
   private _validTarget: boolean;
   private _camera: Entity;
-  private _tcontrols: THREE.OrbitControls;
   private _intersectingNode: string;
   private _isShiftDown: boolean;
 
   // TODO: Put In Reducer
   private _lastCameraPosition: THREE.Vector3;
   private _lastCameraTarget: THREE.Vector3;
+  private _controlsEnabled: boolean;
   //#endregion
 
   @Prop({ context: "store" }) store: Store;
@@ -358,7 +358,6 @@ export class Aleph {
       this
     );
     this._nodeMovedEventHandler = this._nodeMovedEventHandler.bind(this);
-    this._controlsInitEventHandler = this._controlsInitEventHandler.bind(this);
     this._controlsEnabledHandler = this._controlsEnabledHandler.bind(this);
     this._controlsDisabledHandler = this._controlsDisabledHandler.bind(this);
     this._animationFinished = this._animationFinished.bind(this);
@@ -366,9 +365,12 @@ export class Aleph {
     this._canvasMouseDown = this._canvasMouseDown.bind(this);
     this._canvasMouseUp = this._canvasMouseUp.bind(this);
 
+    this._intersectingNode = null;
+
+    // TODO: Put In Redux
     this._lastCameraPosition = new THREE.Vector3(0, 0, 0);
     this._lastCameraTarget = new THREE.Vector3(0, 0, 0);
-    this._intersectingNode = null;
+    this._controlsEnabled = true;
   }
 
   //#region Rendering Methods
@@ -510,6 +512,7 @@ export class Aleph {
               baseline: bottom;
               anchor: left;
             `}
+            al-look-to-camera
             position={ThreeUtils.vector3ToString(textOffset)}
             id={`${nodeId}-label"`}
           />
@@ -531,7 +534,7 @@ export class Aleph {
             node2: ${edge.node2};
           `}
         >
-          <a-entity id={`${edgeId}-title`} />
+          <a-entity id={`${edgeId}-title`} al-look-to-camera />
         </a-entity>
       );
     });
@@ -608,7 +611,8 @@ export class Aleph {
       targetPosition: ${ThreeUtils.vector3ToString(camData.target)};
       cameraPosition: ${ThreeUtils.vector3ToString(camData.position)};
       boundingRadius: ${radius};
-      cameraAnimating: ${this.cameraAnimating}
+      cameraAnimating: ${this.cameraAnimating};
+      enabled: ${this._controlsEnabled};
     `}
         ref={el => (this._camera = el)}
       >
@@ -747,15 +751,13 @@ export class Aleph {
   }
 
   private _controlsEnabledHandler(_event: CustomEvent): void {
-    this._tcontrols.enabled = true;
+    this._controlsEnabled = true;
+    console.log("controls-enabled: ", this._controlsEnabled);
   }
 
   private _controlsDisabledHandler(_event: CustomEvent): void {
-    this._tcontrols.enabled = false;
-  }
-
-  private _controlsInitEventHandler(event: CustomEvent): void {
-    this._tcontrols = event.detail.controls;
+    this._controlsEnabled = false;
+    console.log("controls-disabled: ", this._controlsEnabled);
   }
 
   private _intersectionClearedEventHandler(_event): void {
@@ -857,11 +859,6 @@ export class Aleph {
       this._scene.addEventListener(
         AlOrbitControlEvents.ANIMATION_FINISHED,
         this._animationFinished,
-        false
-      );
-      this._scene.addEventListener(
-        AlOrbitControlEvents.INIT,
-        this._controlsInitEventHandler,
         false
       );
       this._scene.addEventListener(

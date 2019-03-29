@@ -67,18 +67,15 @@ export class AlEdge implements AframeRegistry {
         `
           );
 
-          const textPos = start
+          const textDir = start
             .clone()
             .sub(end.clone())
-            .normalize()
-            .multiplyScalar(dist / 2);
+            .normalize();
+          const textPos = textDir.multiplyScalar(dist);
 
-          textEl.setAttribute(
-            "position",
-            `
-              ${ThreeUtils.vector3ToString(textPos)}
-          `
-          );
+          this.el.setAttribute("position", ThreeUtils.vector3ToString(textPos));
+          textEl.setAttribute("position", ThreeUtils.vector3ToString(textPos));
+          console.log(textPos);
         }, Constants.minFrameMS);
       },
 

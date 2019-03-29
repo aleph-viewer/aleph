@@ -12,7 +12,6 @@ interface AlNodeState {
   target: THREE.Vector3;
   dragging: boolean;
   mouseDown: boolean;
-  lastCameraPosition: THREE.Vector3;
 }
 
 interface AlNodeObject extends AframeComponent {
@@ -131,10 +130,6 @@ export class AlNode implements AframeRegistry {
 
         let targetPos = ThreeUtils.objectToVector3(data.target);
 
-        let lookPos = new THREE.Vector3();
-        lookPos.copy(camera.position);
-        el.object3D.lookAt(lookPos);
-
         this.state = {
           selected: true,
           hovered: false,
@@ -143,8 +138,7 @@ export class AlNode implements AframeRegistry {
           mesh,
           camera,
           target: targetPos,
-          dragging: false,
-          lastCameraPosition: lookPos
+          dragging: false
         } as AlNodeState;
       },
 
@@ -166,12 +160,6 @@ export class AlNode implements AframeRegistry {
           state.material.color = new THREE.Color(Constants.nodeColors.selected);
         } else {
           state.material.color = new THREE.Color(Constants.nodeColors.normal);
-        }
-
-        if (!state.lastCameraPosition.equals(state.camera.position)) {
-          const currentCameraPosition = state.camera.position;
-          this.el.object3D.lookAt(currentCameraPosition);
-          state.lastCameraPosition.copy(currentCameraPosition);
         }
       },
 

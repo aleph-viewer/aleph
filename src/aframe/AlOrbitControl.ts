@@ -137,8 +137,6 @@ export class AlOrbitControl implements AframeRegistry {
           Constants.minFrameMS,
           this
         );
-        this.bindListeners();
-        this.addListeners();
 
         let el = this.el;
         let oldPosition = new THREE.Vector3();
@@ -163,16 +161,8 @@ export class AlOrbitControl implements AframeRegistry {
           controlPosition: controls.object.position
         };
 
-        // emit after 10 ms so that it happens after the scene's componentDidUpdate method has fired
-        setTimeout(() => {
-          el.emit(
-            AlOrbitControlEvents.INIT,
-            {
-              controls: this.state.controls
-            },
-            true
-          );
-        }, 10);
+        this.bindListeners();
+        this.addListeners();
       },
 
       update(_oldData) {
@@ -278,7 +268,6 @@ export class AlOrbitControl implements AframeRegistry {
 }
 
 export class AlOrbitControlEvents {
-  static INIT: string = "al-controls-init";
   static ANIMATION_FINISHED: string = "al-animation-finished";
   static HAS_MOVED: string = "al-has-moved";
 }
