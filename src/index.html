@@ -246,7 +246,9 @@
         loadNodesButton.addEventListener(
           "click",
           function(e) {
-            aleph.setNodes(new Map(JSON.parse(nodesTextArea.value)));
+            const nodes = new Map(JSON.parse(nodesTextArea.value));
+            aleph.clearNodes();
+            aleph.setNodes(nodes);
           },
           false
         );
