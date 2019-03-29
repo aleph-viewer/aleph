@@ -7,7 +7,7 @@ interface AlOrbitControlState {
   controls: THREE.OrbitControls;
   targetPosition: THREE.Vector3;
   cameraPosition: THREE.Vector3;
-  controlPosition: THREE.Vector3;
+  positionCache: THREE.Vector3;
   animationStep: number;
 }
 
@@ -22,8 +22,8 @@ interface AlOrbitControlObject extends AframeComponent {
   bindListeners(): void;
   addListeners(): void;
   removeListeners(): void;
-  elMouseUp(event: CustomEvent): void;
-  elMouseDown(event: CustomEvent): void;
+  canvasMouseUp(event: MouseEvent): void;
+  canvasMouseDown(event: MouseEvent): void;
 }
 
 export class AlOrbitControl implements AframeRegistry {
@@ -62,22 +62,31 @@ export class AlOrbitControl implements AframeRegistry {
       bindListeners() {
         this.onEnterVR = this.onEnterVR.bind(this);
         this.onExitVR = this.onExitVR.bind(this);
-        this.elMouseUp = this.elMouseUp.bind(this);
-        this.elMouseDown = this.elMouseDown.bind(this);
+        this.canvasMouseUp = this.canvasMouseUp.bind(this);
+        this.canvasMouseDown = this.canvasMouseDown.bind(this);
       },
 
       addListeners() {
         this.el.sceneEl.addEventListener("enter-vr", this.onEnterVR);
         this.el.sceneEl.addEventListener("exit-vr", this.onExitVR);
-        this.el.addEventListener("mouseup", this.elMouseUp);
-        this.el.addEventListener("mousedown", this.elMouseDown);
+        this.el.sceneEl.canvas.addEventListener("mouseup", this.canvasMouseUp);
+        this.el.sceneEl.canvas.addEventListener(
+          "mousedown",
+          this.canvasMouseDown
+        );
       },
 
       removeListeners() {
         this.el.sceneEl.removeEventListener("enter-vr", this.onEnterVR);
         this.el.sceneEl.removeEventListener("exit-vr", this.onExitVR);
-        this.el.removeEventListener("mouseup", this.elMouseUp);
-        this.el.removeEventListener("mousedown", this.elMouseDown);
+        this.el.sceneEl.canvas.removeEventListener(
+          "mouseup",
+          this.canvasMouseUp
+        );
+        this.el.sceneEl.canvas.removeEventListener(
+          "mousedown",
+          this.canvasMouseDown
+        );
       },
       onEnterVR() {
         if (
@@ -115,7 +124,7 @@ export class AlOrbitControl implements AframeRegistry {
         }
       },
 
-      elMouseUp(_event: CustomEvent) {
+      canvasMouseUp(_event: MouseEvent) {
         document.body.style.cursor = "grab";
         this.el.emit(
           AlOrbitControlEvents.HAS_MOVED,
@@ -127,7 +136,7 @@ export class AlOrbitControl implements AframeRegistry {
         );
       },
 
-      elMouseDown(_event: CustomEvent) {
+      canvasMouseDown(_event: MouseEvent) {
         document.body.style.cursor = "grabbing";
       },
 
@@ -158,8 +167,10 @@ export class AlOrbitControl implements AframeRegistry {
           targetPosition,
           cameraPosition,
           animationStep: 0,
-          controlPosition: controls.object.position
+          positionCache: cameraPosition
         };
+
+        controls.object.position.copy(cameraPosition);
 
         this.bindListeners();
         this.addListeners();
@@ -187,6 +198,7 @@ export class AlOrbitControl implements AframeRegistry {
         controls.autoRotateSpeed = data.autoRotateSpeed;
         controls.dampingFactor = data.dampingFactor;
         controls.enabled = data.enabled;
+        console.log("controls-update: ", data.enabled);
         controls.enableDamping = data.enableDamping;
         controls.enableKeys = data.enableKeys;
         controls.enablePan = data.enablePan;
@@ -215,9 +227,9 @@ export class AlOrbitControl implements AframeRegistry {
             state.cameraPosition.copy(newPos);
 
             if (!data.cameraAnimating) {
-              controls.object.position.copy(newPos);
-            } else {
-              state.controlPosition.copy(state.controls.object.position);
+              controls.object.position.copy(state.cameraPosition);
+              state.positionCache.copy(state.cameraPosition);
+              console.log("controls-update: ", state.cameraPosition);
             }
           }
         }
@@ -235,7 +247,7 @@ export class AlOrbitControl implements AframeRegistry {
 
         if (data.cameraAnimating) {
           let endPos = state.cameraPosition;
-          let startPos = state.controlPosition;
+          let startPos = state.positionCache;
 
           if (state.animationStep <= Constants.maxAnimationSteps) {
             const percent: number =
