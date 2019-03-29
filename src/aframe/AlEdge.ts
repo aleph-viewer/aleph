@@ -1,6 +1,6 @@
 import { AframeRegistry, AframeComponent } from "../interfaces";
 import { Constants } from "../Constants";
-import { THREE } from "aframe";
+import { ThreeUtils } from "../utils";
 
 interface AlEdgeState {
   geometry: THREE.Geometry;
@@ -11,7 +11,7 @@ interface AlEdgeState {
   node1Event: string;
   node2Event: string;
   titleId: string;
-  color: THREE.Color;
+  color: string;
 }
 
 interface AlEdgeObject extends AframeComponent {
@@ -24,7 +24,7 @@ interface AlEdgeObject extends AframeComponent {
   updateDistance(): void;
 }
 
-export class AlNode implements AframeRegistry {
+export class AlEdge implements AframeRegistry {
   public static getObject(): AlEdgeObject {
     return {
       schema: {
@@ -34,30 +34,52 @@ export class AlNode implements AframeRegistry {
 
       updateDistance() {
         const start: THREE.Vector3 = document
-          .querySelector("#" + this.data.startNodeId)
+          .querySelector("#" + this.data.node1)
           .getAttribute("position");
         const end: THREE.Vector3 = document
-          .querySelector("#" + this.data.endNodeId)
+          .querySelector("#" + this.data.node2)
           .getAttribute("position");
+
+        if (this.el.getAttribute("line")) {
+          this.el.removeAttribute("line");
+        }
 
         this.el.setAttribute(
           "line",
           `
-          start: ${start} 
-          end: ${end}; 
-          color: ${this.state.color}"
+          start: ${ThreeUtils.vector3ToString(start)};
+          end: ${ThreeUtils.vector3ToString(end)}; 
+          color: ${this.state.color};
         `
         );
 
-        document.querySelector("#" + this.state.titleId).setAttribute(
-          "text",
+        window.setTimeout(() => {
+          const dist: number = start.distanceTo(end);
+
+          let textEl = document.querySelector("#" + this.state.titleId);
+          textEl.setAttribute(
+            "text",
+            `
+          value: ${dist.toFixed(4) + " units"};
+          side: double;
+          baseline: bottom;
+          anchor: center;
+        `
+          );
+
+          const textPos = start
+            .clone()
+            .sub(end.clone())
+            .normalize()
+            .multiplyScalar(dist / 2);
+
+          textEl.setAttribute(
+            "position",
+            `
+              ${ThreeUtils.vector3ToString(textPos)}
           `
-        value: ${start.distanceTo(end).toString() + " units"};
-        side: double;
-        baseline: bottom;
-        anchor: center;
-      `
-        );
+          );
+        }, Constants.minFrameMS);
       },
 
       bindListeners() {
@@ -101,21 +123,6 @@ export class AlNode implements AframeRegistry {
       },
 
       init(): void {
-        this.tickFunction = AFRAME.utils.throttle(
-          this.tickFunction,
-          Constants.minTimeForThrottle,
-          this
-        );
-        this.bindListeners();
-        this.addListeners();
-
-        const start: THREE.Vector3 = document
-          .querySelector("#" + this.data.startNodeId)
-          .getAttribute("position");
-        const end: THREE.Vector3 = document
-          .querySelector("#" + this.data.endNodeId)
-          .getAttribute("position");
-
         const node1Event = this.data.node1 + Constants.movedEventString;
         const node2Event = this.data.node2 + Constants.movedEventString;
         const titleId = this.el.id + Constants.titleIdString;
@@ -126,32 +133,16 @@ export class AlNode implements AframeRegistry {
           node1Event,
           node2Event,
           titleId,
-          color: new THREE.Color(Constants.edgeColors.normal)
+          color: Constants.edgeColors.normal
         } as AlEdgeState;
 
-        document.querySelector("#" + this.state.titleId).setAttribute(
-          "text",
-          `
-          value: ${start.distanceTo(end).toString() + " units"};
-          side: double;
-          baseline: bottom;
-          anchor: center;
-        `
-        );
-
-        this.el.setAttribute(
-          "line",
-          `
-          start: ${start} 
-          end: ${end}; 
-          color: ${this.state.color}"
-        `
-        );
+        this.bindListeners();
+        this.addListeners();
+        this.updateDistance();
       },
 
       remove(): void {
         this.removeListeners();
-        this.el.removeObject3D("mesh");
       }
     } as AlEdgeObject;
   }

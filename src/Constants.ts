@@ -24,7 +24,7 @@ export class Constants {
   static edgeColors = {
     selected: "#c0ff8c",
     hovered: "#ff89b3",
-    normal: "8cdbff"
+    normal: "#8cdbff"
   };
 
   static colorValues = {
