@@ -785,8 +785,15 @@ export class Aleph {
       }
       this._setNode([nodeId, newNode]);
     }
+  }
+
+  private _validTargetEventHandler(event: CustomEvent): void {
+    this._validTarget = event.detail.payload;
+  }
+
+  private _nodeSelectedEventHandler(event: CustomEvent): void {
     // ELSE IF intersecting a node and it is NOT the selected node
-    else if (
+    if (
       this._intersectingNode !== null && // We're are intersecting a node
       this.nodesEnabled && // Nodes are enabled
       this.selectedNode !== null && // We have a node already selected
@@ -795,13 +802,6 @@ export class Aleph {
     ) {
       this._createEdge(this.selectedNode, this._intersectingNode);
     }
-  }
-
-  private _validTargetEventHandler(event: CustomEvent): void {
-    this._validTarget = event.detail.payload;
-  }
-
-  private _nodeSelectedEventHandler(event: CustomEvent): void {
     this._selectNode(event.detail.id, false);
   }
 
