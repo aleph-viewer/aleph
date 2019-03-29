@@ -13,14 +13,13 @@ export const getInitialState = () => {
   return {
     angles: new Map<string, AlAngleSerial>(),
     boundingBoxVisible: false,
+    camera: null,
     cameraAnimating: false,
+    controlsEnabled: true,
     displayMode: DisplayMode.MESH,
     edges: new Map<string, AlEdgeSerial>(),
     nodes: new Map<string, AlNodeSerial>(),
     nodesEnabled: false,
-    nodesVisible: true,
-    optionsEnabled: false,
-    optionsVisible: true,
     orientation: Orientation.CORONAL,
     selectedAngle: null,
     selectedEdge: null,
@@ -179,28 +178,10 @@ export const app = (
         orientation: action.payload
       };
     }
-    case TypeKeys.APP_SET_NODES_VISIBLE: {
-      return {
-        ...state,
-        nodesVisible: action.payload
-      };
-    }
     case TypeKeys.APP_SET_NODES_ENABLED: {
       return {
         ...state,
         nodesEnabled: action.payload
-      };
-    }
-    case TypeKeys.APP_SET_OPTIONS_VISIBLE: {
-      return {
-        ...state,
-        optionsVisible: action.payload
-      };
-    }
-    case TypeKeys.APP_SET_OPTIONS_ENABLED: {
-      return {
-        ...state,
-        optionsEnabled: action.payload
       };
     }
     case TypeKeys.APP_SET_BOUNDINGBOX_VISIBLE: {
@@ -248,11 +229,23 @@ export const app = (
       };
     }
     //#endregion
-    //#region animation
+    //#region camera
     case TypeKeys.APP_SET_CAMERA_ANIMATING: {
       return {
         ...state,
         cameraAnimating: action.payload
+      };
+    }
+    case TypeKeys.APP_SET_CAMERA: {
+      return {
+        ...state,
+        camera: action.payload
+      };
+    }
+    case TypeKeys.APP_SET_CONTROLS_ENABLED: {
+      return {
+        ...state,
+        controlsEnabled: action.payload
       };
     }
     //#endregion

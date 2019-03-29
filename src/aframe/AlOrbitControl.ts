@@ -137,8 +137,6 @@ export class AlOrbitControl implements AframeRegistry {
           Constants.minFrameMS,
           this
         );
-        this.bindListeners();
-        this.addListeners();
 
         let el = this.el;
         let oldPosition = new THREE.Vector3();
@@ -163,12 +161,16 @@ export class AlOrbitControl implements AframeRegistry {
           controlPosition: controls.object.position
         };
 
-        // emit after a frame so that it happens after the scene's componentDidUpdate method has fired
+        this.bindListeners();
+        this.addListeners();
+
+        // wait a frame before emitting initialised event
         setTimeout(() => {
-          el.emit(
-            AlOrbitControlEvents.INIT,
+          this.el.emit(
+            AlOrbitControlEvents.INITIALISED,
             {
-              controls: this.state.controls
+              position: this.state.controls.object.position,
+              target: this.state.controls.target
             },
             true
           );
@@ -213,7 +215,7 @@ export class AlOrbitControl implements AframeRegistry {
             state.cameraPosition.copy(newPos);
 
             if (!data.cameraAnimating) {
-              controls.object.position.copy(data.cameraPosition);
+              controls.object.position.copy(newPos);
             } else {
               state.controlPosition.copy(state.controls.object.position);
             }
@@ -278,7 +280,7 @@ export class AlOrbitControl implements AframeRegistry {
 }
 
 export class AlOrbitControlEvents {
-  static INIT: string = "al-controls-init";
   static ANIMATION_FINISHED: string = "al-animation-finished";
   static HAS_MOVED: string = "al-has-moved";
+  static INITIALISED: string = "al-controls-initialised";
 }
