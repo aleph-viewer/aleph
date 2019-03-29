@@ -69,7 +69,8 @@ export class Aleph {
   private _validTarget: boolean;
   private _camera: Entity;
   private _tcontrols: THREE.OrbitControls;
-  private _intersectingNode: boolean;
+  private _intersectingNode: string;
+  private _isShiftDown: boolean;
 
   // TODO: Put In Reducer
   private _lastCameraPosition: THREE.Vector3;
@@ -319,6 +320,8 @@ export class Aleph {
     this._controlsDisabledHandler = this._controlsDisabledHandler.bind(this);
     this._animationFinished = this._animationFinished.bind(this);
     this._controlsMoved = this._controlsMoved.bind(this);
+    this._canvasMouseDown = this._canvasMouseDown.bind(this);
+    this._canvasMouseUp = this._canvasMouseUp.bind(this);
 
     this._lastCameraPosition = new THREE.Vector3(0, 0, 0);
     this._lastCameraTarget = new THREE.Vector3(0, 0, 0);
@@ -602,6 +605,15 @@ export class Aleph {
   //#endregion
 
   //#region Private Methods
+  private _createEdge(node1: string, node2: string): void {
+    const newEdge: AlEdgeSerial = {
+      node1,
+      node2
+    };
+    const edgeId: string = GetUtils.getNextEdgeId(this.edges);
+
+    this._setEdge([edgeId, newEdge]);
+  }
   private _getAppState(): AlAppState {
     // todo: can we watch the store object?
     return this.store.getState().app;
@@ -626,6 +638,11 @@ export class Aleph {
 
   private _setNode(node: [string, AlNodeSerial]): void {
     this.appSetNode(node);
+    this.onChanged.emit(this._getAppState());
+  }
+
+  private _setEdge(edge: [string, AlEdgeSerial]): void {
+    this.appSetEdge(edge);
     this.onChanged.emit(this._getAppState());
   }
 
@@ -655,10 +672,25 @@ export class Aleph {
     if (result) {
       this._lastCameraPosition = result.position;
     }
+
+    this._scene.canvas.addEventListener(
+      "mousedown",
+      this._canvasMouseDown,
+      false
+    );
+    this._scene.canvas.addEventListener("mouseup", this._canvasMouseUp, false);
   }
   //#endregion
 
   //#region Event Handlers
+  private _canvasMouseDown(event: MouseEvent) {
+    this._isShiftDown = event.shiftKey;
+  }
+
+  private _canvasMouseUp(_event: MouseEvent) {
+    this._isShiftDown = false;
+  }
+
   private _controlsMoved(event: CustomEvent): void {
     // todo: add to redux store
     this._lastCameraPosition = event.detail.position;
@@ -681,16 +713,21 @@ export class Aleph {
     this._tcontrols = event.detail.controls;
   }
 
-  private _intersectionClearedEventHandler(_evt): void {
-    this._intersectingNode = false;
+  private _intersectionClearedEventHandler(evt): void {
+    this._intersectingNode = evt.detail.id;
   }
 
   private _intersectingNodeEventHandler(_evt): void {
-    this._intersectingNode = true;
+    this._intersectingNode = null;
   }
 
   private _setNodeEventHandler(event: CustomEvent): void {
-    if (this.nodesEnabled && this._validTarget && !this._intersectingNode) {
+    // IF creating a new node and NOT intersecting an exsisting node
+    if (
+      this.nodesEnabled && // Nodes are enabled
+      this._validTarget && // Target is valid
+      this._intersectingNode === null // Not intersecting a Node already
+    ) {
       let intersection: THREE.Intersection = event.detail.detail.intersection;
 
       const nodeId: string = GetUtils.getNextNodeId(this.nodes);
@@ -704,7 +741,23 @@ export class Aleph {
         text: nodeId
       };
 
+      if (
+        this._isShiftDown && // Shift is down
+        this.selectedNode // A Node is already selected
+      ) {
+        this._createEdge(this.selectedNode, nodeId);
+      }
       this._setNode([nodeId, newNode]);
+    }
+    // ELSE IF intersecting a node and it is NOT the selected node
+    else if (
+      this._intersectingNode !== null && // We're are intersecting a node
+      this.nodesEnabled && // Nodes are enabled
+      this.selectedNode !== null && // We have a node already selected
+      this.selectedNode !== this._intersectingNode && // The selected & intersecting nodes are not the same
+      this._isShiftDown // The shift key is down
+    ) {
+      this._createEdge(this.selectedNode, this._intersectingNode);
     }
   }
 
@@ -740,7 +793,7 @@ export class Aleph {
         }
       ]);
       const eventName = nodeId + Constants.movedString;
-      this._scene.emit(eventName, {newPosition: intersection.point}, true);
+      this._scene.emit(eventName, { newPosition: intersection.point }, true);
     } else {
       console.log("No intersection!");
     }

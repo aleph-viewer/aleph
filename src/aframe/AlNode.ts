@@ -13,7 +13,6 @@ interface AlNodeState {
   dragging: boolean;
   mouseDown: boolean;
   lastCameraPosition: THREE.Vector3;
-  shifted: boolean;
 }
 
 interface AlNodeObject extends AframeComponent {
@@ -28,8 +27,6 @@ interface AlNodeObject extends AframeComponent {
   elMouseUp(_event: CustomEvent): void;
   elRaycasterIntersected(_event: CustomEvent): void;
   elRaycasterIntersectedCleared(_event: CustomEvent): void;
-  canvasMouseDown(_event: MouseEvent): void;
-  canvasMouseUp(_event: MouseEvent): void;
 }
 
 export class AlNode implements AframeRegistry {
@@ -43,8 +40,6 @@ export class AlNode implements AframeRegistry {
       },
 
       bindListeners(): void {
-        this.canvasMouseDown = this.canvasMouseDown.bind(this);
-        this.canvasMouseUp = this.canvasMouseUp.bind(this);
         this.elMouseDown = this.elMouseDown.bind(this);
         this.elMouseUp = this.elMouseUp.bind(this);
         this.elRaycasterIntersected = this.elRaycasterIntersected.bind(this);
@@ -54,11 +49,6 @@ export class AlNode implements AframeRegistry {
       },
 
       addListeners(): void {
-        this.el.sceneEl.canvas.addEventListener(
-          "mousedown",
-          this.canvasMouseDown
-        );
-        this.el.sceneEl.canvas.addEventListener("mouseup", this.canvasMouseUp);
         this.el.addEventListener("mousedown", this.elMouseDown);
         this.el.addEventListener("mouseup", this.elMouseUp);
         this.el.addEventListener(
@@ -72,14 +62,6 @@ export class AlNode implements AframeRegistry {
       },
 
       removeListeners(): void {
-        this.el.sceneEl.canvas.removeEventListener(
-          "mousedown",
-          this.canvasMouseDown
-        );
-        this.el.sceneEl.canvas.removeEventListener(
-          "mouseup",
-          this.canvasMouseUp
-        );
         this.el.removeEventListener("mousedown", this.elMouseDown);
         this.el.removeEventListener("mouseup", this.elMouseUp);
         this.el.removeEventListener(
@@ -92,15 +74,6 @@ export class AlNode implements AframeRegistry {
         );
       },
 
-      canvasMouseDown(event: MouseEvent) {
-        console.log(event.shiftKey);
-        this.state.shifted = event.shiftKey;
-      },
-
-      canvasMouseUp(_event: MouseEvent) {
-        this.state.shifted = false;
-      },
-
       elMouseDown(_event: CustomEvent): void {
         window.setTimeout(() => {
           if (this.data.nodesEnabled) {
@@ -108,15 +81,6 @@ export class AlNode implements AframeRegistry {
             state.mouseDown = true;
             this.el.emit(AlNodeEvents.CONTROLS_DISABLED, {}, true);
             this.el.emit(AlNodeEvents.SELECTED, { id: this.el.id }, true);
-
-            // TODO: Emitting properly, butn ot being recieved by the EdgeSpawner
-            if (this.state.shifted && this.state.hovered) {
-              this.el.twoemit(
-                AlNodeEvents.NODE_SHIFT_CLICKED,
-                { id: this.el.id },
-                true
-              );
-            }
           }
         }, Constants.minTimeForCameraThrottle);
       },
@@ -133,7 +97,7 @@ export class AlNode implements AframeRegistry {
       elRaycasterIntersected(_event: CustomEvent): void {
         let state = this.state as AlNodeState;
         state.hovered = true;
-        this.el.emit(AlNodeEvents.INTERSECTION, {}, true);
+        this.el.emit(AlNodeEvents.INTERSECTION, { id: this.el.id }, true);
       },
 
       elRaycasterIntersectedCleared(_event: CustomEvent): void {
@@ -180,8 +144,7 @@ export class AlNode implements AframeRegistry {
           camera,
           target: targetPos,
           dragging: false,
-          lastCameraPosition: lookPos,
-          shifted: false
+          lastCameraPosition: lookPos
         } as AlNodeState;
       },
 
@@ -236,5 +199,4 @@ export class AlNodeEvents {
   static CONTROLS_ENABLED: string = "al-control-enable";
   static CONTROLS_DISABLED: string = "al-control-disabled";
   static ANIMATION_STARTED: string = "al-animation-started";
-  static NODE_SHIFT_CLICKED: string = "al-node-shift-clicked";
 }

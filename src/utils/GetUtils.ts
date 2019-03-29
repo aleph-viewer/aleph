@@ -1,4 +1,4 @@
-import { AlNodeSerial, AlCameraSerial } from "../interfaces";
+import { AlNodeSerial, AlCameraSerial, AlEdgeSerial } from "../interfaces";
 import { Constants } from "../Constants";
 import { Entity } from "aframe";
 import { ThreeUtils } from ".";
@@ -21,12 +21,29 @@ export class GetUtils {
     return -1;
   }
 
+  static getEdgeWithHighestId(edges: Map<string, AlEdgeSerial>): number {
+    if (edges.size) {
+      return Math.max.apply(
+        Math,
+        [...edges].map(([edgeId]) => {
+          return this.getNodeIdNumber(edgeId);
+        })
+      );
+    }
+
+    return -1;
+  }
+
   static getNodeIdNumber(nodeId: string): number {
     return Number(nodeId.split("-")[1]);
   }
 
   static getNextNodeId(nodes: Map<string, AlNodeSerial>): string {
     return "node-" + Number(this.getNodeWithHighestId(nodes) + 1);
+  }
+
+  static getNextEdgeId(edges: Map<string, AlEdgeSerial>): string {
+    return "edge-" + Number(this.getEdgeWithHighestId(edges) + 1);
   }
 
   static getGeometryCenter(

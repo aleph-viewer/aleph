@@ -8,7 +8,7 @@ interface AlEdgeState {
   node2: string;
   node1: string;
   node1String: string;
-  node2String: string
+  node2String: string;
 }
 
 interface AlEdgeObject extends AframeComponent {
@@ -37,13 +37,29 @@ export class AlNode implements AframeRegistry {
       },
 
       addListeners() {
-        this.el.addEventListener(this.state.node1String, this.node1Listener, false);
-        this.el.addEventListener(this.state.node2String, this.node2Listener, false);
+        this.el.addEventListener(
+          this.state.node1String,
+          this.node1Listener,
+          false
+        );
+        this.el.addEventListener(
+          this.state.node2String,
+          this.node2Listener,
+          false
+        );
       },
 
       removeListeners() {
-        this.el.removeEventListener(this.state.node1String, this.node1Listener, false);
-        this.el.removeEventListener(this.state.node2String, this.node2Listener, false);
+        this.el.removeEventListener(
+          this.state.node1String,
+          this.node1Listener,
+          false
+        );
+        this.el.removeEventListener(
+          this.state.node2String,
+          this.node2Listener,
+          false
+        );
       },
 
       node1Listener(event: CustomEvent) {
@@ -75,8 +91,6 @@ export class AlNode implements AframeRegistry {
         const end: THREE.Vector3 = document
           .querySelector("#" + this.data.endNodeId)
           .getAttribute("position");
-
-
 
         const geometry = new THREE.Geometry();
         geometry.vertices.push(start, end);
