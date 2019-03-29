@@ -6,7 +6,8 @@ import {
   AlOrbitControl,
   AlSpinner,
   AlHalo,
-  AlFixedToOrbitCamera
+  AlFixedToOrbitCamera,
+  AlEdge
 } from "../aframe";
 
 export class CreateUtils {
@@ -31,5 +32,6 @@ export class CreateUtils {
       AlFixedToOrbitCamera.getName(),
       AlFixedToOrbitCamera.getObject()
     );
+    AFRAME.registerComponent(AlEdge.getName(), AlEdge.getObject());
   }
 }

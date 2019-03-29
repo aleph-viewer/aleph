@@ -134,7 +134,7 @@ export class AlOrbitControl implements AframeRegistry {
       init() {
         this.tickFunction = AFRAME.utils.throttle(
           this.tickFunction,
-          Constants.minTimeForCameraThrottle,
+          Constants.minFrameMS,
           this
         );
         this.bindListeners();

@@ -519,7 +519,6 @@ export class Aleph {
   }
 
   private _renderEdges(): JSX.Element {
-    console.log(this.edges);
     return [...this.edges].map((n: [string, AlEdgeSerial]) => {
       const [edgeId, edge] = n;
 
@@ -787,13 +786,16 @@ export class Aleph {
         text: nodeId
       };
 
+      const previousSelected = this.selectedNode;
+
+      this._setNode([nodeId, newNode]);
+
       if (
         this._isShiftDown && // Shift is down
         this.selectedNode // A Node is already selected
       ) {
-        this._createEdge(this.selectedNode, nodeId);
+        this._createEdge(previousSelected, nodeId);
       }
-      this._setNode([nodeId, newNode]);
     }
   }
 
