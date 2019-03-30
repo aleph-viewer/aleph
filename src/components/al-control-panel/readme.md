@@ -21,7 +21,7 @@
 | `rulerNodeEnabled`      | `ruler-node-enabled`      |             | `boolean`                                                                                     | `undefined` |
 | `saveNodes`             | --                        |             | `() => void`                                                                                  | `undefined` |
 | `selectNode`            | --                        |             | `(id: number) => void`                                                                        | `undefined` |
-| `selectedNode`          | `selected-node`           |             | `number`                                                                                      | `undefined` |
+| `selected`          | `selected-node`           |             | `number`                                                                                      | `undefined` |
 | `setBoundingBoxVisible` | --                        |             | `(visible: boolean) => void`                                                                  | `undefined` |
 | `setDisplayMode`        | --                        |             | `(mode: DisplayMode) => void`                                                                 | `undefined` |
 | `setOptionsEnabled`     | --                        |             | `(enabled: boolean) => void`                                                                  | `undefined` |

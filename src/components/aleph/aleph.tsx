@@ -128,7 +128,7 @@ export class Aleph {
   @State() optionsEnabled: boolean;
   @State() optionsVisible: boolean;
   @State() orientation: Orientation;
-  @State() selectedNode: string;
+  @State() selected: string;
   @State() slicesIndex: number;
   @State() slicesWindowCenter: number;
   @State() slicesWindowWidth: number;
@@ -267,9 +267,7 @@ export class Aleph {
           nodes,
           nodesEnabled,
           orientation,
-          selectedAngle,
-          selectedEdge,
-          selectedNode,
+          selected,
           slicesIndex,
           slicesWindowCenter,
           slicesWindowWidth,
@@ -292,9 +290,7 @@ export class Aleph {
         nodes,
         nodesEnabled,
         orientation,
-        selectedAngle,
-        selectedEdge,
-        selectedNode,
+        selected,
         slicesIndex,
         slicesWindowCenter,
         slicesWindowWidth,
@@ -489,7 +485,7 @@ export class Aleph {
           al-node={`
             target: ${node.target};
             scale: ${node.scale};
-            selected: ${this.selectedNode === nodeId};
+            selected: ${this.selected === nodeId};
             nodesEnabled: ${this.nodesEnabled};
           `}
         >
@@ -522,8 +518,8 @@ export class Aleph {
             node2: ${edge.node2};
           `}*/
           line={`
-            start: ${this.nodes.get(edge.node1).position}
-            end: ${this.nodes.get(edge.node2).position}
+            start: ${this.nodes.get(edge.node1Id).position}
+            end: ${this.nodes.get(edge.node2Id).position}
           `}
         >
           <a-entity
@@ -634,8 +630,8 @@ export class Aleph {
   //#region Private Methods
   private _createEdge(node1: string, node2: string): void {
     const newEdge: AlEdgeSerial = {
-      node1,
-      node2
+      node1Id: node1,
+      node2Id: node2
     };
     const edgeId: string = GetUtils.getNextEdgeId(this.edges);
 
@@ -674,14 +670,14 @@ export class Aleph {
   }
 
   private _selectNode(nodeId: string, animate: boolean): void {
-    if (animate && nodeId !== this.selectedNode) {
+    if (animate && nodeId !== this.selected) {
       this.appSetCameraAnimating(true); // todo: can we pass boolean to appSelectNode to set cameraAnimating in the state?
 
       // TODO: Differentiate between Node -> Node && Target -> Target animations
       if (this.cameraAnimating) {
         // Get camera state from node and set as result
         let result: AlCameraSerial | null = GetUtils.getCameraStateFromNode(
-          this.nodes.get(this.selectedNode),
+          this.nodes.get(this.selected),
           this._boundingSphereRadius
         );
 
@@ -796,13 +792,13 @@ export class Aleph {
         text: nodeId
       };
 
-      const previousSelected = this.selectedNode;
+      const previousSelected = this.selected;
 
       this._setNode([nodeId, newNode]);
 
       if (
         this._isShiftDown && // Shift is down
-        this.selectedNode // A Node is already selected
+        this.selected // A Node is already selected
       ) {
         this._createEdge(previousSelected, nodeId);
       }
@@ -818,11 +814,11 @@ export class Aleph {
     if (
       this._intersectingNode !== null && // We're are intersecting a node
       this.nodesEnabled && // Nodes are enabled
-      this.selectedNode !== null && // We have a node already selected
-      this.selectedNode !== this._intersectingNode && // The selected & intersecting nodes are not the same
+      this.selected !== null && // We have a node already selected
+      this.selected !== this._intersectingNode && // The selected & intersecting nodes are not the same
       this._isShiftDown // The shift key is down
     ) {
-      this._createEdge(this.selectedNode, this._intersectingNode);
+      this._createEdge(this.selected, this._intersectingNode);
     }
     this._selectNode(event.detail.id, false);
   }
@@ -845,7 +841,7 @@ export class Aleph {
 
     // TODO: Add Edge Position event
     if (intersection) {
-      this.appSetNode([
+      this._setNode([
         nodeId,
         {
           position: ThreeUtils.vector3ToString(intersection.point)

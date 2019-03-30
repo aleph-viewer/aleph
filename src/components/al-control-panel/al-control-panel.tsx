@@ -33,7 +33,7 @@ export class AlControlPanel {
   @Prop({ mutable: true }) optionsEnabled: boolean = false;
   @Prop({ mutable: true }) optionsVisible: boolean = true;
   @Prop({ mutable: true }) orientation: Orientation = Orientation.CORONAL;
-  @Prop({ mutable: true }) selectedNode: string | null = null;
+  @Prop({ mutable: true }) selected: string | null = null;
   @Prop({ mutable: true }) slicesIndex: number;
   @Prop({ mutable: true }) slicesWindowCenter: number;
   @Prop({ mutable: true }) slicesWindowWidth: number;
@@ -73,8 +73,8 @@ export class AlControlPanel {
     this.onSetOrientation.emit(orientation);
   }
 
-  private _selectedNode(nodeId: string | null) {
-    this.selectedNode = nodeId;
+  private _selected(nodeId: string | null) {
+    this.selected = nodeId;
   }
 
   private _slicesIndex(index: number) {
@@ -180,7 +180,7 @@ export class AlControlPanel {
     //       <label class="block">
     //         <input
     //           type="radio"
-    //           checked={this.selectedNode === node.id}
+    //           checked={this.selected === node.id}
     //           id={node.id}
     //           name="node"
     //           value={node.id}
@@ -251,10 +251,10 @@ export class AlControlPanel {
               </ion-button> */
     }
     {
-      /* {this.selectedNode !== null ? (
+      /* {this.selected !== null ? (
                 <ion-button
                   onClick={() => {
-                    this.onRemoveNode.emit(this.selectedNode);
+                    this.onRemoveNode.emit(this.selected);
                   }}
                 >
                   Delete

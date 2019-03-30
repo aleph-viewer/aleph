@@ -161,7 +161,7 @@
           this.src = null;
           this.srcLoaded = false;
           this.nodes = [];
-          this.selectedNode = null;
+          this.selected = null;
         }
       }
 
@@ -169,7 +169,7 @@
         src: mobx.observable,
         srcLoaded: mobx.observable,
         nodes: mobx.observable,
-        selectedNode: mobx.observable
+        selected: mobx.observable
       });
 
       state = new AlephDemonstratorState();
@@ -198,7 +198,7 @@
           function(e) {
             state.srcLoaded = e.detail.srcLoaded;
             state.nodes = e.detail.nodes;
-            state.selectedNode = e.detail.selectedNode;
+            state.selected = e.detail.selected;
           },
           false
         );
@@ -212,7 +212,7 @@
         }, false);
 
         nodeList.addEventListener(
-          "onSelectedNodeChanged",
+          "onselectedChanged",
           function(e) {
             aleph.selectNode(e.detail);
           },
@@ -292,18 +292,18 @@
         // }
 
         nodeList.nodes = state.nodes;
-        nodeList.selectedNode = state.selectedNode;
-        nodeEditor.node = getSelectedNode();
+        nodeList.selected = state.selected;
+        nodeEditor.node = getselected();
         nodesTextArea.value = state.nodes ? JSON.stringify([...state.nodes]) : "";
 
         lastState = Object.assign({}, state);
       }
 
-      function getSelectedNode() {
-        if (state.selectedNode && state.nodes) {
-          const n = state.nodes.get(state.selectedNode);
+      function getselected() {
+        if (state.selected && state.nodes) {
+          const n = state.nodes.get(state.selected);
           if (n) {
-            return [state.selectedNode, n];
+            return [state.selected, n];
           }
         }
         return null;

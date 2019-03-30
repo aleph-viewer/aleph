@@ -12,9 +12,7 @@ export interface AlAppState {
   nodes: Map<string, AlNodeSerial>;
   nodesEnabled: boolean;
   orientation: Orientation;
-  selectedAngle: string | null;
-  selectedEdge: string | null;
-  selectedNode: string | null;
+  selected: string | null;
   slicesIndex: number;
   slicesWindowCenter: number;
   slicesWindowWidth: number;

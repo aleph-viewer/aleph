@@ -21,9 +21,7 @@ export const getInitialState = () => {
     nodes: new Map<string, AlNodeSerial>(),
     nodesEnabled: false,
     orientation: Orientation.CORONAL,
-    selectedAngle: null,
-    selectedEdge: null,
-    selectedNode: null,
+    selected: null,
     slicesIndex: undefined,
     slicesWindowCenter: undefined,
     slicesWindowWidth: undefined,
@@ -46,7 +44,7 @@ export const app = (
         ...state,
         src: action.payload,
         srcLoaded: false,
-        selectedNode: null,
+        selected: null,
         nodes: new Map<string, AlNodeSerial>(),
         edges: new Map<string, AlEdgeSerial>(),
         angles: new Map<string, AlAngleSerial>()
@@ -61,38 +59,42 @@ export const app = (
     //#endregion
     //#region nodes
     case TypeKeys.APP_SET_NODE: {
-      // updates a node if it already exists, otherwise adds it.
-      const [nodeId, node] = action.payload;
+      // updates a map key if it already exists, otherwise adds it.
+      const [key, value] = action.payload;
 
-      // merge with the current node (if any)
-      const currentNode: AlNodeSerial | undefined = state.nodes.get(nodeId);
-      let nextNode: AlNodeSerial = {
-        ...currentNode,
-        ...node
+      // sanitise
+      const sanitisedValue = JSON.parse(JSON.stringify(value));
+
+      // merge with the current value (if any)
+      const currentValue: AlNodeSerial | undefined = state.nodes.get(key);
+      let nextValue: AlNodeSerial = {
+        ...currentValue,
+        ...sanitisedValue
       };
 
-      // if the node already exists, keep the current selectedNode
-      // otherwise select the new node.
+      console.log("new position", nextValue.position);
+
+      // if the key already exists, keep the current selected
+      // otherwise select the new key.
       return {
         ...state,
-        selectedNode: currentNode ? state.selectedNode : nodeId,
-        nodes: new Map(state.nodes).set(nodeId, nextNode)
+        selected: currentValue ? state.selected : key,
+        nodes: new Map(state.nodes).set(key, nextValue)
       };
     }
     case TypeKeys.APP_DELETE_NODE: {
       return {
         ...state,
-        selectedNode:
-          state.selectedNode === action.payload ? null : state.selectedNode,
+        selected: state.selected === action.payload ? null : state.selected,
         nodes: new Map(
-          [...state.nodes].filter(([nodeId]) => nodeId !== action.payload)
+          [...state.nodes].filter(([key]) => key !== action.payload)
         )
       };
     }
     case TypeKeys.APP_SELECT_NODE: {
       return {
         ...state,
-        selectedNode: action.payload
+        selected: action.payload
       };
     }
     case TypeKeys.APP_CLEAR_NODES: {
@@ -104,30 +106,40 @@ export const app = (
     //#endregion
     //#region edges
     case TypeKeys.APP_SET_EDGE: {
-      // updates an edge if it already exists, otherwise adds it.
-      // if it already exists, the current selectedEdge is kept, otherwise it's set to the new edge's id.
-      const [edgeId, edge] = action.payload;
+      // updates a map key if it already exists, otherwise adds it.
+      const [key, value] = action.payload;
 
+      // sanitise
+      const sanitisedValue = JSON.parse(JSON.stringify(value));
+
+      // merge with the current value (if any)
+      const currentValue: AlEdgeSerial | undefined = state.edges.get(key);
+      let nextValue: AlEdgeSerial = {
+        ...currentValue,
+        ...sanitisedValue
+      };
+
+      // if the key already exists, keep the current selected
+      // otherwise select the new key.
       return {
         ...state,
-        selectedEdge: state.edges.has(edgeId) ? state.selectedEdge : edgeId,
-        edges: new Map(state.edges).set(edgeId, edge)
+        selected: currentValue ? state.selected : key,
+        edges: new Map(state.edges).set(key, nextValue)
       };
     }
     case TypeKeys.APP_DELETE_EDGE: {
       return {
         ...state,
-        selectedEdge:
-          state.selectedEdge === action.payload ? null : state.selectedEdge,
+        selected: state.selected === action.payload ? null : state.selected,
         edges: new Map(
-          [...state.edges].filter(([edgeId]) => edgeId !== action.payload)
+          [...state.edges].filter(([key]) => key !== action.payload)
         )
       };
     }
     case TypeKeys.APP_SELECT_EDGE: {
       return {
         ...state,
-        selectedEdge: action.payload
+        selected: action.payload
       };
     }
     case TypeKeys.APP_CLEAR_EDGES: {
@@ -139,32 +151,40 @@ export const app = (
     //#endregion
     //#region angles
     case TypeKeys.APP_SET_ANGLE: {
-      // updates an angle if it already exists, otherwise adds it.
-      // if it already exists, the current selectedAngle is kept, otherwise it's set to the new angle's id.
-      const [angleId, angle] = action.payload;
+      // updates a map key if it already exists, otherwise adds it.
+      const [key, value] = action.payload;
 
+      // sanitise
+      const sanitisedValue = JSON.parse(JSON.stringify(value));
+
+      // merge with the current value (if any)
+      const currentValue: AlAngleSerial | undefined = state.angles.get(key);
+      let nextValue: AlAngleSerial = {
+        ...currentValue,
+        ...sanitisedValue
+      };
+
+      // if the key already exists, keep the current selected
+      // otherwise select the new key.
       return {
         ...state,
-        selectedAngle: state.angles.has(angleId)
-          ? state.selectedAngle
-          : angleId,
-        angles: new Map(state.angles).set(angleId, angle)
+        selected: currentValue ? state.selected : key,
+        angles: new Map(state.angles).set(key, nextValue)
       };
     }
     case TypeKeys.APP_DELETE_ANGLE: {
       return {
         ...state,
-        selectedAngle:
-          state.selectedAngle === action.payload ? null : state.selectedAngle,
+        selected: state.selected === action.payload ? null : state.selected,
         angles: new Map(
-          [...state.angles].filter(([angleId]) => angleId !== action.payload)
+          [...state.angles].filter(([key]) => key !== action.payload)
         )
       };
     }
     case TypeKeys.APP_SELECT_ANGLE: {
       return {
         ...state,
-        selectedAngle: action.payload
+        selected: action.payload
       };
     }
     case TypeKeys.APP_CLEAR_ANGLES: {

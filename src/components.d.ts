@@ -34,7 +34,7 @@ export namespace Components {
     'optionsEnabled': boolean;
     'optionsVisible': boolean;
     'orientation': Orientation;
-    'selectedNode': string | null;
+    'selected': string | null;
     'slicesIndex': number;
     'slicesWindowCenter': number;
     'slicesWindowWidth': number;
@@ -64,7 +64,7 @@ export namespace Components {
     'optionsEnabled'?: boolean;
     'optionsVisible'?: boolean;
     'orientation'?: Orientation;
-    'selectedNode'?: string | null;
+    'selected'?: string | null;
     'slicesIndex'?: number;
     'slicesWindowCenter'?: number;
     'slicesWindowWidth'?: number;
@@ -86,12 +86,12 @@ export namespace Components {
 
   interface AlNodeList {
     'nodes': Map<string, AlNodeSerial> | null;
-    'selectedNode': string | null;
+    'selected': string | null;
   }
   interface AlNodeListAttributes extends StencilHTMLAttributes {
     'nodes'?: Map<string, AlNodeSerial> | null;
-    'onOnSelectedNodeChanged'?: (event: CustomEvent) => void;
-    'selectedNode'?: string | null;
+    'onOnselectedChanged'?: (event: CustomEvent) => void;
+    'selected'?: string | null;
   }
 
   interface UvAleph {
