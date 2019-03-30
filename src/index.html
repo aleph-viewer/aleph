@@ -7,9 +7,7 @@
       content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0"
     />
     <title>Aleph</title>
-    <script src="https://unpkg.com/proxy-observe@0.0.21/browser/proxy-observe.min.js"></script>
-    <script src="https://unpkg.com/react@16.8.5/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@16.8.5/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/mobx@4.9.4/lib/mobx.umd.js"></script>
     <script src="https://unpkg.com/three@0.102.1/build/three.min.js"></script>
     <script src="/assets/aframe-master.js"></script>
     <script src="https://unpkg.com/aframe-orbit-controls@1.2.0/dist/aframe-orbit-controls.min.js"></script>
@@ -156,20 +154,26 @@
 
     <script>
 
-      let container, debug, aleph, nodeList, nodeEditor, controlPanel, srcSelect, srcInput, loadSrcButton, nodesTextArea, loadNodesButton;
+      let state, lastState, container, debug, aleph, nodeList, nodeEditor, controlPanel, srcSelect, srcInput, loadSrcButton, nodesTextArea, loadNodesButton;
 
-      let state = {
-        src: null,
-        srcLoaded: false,
-        nodes: new Map(),
-        selectedNode: null
+      class AlephDemonstratorState {
+        constructor() {
+          this.src = null;
+          this.srcLoaded = false;
+          this.nodes = [];
+          this.selectedNode = null;
+        }
       }
 
-      if (Object.observe) {
-        state = Object.observe(state, (changeset) => {
-          render(changeset);
-        });
-      }
+      mobx.decorate(AlephDemonstratorState, {
+        src: mobx.observable,
+        srcLoaded: mobx.observable,
+        nodes: mobx.observable,
+        selectedNode: mobx.observable
+      });
+
+      state = new AlephDemonstratorState();
+      lastState = {};
 
       function init() {
         container = document.getElementById("container");
@@ -233,14 +237,14 @@
 
         srcSelect.addEventListener("change", function() {
           state.src = srcSelect.value;
-          state.nodes = null;
+          state.nodes = [];
         }, false);
 
         loadSrcButton.addEventListener(
           "click",
           function(e) {
             state.src = srcInput.value;
-            state.nodes = null;
+            state.nodes = [];
           },
           false
         );
@@ -254,18 +258,27 @@
           },
           false
         );
+
+        mobx.autorun(() => {
+          render();
+        });
       }
 
-      function changeSetIncludes(changeSet, name) {
-        return (changeSet.findIndex((item) => { return (item.name === name) }) !== -1);
-      }
+      function render() {
 
-      function render(changeSet) {
-
-        if (changeSetIncludes(changeSet, "src")) {
+        if (state.src && state.src !== lastState.src) {
           aleph.load(state.src);
+        }
+
+        if (state.src) {
+          srcSelect.value = state.src;
+          srcInput.value = state.src;
+        }
+
+        if (!state.srcLoaded) {
           debug.classList.add("disabled");
-          return;
+        } else {
+          debug.classList.remove("disabled");
         }
 
         // if (state.srcLoaded) {
@@ -281,11 +294,9 @@
         nodeList.nodes = state.nodes;
         nodeList.selectedNode = state.selectedNode;
         nodeEditor.node = getSelectedNode();
-        srcSelect.value = state.src;
-        srcInput.value = state.src;
         nodesTextArea.value = state.nodes ? JSON.stringify([...state.nodes]) : "";
 
-        debug.classList.remove("disabled");
+        lastState = Object.assign({}, state);
       }
 
       function getSelectedNode() {

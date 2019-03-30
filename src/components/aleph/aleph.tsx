@@ -526,15 +526,16 @@ export class Aleph {
             end: ${this.nodes.get(edge.node2).position}
           `}
         >
-          <a-entity 
-            id={`${edgeId}-title`} 
+          <a-entity
+            id={`${edgeId}-title`}
             al-look-to-camera
             text={`
             value: ${edgeId}
             side: double;
             baseline: bottom;
             anchor: center;
-          `} />
+          `}
+          />
         </a-entity>
       );
     });

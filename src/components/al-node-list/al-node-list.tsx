@@ -9,10 +9,7 @@ import { AlNodeSerial } from "../../interfaces";
 export class AlNodeList {
   @Event() onSelectedNodeChanged: EventEmitter;
 
-  @Prop({ mutable: true }) nodes: Map<string, AlNodeSerial> = new Map<
-    string,
-    AlNodeSerial
-  >();
+  @Prop({ mutable: true }) nodes: Map<string, AlNodeSerial> | null = null;
   @Prop({ mutable: true }) selectedNode: string | null = null;
 
   render(): JSX.Element {
