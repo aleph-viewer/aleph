@@ -3,7 +3,7 @@ export class Constants {
 
   static titleIdString = "-title";
 
-  static nodeSize = 50;
+  static nodeSizeRatio = 50;
 
   static splashBackSize = 5;
 

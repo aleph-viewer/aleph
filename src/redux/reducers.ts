@@ -62,13 +62,21 @@ export const app = (
     //#region nodes
     case TypeKeys.APP_SET_NODE: {
       // updates a node if it already exists, otherwise adds it.
-      // if it already exists, the current selectedNode is kept, otherwise it's set to the new node's id.
       const [nodeId, node] = action.payload;
 
+      // merge with the current node (if any)
+      const currentNode: AlNodeSerial | undefined = state.nodes.get(nodeId);
+      let nextNode: AlNodeSerial = {
+        ...currentNode,
+        ...node
+      };
+
+      // if the node already exists, keep the current selectedNode
+      // otherwise select the new node.
       return {
         ...state,
-        selectedNode: state.nodes.has(nodeId) ? state.selectedNode : nodeId,
-        nodes: new Map(state.nodes).set(nodeId, node)
+        selectedNode: currentNode ? state.selectedNode : nodeId,
+        nodes: new Map(state.nodes).set(nodeId, nextNode)
       };
     }
     case TypeKeys.APP_DELETE_NODE: {

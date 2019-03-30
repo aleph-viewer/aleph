@@ -777,7 +777,7 @@ export class Aleph {
   }
 
   private _setNodeEventHandler(event: CustomEvent): void {
-    // IF creating a new node and NOT intersecting an exsisting node
+    // IF creating a new node and NOT intersecting an existing node
     if (
       this.nodesEnabled && // Nodes are enabled
       this._validTarget && // Target is valid
@@ -792,7 +792,7 @@ export class Aleph {
           this._targetEntity.object3D.position
         ),
         position: ThreeUtils.vector3ToString(intersection.point),
-        scale: this._boundingSphereRadius / Constants.nodeSize,
+        scale: this._boundingSphereRadius / Constants.nodeSizeRatio,
         text: nodeId
       };
 
@@ -836,6 +836,7 @@ export class Aleph {
       this._targetEntity
     ) as THREE.Intersection;
 
+    // Try backboard
     if (!intersection) {
       intersection = raycaster.getIntersection(
         this._backBoard
