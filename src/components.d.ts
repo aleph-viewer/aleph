@@ -90,7 +90,7 @@ export namespace Components {
   }
   interface AlNodeListAttributes extends StencilHTMLAttributes {
     'nodes'?: Map<string, AlNodeSerial> | null;
-    'onOnselectedChanged'?: (event: CustomEvent) => void;
+    'onOnSelectedChanged'?: (event: CustomEvent) => void;
     'selected'?: string | null;
   }
 

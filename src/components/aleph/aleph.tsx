@@ -161,12 +161,12 @@ export class Aleph {
     }
 
     if (this.src) {
-      this.appSetSrc(null); // shows loading spinner and resets gltf-model
+      this._setSrc(null); // shows loading spinner and resets gltf-model
       setTimeout(() => {
-        this.appSetSrc(src);
+        this._setSrc(src);
       }, 500);
     } else {
-      this.appSetSrc(src);
+      this._setSrc(src);
     }
   }
 
@@ -706,6 +706,11 @@ export class Aleph {
 
   private _setBoundingBoxVisible(visible: boolean): void {
     this.appSetBoundingBoxVisible(visible);
+    this.onChanged.emit(this._getAppState());
+  }
+
+  private _setSrc(src: string): void {
+    this.appSetSrc(src);
     this.onChanged.emit(this._getAppState());
   }
 

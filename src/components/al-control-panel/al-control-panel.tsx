@@ -162,110 +162,11 @@ export class AlControlPanel {
     if (this.nodesVisible) {
       return (
         <ion-item>
-          <ion-icon name="create" />
+          <ion-icon name="add-circle" />
           <ion-toggle onIonChange={e => this._nodesEnabled(e.detail.checked)} />
         </ion-item>
       );
     }
-
-    return null;
-  }
-
-  renderNodes(): JSX.Element {
-    //if (this.nodesVisible && this.nodesEnabled) {
-    //return [
-    // <div class="al-list">
-    //   {this.nodes.map((node: Node) => {
-    //     return (
-    //       <label class="block">
-    //         <input
-    //           type="radio"
-    //           checked={this.selected === node.id}
-    //           id={node.id}
-    //           name="node"
-    //           value={node.id}
-    //           onChange={e => this.selectNode(e.srcElement.id)}
-    //         />
-    //         {node.id}
-    //       </label>
-    //     );
-    //   })}
-    // </div>,
-    // <ion-footer>
-    {
-      /* <ion-item>
-            <ion-label>Node Type</ion-label>
-            <select
-              onChange={e =>
-                this.setNodeType((e.target as HTMLSelectElement)
-                  .value as NodeType)
-              }
-            >
-              {this.angleNodeEnabled ? (
-                <option
-                  selected={this.nodeType === NodeType.ANGLE}
-                  value={NodeType.ANGLE}
-                >
-                  Angle
-                </option>
-              ) : null}
-              {this.annotationNodeEnabled ? (
-                <option
-                  selected={this.nodeType === NodeType.ANNOTATION}
-                  value={NodeType.ANNOTATION}
-                >
-                  Annotation
-                </option>
-              ) : null}
-              {this.rulerNodeEnabled ? (
-                <option
-                  selected={this.nodeType === NodeType.RULER}
-                  value={NodeType.RULER}
-                >
-                  Ruler
-                </option>
-              ) : null}
-            </select>
-          </ion-item> */
-    }
-    // <ion-nodebar>
-    //   <ion-buttons>
-    {
-      /* <ion-button
-                onClick={() => {
-                  this.addNode(
-                    CreateUtils.createNode(this.nodes, this.nodeType)
-                  );
-                }}
-              >
-                Add
-              </ion-button> */
-    }
-    {
-      /* <ion-button
-                onClick={() => {
-                  this.saveNodes();
-                }}
-              >
-                Save
-              </ion-button> */
-    }
-    {
-      /* {this.selected !== null ? (
-                <ion-button
-                  onClick={() => {
-                    this.onRemoveNode.emit(this.selected);
-                  }}
-                >
-                  Delete
-                </ion-button>
-              ) : null} */
-    }
-    //     </ion-buttons>
-    //   </ion-nodebar>
-    // </ion-footer>
-    //];
-    //}
 
     return null;
   }
@@ -519,7 +420,6 @@ export class AlControlPanel {
     return [
       this.renderDisplayModeToggle(),
       this.renderNodesToggle(),
-      this.renderNodes(),
       this.renderOptionsToggle(),
       this.renderOptions()
     ];

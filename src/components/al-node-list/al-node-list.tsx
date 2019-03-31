@@ -7,7 +7,7 @@ import { AlNodeSerial } from "../../interfaces";
   shadow: false
 })
 export class AlNodeList {
-  @Event() onselectedChanged: EventEmitter;
+  @Event() onSelectedChanged: EventEmitter;
 
   @Prop({ mutable: true }) nodes: Map<string, AlNodeSerial> | null = null;
   @Prop({ mutable: true }) selected: string | null = null;
@@ -16,24 +16,44 @@ export class AlNodeList {
     if (this.nodes) {
       return (
         <ion-list>
-          <ion-radio-group value={this.selected}>
-            {[...this.nodes].map(([nodeId, node]) => {
-              return (
-                <ion-item no-padding>
-                  <ion-label>{node.text}</ion-label>
-                  <ion-radio
-                    value={nodeId}
-                    onClick={() => this.onselectedChanged.emit(nodeId)}
-                  />
-                </ion-item>
-              );
-            })}
-          </ion-radio-group>
+          {[...this.nodes].map(([nodeId, node]) => {
+            return (
+              <ion-item
+                class={this.selected === nodeId ? "selected" : null}
+                onClick={() => this.onSelectedChanged.emit(nodeId)}
+              >>
+                {node.text}
+              </ion-item>
+            );
+          })}
         </ion-list>
       );
     }
     return null;
   }
+
+  // render(): JSX.Element {
+  //   if (this.nodes) {
+  //     return (
+  //       <ion-list>
+  //         <ion-radio-group value={this.selected}>
+  //           {[...this.nodes].map(([nodeId, node]) => {
+  //             return (
+  //               <ion-item no-padding>
+  //                 <ion-label>{node.text}</ion-label>
+  //                 <ion-radio
+  //                   value={nodeId}
+  //                   onClick={() => this.onSelectedChanged.emit(nodeId)}
+  //                 />
+  //               </ion-item>
+  //             );
+  //           })}
+  //         </ion-radio-group>
+  //       </ion-list>
+  //     );
+  //   }
+  //   return null;
+  // }
 
   // return (
   //   <div>
@@ -49,7 +69,7 @@ export class AlNodeList {
   //                 name="node"
   //                 value={node.id}
   //                 onChange={e =>
-  //                   this.onselectedChanged.emit(e.srcElement.id)
+  //                   this.onSelectedChanged.emit(e.srcElement.id)
   //                 }
   //               />
   //               {node.id}

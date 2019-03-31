@@ -130,11 +130,11 @@
                   value="https://ami-test-manifests.netlify.com/collection/nifti/brain/_brain/brain.json">Brain</option>
               </optgroup>
             </select>
-            <ion-input type="text" id="src-input" placeholder="src" required /><ion-button id="load-src-button" size="small">Load Src<ion-icon name="refresh" slot="start"></ion-icon></ion-button>
+            <ion-input type="text" id="src-input" placeholder="src" required /><ion-button id="load-src-button" size="small" description="Load src"><ion-icon name="refresh"></ion-icon></ion-button>
           </ion-item-group>
           <ion-item-group>
             <ion-textarea id="nodes-textarea" placeholder="nodes" rows="5" required></ion-textarea>
-            <ion-button id="load-nodes-button" size="small">Load Nodes<ion-icon name="add-circle" slot="start"></ion-icon></ion-button>
+            <ion-button id="load-nodes-button" size="small"><ion-icon name="refresh"></ion-icon></ion-button>
           </ion-item-group>
           <ion-item-group>
             <al-node-list></al-node-list>
@@ -207,7 +207,7 @@
         }, false);
 
         nodeList.addEventListener(
-          "onselectedChanged",
+          "onSelectedChanged",
           function(e) {
             aleph.selectNode(e.detail);
           },
@@ -232,14 +232,12 @@
 
         srcSelect.addEventListener("change", function() {
           state.src = srcSelect.value;
-          state.nodes = [];
         }, false);
 
         loadSrcButton.addEventListener(
           "click",
           function(e) {
             state.src = srcInput.value;
-            state.nodes = [];
           },
           false
         );

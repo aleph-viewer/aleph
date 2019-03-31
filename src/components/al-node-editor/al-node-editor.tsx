@@ -32,8 +32,7 @@ export class AlNodeEditor {
             this.node = null;
           }}
         >
-          Delete
-          <ion-icon name="trash" slot="start" />
+          <ion-icon name="remove" />
         </ion-button>,
         <ion-button
           size="small"
@@ -41,8 +40,7 @@ export class AlNodeEditor {
             this.onSave.emit([nodeId, node]);
           }}
         >
-          Save
-          <ion-icon name="save" slot="start" />
+          <ion-icon name="checkmark" />
         </ion-button>
       ];
     }
