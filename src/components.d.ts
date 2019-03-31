@@ -94,6 +94,16 @@ export namespace Components {
     'selected'?: string | null;
   }
 
+  interface AlUrlPicker {
+    'url': string | null;
+    'urls': Map<string, string> | null;
+  }
+  interface AlUrlPickerAttributes extends StencilHTMLAttributes {
+    'onOnUrlChanged'?: (event: CustomEvent) => void;
+    'url'?: string | null;
+    'urls'?: Map<string, string> | null;
+  }
+
   interface UvAleph {
     'clearNodes': () => Promise<void>;
     'debug': boolean;
@@ -126,6 +136,7 @@ declare global {
     'AlControlPanel': Components.AlControlPanel;
     'AlNodeEditor': Components.AlNodeEditor;
     'AlNodeList': Components.AlNodeList;
+    'AlUrlPicker': Components.AlUrlPicker;
     'UvAleph': Components.UvAleph;
   }
 
@@ -133,6 +144,7 @@ declare global {
     'al-control-panel': Components.AlControlPanelAttributes;
     'al-node-editor': Components.AlNodeEditorAttributes;
     'al-node-list': Components.AlNodeListAttributes;
+    'al-url-picker': Components.AlUrlPickerAttributes;
     'uv-aleph': Components.UvAlephAttributes;
   }
 
@@ -155,6 +167,12 @@ declare global {
     new (): HTMLAlNodeListElement;
   };
 
+  interface HTMLAlUrlPickerElement extends Components.AlUrlPicker, HTMLStencilElement {}
+  var HTMLAlUrlPickerElement: {
+    prototype: HTMLAlUrlPickerElement;
+    new (): HTMLAlUrlPickerElement;
+  };
+
   interface HTMLUvAlephElement extends Components.UvAleph, HTMLStencilElement {}
   var HTMLUvAlephElement: {
     prototype: HTMLUvAlephElement;
@@ -165,6 +183,7 @@ declare global {
     'al-control-panel': HTMLAlControlPanelElement
     'al-node-editor': HTMLAlNodeEditorElement
     'al-node-list': HTMLAlNodeListElement
+    'al-url-picker': HTMLAlUrlPickerElement
     'uv-aleph': HTMLUvAlephElement
   }
 
@@ -172,6 +191,7 @@ declare global {
     'al-control-panel': HTMLAlControlPanelElement;
     'al-node-editor': HTMLAlNodeEditorElement;
     'al-node-list': HTMLAlNodeListElement;
+    'al-url-picker': HTMLAlUrlPickerElement;
     'uv-aleph': HTMLUvAlephElement;
   }
 

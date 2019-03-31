@@ -79,7 +79,7 @@
   --ion-color-light-tint: #f5f6f9;
 }
 
-ion-item {
+ion-item:not(.sc-ion-select-popover) {
   --padding-start: 0px;
 }
 

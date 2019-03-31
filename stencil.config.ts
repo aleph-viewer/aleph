@@ -18,5 +18,5 @@ export const config: Config = {
   ],
   copy: [
   ],
-  globalStyle: 'src/global/variables.css'
+  globalStyle: 'src/global/theme.css'
 };

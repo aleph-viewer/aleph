@@ -110,27 +110,20 @@
             <!--
               https://ami-test-manifests.netlify.com/collection/stl/brain/_brain/brain.json
             -->
-            <select id="src-select">
-              <optgroup label="GLTF">
-                <option value="https://iiif-3d-manifests.netlify.com/collection/gltf/woody/_woody/assets/woody.gltf">Fisherman</option>
-              </optgroup>
-              <optgroup label="DRACO">
-                <option selected value="http://files.blokdust.io/test/bowl-draco.glb">Bowl</option>
-              </optgroup>
-              <optgroup label="DICOM">
-                <option
-                  value="https://ami-test-manifests.netlify.com/collection/dicom/brain/_brain/brain.json">Brain</option>
-                <option
-                  value="https://www.morphosource.org/media/morphosource/dcm_sample/platypus/dcm_multi_vf300_16bit_allslices.json">Platypus 16bit</option>
-                <option
-                  value="https://www.morphosource.org/media/morphosource/dcm_sample/platypus/dcm_multi_vf300_jpegQ95_16bit_allslices.json">Platypus jpegQ95</option>
-              </optgroup>
-              <optgroup label="NIFTI">
-                <option
-                  value="https://ami-test-manifests.netlify.com/collection/nifti/brain/_brain/brain.json">Brain</option>
-              </optgroup>
-            </select>
-            <ion-input type="text" id="src-input" placeholder="src" required /><ion-button id="load-src-button" size="small" description="Load src"><ion-icon name="refresh"></ion-icon></ion-button>
+            <!-- <ion-select id="src-select">
+              <ion-select-option value="https://iiif-3d-manifests.netlify.com/collection/gltf/woody/_woody/assets/woody.gltf">Fisherman</ion-select-option>
+              <ion-select-option selected value="http://files.blokdust.io/test/bowl-draco.glb">Bowl</ion-select-option>
+              <ion-select-option
+                value="https://ami-test-manifests.netlify.com/collection/dicom/brain/_brain/brain.json">Brain</ion-select-option>
+              <ion-select-option
+                value="https://www.morphosource.org/media/morphosource/dcm_sample/platypus/dcm_multi_vf300_16bit_allslices.json">Platypus 16bit</ion-select-option>
+              <ion-select-option
+                value="https://www.morphosource.org/media/morphosource/dcm_sample/platypus/dcm_multi_vf300_jpegQ95_16bit_allslices.json">Platypus jpegQ95</ion-select-option>
+              <ion-select-option
+                value="https://ami-test-manifests.netlify.com/collection/nifti/brain/_brain/brain.json">Brain</ion-select-option>
+            </ion-select>
+            <ion-input type="text" id="src-input" placeholder="src" required /><ion-button id="load-src-button" size="small" description="Load src"><ion-icon name="refresh"></ion-icon></ion-button> -->
+            <al-url-picker></al-url-picker>
           </ion-item-group>
           <ion-item-group>
             <form onsubmit="return false">
@@ -151,36 +144,44 @@
 
     <script>
 
-      let state, lastState, container, debug, aleph, nodeList, nodeEditor, controlPanel, srcSelect, srcInput, loadSrcButton, nodesTextArea, loadNodesButton;
+      let state, lastState, urls, container, debug, aleph, srcPicker, nodeList, nodeEditor, controlPanel, srcSelect, srcInput, loadSrcButton, nodesTextArea, loadNodesButton;
 
-      class AlephDemonstratorState {
+      class AlephInspectorState {
         constructor() {
           this.src = null;
           this.srcLoaded = false;
-          this.nodes = [];
+          this.nodes = null;
           this.selected = null;
         }
       }
 
-      mobx.decorate(AlephDemonstratorState, {
-        src: mobx.observable,
-        srcLoaded: mobx.observable,
+      mobx.decorate(AlephInspectorState, {
         nodes: mobx.observable,
-        selected: mobx.observable
+        selected: mobx.observable,
+        src: mobx.observable,
+        srcLoaded: mobx.observable
       });
 
-      state = new AlephDemonstratorState();
+      urls = new Map([
+        ["https://iiif-3d-manifests.netlify.com/collection/gltf/woody/_woody/assets/woody.gltf", "Fisherman (GLTF)"],
+        ["http://files.blokdust.io/test/bowl-draco.glb", "Bowl (DRACO)"],
+        ["https://ami-test-manifests.netlify.com/collection/dicom/brain/_brain/brain.json", "Brain (DICOM)"],
+        ["https://www.morphosource.org/media/morphosource/dcm_sample/platypus/dcm_multi_vf300_16bit_allslices.json", "Platypus 16bit (DICOM)"],
+        ["https://www.morphosource.org/media/morphosource/dcm_sample/platypus/dcm_multi_vf300_jpegQ95_16bit_allslices.json", "Platypus jpegQ95 (DICOM)"],
+        ["https://ami-test-manifests.netlify.com/collection/nifti/brain/_brain/brain.json", "Brain (NIFTI)"]
+      ]);
+
+      state = new AlephInspectorState();
       lastState = {};
 
       function init() {
         container = document.getElementById("container");
         debug = document.getElementById("debug");
         aleph = document.querySelector("uv-aleph");
+        srcPicker = document.querySelector("al-url-picker");
         nodeList = document.querySelector("al-node-list");
         nodeEditor = document.querySelector("al-node-editor");
         controlPanel = document.querySelector("al-control-panel");
-        srcSelect = document.getElementById("src-select");
-        srcInput = document.getElementById("src-input");
         loadSrcButton = document.getElementById("load-src-button");
         nodesTextArea = document.getElementById("nodes-textarea");
         loadNodesButton = document.getElementById("load-nodes-button");
@@ -200,13 +201,11 @@
           false
         );
 
-        controlPanel.addEventListener("onSetNodesEnabled", function(e) {
-          aleph.setNodesEnabled(e.detail);
+        srcPicker.addEventListener("onUrlChanged", function(e) {
+          state.src = e.detail;
         }, false);
 
-        controlPanel.addEventListener("onSetBoundingBoxVisible", function(e) {
-          aleph.setBoundingBoxVisible(e.detail);
-        }, false);
+        srcPicker.urls = urls;
 
         nodeList.addEventListener(
           "onSelectedChanged",
@@ -232,18 +231,6 @@
           false
         );
 
-        srcSelect.addEventListener("change", function() {
-          state.src = srcSelect.value;
-        }, false);
-
-        loadSrcButton.addEventListener(
-          "click",
-          function(e) {
-            state.src = srcInput.value;
-          },
-          false
-        );
-
         loadNodesButton.addEventListener(
           "click",
           function(e) {
@@ -255,6 +242,14 @@
           },
           false
         );
+
+        controlPanel.addEventListener("onSetNodesEnabled", function(e) {
+          aleph.setNodesEnabled(e.detail);
+        }, false);
+
+        controlPanel.addEventListener("onSetBoundingBoxVisible", function(e) {
+          aleph.setBoundingBoxVisible(e.detail);
+        }, false);
 
         mobx.autorun(() => {
           render();
@@ -268,8 +263,7 @@
         }
 
         if (state.src) {
-          srcSelect.value = state.src;
-          srcInput.value = state.src;
+          srcPicker.url = state.src;
         }
 
         if (!state.srcLoaded) {
@@ -313,7 +307,7 @@
 
         aleph.componentOnReady().then(function() {
           //component.setDisplayMode("slices");
-          state.src = srcSelect.value; // load src when component ready
+          state.src = urls.keys().next().value; // load src when component ready
         });
 
       });

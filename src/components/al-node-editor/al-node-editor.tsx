@@ -12,16 +12,12 @@ export class AlNodeEditor {
 
   @Prop({ mutable: true }) node: [string, AlNodeSerial];
 
-  private _handleSubmit(event) {
-    event.preventDefault();
-  }
-
   render(): JSX.Element {
     if (this.node) {
       const [nodeId, node] = this.node;
 
-      return [
-        <form onSubmit={this._handleSubmit}>
+      return (
+        <form onSubmit={e => e.preventDefault()}>
           <ion-item>
             <ion-textarea
               value={node.text}
@@ -52,7 +48,7 @@ export class AlNodeEditor {
             <ion-icon name="checkmark" />
           </ion-button>
         </form>
-      ];
+      );
     }
 
     return null;
