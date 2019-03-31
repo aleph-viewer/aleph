@@ -21,7 +21,7 @@ export class AlNodeList {
               <ion-item
                 class={this.selected === nodeId ? "selected" : null}
                 onClick={() => this.onSelectedChanged.emit(nodeId)}
-              >>
+              >
                 {node.text}
               </ion-item>
             );

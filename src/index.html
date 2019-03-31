@@ -133,8 +133,10 @@
             <ion-input type="text" id="src-input" placeholder="src" required /><ion-button id="load-src-button" size="small" description="Load src"><ion-icon name="refresh"></ion-icon></ion-button>
           </ion-item-group>
           <ion-item-group>
-            <ion-textarea id="nodes-textarea" placeholder="nodes" rows="5" required></ion-textarea>
-            <ion-button id="load-nodes-button" size="small"><ion-icon name="refresh"></ion-icon></ion-button>
+            <form onsubmit="return false">
+              <ion-textarea id="nodes-textarea" placeholder="nodes" rows="5" required></ion-textarea>
+              <ion-button id="load-nodes-button" type="submit" size="small"><ion-icon name="refresh"></ion-icon></ion-button>
+            </form>
           </ion-item-group>
           <ion-item-group>
             <al-node-list></al-node-list>
@@ -246,8 +248,10 @@
           "click",
           function(e) {
             const nodes = new Map(JSON.parse(nodesTextArea.value));
-            aleph.clearNodes();
-            aleph.setNodes(nodes);
+            if (nodes) {
+              aleph.clearNodes();
+              aleph.setNodes(nodes);
+            }
           },
           false
         );

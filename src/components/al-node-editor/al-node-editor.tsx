@@ -12,36 +12,46 @@ export class AlNodeEditor {
 
   @Prop({ mutable: true }) node: [string, AlNodeSerial];
 
+  private _handleSubmit(event) {
+    event.preventDefault();
+  }
+
   render(): JSX.Element {
     if (this.node) {
       const [nodeId, node] = this.node;
 
       return [
-        <ion-item>
-          <ion-textarea
-            value={node.text}
-            rows="5"
-            onIonChange={e => (node.text = e.detail.value)}
-          />
-          ,
-        </ion-item>,
-        <ion-button
-          size="small"
-          onClick={() => {
-            this.onDelete.emit(nodeId);
-            this.node = null;
-          }}
-        >
-          <ion-icon name="remove" />
-        </ion-button>,
-        <ion-button
-          size="small"
-          onClick={() => {
-            this.onSave.emit([nodeId, node]);
-          }}
-        >
-          <ion-icon name="checkmark" />
-        </ion-button>
+        <form onSubmit={this._handleSubmit}>
+          <ion-item>
+            <ion-textarea
+              value={node.text}
+              rows="5"
+              required
+              onIonChange={e => (node.text = e.detail.value)}
+            />
+          </ion-item>
+          <ion-button
+            size="small"
+            onClick={() => {
+              this.onDelete.emit(nodeId);
+              this.node = null;
+            }}
+          >
+            <ion-icon name="remove" />
+          </ion-button>
+          <ion-button
+            size="small"
+            type="submit"
+            onClick={() => {
+              if (node.text) {
+                this.onSave.emit([nodeId, node]);
+                return false;
+              }
+            }}
+          >
+            <ion-icon name="checkmark" />
+          </ion-button>
+        </form>
       ];
     }
 
