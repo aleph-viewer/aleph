@@ -41,7 +41,6 @@ export class AlNodeEditor {
             onClick={() => {
               if (node.text) {
                 this.onSave.emit([nodeId, node]);
-                return false;
               }
             }}
           >

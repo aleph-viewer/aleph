@@ -50,35 +50,16 @@
 
       #debug h1 {
         margin-top: 0;
+        text-align: right;
       }
 
       #debug section {
         margin: 1rem 0 0 0;
       }
 
-      #debug section textarea {
-        height: 5rem;
-        width: 100%;
-      }
-
-      #debug a.selected {
-        color: cornflowerblue;
-      }
-
-      #debug ul {
-        margin: 0;
-        padding: 0;
-        list-style-type: none;
-      }
-
       #debug.disabled {
         pointer-events: none;
         opacity: 0.4;
-      }
-
-      #debug select {
-        padding: 5px;
-        font-size: 14px;
       }
 
       .rs-base {
@@ -107,35 +88,16 @@
 
         <ion-app>
           <ion-item-group>
-            <!--
-              https://ami-test-manifests.netlify.com/collection/stl/brain/_brain/brain.json
-            -->
-            <!-- <ion-select id="src-select">
-              <ion-select-option value="https://iiif-3d-manifests.netlify.com/collection/gltf/woody/_woody/assets/woody.gltf">Fisherman</ion-select-option>
-              <ion-select-option selected value="http://files.blokdust.io/test/bowl-draco.glb">Bowl</ion-select-option>
-              <ion-select-option
-                value="https://ami-test-manifests.netlify.com/collection/dicom/brain/_brain/brain.json">Brain</ion-select-option>
-              <ion-select-option
-                value="https://www.morphosource.org/media/morphosource/dcm_sample/platypus/dcm_multi_vf300_16bit_allslices.json">Platypus 16bit</ion-select-option>
-              <ion-select-option
-                value="https://www.morphosource.org/media/morphosource/dcm_sample/platypus/dcm_multi_vf300_jpegQ95_16bit_allslices.json">Platypus jpegQ95</ion-select-option>
-              <ion-select-option
-                value="https://ami-test-manifests.netlify.com/collection/nifti/brain/_brain/brain.json">Brain</ion-select-option>
-            </ion-select>
-            <ion-input type="text" id="src-input" placeholder="src" required /><ion-button id="load-src-button" size="small" description="Load src"><ion-icon name="refresh"></ion-icon></ion-button> -->
             <al-url-picker></al-url-picker>
           </ion-item-group>
           <ion-item-group>
-            <form onsubmit="return false">
-              <ion-textarea id="nodes-textarea" placeholder="nodes" rows="5" required></ion-textarea>
-              <ion-button id="load-nodes-button" type="submit" size="small"><ion-icon name="refresh"></ion-icon></ion-button>
-            </form>
+            <al-console></al-console>
           </ion-item-group>
           <ion-item-group>
             <al-node-list></al-node-list>
-            <ion-item-divider></ion-item-divider>
             <al-node-editor></al-node-editor>
-            <ion-item-divider></ion-item-divider>
+          </ion-item-group>
+          <ion-item-group>
             <al-control-panel></al-control-panel>
           </ion-item-group>
         </ion-app>
@@ -144,7 +106,7 @@
 
     <script>
 
-      let state, lastState, urls, container, debug, aleph, srcPicker, nodeList, nodeEditor, controlPanel, srcSelect, srcInput, loadSrcButton, nodesTextArea, loadNodesButton;
+      let state, lastState, urls, container, debug, aleph, alUrlPicker, alNodeList, alConsole, alNodeEditor, alControlPanel;
 
       class AlephInspectorState {
         constructor() {
@@ -178,10 +140,11 @@
         container = document.getElementById("container");
         debug = document.getElementById("debug");
         aleph = document.querySelector("uv-aleph");
-        srcPicker = document.querySelector("al-url-picker");
-        nodeList = document.querySelector("al-node-list");
-        nodeEditor = document.querySelector("al-node-editor");
-        controlPanel = document.querySelector("al-control-panel");
+        alUrlPicker = document.querySelector("al-url-picker");
+        alConsole = document.querySelector("al-console");
+        alNodeList = document.querySelector("al-node-list");
+        alNodeEditor = document.querySelector("al-node-editor");
+        alControlPanel = document.querySelector("al-control-panel");
         loadSrcButton = document.getElementById("load-src-button");
         nodesTextArea = document.getElementById("nodes-textarea");
         loadNodesButton = document.getElementById("load-nodes-button");
@@ -201,13 +164,13 @@
           false
         );
 
-        srcPicker.addEventListener("onUrlChanged", function(e) {
+        alUrlPicker.addEventListener("onUrlChanged", function(e) {
           state.src = e.detail;
         }, false);
 
-        srcPicker.urls = urls;
+        alUrlPicker.urls = urls;
 
-        nodeList.addEventListener(
+        alNodeList.addEventListener(
           "onSelectedChanged",
           function(e) {
             aleph.selectNode(e.detail);
@@ -215,7 +178,7 @@
           false
         );
 
-        nodeEditor.addEventListener(
+        alNodeEditor.addEventListener(
           "onDelete",
           function(e) {
             aleph.deleteNode(e.detail);
@@ -223,7 +186,7 @@
           false
         );
 
-        nodeEditor.addEventListener(
+        alNodeEditor.addEventListener(
           "onSave",
           function(e) {
             aleph.setNode(e.detail);
@@ -231,10 +194,10 @@
           false
         );
 
-        loadNodesButton.addEventListener(
-          "click",
+        alConsole.addEventListener(
+          "onCmd",
           function(e) {
-            const nodes = new Map(JSON.parse(nodesTextArea.value));
+            const nodes = new Map(JSON.parse(alConsole.cmd));
             if (nodes) {
               aleph.clearNodes();
               aleph.setNodes(nodes);
@@ -243,11 +206,11 @@
           false
         );
 
-        controlPanel.addEventListener("onSetNodesEnabled", function(e) {
+        alControlPanel.addEventListener("onSetNodesEnabled", function(e) {
           aleph.setNodesEnabled(e.detail);
         }, false);
 
-        controlPanel.addEventListener("onSetBoundingBoxVisible", function(e) {
+        alControlPanel.addEventListener("onSetBoundingBoxVisible", function(e) {
           aleph.setBoundingBoxVisible(e.detail);
         }, false);
 
@@ -263,7 +226,7 @@
         }
 
         if (state.src) {
-          srcPicker.url = state.src;
+          alUrlPicker.url = state.src;
         }
 
         if (!state.srcLoaded) {
@@ -282,10 +245,10 @@
         //   }, 250);
         // }
 
-        nodeList.nodes = state.nodes;
-        nodeList.selected = state.selected;
-        nodeEditor.node = getselected();
-        nodesTextArea.value = state.nodes ? JSON.stringify([...state.nodes]) : "";
+        alConsole.cmd = state.nodes ? JSON.stringify([...state.nodes]) : "";
+        alNodeList.nodes = state.nodes;
+        alNodeList.selected = state.selected;
+        alNodeEditor.node = getselected();
 
         lastState = Object.assign({}, state);
       }

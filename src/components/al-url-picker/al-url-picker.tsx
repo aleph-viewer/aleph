@@ -11,23 +11,7 @@ export class AlUrlPicker {
   @Prop({ mutable: true }) urls: Map<string, string> | null = null;
   @Prop({ mutable: true }) url: string | null = null;
 
-  //private _select: HTMLSelectElement;
   private _input: HTMLInputElement;
-
-  // private _urlChanged() {
-  //   const selectUrl: string = this._select.value;
-  //   const inputUrl: string = this._input.value;
-
-  //   console.log("url changed");
-
-  //   if (inputUrl && inputUrl !== selectUrl) {
-  //     this.url = inputUrl;
-  //   } else {
-  //     this.url = selectUrl;
-  //   }
-
-  //   this.onUrlChanged.emit(this.url);
-  // }
 
   render(): JSX.Element {
     return (
@@ -53,6 +37,7 @@ export class AlUrlPicker {
         />
         <ion-button
           size="small"
+          type="submit"
           onClick={() => this.onUrlChanged.emit(this._input.value)}
         >
           <ion-icon name="refresh" />

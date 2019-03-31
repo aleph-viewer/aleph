@@ -25,6 +25,14 @@ import {
 
 export namespace Components {
 
+  interface AlConsole {
+    'cmd': string;
+  }
+  interface AlConsoleAttributes extends StencilHTMLAttributes {
+    'cmd'?: string;
+    'onOnCmd'?: (event: CustomEvent) => void;
+  }
+
   interface AlControlPanel {
     'boundingBoxVisible': boolean;
     'displayMode': DisplayMode;
@@ -133,6 +141,7 @@ export namespace Components {
 
 declare global {
   interface StencilElementInterfaces {
+    'AlConsole': Components.AlConsole;
     'AlControlPanel': Components.AlControlPanel;
     'AlNodeEditor': Components.AlNodeEditor;
     'AlNodeList': Components.AlNodeList;
@@ -141,6 +150,7 @@ declare global {
   }
 
   interface StencilIntrinsicElements {
+    'al-console': Components.AlConsoleAttributes;
     'al-control-panel': Components.AlControlPanelAttributes;
     'al-node-editor': Components.AlNodeEditorAttributes;
     'al-node-list': Components.AlNodeListAttributes;
@@ -148,6 +158,12 @@ declare global {
     'uv-aleph': Components.UvAlephAttributes;
   }
 
+
+  interface HTMLAlConsoleElement extends Components.AlConsole, HTMLStencilElement {}
+  var HTMLAlConsoleElement: {
+    prototype: HTMLAlConsoleElement;
+    new (): HTMLAlConsoleElement;
+  };
 
   interface HTMLAlControlPanelElement extends Components.AlControlPanel, HTMLStencilElement {}
   var HTMLAlControlPanelElement: {
@@ -180,6 +196,7 @@ declare global {
   };
 
   interface HTMLElementTagNameMap {
+    'al-console': HTMLAlConsoleElement
     'al-control-panel': HTMLAlControlPanelElement
     'al-node-editor': HTMLAlNodeEditorElement
     'al-node-list': HTMLAlNodeListElement
@@ -188,6 +205,7 @@ declare global {
   }
 
   interface ElementTagNameMap {
+    'al-console': HTMLAlConsoleElement;
     'al-control-panel': HTMLAlControlPanelElement;
     'al-node-editor': HTMLAlNodeEditorElement;
     'al-node-list': HTMLAlNodeListElement;
