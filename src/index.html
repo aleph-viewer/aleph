@@ -87,19 +87,35 @@
         <h1>ℵ</h1>
 
         <ion-app>
-          <ion-item-group>
-            <al-url-picker></al-url-picker>
-          </ion-item-group>
-          <ion-item-group>
-            <al-console></al-console>
-          </ion-item-group>
-          <ion-item-group>
-            <al-node-list></al-node-list>
-            <al-node-editor></al-node-editor>
-          </ion-item-group>
-          <ion-item-group>
-            <al-control-panel></al-control-panel>
-          </ion-item-group>
+          <al-tabs>
+            <ion-tab-bar>
+              <ion-tab-button tab="src">
+                <ion-label>src</ion-label>
+              </ion-tab-button>
+              <ion-tab-button tab="settings">
+                <ion-label>settings</ion-label>
+              </ion-tab-button>
+              <ion-tab-button tab="graph">
+                <ion-label>graph</ion-label>
+              </ion-tab-button>
+              <ion-tab-button tab="console">
+                <ion-label>console</ion-label>
+              </ion-tab-button>
+            </ion-tab-bar>
+            <ion-tab tab="src">
+              <al-url-picker></al-url-picker>
+            </ion-tab>
+            <ion-tab tab="graph">
+              <al-node-list></al-node-list>
+              <al-node-editor></al-node-editor>
+            </ion-tab>
+            <ion-tab tab="settings">
+              <al-control-panel></al-control-panel>
+            </ion-tab>
+            <ion-tab tab="console">
+              <al-console></al-console>
+            </ion-tab>
+          </al-tabs>
         </ion-app>
       </div>
     </div>

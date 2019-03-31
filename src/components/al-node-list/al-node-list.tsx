@@ -4,7 +4,7 @@ import { AlNodeSerial } from "../../interfaces";
 @Component({
   tag: "al-node-list",
   styleUrl: "al-node-list.css",
-  shadow: false
+  shadow: true
 })
 export class AlNodeList {
   @Event() onSelectedChanged: EventEmitter;
@@ -13,7 +13,7 @@ export class AlNodeList {
   @Prop({ mutable: true }) selected: string | null = null;
 
   render(): JSX.Element {
-    if (this.nodes) {
+    if (this.nodes && this.nodes.size) {
       return (
         <ion-list>
           {[...this.nodes].map(([nodeId, node]) => {
@@ -29,7 +29,7 @@ export class AlNodeList {
         </ion-list>
       );
     }
-    return null;
+    return <p>No nodes exist</p>;
   }
 
   // render(): JSX.Element {

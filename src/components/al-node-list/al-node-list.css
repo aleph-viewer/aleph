@@ -1,3 +1,7 @@
-:root .al-list-item .item-native {
-  padding-left: 0px !important;
+/* ion-item {
+  --padding-start: 0px;
+} */
+
+ion-item.selected {
+  --color: cornflowerblue;
 }

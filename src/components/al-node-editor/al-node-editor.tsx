@@ -4,7 +4,7 @@ import { AlNodeSerial } from "../../interfaces";
 @Component({
   tag: "al-node-editor",
   styleUrl: "al-node-editor.css",
-  shadow: false
+  shadow: true
 })
 export class AlNodeEditor {
   @Event() onDelete: EventEmitter;

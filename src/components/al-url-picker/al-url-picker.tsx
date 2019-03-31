@@ -3,7 +3,7 @@ import { Component, Prop, Event, EventEmitter } from "@stencil/core";
 @Component({
   tag: "al-url-picker",
   styleUrl: "al-url-picker.css",
-  shadow: false
+  shadow: true
 })
 export class AlUrlPicker {
   @Event() onUrlChanged: EventEmitter;
@@ -20,8 +20,6 @@ export class AlUrlPicker {
           value={this.url}
           interface="popover"
           placeholder=""
-          ok-text="OK"
-          cancel-text="Cancel"
           onIonChange={e => this.onUrlChanged.emit(e.detail.value)}
         >
           {[...this.urls].map(([url, title]) => {
@@ -29,7 +27,7 @@ export class AlUrlPicker {
           })}
         </ion-select>
         <ion-input
-          type="text"
+          type="url"
           placeholder="src"
           required
           value={this.url}

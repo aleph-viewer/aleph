@@ -3,7 +3,7 @@ import { Component, Prop, Event, EventEmitter } from "@stencil/core";
 @Component({
   tag: "al-console",
   styleUrl: "al-console.css",
-  shadow: false
+  shadow: true
 })
 export class AlConsole {
   private _cmd: HTMLTextAreaElement;

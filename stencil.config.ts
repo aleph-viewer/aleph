@@ -14,7 +14,10 @@ export const config: Config = {
     { components: ['uv-aleph'] },
     { components: ['al-control-panel'] },
     { components: ['al-node-list'] },
-    { components: ['al-node-editor'] }
+    { components: ['al-node-editor'] },
+    { components: ['al-url-picker'] },
+    { components: ['al-console'] },
+    { components: ['al-tabs'] }
   ],
   copy: [
   ],

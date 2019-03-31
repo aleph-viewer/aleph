@@ -1,19 +1,11 @@
-import {
-  Component,
-  Prop,
-  Event,
-  EventEmitter,
-  Watch,
-  State
-} from "@stencil/core";
-import { AlNodeSerial } from "../../interfaces";
+import { Component, Prop, Event, EventEmitter } from "@stencil/core";
 import { DisplayMode } from "../../enums/DisplayMode";
 import { Orientation } from "../../enums/Orientation";
 
 @Component({
   tag: "al-control-panel",
   styleUrl: "al-control-panel.css",
-  shadow: false
+  shadow: true
 })
 export class AlControlPanel {
   @Event() onSetBoundingBoxVisible: EventEmitter;
@@ -33,16 +25,11 @@ export class AlControlPanel {
   @Prop({ mutable: true }) optionsEnabled: boolean = false;
   @Prop({ mutable: true }) optionsVisible: boolean = true;
   @Prop({ mutable: true }) orientation: Orientation = Orientation.CORONAL;
-  @Prop({ mutable: true }) selected: string | null = null;
   @Prop({ mutable: true }) slicesIndex: number;
   @Prop({ mutable: true }) slicesWindowCenter: number;
   @Prop({ mutable: true }) slicesWindowWidth: number;
   @Prop({ mutable: true }) stack: any;
   @Prop({ mutable: true }) stackHelper: AMI.StackHelper;
-  @Prop({ mutable: true }) nodes: Map<string, AlNodeSerial> = new Map<
-    string,
-    AlNodeSerial
-  >();
   @Prop({ mutable: true }) nodesEnabled: boolean = false;
   @Prop({ mutable: true }) nodesVisible: boolean = true;
   @Prop({ mutable: true }) volumeSteps: number;
@@ -73,10 +60,6 @@ export class AlControlPanel {
     this.onSetOrientation.emit(orientation);
   }
 
-  private _selected(nodeId: string | null) {
-    this.selected = nodeId;
-  }
-
   private _slicesIndex(index: number) {
     this.slicesIndex = index;
     this.onSetSlicesIndex.emit(index);
@@ -98,10 +81,6 @@ export class AlControlPanel {
 
   private _stackHelper(helper: AMI.StackHelper) {
     this.stackHelper = helper;
-  }
-
-  private _nodes(nodes: Map<string, AlNodeSerial>) {
-    this.nodes = nodes;
   }
 
   private _nodesEnabled(enabled: boolean) {

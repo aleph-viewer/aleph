@@ -79,10 +79,6 @@
   --ion-color-light-tint: #f5f6f9;
 }
 
-ion-item:not(.sc-ion-select-popover) {
-  --padding-start: 0px;
-}
-
-ion-item.selected {
-  --color: cornflowerblue;
-}
+/* ion-item.sc-ion-select-popover {
+  --padding-start: 16px;
+} */
