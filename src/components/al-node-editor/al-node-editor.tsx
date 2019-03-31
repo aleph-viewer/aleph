@@ -20,24 +20,29 @@ export class AlNodeEditor {
         <ion-item>
           <ion-textarea
             value={node.text}
+            rows="5"
             onIonChange={e => (node.text = e.detail.value)}
           />
           ,
         </ion-item>,
         <ion-button
+          size="small"
           onClick={() => {
             this.onDelete.emit(nodeId);
             this.node = null;
           }}
         >
           Delete
+          <ion-icon name="trash" slot="start" />
         </ion-button>,
         <ion-button
+          size="small"
           onClick={() => {
             this.onSave.emit([nodeId, node]);
           }}
         >
           Save
+          <ion-icon name="save" slot="start" />
         </ion-button>
       ];
     }

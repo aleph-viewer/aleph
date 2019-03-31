@@ -49,7 +49,7 @@
       }
 
       #debug h1 {
-        margin: 0;
+        margin-top: 0;
       }
 
       #debug section {
@@ -90,6 +90,7 @@
   </head>
   <body>
     <div id="container">
+
       <div id="scene">
         <uv-aleph
           draco-decoder-path="assets/"
@@ -99,56 +100,50 @@
           spinner-color="#3d3d3d"
         ></uv-aleph>
       </div>
+
       <div id="debug" class="disabled">
+
         <h1>ℵ</h1>
 
-        <section>
-          <!--
-            https://ami-test-manifests.netlify.com/collection/stl/brain/_brain/brain.json
-          -->
-          <select id="src-select">
-            <optgroup label="GLTF">
-              <option value="https://iiif-3d-manifests.netlify.com/collection/gltf/woody/_woody/assets/woody.gltf">Fisherman</option>
-            </optgroup>
-            <optgroup label="DRACO">
-              <option selected value="http://files.blokdust.io/test/bowl-draco.glb">Bowl</option>
-            </optgroup>
-            <optgroup label="DICOM">
-              <option
-                value="https://ami-test-manifests.netlify.com/collection/dicom/brain/_brain/brain.json">Brain</option>
-              <option
-                value="https://www.morphosource.org/media/morphosource/dcm_sample/platypus/dcm_multi_vf300_16bit_allslices.json">Platypus 16bit</option>
-              <option
-                value="https://www.morphosource.org/media/morphosource/dcm_sample/platypus/dcm_multi_vf300_jpegQ95_16bit_allslices.json">Platypus jpegQ95</option>
-            </optgroup>
-            <optgroup label="NIFTI">
-              <option
-                value="https://ami-test-manifests.netlify.com/collection/nifti/brain/_brain/brain.json">Brain</option>
-            </optgroup>
-          </select>
-        </section>
-        <section>
-          <input type="text" id="src-input" placeholder="src"><button id="load-src-button">Load</button>
-        </section>
-        <section>
-          <textarea id="nodes-textarea" placeholder="nodes"></textarea>
-        </section>
-        <section>
-          <ul id="node-list"></ul>
-        </section>
-        <section>
-          <button id="load-nodes-button">Load</button>
-        </section>
-        <section>
-          <ion-app>
-            <ion-item-divider></ion-item-divider>
+        <ion-app>
+          <ion-item-group>
+            <!--
+              https://ami-test-manifests.netlify.com/collection/stl/brain/_brain/brain.json
+            -->
+            <select id="src-select">
+              <optgroup label="GLTF">
+                <option value="https://iiif-3d-manifests.netlify.com/collection/gltf/woody/_woody/assets/woody.gltf">Fisherman</option>
+              </optgroup>
+              <optgroup label="DRACO">
+                <option selected value="http://files.blokdust.io/test/bowl-draco.glb">Bowl</option>
+              </optgroup>
+              <optgroup label="DICOM">
+                <option
+                  value="https://ami-test-manifests.netlify.com/collection/dicom/brain/_brain/brain.json">Brain</option>
+                <option
+                  value="https://www.morphosource.org/media/morphosource/dcm_sample/platypus/dcm_multi_vf300_16bit_allslices.json">Platypus 16bit</option>
+                <option
+                  value="https://www.morphosource.org/media/morphosource/dcm_sample/platypus/dcm_multi_vf300_jpegQ95_16bit_allslices.json">Platypus jpegQ95</option>
+              </optgroup>
+              <optgroup label="NIFTI">
+                <option
+                  value="https://ami-test-manifests.netlify.com/collection/nifti/brain/_brain/brain.json">Brain</option>
+              </optgroup>
+            </select>
+            <ion-input type="text" id="src-input" placeholder="src" required /><ion-button id="load-src-button" size="small">Load Src<ion-icon name="refresh" slot="start"></ion-icon></ion-button>
+          </ion-item-group>
+          <ion-item-group>
+            <ion-textarea id="nodes-textarea" placeholder="nodes" rows="5" required></ion-textarea>
+            <ion-button id="load-nodes-button" size="small">Load Nodes<ion-icon name="add-circle" slot="start"></ion-icon></ion-button>
+          </ion-item-group>
+          <ion-item-group>
             <al-node-list></al-node-list>
             <ion-item-divider></ion-item-divider>
             <al-node-editor></al-node-editor>
             <ion-item-divider></ion-item-divider>
             <al-control-panel></al-control-panel>
-          </ion-app>
-        </section>
+          </ion-item-group>
+        </ion-app>
       </div>
     </div>
 
