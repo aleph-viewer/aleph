@@ -77,6 +77,9 @@ export class Aleph {
   private _intersectingNode: string | null = null;
   private _isShiftDown: boolean = false;
 
+  // private _animationStart: AlCameraSerial;
+  // private _animationEnd: AlCameraSerial;
+
   @Prop({ context: "store" }) store: Store;
   @Prop() dracoDecoderPath: string | null;
   @Prop() width: string = "640px";
@@ -672,31 +675,75 @@ export class Aleph {
 
   private _selectNode(nodeId: string, animate: boolean): void {
     console.log("animate ", animate);
-    // if (animate && nodeId !== this.selected) {
-    //   this.appSetCameraAnimating(true); // todo: can we pass boolean to appSelectNode to set cameraAnimating in the state?
+    if (animate && nodeId !== this.selected) {
+      this.appSetCameraAnimating(true); // todo: can we pass boolean to appSelectNode to set cameraAnimating in the state?
 
-    //   // TODO: Differentiate between Node -> Node && Target -> Target animations
-    //   if (this.cameraAnimating) {
-    //     // Get camera state from node and set as result
-    //     let result: AlCameraSerial | null = GetUtils.getCameraStateFromNode(
-    //       this.nodes.get(this.selected),
-    //       this._boundingSphereRadius
-    //     );
+      // TODO: Differentiate between Node -> Node && Target -> Target animations
+      if (this.cameraAnimating) {
+        // Get camera state from node and set as result
+        let result: AlCameraSerial | null = GetUtils.getCameraStateFromNode(
+          this.nodes.get(this.selected),
+          this._boundingSphereRadius
+        );
 
-    //     if (result) {
-    //       // If we returned a result AND the difference between the last position and the result position is not 0
-    //       const diffPos: number = result.position.distanceTo(
-    //         this.camera.position
-    //       );
+        if (result) {
+          // If we returned a result AND the difference between the last position and the result position is not 0
+          const diffPos: number = result.position.distanceTo(
+            this.camera.position
+          );
 
-    //       const diffTarg: number = result.target.distanceTo(this.camera.target);
+          let diffTarg: number;
+          if (this.camera.target) {
+            diffTarg = result.target.distanceTo(this.camera.target);
+          } else {
+            diffTarg = 0;
+          }
 
-    //       if (diffPos !== 0 || diffTarg !== 0) {
-    //         this.appSetCamera(result);
-    //       }
-    //     }
-    //   }
-    // }
+          if (diffPos !== 0 || diffTarg !== 0) {
+            let steps: AlCameraSerial[] = [];
+
+            const animationStart = this.camera;
+            const animationEnd = result;
+
+            for (let step = 1; step <= Constants.maxAnimationSteps; step++) {
+              let percent = step / Constants.maxAnimationSteps;
+              let newPos = new THREE.Vector3().copy(animationStart.position);
+              let newTarg = new THREE.Vector3().copy(animationStart.target);
+
+              if (diffPos) {
+                newPos = ThreeUtils.slerp(
+                  animationStart.position.clone(),
+                  animationEnd.position.clone(),
+                  percent
+                );
+              }
+              if (diffTarg) {
+                newTarg = ThreeUtils.slerp(
+                  animationStart.target.clone(),
+                  animationEnd.target.clone(),
+                  percent
+                );
+              }
+
+              steps.push({
+                position: newPos,
+                target: newTarg
+              } as AlCameraSerial);
+            }
+
+            let step = 0;
+            let anim = window.setInterval(() => {
+              this.appSetCamera(steps[step]);
+              step++;
+            }, Constants.minFrameMS / 2);
+
+            window.setTimeout(() => {
+              window.clearInterval(anim);
+            }, Constants.minFrameMS * (Constants.maxAnimationSteps + 1));
+          }
+        }
+      }
+    }
     this.appSelectNode(nodeId);
     this.onChanged.emit(this._getAppState());
   }
@@ -744,7 +791,7 @@ export class Aleph {
   }
 
   private _controlsUpdated(event: CustomEvent): void {
-    this.appSetCamera(event.detail);
+    this.appSetCamera(event.detail.cameraSerial);
   }
 
   private _controlsEnabledHandler(_event: CustomEvent): void {

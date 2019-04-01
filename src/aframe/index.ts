@@ -8,6 +8,7 @@ import { AlSpinner } from "./AlSpinner";
 import { AlFixedToOrbitCamera } from "./AlFixedToOrbitCamera";
 import { AlEdge } from "./AlEdge";
 import { AlLookToCamera } from "./AlLookToCamera";
+import {AlRenderOverlaid} from "./AlRenderOverlaid";
 
 export {
   AlGltfModel,
@@ -23,5 +24,6 @@ export {
   AlNodeEvents,
   AlFixedToOrbitCamera,
   AlEdge,
-  AlLookToCamera
+  AlLookToCamera,
+  AlRenderOverlaid
 };

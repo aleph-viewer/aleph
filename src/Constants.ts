@@ -9,7 +9,7 @@ export class Constants {
 
   static zoomFactor = 2.5;
 
-  static maxAnimationSteps = 100;
+  static maxAnimationSteps = 50;
 
   static minFrameMS = 15; // Should never be higher than the returned frame time
 
