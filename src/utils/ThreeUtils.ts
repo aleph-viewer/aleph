@@ -1,6 +1,7 @@
 type Entity = import("aframe").Entity;
 
 export class ThreeUtils {
+  // Must use setAttribute, otherwise THREE.OrbitControls onMouseUp doesn't always pick up the change :-(
   static enableCamera(camEntity: Entity, enabled: boolean) {
     camEntity.setAttribute("al-orbit-control", `enabled: ${enabled}`);
   }

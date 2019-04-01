@@ -360,13 +360,10 @@ export class Aleph {
     if (!this.srcLoaded) {
       return (
         <a-entity
-          position="0 0 -2"
-          rotation="0 0 0"
-          scale="0.05 0.05 0.05"
           al-fixed-to-orbit-camera={`
-          distanceFromTarget: 0.5
+          distanceFromTarget: 10;
           target: ${
-            this.camera ? this.camera.target : new THREE.Vector3(0, 0, 0)
+            this.camera ? this.camera.position : new THREE.Vector3(0, 0, 0)
           };
         `}
         >
@@ -477,7 +474,7 @@ export class Aleph {
     return [...this.nodes].map((n: [string, AlNodeSerial]) => {
       const [nodeId, node] = n;
 
-      let textOffset: THREE.Vector3 = new THREE.Vector3(0.1, 0.1, 0.01);
+      let textOffset: THREE.Vector3 = new THREE.Vector3(1.5, 0.5, 0);
       textOffset.multiplyScalar(node.scale);
 
       return (
@@ -495,9 +492,12 @@ export class Aleph {
         >
           <a-entity
             text={`
+              geometry: "primitive: plane; width: ${this._boundingSphereRadius *
+                Constants.fontSize}; height: auto";
+              material: "color: #fff";
               value: ${node.text};
               side: double;
-              baseline: bottom;
+              baseline: center;
               anchor: left;
             `}
             al-look-to-camera
