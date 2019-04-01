@@ -333,13 +333,12 @@ export class Aleph {
     });
 
     // set up event handlers
-    this._animationFinished = this._animationFinished.bind(this);
+    //this._animationFinished = this._animationFinished.bind(this);
     this._canvasMouseDown = this._canvasMouseDown.bind(this);
     this._canvasMouseUp = this._canvasMouseUp.bind(this);
     this._controlsDisabledHandler = this._controlsDisabledHandler.bind(this);
     this._controlsEnabledHandler = this._controlsEnabledHandler.bind(this);
-    this._controlsInitialised = this._controlsInitialised.bind(this);
-    this._controlsMoved = this._controlsMoved.bind(this);
+    this._controlsUpdated = this._controlsUpdated.bind(this);
     this._intersectingNodeEventHandler = this._intersectingNodeEventHandler.bind(
       this
     );
@@ -586,8 +585,6 @@ export class Aleph {
       cameraPosition: ${ThreeUtils.vector3ToString(
         this.camera ? this.camera.position : new THREE.Vector3(0, 0, 0)
       )};
-      boundingRadius: ${radius};
-      cameraAnimating: ${this.cameraAnimating};
       enabled: ${this.controlsEnabled};
     `}
         ref={el => (this._camera = el)}
@@ -743,23 +740,13 @@ export class Aleph {
     this._isShiftDown = false;
   }
 
-  private _controlsInitialised(event: CustomEvent): void {
-    this.appSetCamera({
-      position: event.detail.position,
-      target: event.detail.target
-    });
+  private _controlsUpdated(event: CustomEvent): void {
+    this.appSetCamera(event.detail);
   }
 
-  private _controlsMoved(event: CustomEvent): void {
-    this.appSetCamera({
-      position: event.detail.position,
-      target: event.detail.target
-    });
-  }
-
-  private _animationFinished(_event: CustomEvent): void {
-    this.appSetCameraAnimating(false);
-  }
+  // private _animationFinished(_event: CustomEvent): void {
+  //   this.appSetCameraAnimating(false);
+  // }
 
   private _controlsEnabledHandler(_event: CustomEvent): void {
     this.appSetControlsEnabled(true);
@@ -876,22 +863,16 @@ export class Aleph {
       });
 
       this._scene.addEventListener(
-        AlOrbitControlEvents.INITIALISED,
-        this._controlsInitialised,
+        AlOrbitControlEvents.UPDATED,
+        this._controlsUpdated,
         false
       );
 
-      this._scene.addEventListener(
-        AlOrbitControlEvents.HAS_MOVED,
-        this._controlsMoved,
-        false
-      );
-
-      this._scene.addEventListener(
-        AlOrbitControlEvents.ANIMATION_FINISHED,
-        this._animationFinished,
-        false
-      );
+      // this._scene.addEventListener(
+      //   AlOrbitControlEvents.ANIMATION_FINISHED,
+      //   this._animationFinished,
+      //   false
+      // );
 
       this._scene.addEventListener(
         AlNodeEvents.CONTROLS_ENABLED,

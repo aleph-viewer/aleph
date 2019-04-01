@@ -1,21 +1,14 @@
-import { AframeRegistry, AframeComponent } from "../interfaces";
+import { AframeRegistry, AframeComponent, AlCameraSerial } from "../interfaces";
 import { Constants } from "../Constants";
 import { ThreeUtils } from "../utils";
 import { AlNodeSpawnerEvents, AlNodeEvents } from ".";
 
 interface AlOrbitControlState {
-  oldPosition: THREE.Vector3;
   controls: THREE.OrbitControls;
-  targetPosition: THREE.Vector3;
-  cameraPosition: THREE.Vector3;
-  positionCache: THREE.Vector3;
-  animationStep: number;
 }
 
 interface AlOrbitControlObject extends AframeComponent {
   dependencies: string[];
-  onEnterVR: () => void;
-  onExitVR: () => void;
   update(_oldData): void;
   tickFunction(): void;
   tick(): void;
@@ -25,7 +18,6 @@ interface AlOrbitControlObject extends AframeComponent {
   removeListeners(): void;
   canvasMouseUp(event: MouseEvent): void;
   canvasMouseDown(event: MouseEvent): void;
-  // controlsEnabled(event: CustomEvent): void;
 }
 
 export class AlOrbitControl implements AframeRegistry {
@@ -34,9 +26,9 @@ export class AlOrbitControl implements AframeRegistry {
       dependencies: ["camera"],
 
       schema: {
-        cameraPosition: { type: "vec3" },
         autoRotate: { type: "boolean" },
         autoRotateSpeed: { default: 2 },
+        cameraPosition: { type: "vec3" },
         dampingFactor: { default: 0.1 },
         enabled: { default: true },
         enableDamping: { default: true },
@@ -45,10 +37,10 @@ export class AlOrbitControl implements AframeRegistry {
         enableRotate: { default: true },
         enableZoom: { default: true },
         keyPanSpeed: { default: 7 },
-        minAzimuthAngle: { type: "number", default: -Infinity },
         maxAzimuthAngle: { type: "number", default: Infinity },
         maxDistance: { default: 1000 },
         maxPolarAngle: { default: AFRAME.utils.device.isMobile() ? 90 : 120 },
+        minAzimuthAngle: { type: "number", default: -Infinity },
         minDistance: { default: 1 },
         minPolarAngle: { default: 0 },
         minZoom: { default: 0 },
@@ -56,30 +48,15 @@ export class AlOrbitControl implements AframeRegistry {
         rotateSpeed: { default: 0.05 },
         screenSpacePanning: { default: false },
         targetPosition: { type: "vec3" },
-        zoomSpeed: { type: "number", default: 0.5 },
-        boundingRadius: { type: "number", default: 1 },
-        cameraAnimating: { type: "boolean", default: false }
+        zoomSpeed: { type: "number", default: 0.5 }
       },
 
       bindListeners() {
-        this.onEnterVR = this.onEnterVR.bind(this);
-        this.onExitVR = this.onExitVR.bind(this);
         this.canvasMouseUp = this.canvasMouseUp.bind(this);
         this.canvasMouseDown = this.canvasMouseDown.bind(this);
-        //this.controlsEnabled = this.controlsEnabled.bind(this);
       },
 
       addListeners() {
-        this.el.sceneEl.addEventListener("enter-vr", this.onEnterVR, {
-          capture: false,
-          once: false,
-          passive: true
-        });
-        this.el.sceneEl.addEventListener("exit-vr", this.onExitVR, {
-          capture: false,
-          once: false,
-          passive: true
-        });
         this.el.sceneEl.canvas.addEventListener("mouseup", this.canvasMouseUp, {
           capture: false,
           once: false,
@@ -90,15 +67,9 @@ export class AlOrbitControl implements AframeRegistry {
           this.canvasMouseDown,
           { capture: false, once: false, passive: true }
         );
-        // this.el.addEventListener(
-        //   AlNodeEvents.CONTROLS_ENABLED,
-        //   this.controlsEnabled
-        // );
       },
 
       removeListeners() {
-        this.el.sceneEl.removeEventListener("enter-vr", this.onEnterVR);
-        this.el.sceneEl.removeEventListener("exit-vr", this.onExitVR);
         this.el.sceneEl.canvas.removeEventListener(
           "mouseup",
           this.canvasMouseUp
@@ -107,67 +78,20 @@ export class AlOrbitControl implements AframeRegistry {
           "mousedown",
           this.canvasMouseDown
         );
-        // this.el.removeEventListener(
-        //   AlNodeEvents.CONTROLS_ENABLED,
-        //   this.controlsEnabled
-        // );
-      },
-
-      // controlsEnabled(event: CustomEvent) {
-      //   console.log("controls enabled", event.detail);
-      //   this.state.controls.enabled = event.detail;
-      // },
-
-      onEnterVR() {
-        if (
-          !AFRAME.utils.device.checkHeadsetConnected() &&
-          !AFRAME.utils.device.isMobile()
-        ) {
-          return;
-        }
-
-        let state = this.state as AlOrbitControlState;
-        let el = this.el;
-
-        state.controls.enabled = false;
-        if (el.hasAttribute("look-controls")) {
-          el.setAttribute("look-controls", "enabled", true);
-          state.oldPosition.copy(el.getObject3D("camera").position);
-          el.getObject3D("camera").position.set(0, 0, 0);
-        }
-      },
-
-      onExitVR() {
-        if (
-          !AFRAME.utils.device.checkHeadsetConnected() &&
-          !AFRAME.utils.device.isMobile()
-        ) {
-          return;
-        }
-
-        let state = this.state as AlOrbitControlState;
-        let el = this.el;
-
-        state.controls.enabled = true;
-        el.getObject3D("camera").position.copy(state.oldPosition);
-        if (el.hasAttribute("look-controls")) {
-          el.setAttribute("look-controls", "enabled", false);
-        }
       },
 
       canvasMouseUp(_event: MouseEvent) {
         document.body.style.cursor = "grab";
-        //console.log("canvas-up: ", this.state.controls.enabled);
-        //if (this.state.controls.enabled) {
-        this.el.emit(
-          AlOrbitControlEvents.HAS_MOVED,
-          {
-            position: this.state.controls.object.position,
-            target: this.state.controls.target
-          },
-          true
-        );
-        //}
+        let controls = this.state.controls;
+
+        if (controls.enabled) {
+          let res = {
+            position: controls.object.position,
+            target: controls.target
+          } as AlCameraSerial;
+
+          this.el.emit(AlOrbitControlEvents.UPDATED, res, true);
+        }
       },
 
       canvasMouseDown(_event: MouseEvent) {
@@ -175,59 +99,49 @@ export class AlOrbitControl implements AframeRegistry {
       },
 
       init() {
+        let el = this.el;
+        let data = this.data;
+        document.body.style.cursor = "grab";
+
         this.tickFunction = AFRAME.utils.throttle(
           this.tickFunction,
           Constants.minFrameMS,
           this
         );
 
-        let el = this.el;
-        let oldPosition = new THREE.Vector3();
         let controls = new THREE.OrbitControls(
           el.getObject3D("camera"),
           el.sceneEl.renderer.domElement
         );
-        let data = this.data;
-
-        document.body.style.cursor = "grab";
 
         // Convert the cameraPosition & targetPosition Objects into THREE.Vector3
         let cameraPosition = ThreeUtils.objectToVector3(data.cameraPosition);
         let targetPosition = ThreeUtils.objectToVector3(data.targetPosition);
 
-        (this.state as AlOrbitControlState) = {
-          controls,
-          oldPosition,
-          targetPosition,
-          cameraPosition,
-          animationStep: 0,
-          positionCache: cameraPosition
-        };
+        //controls.object.position.copy(cameraPosition);
+        el.getObject3D("camera").position.copy(cameraPosition);
+        controls.target.copy(targetPosition);
 
-        controls.object.position.copy(cameraPosition);
+        (this.state as AlOrbitControlState) = { controls };
 
         this.bindListeners();
         this.addListeners();
 
         // wait a frame before emitting initialised event
         setTimeout(() => {
-          this.el.emit(
-            AlOrbitControlEvents.INITIALISED,
-            {
-              position: this.state.controls.object.position,
-              target: this.state.controls.target
-            },
-            true
-          );
+          let res = {
+            position: controls.object.position,
+            target: controls.target
+          } as AlCameraSerial;
+          this.el.emit(AlOrbitControlEvents.UPDATED, res, true);
         }, Constants.minFrameMS);
       },
 
       update(_oldData) {
-        let state = this.state as AlOrbitControlState;
-        let controls = state.controls;
+        let controls = this.state.controls;
         const data = this.data;
 
-        controls.target = state.targetPosition.copy(data.targetPosition);
+        controls.target = ThreeUtils.objectToVector3(data.targetPosition);
         controls.autoRotate = data.autoRotate;
         controls.autoRotateSpeed = data.autoRotateSpeed;
         controls.dampingFactor = data.dampingFactor;
@@ -247,69 +161,74 @@ export class AlOrbitControl implements AframeRegistry {
         controls.rotateSpeed = data.rotateSpeed;
         controls.screenSpacePanning = data.screenSpacePanning;
         controls.zoomSpeed = data.zoomSpeed;
+        this.el
+          .getObject3D("camera")
+          .position.copy(ThreeUtils.objectToVector3(data.cameraPosition));
 
-        // If _oldData.cameraPosition exists and we're NOT cameraAnimating, this is not the initialisation update and an animation update
-        if (_oldData.cameraPosition) {
-          let oldPos = ThreeUtils.objectToVector3(_oldData.cameraPosition);
-          let newPos = ThreeUtils.objectToVector3(data.cameraPosition);
+        // // If _oldData.cameraPosition exists and we're NOT cameraAnimating, this is not the initialisation update and an animation update
+        // if (_oldData.cameraPosition) {
+        //   let oldPos = ThreeUtils.objectToVector3(_oldData.cameraPosition);
+        //   let newPos = ThreeUtils.objectToVector3(data.cameraPosition);
 
-          if (!oldPos.equals(newPos)) {
-            // Check the old start position against the value passed in by aleph._renderCamera()
-            // This is to check and see if the source has changed, as the cameraPosition for each
-            // source is determined by it's bounding sphere.
-            state.cameraPosition.copy(newPos);
+        //   if (!oldPos.equals(newPos)) {
+        //     // Check the old start position against the value passed in by aleph._renderCamera()
+        //     // This is to check and see if the source has changed, as the cameraPosition for each
+        //     // source is determined by it's bounding sphere.
+        //     state.cameraPosition.copy(newPos);
 
-            if (!data.cameraAnimating) {
-              controls.object.position.copy(state.cameraPosition);
-              state.positionCache.copy(state.cameraPosition);
-            }
-          }
-        }
-        console.log("controls-update:", this.state.controls.object.position);
+        //     if (!data.cameraAnimating) {
+        //       controls.object.position.copy(state.cameraPosition);
+        //       state.positionCache.copy(state.cameraPosition);
+        //     }
+        //   }
+        // }
+        // console.log("controls-update:", this.state.controls.object.position);
       },
 
       tickFunction() {
         //console.log("controls-update: enabled:", this.data.enabled);
-        let state = this.state as AlOrbitControlState;
-        let controls = state.controls;
-        let el = this.el;
-        const data = this.data;
-
-        if (!this.data.enabled) {
+        // let state = this.state as AlOrbitControlState;
+        let controls = this.state.controls;
+        if (!controls.enabled) {
           return;
         }
+        // let el = this.el;
+        // const data = this.data;
 
-        if (data.cameraAnimating) {
-          //console.log("controls-update: animating ", data.animating);
-          let endPos = state.cameraPosition;
-          let startPos = state.positionCache;
+        // if (!this.data.enabled) {
+        //   return;
+        // }
 
-          if (state.animationStep <= Constants.maxAnimationSteps) {
-            const percent: number =
-              state.animationStep / Constants.maxAnimationSteps;
-            const res: THREE.Vector3 | null = ThreeUtils.slerp(
-              startPos.clone(),
-              endPos.clone(),
-              percent
-            );
+        // if (data.cameraAnimating) {
+        //   //console.log("controls-update: animating ", data.animating);
+        //   let endPos = state.cameraPosition;
+        //   let startPos = state.positionCache;
 
-            if (res) {
-              controls.object.position.copy(res);
-              state.animationStep += 1;
-            } else {
-              el.emit(AlOrbitControlEvents.ANIMATION_FINISHED, {}, true);
-              state.animationStep = 0;
-            }
-          } else {
-            el.emit(AlOrbitControlEvents.ANIMATION_FINISHED, {}, true);
-            state.animationStep = 0;
-          }
-        }
+        //   if (state.animationStep <= Constants.maxAnimationSteps) {
+        //     const percent: number =
+        //       state.animationStep / Constants.maxAnimationSteps;
+        //     const res: THREE.Vector3 | null = ThreeUtils.slerp(
+        //       startPos.clone(),
+        //       endPos.clone(),
+        //       percent
+        //     );
+
+        //     if (res) {
+        //       controls.object.position.copy(res);
+        //       state.animationStep += 1;
+        //     } else {
+        //       el.emit(AlOrbitControlEvents.ANIMATION_FINISHED, {}, true);
+        //       state.animationStep = 0;
+        //     }
+        //   } else {
+        //     el.emit(AlOrbitControlEvents.ANIMATION_FINISHED, {}, true);
+        //     state.animationStep = 0;
+        //   }
+        // }
         if (
           controls.enabled &&
           (controls.enableDamping || controls.autoRotate)
         ) {
-          console.log("updating controls!");
           controls.update();
         }
       },
@@ -333,7 +252,5 @@ export class AlOrbitControl implements AframeRegistry {
 }
 
 export class AlOrbitControlEvents {
-  static ANIMATION_FINISHED: string = "al-animation-finished";
-  static HAS_MOVED: string = "al-has-moved";
-  static INITIALISED: string = "al-controls-initialised";
+  static UPDATED: string = "al-orbit-controls-updated";
 }
