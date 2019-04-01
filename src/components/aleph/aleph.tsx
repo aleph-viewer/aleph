@@ -358,20 +358,22 @@ export class Aleph {
     if (!this.srcLoaded) {
       return (
         <a-entity
-          cursor
           position="0 0 -2"
           rotation="0 0 0"
-          animation="property: rotation; to: 0 120 0; loop: true; dur: 1000; easing: easeInOutQuad"
-          geometry="primitive: al-spinner;"
           scale="0.05 0.05 0.05"
-          material={`color: ${this.spinnerColor};`}
           al-fixed-to-orbit-camera={`
-            distanceFromTarget: 0.5
-            target: ${
-              this.camera ? this.camera.target : new THREE.Vector3(0, 0, 0)
-            };
-          `}
-        />
+          distanceFromTarget: 0.5
+          target: ${
+            this.camera ? this.camera.target : new THREE.Vector3(0, 0, 0)
+          };
+        `}
+        >
+          <a-entity
+            animation="property: rotation; to: 0 120 0; loop: true; dur: 1000; easing: easeInOutQuad"
+            geometry="primitive: al-spinner;"
+            material={`color: ${this.spinnerColor};`}
+          />
+        </a-entity>
       );
     }
 
