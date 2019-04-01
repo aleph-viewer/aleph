@@ -705,7 +705,7 @@ export class Aleph {
             const animationStart = this.camera;
             const animationEnd = result;
 
-            for (let step = 1; step <= Constants.maxAnimationSteps; step++) {
+            for (let step = 1; step < Constants.maxAnimationSteps; step++) {
               let percent = step / Constants.maxAnimationSteps;
               let newPos = new THREE.Vector3().copy(animationStart.position);
               let newTarg = new THREE.Vector3().copy(animationStart.target);
@@ -739,7 +739,8 @@ export class Aleph {
 
             window.setTimeout(() => {
               window.clearInterval(anim);
-            }, Constants.minFrameMS * (Constants.maxAnimationSteps + 1));
+              this.appSetCamera(result);
+            }, Constants.minFrameMS * Constants.maxAnimationSteps);
           }
         }
       }
