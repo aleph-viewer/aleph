@@ -863,17 +863,17 @@ export class Aleph {
 
   private _addEventListeners(): void {
     if (this._scene) {
-      this._scene.canvas.addEventListener(
-        "mousedown",
-        this._canvasMouseDown,
-        false
-      );
+      this._scene.canvas.addEventListener("mousedown", this._canvasMouseDown, {
+        capture: false,
+        once: false,
+        passive: true
+      });
 
-      this._scene.canvas.addEventListener(
-        "mouseup",
-        this._canvasMouseUp,
-        false
-      );
+      this._scene.canvas.addEventListener("mouseup", this._canvasMouseUp, {
+        capture: false,
+        once: false,
+        passive: true
+      });
 
       this._scene.addEventListener(
         AlOrbitControlEvents.INITIALISED,

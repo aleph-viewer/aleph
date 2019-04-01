@@ -70,17 +70,25 @@ export class AlOrbitControl implements AframeRegistry {
       },
 
       addListeners() {
-        this.el.sceneEl.addEventListener("enter-vr", this.onEnterVR, false);
-        this.el.sceneEl.addEventListener("exit-vr", this.onExitVR, false);
-        this.el.sceneEl.canvas.addEventListener(
-          "mouseup",
-          this.canvasMouseUp,
-          false
-        );
+        this.el.sceneEl.addEventListener("enter-vr", this.onEnterVR, {
+          capture: false,
+          once: false,
+          passive: true
+        });
+        this.el.sceneEl.addEventListener("exit-vr", this.onExitVR, {
+          capture: false,
+          once: false,
+          passive: true
+        });
+        this.el.sceneEl.canvas.addEventListener("mouseup", this.canvasMouseUp, {
+          capture: false,
+          once: false,
+          passive: true
+        });
         this.el.sceneEl.canvas.addEventListener(
           "mousedown",
           this.canvasMouseDown,
-          false
+          { capture: false, once: false, passive: true }
         );
         // this.el.addEventListener(
         //   AlNodeEvents.CONTROLS_ENABLED,
@@ -149,16 +157,17 @@ export class AlOrbitControl implements AframeRegistry {
 
       canvasMouseUp(_event: MouseEvent) {
         document.body.style.cursor = "grab";
-        if (this.enabled) {
-          this.el.emit(
-            AlOrbitControlEvents.HAS_MOVED,
-            {
-              position: this.state.controls.object.position,
-              target: this.state.controls.target
-            },
-            true
-          );
-        }
+        //console.log("canvas-up: ", this.state.controls.enabled);
+        //if (this.state.controls.enabled) {
+        this.el.emit(
+          AlOrbitControlEvents.HAS_MOVED,
+          {
+            position: this.state.controls.object.position,
+            target: this.state.controls.target
+          },
+          true
+        );
+        //}
       },
 
       canvasMouseDown(_event: MouseEvent) {
@@ -214,8 +223,6 @@ export class AlOrbitControl implements AframeRegistry {
       },
 
       update(_oldData) {
-        console.log("update");
-
         let state = this.state as AlOrbitControlState;
         let controls = state.controls;
         const data = this.data;
@@ -258,25 +265,22 @@ export class AlOrbitControl implements AframeRegistry {
             }
           }
         }
+        console.log("controls-update:", this.state.controls.object.position);
       },
 
       tickFunction() {
-        console.log("controls enabled:", this.data.enabled);
+        //console.log("controls-update: enabled:", this.data.enabled);
         let state = this.state as AlOrbitControlState;
         let controls = state.controls;
+        let el = this.el;
+        const data = this.data;
 
         if (!this.data.enabled) {
-          //controls.enabled = false;
           return;
         }
 
-        //controls.enabled = true;
-
-        let el = this.el;
-
-        const data = this.data;
-
         if (data.cameraAnimating) {
+          //console.log("controls-update: animating ", data.animating);
           let endPos = state.cameraPosition;
           let startPos = state.positionCache;
 
@@ -305,6 +309,7 @@ export class AlOrbitControl implements AframeRegistry {
           controls.enabled &&
           (controls.enableDamping || controls.autoRotate)
         ) {
+          console.log("updating controls!");
           controls.update();
         }
       },

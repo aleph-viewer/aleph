@@ -86,16 +86,16 @@ export class AlEdge implements AframeRegistry {
       },
 
       addListeners() {
-        this.el.addEventListener(
-          this.state.node1Event,
-          this.node1Listener,
-          false
-        );
-        this.el.addEventListener(
-          this.state.node2Event,
-          this.node2Listener,
-          false
-        );
+        this.el.addEventListener(this.state.node1Event, this.node1Listener, {
+          capture: false,
+          once: false,
+          passive: true
+        });
+        this.el.addEventListener(this.state.node2Event, this.node2Listener, {
+          capture: false,
+          once: false,
+          passive: true
+        });
       },
 
       removeListeners() {
