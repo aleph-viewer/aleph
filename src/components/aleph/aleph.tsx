@@ -749,11 +749,12 @@ export class Aleph {
 
   private _controlsEnabledHandler(_event: CustomEvent): void {
     this.appSetControlsEnabled(true);
+    ThreeUtils.enableCamera(this._camera, true);
   }
 
   private _controlsDisabledHandler(_event: CustomEvent): void {
     this.appSetControlsEnabled(false);
-    console.log("controls: ", this.controlsEnabled);
+    ThreeUtils.enableCamera(this._camera, false);
   }
 
   private _intersectionClearedEventHandler(_event): void {

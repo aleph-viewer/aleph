@@ -1,4 +1,10 @@
+type Entity = import("aframe").Entity;
+
 export class ThreeUtils {
+  static enableCamera(camEntity: Entity, enabled: boolean) {
+    camEntity.setAttribute("al-orbit-control", `enabled: ${enabled}`);
+  }
+
   static objectToVector3(vec: {
     x: number;
     y: number;
