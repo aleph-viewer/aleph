@@ -850,96 +850,86 @@ export class Aleph {
   }
 
   private _addEventListeners(): void {
-    if (this._scene) {
-      this._scene.canvas.addEventListener("mousedown", this._canvasMouseDown, {
-        capture: false,
-        once: false,
-        passive: true
-      });
+    this._scene.canvas.addEventListener("mousedown", this._canvasMouseDown, {
+      capture: false,
+      once: false,
+      passive: true
+    });
 
-      this._scene.canvas.addEventListener("mouseup", this._canvasMouseUp, {
-        capture: false,
-        once: false,
-        passive: true
-      });
+    this._scene.canvas.addEventListener("mouseup", this._canvasMouseUp, {
+      capture: false,
+      once: false,
+      passive: true
+    });
 
-      this._scene.addEventListener(
-        AlOrbitControlEvents.UPDATED,
-        this._controlsUpdated,
-        false
-      );
+    this._scene.addEventListener(
+      AlOrbitControlEvents.UPDATED,
+      this._controlsUpdated,
+      false
+    );
 
-      // this._scene.addEventListener(
-      //   AlOrbitControlEvents.ANIMATION_FINISHED,
-      //   this._animationFinished,
-      //   false
-      // );
+    this._scene.addEventListener(
+      AlNodeEvents.CONTROLS_ENABLED,
+      this._controlsEnabledHandler,
+      false
+    );
 
-      this._scene.addEventListener(
-        AlNodeEvents.CONTROLS_ENABLED,
-        this._controlsEnabledHandler,
-        false
-      );
+    this._scene.addEventListener(
+      AlNodeEvents.CONTROLS_DISABLED,
+      this._controlsDisabledHandler,
+      false
+    );
 
-      this._scene.addEventListener(
-        AlNodeEvents.CONTROLS_DISABLED,
-        this._controlsDisabledHandler,
-        false
-      );
+    this._scene.addEventListener(
+      AlNodeEvents.DRAGGING,
+      this._nodeMovedEventHandler,
+      false
+    );
 
-      this._scene.addEventListener(
-        AlNodeEvents.DRAGGING,
-        this._nodeMovedEventHandler,
-        false
-      );
+    this._scene.addEventListener(
+      AlNodeSpawnerEvents.ADD_NODE,
+      this._setNodeEventHandler,
+      false
+    );
 
-      this._scene.addEventListener(
-        AlNodeSpawnerEvents.ADD_NODE,
-        this._setNodeEventHandler,
-        false
-      );
+    this._scene.addEventListener(
+      AlNodeEvents.SELECTED,
+      this._nodeSelectedEventHandler,
+      false
+    );
 
-      this._scene.addEventListener(
-        AlNodeEvents.SELECTED,
-        this._nodeSelectedEventHandler,
-        false
-      );
+    this._scene.addEventListener(
+      AlNodeSpawnerEvents.VALID_TARGET,
+      this._validTargetEventHandler,
+      false
+    );
 
-      this._scene.addEventListener(
-        AlNodeSpawnerEvents.VALID_TARGET,
-        this._validTargetEventHandler,
-        false
-      );
+    this._scene.addEventListener(
+      AlGltfModelEvents.LOADED,
+      this._srcLoaded,
+      false
+    );
 
-      if (this._targetEntity) {
-        this._targetEntity.addEventListener(
-          AlGltfModelEvents.LOADED,
-          this._srcLoaded,
-          false
-        );
-      }
+    this._scene.addEventListener(
+      AlNodeEvents.INTERSECTION,
+      this._intersectingNodeEventHandler,
+      false
+    );
 
-      if (this._camera) {
-        this._camera.addEventListener(
-          AlNodeEvents.INTERSECTION,
-          this._intersectingNodeEventHandler,
-          false
-        );
-
-        this._camera.addEventListener(
-          AlNodeEvents.INTERSECTION_CLEARED,
-          this._intersectionClearedEventHandler,
-          false
-        );
-      }
-    }
+    this._scene.addEventListener(
+      AlNodeEvents.INTERSECTION_CLEARED,
+      this._intersectionClearedEventHandler,
+      false
+    );
   }
   //#endregion
 
   componentDidLoad() {}
 
   componentDidUpdate() {
-    this._addEventListeners();
+    if (this._scene) {
+      this._addEventListeners();
+    }
 
     // Turns debug text inside the models invisible
     // TODO: Wire to debug variable

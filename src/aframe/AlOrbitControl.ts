@@ -90,7 +90,7 @@ export class AlOrbitControl implements AframeRegistry {
             target: controls.target
           } as AlCameraSerial;
 
-          this.el.emit(AlOrbitControlEvents.UPDATED, res, false);
+          this.el.sceneEl.emit(AlOrbitControlEvents.UPDATED, res, false);
         }
       },
 
@@ -133,7 +133,7 @@ export class AlOrbitControl implements AframeRegistry {
             position: controls.object.position,
             target: controls.target
           } as AlCameraSerial;
-          this.el.emit(AlOrbitControlEvents.UPDATED, res, true);
+          this.el.sceneEl.emit(AlOrbitControlEvents.UPDATED, res, false);
         }, Constants.minFrameMS);
       },
 
@@ -217,11 +217,11 @@ export class AlOrbitControl implements AframeRegistry {
         //       controls.object.position.copy(res);
         //       state.animationStep += 1;
         //     } else {
-        //       el.emit(AlOrbitControlEvents.ANIMATION_FINISHED, {}, true);
+        //       el.sceneEl.emit(AlOrbitControlEvents.ANIMATION_FINISHED, {}, true);
         //       state.animationStep = 0;
         //     }
         //   } else {
-        //     el.emit(AlOrbitControlEvents.ANIMATION_FINISHED, {}, true);
+        //     el.sceneEl.emit(AlOrbitControlEvents.ANIMATION_FINISHED, {}, true);
         //     state.animationStep = 0;
         //   }
         // }

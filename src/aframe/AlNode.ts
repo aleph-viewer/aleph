@@ -88,8 +88,12 @@ export class AlNode implements AframeRegistry {
           if (this.data.nodesEnabled) {
             let state = this.state as AlNodeState;
             state.mouseDown = true;
-            this.el.emit(AlNodeEvents.CONTROLS_DISABLED, {}, true);
-            this.el.emit(AlNodeEvents.SELECTED, { id: this.el.id }, true);
+            this.el.sceneEl.emit(AlNodeEvents.CONTROLS_DISABLED, {}, true);
+            this.el.sceneEl.emit(
+              AlNodeEvents.SELECTED,
+              { id: this.el.id },
+              true
+            );
           }
         }, Constants.minFrameMS);
       },
@@ -99,14 +103,18 @@ export class AlNode implements AframeRegistry {
           let state = this.state as AlNodeState;
           state.dragging = false;
           state.mouseDown = false;
-          this.el.emit(AlNodeEvents.CONTROLS_ENABLED, {}, true);
+          this.el.sceneEl.emit(AlNodeEvents.CONTROLS_ENABLED, {}, true);
         }
       },
 
       elRaycasterIntersected(_event: CustomEvent): void {
         let state = this.state as AlNodeState;
         state.hovered = true;
-        this.el.emit(AlNodeEvents.INTERSECTION, { id: this.el.id }, true);
+        this.el.sceneEl.emit(
+          AlNodeEvents.INTERSECTION,
+          { id: this.el.id },
+          true
+        );
       },
 
       elRaycasterIntersectedCleared(_event: CustomEvent): void {
@@ -115,7 +123,7 @@ export class AlNode implements AframeRegistry {
         if (state.mouseDown && state.selected) {
           state.dragging = true;
         }
-        this.el.emit(AlNodeEvents.INTERSECTION_CLEARED, {}, true);
+        this.el.sceneEl.emit(AlNodeEvents.INTERSECTION_CLEARED, {}, true);
       },
 
       init(): void {
@@ -161,7 +169,7 @@ export class AlNode implements AframeRegistry {
       tickFunction(): void {
         let state = this.state as AlNodeState;
         if (this.data.nodesEnabled && state.dragging) {
-          this.el.emit(AlNodeEvents.DRAGGING, { id: this.el.id }, true);
+          this.el.sceneEl.emit(AlNodeEvents.DRAGGING, { id: this.el.id }, true);
         }
 
         if (state.hovered || state.dragging) {
