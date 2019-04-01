@@ -1,18 +1,12 @@
 export class Constants {
+  static fontSize = 1.5;
   static movedEventString = "-moved";
-
   static titleIdString = "-title";
-
   static nodeSizeRatio = 50;
-
   static splashBackSize = 5;
-
   static zoomFactor = 2.5;
-
   static maxAnimationSteps = 100;
-
   static minFrameMS = 15; // Should never be higher than the returned frame time
-
   static minTimeForThrottle = Constants.minFrameMS * 5;
 
   static nodeColors = {
