@@ -85,15 +85,12 @@ export class AlNode implements AframeRegistry {
 
       elMouseDown(_event: CustomEvent): void {
         window.setTimeout(() => {
+          this.el.sceneEl.emit(AlNodeEvents.SELECTED, { id: this.el.id }, true);
+
           if (this.data.nodesEnabled) {
             let state = this.state as AlNodeState;
             state.mouseDown = true;
             this.el.sceneEl.emit(AlNodeEvents.CONTROLS_DISABLED, {}, true);
-            this.el.sceneEl.emit(
-              AlNodeEvents.SELECTED,
-              { id: this.el.id },
-              true
-            );
           }
         }, Constants.minFrameMS);
       },
