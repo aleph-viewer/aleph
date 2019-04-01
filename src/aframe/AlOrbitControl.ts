@@ -118,7 +118,7 @@ export class AlOrbitControl implements AframeRegistry {
         let cameraPosition = ThreeUtils.objectToVector3(data.cameraPosition);
         let targetPosition = ThreeUtils.objectToVector3(data.targetPosition);
 
-        //controls.object.position.copy(cameraPosition);
+        controls.object.position.copy(cameraPosition);
         el.getObject3D("camera").position.copy(cameraPosition);
         controls.target.copy(targetPosition);
 
@@ -168,67 +168,13 @@ export class AlOrbitControl implements AframeRegistry {
           .position.copy(ThreeUtils.objectToVector3(data.cameraPosition));
 
         console.log("orbit-controls-bot: ", controls.enabled);
-
-        // // If _oldData.cameraPosition exists and we're NOT cameraAnimating, this is not the initialisation update and an animation update
-        // if (_oldData.cameraPosition) {
-        //   let oldPos = ThreeUtils.objectToVector3(_oldData.cameraPosition);
-        //   let newPos = ThreeUtils.objectToVector3(data.cameraPosition);
-
-        //   if (!oldPos.equals(newPos)) {
-        //     // Check the old start position against the value passed in by aleph._renderCamera()
-        //     // This is to check and see if the source has changed, as the cameraPosition for each
-        //     // source is determined by it's bounding sphere.
-        //     state.cameraPosition.copy(newPos);
-
-        //     if (!data.cameraAnimating) {
-        //       controls.object.position.copy(state.cameraPosition);
-        //       state.positionCache.copy(state.cameraPosition);
-        //     }
-        //   }
-        // }
-        // console.log("controls-update:", this.state.controls.object.position);
       },
 
       tickFunction() {
-        //console.log("controls-update: enabled:", this.data.enabled);
-        // let state = this.state as AlOrbitControlState;
         let controls = this.state.controls;
         if (!controls.enabled) {
           return;
         }
-        // let el = this.el;
-        // const data = this.data;
-
-        // if (!this.data.enabled) {
-        //   return;
-        // }
-
-        // if (data.cameraAnimating) {
-        //   //console.log("controls-update: animating ", data.animating);
-        //   let endPos = state.cameraPosition;
-        //   let startPos = state.positionCache;
-
-        //   if (state.animationStep <= Constants.maxAnimationSteps) {
-        //     const percent: number =
-        //       state.animationStep / Constants.maxAnimationSteps;
-        //     const res: THREE.Vector3 | null = ThreeUtils.slerp(
-        //       startPos.clone(),
-        //       endPos.clone(),
-        //       percent
-        //     );
-
-        //     if (res) {
-        //       controls.object.position.copy(res);
-        //       state.animationStep += 1;
-        //     } else {
-        //       el.sceneEl.emit(AlOrbitControlEvents.ANIMATION_FINISHED, {}, true);
-        //       state.animationStep = 0;
-        //     }
-        //   } else {
-        //     el.sceneEl.emit(AlOrbitControlEvents.ANIMATION_FINISHED, {}, true);
-        //     state.animationStep = 0;
-        //   }
-        // }
         if (
           controls.enabled &&
           (controls.enableDamping || controls.autoRotate)

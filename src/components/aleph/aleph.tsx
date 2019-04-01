@@ -672,31 +672,31 @@ export class Aleph {
 
   private _selectNode(nodeId: string, animate: boolean): void {
     console.log("animate ", animate);
-    if (animate && nodeId !== this.selected) {
-      this.appSetCameraAnimating(true); // todo: can we pass boolean to appSelectNode to set cameraAnimating in the state?
+    // if (animate && nodeId !== this.selected) {
+    //   this.appSetCameraAnimating(true); // todo: can we pass boolean to appSelectNode to set cameraAnimating in the state?
 
-      // TODO: Differentiate between Node -> Node && Target -> Target animations
-      if (this.cameraAnimating) {
-        // Get camera state from node and set as result
-        let result: AlCameraSerial | null = GetUtils.getCameraStateFromNode(
-          this.nodes.get(this.selected),
-          this._boundingSphereRadius
-        );
+    //   // TODO: Differentiate between Node -> Node && Target -> Target animations
+    //   if (this.cameraAnimating) {
+    //     // Get camera state from node and set as result
+    //     let result: AlCameraSerial | null = GetUtils.getCameraStateFromNode(
+    //       this.nodes.get(this.selected),
+    //       this._boundingSphereRadius
+    //     );
 
-        if (result) {
-          // If we returned a result AND the difference between the last position and the result position is not 0
-          const diffPos: number = result.position.distanceTo(
-            this.camera.position
-          );
+    //     if (result) {
+    //       // If we returned a result AND the difference between the last position and the result position is not 0
+    //       const diffPos: number = result.position.distanceTo(
+    //         this.camera.position
+    //       );
 
-          const diffTarg: number = result.target.distanceTo(this.camera.target);
+    //       const diffTarg: number = result.target.distanceTo(this.camera.target);
 
-          if (diffPos !== 0 || diffTarg !== 0) {
-            this.appSetCamera(result);
-          }
-        }
-      }
-    }
+    //       if (diffPos !== 0 || diffTarg !== 0) {
+    //         this.appSetCamera(result);
+    //       }
+    //     }
+    //   }
+    // }
     this.appSelectNode(nodeId);
     this.onChanged.emit(this._getAppState());
   }
