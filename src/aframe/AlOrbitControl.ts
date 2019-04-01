@@ -72,10 +72,15 @@ export class AlOrbitControl implements AframeRegistry {
       addListeners() {
         this.el.sceneEl.addEventListener("enter-vr", this.onEnterVR, false);
         this.el.sceneEl.addEventListener("exit-vr", this.onExitVR, false);
-        this.el.sceneEl.canvas.addEventListener("mouseup", this.canvasMouseUp, false);
+        this.el.sceneEl.canvas.addEventListener(
+          "mouseup",
+          this.canvasMouseUp,
+          false
+        );
         this.el.sceneEl.canvas.addEventListener(
           "mousedown",
-          this.canvasMouseDown, false
+          this.canvasMouseDown,
+          false
         );
         // this.el.addEventListener(
         //   AlNodeEvents.CONTROLS_ENABLED,
