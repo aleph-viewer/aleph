@@ -48,15 +48,17 @@ export class AlNode implements AframeRegistry {
       },
 
       addListeners(): void {
-        this.el.addEventListener("mousedown", this.elMouseDown);
-        this.el.sceneEl.canvas.addEventListener("mouseup", this.canvasMouseUp);
+        this.el.addEventListener("mousedown", this.elMouseDown, false);
+        this.el.sceneEl.canvas.addEventListener("mouseup", this.canvasMouseUp, false);
         this.el.addEventListener(
           "raycaster-intersected",
-          this.elRaycasterIntersected
+          this.elRaycasterIntersected,
+          false
         );
         this.el.addEventListener(
           "raycaster-intersected-cleared",
-          this.elRaycasterIntersectedCleared
+          this.elRaycasterIntersectedCleared,
+          false
         );
       },
 
