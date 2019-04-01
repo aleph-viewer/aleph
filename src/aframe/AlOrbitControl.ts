@@ -5,6 +5,8 @@ import { AlNodeSpawnerEvents, AlNodeEvents } from ".";
 
 interface AlOrbitControlState {
   controls: THREE.OrbitControls;
+  animationStates: AlCameraSerial[];
+  step: number;
 }
 
 interface AlOrbitControlObject extends AframeComponent {
@@ -28,9 +30,13 @@ export class AlOrbitControl implements AframeRegistry {
       dependencies: ["camera"],
 
       schema: {
+        animating: { type: "boolean", default: false },
+        animationPosition: { type: "vec3" },
+        animationTarget: { type: "vec3" },
         autoRotate: { type: "boolean" },
         autoRotateSpeed: { default: 2 },
-        cameraPosition: { type: "vec3" },
+        controlsPosition: { type: "vec3" },
+        controlsTarget: { type: "vec3" },
         dampingFactor: { default: 0.1 },
         enabled: { default: true },
         enableDamping: { default: true },
@@ -49,7 +55,6 @@ export class AlOrbitControl implements AframeRegistry {
         panSpeed: { default: 1 },
         rotateSpeed: { default: 0.05 },
         screenSpacePanning: { default: false },
-        targetPosition: { type: "vec3" },
         zoomSpeed: { type: "number", default: 0.5 }
       },
 
@@ -139,22 +144,27 @@ export class AlOrbitControl implements AframeRegistry {
           el.sceneEl.renderer.domElement
         );
 
-        // Convert the cameraPosition & targetPosition Objects into THREE.Vector3
-        let cameraPosition = ThreeUtils.objectToVector3(data.cameraPosition);
-        let targetPosition = ThreeUtils.objectToVector3(data.targetPosition);
+        // Convert the controlsPosition & controlsTarget Objects into THREE.Vector3
+        let controlsPosition = ThreeUtils.objectToVector3(
+          data.controlsPosition
+        );
+        let controlsTarget = ThreeUtils.objectToVector3(data.controlsTarget);
 
-        controls.object.position.copy(cameraPosition);
-        el.getObject3D("camera").position.copy(cameraPosition);
-        controls.target.copy(targetPosition);
+        controls.object.position.copy(controlsPosition);
+        el.getObject3D("camera").position.copy(controlsPosition);
+        controls.target.copy(controlsTarget);
 
-        (this.state as AlOrbitControlState) = { controls };
+        (this.state as AlOrbitControlState) = {
+          controls,
+          animationStates: [],
+          step: Constants.maxAnimationSteps
+        };
 
         this.bindListeners();
         this.addListeners();
 
         // wait a frame before emitting initialised event
         window.setTimeout(() => {
-          console.log("timeout!");
           this.emitNewSerial();
         }, Constants.minFrameMS);
       },
@@ -163,7 +173,6 @@ export class AlOrbitControl implements AframeRegistry {
         let controls = this.state.controls;
         const data = this.data;
 
-        controls.target = ThreeUtils.objectToVector3(data.targetPosition);
         controls.autoRotate = data.autoRotate;
         controls.autoRotateSpeed = data.autoRotateSpeed;
         controls.dampingFactor = data.dampingFactor;
@@ -183,17 +192,87 @@ export class AlOrbitControl implements AframeRegistry {
         controls.rotateSpeed = data.rotateSpeed;
         controls.screenSpacePanning = data.screenSpacePanning;
         controls.zoomSpeed = data.zoomSpeed;
-        this.el
-          .getObject3D("camera")
-          .position.copy(ThreeUtils.objectToVector3(data.cameraPosition));
+
+        if (_oldData.animating !== data.animating) {
+          if (data.animating) {
+            this.state.step = 0;
+            const animationTarget = ThreeUtils.objectToVector3(
+              data.animationTarget
+            );
+            const animationPosition = ThreeUtils.objectToVector3(
+              data.animationPosition
+            );
+
+            const diffPos: number = animationPosition.distanceTo(
+              controls.object.position
+            );
+            const diffTarg: number = animationTarget.distanceTo(
+              controls.target
+            );
+
+            for (let step = 1; step <= Constants.maxAnimationSteps; step++) {
+              let percent = step / Constants.maxAnimationSteps;
+              let newPos = new THREE.Vector3().copy(controls.object.position);
+              let newTarg = new THREE.Vector3().copy(controls.target);
+
+              if (diffPos) {
+                newPos = ThreeUtils.slerp(
+                  controls.object.position.clone(),
+                  animationPosition.clone(),
+                  percent
+                );
+              }
+              if (diffTarg) {
+                newTarg = ThreeUtils.slerp(
+                  controls.target.clone(),
+                  animationTarget.clone(),
+                  percent
+                );
+              }
+
+              this.state.animationStates.push({
+                position: newPos,
+                target: newTarg
+              } as AlCameraSerial);
+            }
+
+            this.state.step = 0;
+          }
+        } else {
+          this.state.animating = data.animating;
+          controls.target = ThreeUtils.objectToVector3(data.controlsTarget);
+          this.el
+            .getObject3D("camera")
+            .position.copy(ThreeUtils.objectToVector3(data.controlsPosition));
+        }
       },
 
       tickFunction() {
-        let controls = this.state.controls;
+        let state = this.state;
+        let controls = state.controls;
         if (!controls.enabled) {
           return;
         }
-        if (
+
+        if (state.step < Constants.maxAnimationSteps && this.data.animating) {
+          console.log("step: ", state.step);
+          state.controls.object.position.copy(
+            state.animationStates[state.step].position
+          );
+          state.controls.target.copy(state.animationStates[state.step].target);
+          state.step += 1;
+          controls.update();
+
+          if (state.step == Constants.maxAnimationSteps) {
+            this.emitNewSerial();
+            this.el.sceneEl.emit(
+              AlOrbitControlEvents.ANIMATION_FINISHED,
+              {},
+              false
+            );
+            state.animationStates = [];
+          }
+        } else if (
           controls.enabled &&
           (controls.enableDamping || controls.autoRotate)
         ) {
@@ -221,4 +300,5 @@ export class AlOrbitControl implements AframeRegistry {
 
 export class AlOrbitControlEvents {
   static UPDATED: string = "al-orbit-controls-updated";
+  static ANIMATION_FINISHED: string = "al-orbit-control-animation-finished";
 }
