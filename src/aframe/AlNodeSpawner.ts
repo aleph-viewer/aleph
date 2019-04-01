@@ -18,6 +18,8 @@ interface AlNodeSpawnerObject extends AframeComponent {
   elRaycasterIntersected(event: CustomEvent): void;
   elRaycasterIntersectedCleared(event: CustomEvent): void;
   elClick(event: CustomEvent): void;
+  elMouseDown(event: CustomEvent): void;
+  elMouseUp(event: CustomEvent): void;
 }
 
 export class AlNodeSpawner implements AframeRegistry {
@@ -37,6 +39,8 @@ export class AlNodeSpawner implements AframeRegistry {
         );
         this.elClick = this.elClick.bind(this);
         this.canvasMouseUp = this.canvasMouseUp.bind(this);
+        this.elMouseDown = this.elMouseDown.bind(this);
+        this.elMouseUp = this.elMouseUp.bind(this);
       },
 
       addListeners() {
@@ -65,6 +69,16 @@ export class AlNodeSpawner implements AframeRegistry {
           once: false,
           passive: true
         });
+        this.el.addEventListener("mousedown", this.elMouseDown, {
+          capture: false,
+          once: false,
+          passive: true
+        });
+        this.el.addEventListener("mouseup", this.elMouseUp, {
+          capture: false,
+          once: false,
+          passive: true
+        });
       },
 
       removeListeners() {
@@ -85,19 +99,21 @@ export class AlNodeSpawner implements AframeRegistry {
           this.elRaycasterIntersectedCleared
         );
         this.el.removeEventListener("click", this.elClick);
+        this.el.removeEventListener("mousedown", this.elMouseDown);
+        this.el.removeEventListener("mouseup", this.elMouseUp);
       },
 
       canvasMouseDown(event: MouseEvent) {
         this.state.left = event.button === 0;
-        if (this.state.intersecting && this.data.nodesEnabled) {
-          this.el.sceneEl.emit(AlNodeEvents.CONTROLS_DISABLED, {}, false);
-        }
+        // if (this.state.intersecting && this.data.nodesEnabled) {
+        //   this.el.sceneEl.emit(AlNodeEvents.CONTROLS_DISABLED, {}, false);
+        // }
       },
 
       canvasMouseUp(_event: MouseEvent) {
         window.setTimeout(() => {
           this.state.left = false;
-          this.el.sceneEl.emit(AlNodeEvents.CONTROLS_ENABLED, {}, false);
+          //this.el.sceneEl.emit(AlNodeEvents.CONTROLS_ENABLED, {}, false);
         }, Constants.minFrameMS);
       },
 
@@ -117,6 +133,24 @@ export class AlNodeSpawner implements AframeRegistry {
           { valid: false },
           false
         );
+      },
+
+      elMouseDown(_event: CustomEvent) {
+        if (this.data.nodesEnabled) {
+          this.el.sceneEl.camera.el.setAttribute(
+            "al-orbit-control",
+            "enabled: false"
+          );
+        }
+      },
+
+      elMouseUp(_event: CustomEvent) {
+        if (this.data.nodesEnabled) {
+          this.el.sceneEl.camera.el.setAttribute(
+            "al-orbit-control",
+            "enabled: true"
+          );
+        }
       },
 
       elClick(event: CustomEvent) {
