@@ -572,21 +572,21 @@ export class Aleph {
         look-controls="enabled: false"
         far={Constants.cameraValues.far}
         al-orbit-control={`
-      maxPolarAngle: ${Constants.cameraValues.maxPolarAngle};
-      minDistance: ${Constants.cameraValues.minDistance};
-      screenSpacePanning: true;
-      rotateSpeed: ${Constants.cameraValues.rotateSpeed};
-      zoomSpeed: ${Constants.cameraValues.zoomSpeed};
-      enableDamping: true;
-      dampingFactor: ${Constants.cameraValues.dampingFactor};
-      targetPosition: ${ThreeUtils.vector3ToString(
-        this.camera ? this.camera.target : new THREE.Vector3(0, 0, 0)
-      )};
-      cameraPosition: ${ThreeUtils.vector3ToString(
-        this.camera ? this.camera.position : new THREE.Vector3(0, 0, 0)
-      )};
-      enabled: ${this.controlsEnabled};
-    `}
+          maxPolarAngle: ${Constants.cameraValues.maxPolarAngle};
+          minDistance: ${Constants.cameraValues.minDistance};
+          screenSpacePanning: true;
+          rotateSpeed: ${Constants.cameraValues.rotateSpeed};
+          zoomSpeed: ${Constants.cameraValues.zoomSpeed};
+          enableDamping: true;
+          dampingFactor: ${Constants.cameraValues.dampingFactor};
+          targetPosition: ${ThreeUtils.vector3ToString(
+            this.camera ? this.camera.target : new THREE.Vector3(0, 0, 0)
+          )};
+          cameraPosition: ${ThreeUtils.vector3ToString(
+            this.camera ? this.camera.position : new THREE.Vector3(0, 0, 0)
+          )};
+          enabled: ${this.controlsEnabled};
+        `}
         ref={el => (this._camera = el)}
       >
         {this._renderSpinner()}
@@ -659,8 +659,10 @@ export class Aleph {
   }
 
   private _setNode(node: [string, AlNodeSerial]): void {
-    this.appSetNode(node);
-    this.onChanged.emit(this._getAppState());
+    window.setTimeout(() => {
+      this.appSetNode(node);
+      this.onChanged.emit(this._getAppState());
+    }, Constants.minFrameMS);
   }
 
   private _setEdge(edge: [string, AlEdgeSerial]): void {
@@ -669,6 +671,7 @@ export class Aleph {
   }
 
   private _selectNode(nodeId: string, animate: boolean): void {
+    console.log("animate ", animate);
     if (animate && nodeId !== this.selected) {
       this.appSetCameraAnimating(true); // todo: can we pass boolean to appSelectNode to set cameraAnimating in the state?
 
@@ -750,6 +753,7 @@ export class Aleph {
 
   private _controlsDisabledHandler(_event: CustomEvent): void {
     this.appSetControlsEnabled(false);
+    console.log("controls: ", this.controlsEnabled);
   }
 
   private _intersectionClearedEventHandler(_event): void {

@@ -141,6 +141,8 @@ export class AlOrbitControl implements AframeRegistry {
         let controls = this.state.controls;
         const data = this.data;
 
+        console.log("orbit-controls-top: ", data.enabled);
+
         controls.target = ThreeUtils.objectToVector3(data.targetPosition);
         controls.autoRotate = data.autoRotate;
         controls.autoRotateSpeed = data.autoRotateSpeed;
@@ -164,6 +166,8 @@ export class AlOrbitControl implements AframeRegistry {
         this.el
           .getObject3D("camera")
           .position.copy(ThreeUtils.objectToVector3(data.cameraPosition));
+
+        console.log("orbit-controls-bot: ", controls.enabled);
 
         // // If _oldData.cameraPosition exists and we're NOT cameraAnimating, this is not the initialisation update and an animation update
         // if (_oldData.cameraPosition) {
