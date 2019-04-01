@@ -18,6 +18,7 @@ interface AlOrbitControlObject extends AframeComponent {
   removeListeners(): void;
   canvasMouseUp(event: MouseEvent): void;
   canvasMouseDown(event: MouseEvent): void;
+  canvasWheel(event: WheelEvent): void;
 }
 
 export class AlOrbitControl implements AframeRegistry {
@@ -54,6 +55,7 @@ export class AlOrbitControl implements AframeRegistry {
       bindListeners() {
         this.canvasMouseUp = this.canvasMouseUp.bind(this);
         this.canvasMouseDown = this.canvasMouseDown.bind(this);
+        this.canvasWheel = this.canvasWheel.bind(this);
       },
 
       addListeners() {
@@ -67,6 +69,11 @@ export class AlOrbitControl implements AframeRegistry {
           this.canvasMouseDown,
           { capture: false, once: false, passive: true }
         );
+        this.el.sceneEl.canvas.addEventListener("wheel", this.canvasWheel, {
+          capture: false,
+          once: false,
+          passive: true
+        });
       },
 
       removeListeners() {
@@ -78,6 +85,7 @@ export class AlOrbitControl implements AframeRegistry {
           "mousedown",
           this.canvasMouseDown
         );
+        this.el.sceneEl.canvas.addEventListener("wheel", this.canvasWheel);
       },
 
       canvasMouseUp(_event: MouseEvent) {
@@ -96,6 +104,17 @@ export class AlOrbitControl implements AframeRegistry {
 
       canvasMouseDown(_event: MouseEvent) {
         document.body.style.cursor = "grabbing";
+      },
+
+      canvasWheel(_event: WheelEvent) {
+        window.clearTimeout(this.canvasWheel);
+        this.canvasWheel = window.setTimeout(() => {
+          let res = {
+            position: this.state.controls.object.position,
+            target: this.state.controls.target
+          } as AlCameraSerial;
+          this.el.sceneEl.emit(AlOrbitControlEvents.UPDATED, res, false);
+        }, Constants.minFrameMS);
       },
 
       init() {

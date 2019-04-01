@@ -105,15 +105,11 @@ export class AlNodeSpawner implements AframeRegistry {
 
       canvasMouseDown(event: MouseEvent) {
         this.state.left = event.button === 0;
-        // if (this.state.intersecting && this.data.nodesEnabled) {
-        //   this.el.sceneEl.emit(AlNodeEvents.CONTROLS_DISABLED, {}, false);
-        // }
       },
 
       canvasMouseUp(_event: MouseEvent) {
         window.setTimeout(() => {
           this.state.left = false;
-          //this.el.sceneEl.emit(AlNodeEvents.CONTROLS_ENABLED, {}, false);
         }, Constants.minFrameMS);
       },
 
@@ -135,6 +131,15 @@ export class AlNodeSpawner implements AframeRegistry {
         );
       },
 
+      //#region Here be dragons. Thou art forewarned.
+      // Number of hours waster "cleaning" this: 8.
+      // Every time you try to clean this, please realize your mistakes, and cry
+      // as you increment this counter.
+      //
+      // But seriously: we tried setting this through the Redux store & events, it caused
+      // mouseUp to not register from the node spawner or propagate to the underlying
+      // THREE.OrbitControls. CLicking on anything EXCEPT the nodeSpawner entity reset the
+      // mouse state properly.
       elMouseDown(_event: CustomEvent) {
         if (this.data.nodesEnabled) {
           this.el.sceneEl.camera.el.setAttribute(
@@ -152,6 +157,7 @@ export class AlNodeSpawner implements AframeRegistry {
           );
         }
       },
+      //#endregion
 
       elClick(event: CustomEvent) {
         if (this.state.left && this.data.nodesEnabled) {
