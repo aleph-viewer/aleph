@@ -23,7 +23,7 @@ interface AlNodeObject extends AframeComponent {
   addListeners(): void;
   removeListeners(): void;
   elMouseDown(_event: CustomEvent): void;
-  elMouseUp(_event: CustomEvent): void;
+  canvasMouseUp(_event: MouseEvent): void;
   elRaycasterIntersected(_event: CustomEvent): void;
   elRaycasterIntersectedCleared(_event: CustomEvent): void;
 }
@@ -40,7 +40,7 @@ export class AlNode implements AframeRegistry {
 
       bindListeners(): void {
         this.elMouseDown = this.elMouseDown.bind(this);
-        this.elMouseUp = this.elMouseUp.bind(this);
+        this.canvasMouseUp = this.canvasMouseUp.bind(this);
         this.elRaycasterIntersected = this.elRaycasterIntersected.bind(this);
         this.elRaycasterIntersectedCleared = this.elRaycasterIntersectedCleared.bind(
           this
@@ -49,7 +49,7 @@ export class AlNode implements AframeRegistry {
 
       addListeners(): void {
         this.el.addEventListener("mousedown", this.elMouseDown);
-        this.el.addEventListener("mouseup", this.elMouseUp);
+        this.el.sceneEl.canvas.addEventListener("mouseup", this.canvasMouseUp);
         this.el.addEventListener(
           "raycaster-intersected",
           this.elRaycasterIntersected
@@ -62,7 +62,7 @@ export class AlNode implements AframeRegistry {
 
       removeListeners(): void {
         this.el.removeEventListener("mousedown", this.elMouseDown);
-        this.el.removeEventListener("mouseup", this.elMouseUp);
+        this.el.removeEventListener("mouseup", this.canvasMouseUp);
         this.el.removeEventListener(
           "raycaster-intersected",
           this.elRaycasterIntersected
@@ -84,12 +84,12 @@ export class AlNode implements AframeRegistry {
         }, Constants.minFrameMS);
       },
 
-      elMouseUp(_event: CustomEvent): void {
+      canvasMouseUp(_event: MouseEvent): void {
         if (this.data.nodesEnabled) {
           let state = this.state as AlNodeState;
           state.dragging = false;
           state.mouseDown = false;
-          this.el.emit(AlNodeEvents.CONTROLS_ENABLED), {}, true;
+          this.el.emit(AlNodeEvents.CONTROLS_ENABLED, {}, true);
         }
       },
 
@@ -184,7 +184,7 @@ export class AlNodeEvents {
   static INTERSECTION: string = "al-node-intersection";
   static INTERSECTION_CLEARED: string = "al-node-intersection-cleared";
   static DRAGGING: string = "al-node-dragging";
-  static CONTROLS_ENABLED: string = "al-control-enable";
-  static CONTROLS_DISABLED: string = "al-control-disabled";
+  static CONTROLS_ENABLED: string = "al-controls-enabled";
+  static CONTROLS_DISABLED: string = "al-controls-disabled";
   static ANIMATION_STARTED: string = "al-animation-started";
 }

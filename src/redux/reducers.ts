@@ -72,8 +72,6 @@ export const app = (
         ...sanitisedValue
       };
 
-      console.log("new position", nextValue.position);
-
       // if the key already exists, keep the current selected
       // otherwise select the new key.
       return {

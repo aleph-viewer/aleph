@@ -72,10 +72,6 @@ export class Tabs {
     }
   }
 
-  // componentDidUpdate() {
-  //   this.el.style.height = this.el.parentElement.clientHeight + "px";
-  // }
-
   @Listen("ionTabButtonClick")
   protected onTabClicked(ev: CustomEvent<TabButtonClickEventDetail>) {
     const { tab } = ev.detail;

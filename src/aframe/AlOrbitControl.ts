@@ -1,6 +1,7 @@
 import { AframeRegistry, AframeComponent } from "../interfaces";
 import { Constants } from "../Constants";
 import { ThreeUtils } from "../utils";
+import { AlNodeSpawnerEvents, AlNodeEvents } from ".";
 
 interface AlOrbitControlState {
   oldPosition: THREE.Vector3;
@@ -24,6 +25,7 @@ interface AlOrbitControlObject extends AframeComponent {
   removeListeners(): void;
   canvasMouseUp(event: MouseEvent): void;
   canvasMouseDown(event: MouseEvent): void;
+  // controlsEnabled(event: CustomEvent): void;
 }
 
 export class AlOrbitControl implements AframeRegistry {
@@ -64,6 +66,7 @@ export class AlOrbitControl implements AframeRegistry {
         this.onExitVR = this.onExitVR.bind(this);
         this.canvasMouseUp = this.canvasMouseUp.bind(this);
         this.canvasMouseDown = this.canvasMouseDown.bind(this);
+        //this.controlsEnabled = this.controlsEnabled.bind(this);
       },
 
       addListeners() {
@@ -74,6 +77,10 @@ export class AlOrbitControl implements AframeRegistry {
           "mousedown",
           this.canvasMouseDown
         );
+        // this.el.addEventListener(
+        //   AlNodeEvents.CONTROLS_ENABLED,
+        //   this.controlsEnabled
+        // );
       },
 
       removeListeners() {
@@ -87,7 +94,17 @@ export class AlOrbitControl implements AframeRegistry {
           "mousedown",
           this.canvasMouseDown
         );
+        // this.el.removeEventListener(
+        //   AlNodeEvents.CONTROLS_ENABLED,
+        //   this.controlsEnabled
+        // );
       },
+
+      // controlsEnabled(event: CustomEvent) {
+      //   console.log("controls enabled", event.detail);
+      //   this.state.controls.enabled = event.detail;
+      // },
+
       onEnterVR() {
         if (
           !AFRAME.utils.device.checkHeadsetConnected() &&
@@ -106,6 +123,7 @@ export class AlOrbitControl implements AframeRegistry {
           el.getObject3D("camera").position.set(0, 0, 0);
         }
       },
+
       onExitVR() {
         if (
           !AFRAME.utils.device.checkHeadsetConnected() &&
@@ -126,14 +144,16 @@ export class AlOrbitControl implements AframeRegistry {
 
       canvasMouseUp(_event: MouseEvent) {
         document.body.style.cursor = "grab";
-        this.el.emit(
-          AlOrbitControlEvents.HAS_MOVED,
-          {
-            position: this.state.controls.object.position,
-            target: this.state.controls.target
-          },
-          true
-        );
+        if (this.enabled) {
+          this.el.emit(
+            AlOrbitControlEvents.HAS_MOVED,
+            {
+              position: this.state.controls.object.position,
+              target: this.state.controls.target
+            },
+            true
+          );
+        }
       },
 
       canvasMouseDown(_event: MouseEvent) {
@@ -189,6 +209,8 @@ export class AlOrbitControl implements AframeRegistry {
       },
 
       update(_oldData) {
+        console.log("update");
+
         let state = this.state as AlOrbitControlState;
         let controls = state.controls;
         const data = this.data;
@@ -198,7 +220,6 @@ export class AlOrbitControl implements AframeRegistry {
         controls.autoRotateSpeed = data.autoRotateSpeed;
         controls.dampingFactor = data.dampingFactor;
         controls.enabled = data.enabled;
-        console.log("controls-update: ", data.enabled);
         controls.enableDamping = data.enableDamping;
         controls.enableKeys = data.enableKeys;
         controls.enablePan = data.enablePan;
@@ -229,20 +250,25 @@ export class AlOrbitControl implements AframeRegistry {
             if (!data.cameraAnimating) {
               controls.object.position.copy(state.cameraPosition);
               state.positionCache.copy(state.cameraPosition);
-              console.log("controls-update: ", state.cameraPosition);
             }
           }
         }
       },
 
       tickFunction() {
+        console.log("controls enabled:", this.data.enabled);
+        let state = this.state as AlOrbitControlState;
+        let controls = state.controls;
+
         if (!this.data.enabled) {
+          //controls.enabled = false;
           return;
         }
 
-        let state = this.state as AlOrbitControlState;
+        //controls.enabled = true;
+
         let el = this.el;
-        let controls = state.controls;
+
         const data = this.data;
 
         if (data.cameraAnimating) {
@@ -270,7 +296,12 @@ export class AlOrbitControl implements AframeRegistry {
             state.animationStep = 0;
           }
         }
-        controls.update();
+        if (
+          controls.enabled &&
+          (controls.enableDamping || controls.autoRotate)
+        ) {
+          controls.update();
+        }
       },
 
       tick() {

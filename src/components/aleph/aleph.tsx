@@ -761,12 +761,12 @@ export class Aleph {
 
   private _controlsEnabledHandler(_event: CustomEvent): void {
     this.appSetControlsEnabled(true);
-    console.log("controls-enabled: ", this.controlsEnabled);
+    console.log("controls-enabled");
   }
 
   private _controlsDisabledHandler(_event: CustomEvent): void {
     this.appSetControlsEnabled(false);
-    console.log("controls-disabled: ", this.controlsEnabled);
+    console.log("controls-disabled");
   }
 
   private _intersectionClearedEventHandler(_event): void {
@@ -811,7 +811,7 @@ export class Aleph {
   }
 
   private _validTargetEventHandler(event: CustomEvent): void {
-    this._validTarget = event.detail.payload;
+    this._validTarget = event.detail;
   }
 
   private _nodeSelectedEventHandler(event: CustomEvent): void {

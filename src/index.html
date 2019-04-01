@@ -264,12 +264,12 @@
         alConsole.cmd = state.nodes ? JSON.stringify([...state.nodes]) : "";
         alNodeList.nodes = state.nodes;
         alNodeList.selected = state.selected;
-        alNodeEditor.node = getselected();
+        alNodeEditor.node = getSelected();
 
         lastState = Object.assign({}, state);
       }
 
-      function getselected() {
+      function getSelected() {
         if (state.selected && state.nodes) {
           const n = state.nodes.get(state.selected);
           if (n) {

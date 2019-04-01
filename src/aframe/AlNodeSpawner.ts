@@ -1,4 +1,5 @@
 import { AframeRegistry, AframeComponent } from "../interfaces";
+import { AlNodeEvents } from ".";
 
 interface AlNodeSpawnerState {
   left: boolean;
@@ -12,8 +13,6 @@ interface AlNodeSpawnerObject extends AframeComponent {
   remove(): void;
   canvasMouseDown(event: MouseEvent): void;
   canvasMouseUp(event: MouseEvent): void;
-  elMouseDown(event: CustomEvent): void;
-  elMouseUp(event: CustomEvent): void;
   elRaycasterIntersected(event: CustomEvent): void;
   elRaycasterIntersectedCleared(event: CustomEvent): void;
   elClick(event: CustomEvent): void;
@@ -30,8 +29,6 @@ export class AlNodeSpawner implements AframeRegistry {
 
       bindListeners() {
         this.canvasMouseDown = this.canvasMouseDown.bind(this);
-        this.elMouseDown = this.elMouseDown.bind(this);
-        this.elMouseUp = this.elMouseUp.bind(this);
         this.elRaycasterIntersected = this.elRaycasterIntersected.bind(this);
         this.elRaycasterIntersectedCleared = this.elRaycasterIntersectedCleared.bind(
           this
@@ -46,8 +43,6 @@ export class AlNodeSpawner implements AframeRegistry {
           this.canvasMouseDown
         );
         this.el.sceneEl.canvas.addEventListener("mouseup", this.canvasMouseUp);
-        this.el.addEventListener("mousedown", this.elMouseDown);
-        this.el.addEventListener("mouseup", this.elMouseUp);
         this.el.addEventListener(
           "raycaster-intersected",
           this.elRaycasterIntersected
@@ -68,8 +63,6 @@ export class AlNodeSpawner implements AframeRegistry {
           "mouseup",
           this.canvasMouseUp
         );
-        this.el.removeEventListener("mousedown", this.elMouseDown);
-        this.el.removeEventListener("mouseup", this.mouseup);
         this.el.removeEventListener(
           "raycaster-intersected",
           this.elRaycasterIntersected
@@ -89,26 +82,8 @@ export class AlNodeSpawner implements AframeRegistry {
         this.state.left = false;
       },
 
-      elMouseDown(_event: CustomEvent) {
-        if (this.data.nodesEnabled) {
-          this.el.sceneEl.camera.el.setAttribute(
-            "al-orbit-control",
-            "enabled: false"
-          );
-        }
-      },
-
-      elMouseUp(_event: CustomEvent) {
-        if (this.data.nodesEnabled) {
-          this.el.sceneEl.camera.el.setAttribute(
-            "al-orbit-control",
-            "enabled: true"
-          );
-        }
-      },
-
       elRaycasterIntersected(_event: CustomEvent) {
-        this.el.emit(AlNodeSpawnerEvents.VALID_TARGET, { payload: true }, true);
+        this.el.emit(AlNodeSpawnerEvents.VALID_TARGET, true, true);
       },
 
       elRaycasterIntersectedCleared(_event: CustomEvent) {
