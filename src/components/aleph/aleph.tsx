@@ -744,18 +744,12 @@ export class Aleph {
     this.appSetCamera(event.detail);
   }
 
-  // private _animationFinished(_event: CustomEvent): void {
-  //   this.appSetCameraAnimating(false);
-  // }
-
   private _controlsEnabledHandler(_event: CustomEvent): void {
     this.appSetControlsEnabled(true);
-    console.log("controls-enabled");
   }
 
   private _controlsDisabledHandler(_event: CustomEvent): void {
     this.appSetControlsEnabled(false);
-    console.log("controls-disabled");
   }
 
   private _intersectionClearedEventHandler(_event): void {
@@ -767,7 +761,6 @@ export class Aleph {
   }
 
   private _setNodeEventHandler(event: CustomEvent): void {
-    console.log("aleph: new node!");
     // IF creating a new node and NOT intersecting an existing node
     if (
       this.nodesEnabled && // Nodes are enabled
