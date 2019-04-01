@@ -15,6 +15,7 @@ import {
   Orientation,
 } from './enums/Orientation';
 import {
+  AlEdgeSerial,
   AlNodeSerial,
 } from './interfaces';
 import {
@@ -24,16 +25,22 @@ import {
 
 export namespace Components {
 
+  interface AlConsole {
+    'cmd': string;
+  }
+  interface AlConsoleAttributes extends StencilHTMLAttributes {
+    'cmd'?: string;
+    'onOnCmd'?: (event: CustomEvent) => void;
+  }
+
   interface AlControlPanel {
     'boundingBoxVisible': boolean;
     'displayMode': DisplayMode;
-    'nodes': Map<string, AlNodeSerial>;
     'nodesEnabled': boolean;
     'nodesVisible': boolean;
     'optionsEnabled': boolean;
     'optionsVisible': boolean;
     'orientation': Orientation;
-    'selectedNode': string | null;
     'slicesIndex': number;
     'slicesWindowCenter': number;
     'slicesWindowWidth': number;
@@ -46,7 +53,6 @@ export namespace Components {
   interface AlControlPanelAttributes extends StencilHTMLAttributes {
     'boundingBoxVisible'?: boolean;
     'displayMode'?: DisplayMode;
-    'nodes'?: Map<string, AlNodeSerial>;
     'nodesEnabled'?: boolean;
     'nodesVisible'?: boolean;
     'onOnSetBoundingBoxVisible'?: (event: CustomEvent) => void;
@@ -63,7 +69,6 @@ export namespace Components {
     'optionsEnabled'?: boolean;
     'optionsVisible'?: boolean;
     'orientation'?: Orientation;
-    'selectedNode'?: string | null;
     'slicesIndex'?: number;
     'slicesWindowCenter'?: number;
     'slicesWindowWidth'?: number;
@@ -84,13 +89,48 @@ export namespace Components {
   }
 
   interface AlNodeList {
-    'nodes': Map<string, AlNodeSerial>;
-    'selectedNode': string | null;
+    'nodes': Map<string, AlNodeSerial> | null;
+    'selected': string | null;
   }
   interface AlNodeListAttributes extends StencilHTMLAttributes {
-    'nodes'?: Map<string, AlNodeSerial>;
-    'onOnSelectedNodeChanged'?: (event: CustomEvent) => void;
-    'selectedNode'?: string | null;
+    'nodes'?: Map<string, AlNodeSerial> | null;
+    'onOnSelectedChanged'?: (event: CustomEvent) => void;
+    'selected'?: string | null;
+  }
+
+  interface AlTabs {
+    /**
+    * Get the currently selected tab
+    */
+    'getSelected': () => Promise<string>;
+    /**
+    * Get the tab element given the tab name
+    */
+    'getTab': (tab: any) => Promise<any>;
+    /**
+    * Index or the Tab instance, of the tab to select.
+    */
+    'select': (tab: any) => Promise<boolean>;
+  }
+  interface AlTabsAttributes extends StencilHTMLAttributes {
+    /**
+    * Emitted when the navigation has finished transitioning to a new component.
+    */
+    'onIonTabsDidChange'?: (event: CustomEvent<{ tab: string }>) => void;
+    /**
+    * Emitted when the navigation is about to transition to a new component.
+    */
+    'onIonTabsWillChange'?: (event: CustomEvent<{ tab: string }>) => void;
+  }
+
+  interface AlUrlPicker {
+    'url': string | null;
+    'urls': Map<string, string> | null;
+  }
+  interface AlUrlPickerAttributes extends StencilHTMLAttributes {
+    'onOnUrlChanged'?: (event: CustomEvent) => void;
+    'url'?: string | null;
+    'urls'?: Map<string, string> | null;
   }
 
   interface UvAleph {
@@ -103,6 +143,7 @@ export namespace Components {
     'selectNode': (nodeId: string) => Promise<void>;
     'setBoundingBoxVisible': (visible: boolean) => Promise<void>;
     'setDisplayMode': (displayMode: DisplayMode) => Promise<void>;
+    'setEdge': (edge: [string, AlEdgeSerial]) => Promise<void>;
     'setNode': (node: [string, AlNodeSerial]) => Promise<void>;
     'setNodes': (nodes: Map<string, AlNodeSerial>) => Promise<void>;
     'setNodesEnabled': (enabled: boolean) => Promise<void>;
@@ -121,19 +162,31 @@ export namespace Components {
 
 declare global {
   interface StencilElementInterfaces {
+    'AlConsole': Components.AlConsole;
     'AlControlPanel': Components.AlControlPanel;
     'AlNodeEditor': Components.AlNodeEditor;
     'AlNodeList': Components.AlNodeList;
+    'AlTabs': Components.AlTabs;
+    'AlUrlPicker': Components.AlUrlPicker;
     'UvAleph': Components.UvAleph;
   }
 
   interface StencilIntrinsicElements {
+    'al-console': Components.AlConsoleAttributes;
     'al-control-panel': Components.AlControlPanelAttributes;
     'al-node-editor': Components.AlNodeEditorAttributes;
     'al-node-list': Components.AlNodeListAttributes;
+    'al-tabs': Components.AlTabsAttributes;
+    'al-url-picker': Components.AlUrlPickerAttributes;
     'uv-aleph': Components.UvAlephAttributes;
   }
 
+
+  interface HTMLAlConsoleElement extends Components.AlConsole, HTMLStencilElement {}
+  var HTMLAlConsoleElement: {
+    prototype: HTMLAlConsoleElement;
+    new (): HTMLAlConsoleElement;
+  };
 
   interface HTMLAlControlPanelElement extends Components.AlControlPanel, HTMLStencilElement {}
   var HTMLAlControlPanelElement: {
@@ -153,6 +206,18 @@ declare global {
     new (): HTMLAlNodeListElement;
   };
 
+  interface HTMLAlTabsElement extends Components.AlTabs, HTMLStencilElement {}
+  var HTMLAlTabsElement: {
+    prototype: HTMLAlTabsElement;
+    new (): HTMLAlTabsElement;
+  };
+
+  interface HTMLAlUrlPickerElement extends Components.AlUrlPicker, HTMLStencilElement {}
+  var HTMLAlUrlPickerElement: {
+    prototype: HTMLAlUrlPickerElement;
+    new (): HTMLAlUrlPickerElement;
+  };
+
   interface HTMLUvAlephElement extends Components.UvAleph, HTMLStencilElement {}
   var HTMLUvAlephElement: {
     prototype: HTMLUvAlephElement;
@@ -160,16 +225,22 @@ declare global {
   };
 
   interface HTMLElementTagNameMap {
+    'al-console': HTMLAlConsoleElement
     'al-control-panel': HTMLAlControlPanelElement
     'al-node-editor': HTMLAlNodeEditorElement
     'al-node-list': HTMLAlNodeListElement
+    'al-tabs': HTMLAlTabsElement
+    'al-url-picker': HTMLAlUrlPickerElement
     'uv-aleph': HTMLUvAlephElement
   }
 
   interface ElementTagNameMap {
+    'al-console': HTMLAlConsoleElement;
     'al-control-panel': HTMLAlControlPanelElement;
     'al-node-editor': HTMLAlNodeEditorElement;
     'al-node-list': HTMLAlNodeListElement;
+    'al-tabs': HTMLAlTabsElement;
+    'al-url-picker': HTMLAlUrlPickerElement;
     'uv-aleph': HTMLUvAlephElement;
   }
 

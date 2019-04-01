@@ -4,7 +4,7 @@ import { AlNodeSerial } from "../../interfaces";
 @Component({
   tag: "al-node-editor",
   styleUrl: "al-node-editor.css",
-  shadow: false
+  shadow: true
 })
 export class AlNodeEditor {
   @Event() onDelete: EventEmitter;
@@ -16,30 +16,38 @@ export class AlNodeEditor {
     if (this.node) {
       const [nodeId, node] = this.node;
 
-      return [
-        <ion-item>
-          <ion-textarea
-            value={node.text}
-            onIonChange={e => (node.text = e.detail.value)}
-          />
-          ,
-        </ion-item>,
-        <ion-button
-          onClick={() => {
-            this.onDelete.emit(nodeId);
-            this.node = null;
-          }}
-        >
-          Delete
-        </ion-button>,
-        <ion-button
-          onClick={() => {
-            this.onSave.emit([nodeId, node]);
-          }}
-        >
-          Save
-        </ion-button>
-      ];
+      return (
+        <form onSubmit={e => e.preventDefault()}>
+          <ion-item>
+            <ion-textarea
+              value={node.text}
+              rows="5"
+              required
+              onIonChange={e => (node.text = e.detail.value)}
+            />
+          </ion-item>
+          <ion-button
+            size="small"
+            onClick={() => {
+              this.onDelete.emit(nodeId);
+              this.node = null;
+            }}
+          >
+            <ion-icon name="remove" />
+          </ion-button>
+          <ion-button
+            size="small"
+            type="submit"
+            onClick={() => {
+              if (node.text) {
+                this.onSave.emit([nodeId, node]);
+              }
+            }}
+          >
+            <ion-icon name="checkmark" />
+          </ion-button>
+        </form>
+      );
     }
 
     return null;

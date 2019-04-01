@@ -1,19 +1,11 @@
-import {
-  Component,
-  Prop,
-  Event,
-  EventEmitter,
-  Watch,
-  State
-} from "@stencil/core";
-import { AlNodeSerial } from "../../interfaces";
+import { Component, Prop, Event, EventEmitter } from "@stencil/core";
 import { DisplayMode } from "../../enums/DisplayMode";
 import { Orientation } from "../../enums/Orientation";
 
 @Component({
   tag: "al-control-panel",
   styleUrl: "al-control-panel.css",
-  shadow: false
+  shadow: true
 })
 export class AlControlPanel {
   @Event() onSetBoundingBoxVisible: EventEmitter;
@@ -33,16 +25,11 @@ export class AlControlPanel {
   @Prop({ mutable: true }) optionsEnabled: boolean = false;
   @Prop({ mutable: true }) optionsVisible: boolean = true;
   @Prop({ mutable: true }) orientation: Orientation = Orientation.CORONAL;
-  @Prop({ mutable: true }) selectedNode: string | null = null;
   @Prop({ mutable: true }) slicesIndex: number;
   @Prop({ mutable: true }) slicesWindowCenter: number;
   @Prop({ mutable: true }) slicesWindowWidth: number;
   @Prop({ mutable: true }) stack: any;
   @Prop({ mutable: true }) stackHelper: AMI.StackHelper;
-  @Prop({ mutable: true }) nodes: Map<string, AlNodeSerial> = new Map<
-    string,
-    AlNodeSerial
-  >();
   @Prop({ mutable: true }) nodesEnabled: boolean = false;
   @Prop({ mutable: true }) nodesVisible: boolean = true;
   @Prop({ mutable: true }) volumeSteps: number;
@@ -73,10 +60,6 @@ export class AlControlPanel {
     this.onSetOrientation.emit(orientation);
   }
 
-  private _selectedNode(nodeId: string | null) {
-    this.selectedNode = nodeId;
-  }
-
   private _slicesIndex(index: number) {
     this.slicesIndex = index;
     this.onSetSlicesIndex.emit(index);
@@ -98,10 +81,6 @@ export class AlControlPanel {
 
   private _stackHelper(helper: AMI.StackHelper) {
     this.stackHelper = helper;
-  }
-
-  private _nodes(nodes: Map<string, AlNodeSerial>) {
-    this.nodes = nodes;
   }
 
   private _nodesEnabled(enabled: boolean) {
@@ -162,110 +141,11 @@ export class AlControlPanel {
     if (this.nodesVisible) {
       return (
         <ion-item>
-          <ion-icon name="create" />
+          <ion-icon name="add-circle" />
           <ion-toggle onIonChange={e => this._nodesEnabled(e.detail.checked)} />
         </ion-item>
       );
     }
-
-    return null;
-  }
-
-  renderNodes(): JSX.Element {
-    //if (this.nodesVisible && this.nodesEnabled) {
-    //return [
-    // <div class="al-list">
-    //   {this.nodes.map((node: Node) => {
-    //     return (
-    //       <label class="block">
-    //         <input
-    //           type="radio"
-    //           checked={this.selectedNode === node.id}
-    //           id={node.id}
-    //           name="node"
-    //           value={node.id}
-    //           onChange={e => this.selectNode(e.srcElement.id)}
-    //         />
-    //         {node.id}
-    //       </label>
-    //     );
-    //   })}
-    // </div>,
-    // <ion-footer>
-    {
-      /* <ion-item>
-            <ion-label>Node Type</ion-label>
-            <select
-              onChange={e =>
-                this.setNodeType((e.target as HTMLSelectElement)
-                  .value as NodeType)
-              }
-            >
-              {this.angleNodeEnabled ? (
-                <option
-                  selected={this.nodeType === NodeType.ANGLE}
-                  value={NodeType.ANGLE}
-                >
-                  Angle
-                </option>
-              ) : null}
-              {this.annotationNodeEnabled ? (
-                <option
-                  selected={this.nodeType === NodeType.ANNOTATION}
-                  value={NodeType.ANNOTATION}
-                >
-                  Annotation
-                </option>
-              ) : null}
-              {this.rulerNodeEnabled ? (
-                <option
-                  selected={this.nodeType === NodeType.RULER}
-                  value={NodeType.RULER}
-                >
-                  Ruler
-                </option>
-              ) : null}
-            </select>
-          </ion-item> */
-    }
-    // <ion-nodebar>
-    //   <ion-buttons>
-    {
-      /* <ion-button
-                onClick={() => {
-                  this.addNode(
-                    CreateUtils.createNode(this.nodes, this.nodeType)
-                  );
-                }}
-              >
-                Add
-              </ion-button> */
-    }
-    {
-      /* <ion-button
-                onClick={() => {
-                  this.saveNodes();
-                }}
-              >
-                Save
-              </ion-button> */
-    }
-    {
-      /* {this.selectedNode !== null ? (
-                <ion-button
-                  onClick={() => {
-                    this.onRemoveNode.emit(this.selectedNode);
-                  }}
-                >
-                  Delete
-                </ion-button>
-              ) : null} */
-    }
-    //     </ion-buttons>
-    //   </ion-nodebar>
-    // </ion-footer>
-    //];
-    //}
 
     return null;
   }
@@ -491,35 +371,34 @@ export class AlControlPanel {
     }
   }
 
-  // private _slicesIndexChanged(evt: MouseEvent) {
-  //   this.setSlicesIndex((evt.srcElement as any).value);
+  // private _slicesIndexChanged(event: MouseEvent) {
+  //   this.setSlicesIndex((event.srcElement as any).value);
   // }
 
-  // private _slicesWindowCenterChanged(evt: MouseEvent) {
-  //   this.setSlicesWindowCenter((evt.srcElement as any).value);
+  // private _slicesWindowCenterChanged(event: MouseEvent) {
+  //   this.setSlicesWindowCenter((event.srcElement as any).value);
   // }
 
-  // private _slicesWindowWidthChanged(evt: MouseEvent) {
-  //   this.setSlicesWindowWidth((evt.srcElement as any).value);
+  // private _slicesWindowWidthChanged(event: MouseEvent) {
+  //   this.setSlicesWindowWidth((event.srcElement as any).value);
   // }
 
-  // private _volumeStepsChanged(evt: MouseEvent) {
-  //   this.setVolumeSteps((evt.srcElement as any).value);
+  // private _volumeStepsChanged(event: MouseEvent) {
+  //   this.setVolumeSteps((event.srcElement as any).value);
   // }
 
-  // private _volumeWindowCenterChanged(evt: MouseEvent) {
-  //   this.setVolumeWindowCenter((evt.srcElement as any).value);
+  // private _volumeWindowCenterChanged(event: MouseEvent) {
+  //   this.setVolumeWindowCenter((event.srcElement as any).value);
   // }
 
-  // private _volumeWindowWidthChanged(evt: MouseEvent) {
-  //   this.setVolumeWindowWidth((evt.srcElement as any).value);
+  // private _volumeWindowWidthChanged(event: MouseEvent) {
+  //   this.setVolumeWindowWidth((event.srcElement as any).value);
   // }
 
   render(): JSX.Element {
     return [
       this.renderDisplayModeToggle(),
       this.renderNodesToggle(),
-      this.renderNodes(),
       this.renderOptionsToggle(),
       this.renderOptions()
     ];

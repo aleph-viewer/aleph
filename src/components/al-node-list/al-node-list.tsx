@@ -4,36 +4,56 @@ import { AlNodeSerial } from "../../interfaces";
 @Component({
   tag: "al-node-list",
   styleUrl: "al-node-list.css",
-  shadow: false
+  shadow: true
 })
 export class AlNodeList {
-  @Event() onSelectedNodeChanged: EventEmitter;
+  @Event() onSelectedChanged: EventEmitter;
 
-  @Prop({ mutable: true }) nodes: Map<string, AlNodeSerial> = new Map<
-    string,
-    AlNodeSerial
-  >();
-  @Prop({ mutable: true }) selectedNode: string | null = null;
+  @Prop({ mutable: true }) nodes: Map<string, AlNodeSerial> | null = null;
+  @Prop({ mutable: true }) selected: string | null = null;
 
   render(): JSX.Element {
-    return (
-      <ion-list>
-        <ion-radio-group value={this.selectedNode}>
+    if (this.nodes && this.nodes.size) {
+      return (
+        <ion-list>
           {[...this.nodes].map(([nodeId, node]) => {
             return (
-              <ion-item no-padding>
-                <ion-label>{node.text}</ion-label>
-                <ion-radio
-                  value={nodeId}
-                  onClick={() => this.onSelectedNodeChanged.emit(nodeId)}
-                />
+              <ion-item
+                class={this.selected === nodeId ? "selected" : null}
+                onClick={() => this.onSelectedChanged.emit(nodeId)}
+              >
+                {node.text}
               </ion-item>
             );
           })}
-        </ion-radio-group>
-      </ion-list>
-    );
+        </ion-list>
+      );
+    }
+    return <p>No nodes exist</p>;
   }
+
+  // render(): JSX.Element {
+  //   if (this.nodes) {
+  //     return (
+  //       <ion-list>
+  //         <ion-radio-group value={this.selected}>
+  //           {[...this.nodes].map(([nodeId, node]) => {
+  //             return (
+  //               <ion-item no-padding>
+  //                 <ion-label>{node.text}</ion-label>
+  //                 <ion-radio
+  //                   value={nodeId}
+  //                   onClick={() => this.onSelectedChanged.emit(nodeId)}
+  //                 />
+  //               </ion-item>
+  //             );
+  //           })}
+  //         </ion-radio-group>
+  //       </ion-list>
+  //     );
+  //   }
+  //   return null;
+  // }
 
   // return (
   //   <div>
@@ -44,12 +64,12 @@ export class AlNodeList {
   //             <label class="block">
   //               <input
   //                 type="radio"
-  //                 checked={this.selectedNode === node.id}
+  //                 checked={this.selected === node.id}
   //                 id={node.id}
   //                 name="node"
   //                 value={node.id}
   //                 onChange={e =>
-  //                   this.onSelectedNodeChanged.emit(e.srcElement.id)
+  //                   this.onSelectedChanged.emit(e.srcElement.id)
   //                 }
   //               />
   //               {node.id}

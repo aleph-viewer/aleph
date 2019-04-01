@@ -1,4 +1,3 @@
-import { AlNodeSerial, AlEdgeSerial } from "../interfaces";
 import {
   AlGltfModel,
   AlVolumetricModel,
@@ -7,11 +6,10 @@ import {
   AlOrbitControl,
   AlSpinner,
   AlHalo,
-  AlFixedToOrbitCamera
+  AlFixedToOrbitCamera,
+  AlEdge,
+  AlLookToCamera
 } from "../aframe";
-import { ThreeUtils, GetUtils } from ".";
-import { Constants } from "../Constants";
-import { AlEdgeSpawner } from "../aframe/AlEdgeSpawner";
 
 export class CreateUtils {
   static createAframeComponents(): void {
@@ -35,9 +33,10 @@ export class CreateUtils {
       AlFixedToOrbitCamera.getName(),
       AlFixedToOrbitCamera.getObject()
     );
+    AFRAME.registerComponent(AlEdge.getName(), AlEdge.getObject());
     AFRAME.registerComponent(
-      AlEdgeSpawner.getName(),
-      AlEdgeSpawner.getObject()
+      AlLookToCamera.getName(),
+      AlLookToCamera.getObject()
     );
   }
 }

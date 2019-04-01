@@ -1,7 +1,10 @@
 import { AframeRegistry, AframeComponent } from "../interfaces";
+import { AlNodeEvents } from ".";
+import { Constants } from "../Constants";
 
 interface AlNodeSpawnerState {
   left: boolean;
+  intersecting: boolean;
 }
 
 interface AlNodeSpawnerObject extends AframeComponent {
@@ -12,11 +15,11 @@ interface AlNodeSpawnerObject extends AframeComponent {
   remove(): void;
   canvasMouseDown(event: MouseEvent): void;
   canvasMouseUp(event: MouseEvent): void;
-  elMouseDown(event: CustomEvent): void;
-  elMouseUp(event: CustomEvent): void;
   elRaycasterIntersected(event: CustomEvent): void;
   elRaycasterIntersectedCleared(event: CustomEvent): void;
   elClick(event: CustomEvent): void;
+  elMouseDown(event: CustomEvent): void;
+  elMouseUp(event: CustomEvent): void;
 }
 
 export class AlNodeSpawner implements AframeRegistry {
@@ -30,33 +33,52 @@ export class AlNodeSpawner implements AframeRegistry {
 
       bindListeners() {
         this.canvasMouseDown = this.canvasMouseDown.bind(this);
-        this.elMouseDown = this.elMouseDown.bind(this);
-        this.elMouseUp = this.elMouseUp.bind(this);
         this.elRaycasterIntersected = this.elRaycasterIntersected.bind(this);
         this.elRaycasterIntersectedCleared = this.elRaycasterIntersectedCleared.bind(
           this
         );
         this.elClick = this.elClick.bind(this);
         this.canvasMouseUp = this.canvasMouseUp.bind(this);
+        this.elMouseDown = this.elMouseDown.bind(this);
+        this.elMouseUp = this.elMouseUp.bind(this);
       },
 
       addListeners() {
         this.el.sceneEl.canvas.addEventListener(
           "mousedown",
-          this.canvasMouseDown
+          this.canvasMouseDown,
+          { capture: false, once: false, passive: true }
         );
-        this.el.sceneEl.canvas.addEventListener("mouseup", this.canvasMouseUp);
-        this.el.addEventListener("mousedown", this.elMouseDown);
-        this.el.addEventListener("mouseup", this.elMouseUp);
+        this.el.sceneEl.canvas.addEventListener("mouseup", this.canvasMouseUp, {
+          capture: false,
+          once: false,
+          passive: true
+        });
         this.el.addEventListener(
           "raycaster-intersected",
-          this.elRaycasterIntersected
+          this.elRaycasterIntersected,
+          { capture: false, once: false, passive: true }
         );
         this.el.addEventListener(
           "raycaster-intersected-cleared",
-          this.elRaycasterIntersectedCleared
+          this.elRaycasterIntersectedCleared,
+          false
         );
-        this.el.addEventListener("click", this.elClick);
+        this.el.addEventListener("click", this.elClick, {
+          capture: false,
+          once: false,
+          passive: true
+        });
+        this.el.addEventListener("mousedown", this.elMouseDown, {
+          capture: false,
+          once: false,
+          passive: true
+        });
+        this.el.addEventListener("mouseup", this.elMouseUp, {
+          capture: false,
+          once: false,
+          passive: true
+        });
       },
 
       removeListeners() {
@@ -68,8 +90,6 @@ export class AlNodeSpawner implements AframeRegistry {
           "mouseup",
           this.canvasMouseUp
         );
-        this.el.removeEventListener("mousedown", this.elMouseDown);
-        this.el.removeEventListener("mouseup", this.mouseup);
         this.el.removeEventListener(
           "raycaster-intersected",
           this.elRaycasterIntersected
@@ -79,6 +99,8 @@ export class AlNodeSpawner implements AframeRegistry {
           this.elRaycasterIntersectedCleared
         );
         this.el.removeEventListener("click", this.elClick);
+        this.el.removeEventListener("mousedown", this.elMouseDown);
+        this.el.removeEventListener("mouseup", this.elMouseUp);
       },
 
       canvasMouseDown(event: MouseEvent) {
@@ -86,9 +108,38 @@ export class AlNodeSpawner implements AframeRegistry {
       },
 
       canvasMouseUp(_event: MouseEvent) {
-        this.state.left = false;
+        window.setTimeout(() => {
+          this.state.left = false;
+        }, Constants.minFrameMS);
       },
 
+      elRaycasterIntersected(_event: CustomEvent) {
+        this.state.intersecting = true;
+        this.el.sceneEl.emit(
+          AlNodeSpawnerEvents.VALID_TARGET,
+          { valid: true },
+          false
+        );
+      },
+
+      elRaycasterIntersectedCleared(_event: CustomEvent) {
+        this.state.intersecting = false;
+        this.el.sceneEl.emit(
+          AlNodeSpawnerEvents.VALID_TARGET,
+          { valid: false },
+          false
+        );
+      },
+
+      //#region Here be dragons. Thou art forewarned.
+      // Number of hours waster "cleaning" this: 8.
+      // Every time you try to clean this, please realize your mistakes, and cry
+      // as you increment this counter.
+      //
+      // But seriously: we tried setting this through the Redux store & events, it caused
+      // mouseUp to not register from the node spawner or propagate to the underlying
+      // THREE.OrbitControls. CLicking on anything EXCEPT the nodeSpawner entity reset the
+      // mouse state properly.
       elMouseDown(_event: CustomEvent) {
         if (this.data.nodesEnabled) {
           this.el.sceneEl.camera.el.setAttribute(
@@ -106,23 +157,11 @@ export class AlNodeSpawner implements AframeRegistry {
           );
         }
       },
-
-      elRaycasterIntersected(_event: CustomEvent) {
-        this.el.emit(AlNodeSpawnerEvents.VALID_TARGET, { payload: true }, true);
-      },
-
-      elRaycasterIntersectedCleared(_event: CustomEvent) {
-        this.el.emit(
-          AlNodeSpawnerEvents.VALID_TARGET,
-          { payload: false },
-          true
-        );
-      },
+      //#endregion
 
       elClick(event: CustomEvent) {
-        if (this.state.left) {
-          this.el.emit(AlNodeSpawnerEvents.ADD_NODE, event, true);
-          this.state.left = false;
+        if (this.state.left && this.data.nodesEnabled) {
+          this.el.sceneEl.emit(AlNodeSpawnerEvents.ADD_NODE, event, false);
         }
       },
 
@@ -131,7 +170,8 @@ export class AlNodeSpawner implements AframeRegistry {
         this.addListeners();
 
         this.state = {
-          left: false
+          left: false,
+          intersecting: false
         } as AlNodeSpawnerState;
       },
 

@@ -5,22 +5,28 @@ import {
   State,
   Method,
   Event,
-  EventEmitter,
-  Watch
+  EventEmitter
 } from "@stencil/core";
 import { Store, Action } from "@stencil/redux";
 import {
+  appClearAngles,
+  appClearEdges,
   appClearNodes,
+  appDeleteAngle,
+  appDeleteEdge,
   appDeleteNode,
+  appSelectAngle,
+  appSelectEdge,
   appSelectNode,
+  appSetAngle,
   appSetBoundingBoxVisible,
   appSetCameraAnimating,
+  appSetCamera,
+  appSetControlsEnabled,
   appSetDisplayMode,
+  appSetEdge,
   appSetNode,
   appSetNodesEnabled,
-  appSetNodesVisible,
-  appSetOptionsEnabled,
-  appSetOptionsVisible,
   appSetOrientation,
   appSetSlicesIndex,
   appSetSlicesWindowCenter,
@@ -68,13 +74,8 @@ export class Aleph {
   private _boundingSphereRadius: number;
   private _validTarget: boolean;
   private _camera: Entity;
-  private _tcontrols: THREE.OrbitControls;
-  private _intersectingNode: boolean;
-
-  // TODO: Put In Reducer
-  private _lastCameraPosition: THREE.Vector3;
-  private _lastCameraTarget: THREE.Vector3;
-  //#endregion
+  private _intersectingNode: string | null = null;
+  private _isShiftDown: boolean = false;
 
   @Prop({ context: "store" }) store: Store;
   @Prop() dracoDecoderPath: string | null;
@@ -96,13 +97,12 @@ export class Aleph {
   appSetAngle: Action;
   appSetBoundingBoxVisible: Action;
   appSetCameraAnimating: Action;
+  appSetCamera: Action;
+  appSetControlsEnabled: Action;
   appSetDisplayMode: Action;
   appSetEdge: Action;
   appSetNode: Action;
   appSetNodesEnabled: Action;
-  appSetNodesVisible: Action;
-  appSetOptionsEnabled: Action;
-  appSetOptionsVisible: Action;
   appSetOrientation: Action;
   appSetSlicesIndex: Action;
   appSetSlicesWindowCenter: Action;
@@ -118,6 +118,8 @@ export class Aleph {
   @State() angles: Map<string, AlAngleSerial>;
   @State() boundingBoxVisible: boolean;
   @State() cameraAnimating: boolean;
+  @State() camera: AlCameraSerial;
+  @State() controlsEnabled: boolean;
   @State() displayMode: DisplayMode;
   @State() edges: Map<string, AlEdgeSerial>;
   @State() nodes: Map<string, AlNodeSerial>;
@@ -126,7 +128,7 @@ export class Aleph {
   @State() optionsEnabled: boolean;
   @State() optionsVisible: boolean;
   @State() orientation: Orientation;
-  @State() selectedNode: string;
+  @State() selected: string;
   @State() slicesIndex: number;
   @State() slicesWindowCenter: number;
   @State() slicesWindowWidth: number;
@@ -159,12 +161,12 @@ export class Aleph {
     }
 
     if (this.src) {
-      this.appSetSrc(null); // shows loading spinner and resets gltf-model
+      this._setSrc(null); // shows loading spinner and resets gltf-model
       setTimeout(() => {
-        this.appSetSrc(src);
+        this._setSrc(src);
       }, 500);
     } else {
-      this.appSetSrc(src);
+      this._setSrc(src);
     }
   }
 
@@ -199,6 +201,33 @@ export class Aleph {
 
   //#endregion
 
+  //#region Edge Methods
+  @Method()
+  async setEdge(edge: [string, AlEdgeSerial]): Promise<void> {
+    this._setEdge(edge);
+  }
+
+  // @Method()
+  // async setEdges(edges: Map<string, AlEdgeSerial>): Promise<void> {
+  //   this._setEdges(edges);
+  // }
+
+  // @Method()
+  // async deleteEdge(edgeId: string): Promise<void> {
+  //   this._deleteEdge(edgeId);
+  // }
+
+  // @Method()
+  // async clearEdges(): Promise<void> {
+  //   this._clearEdges();
+  // }
+
+  // @Method()
+  // async selectEdge(edgeId: string): Promise<void> {
+  //   this._selectEdge(edgeId, true);
+  // }
+  //#endregion
+
   //#region control panel methods
 
   @Method()
@@ -230,18 +259,15 @@ export class Aleph {
         app: {
           angles,
           boundingBoxVisible,
+          camera,
           cameraAnimating,
+          controlsEnabled,
           displayMode,
           edges,
           nodes,
           nodesEnabled,
-          nodesVisible,
-          optionsEnabled,
-          optionsVisible,
           orientation,
-          selectedAngle,
-          selectedEdge,
-          selectedNode,
+          selected,
           slicesIndex,
           slicesWindowCenter,
           slicesWindowWidth,
@@ -256,18 +282,15 @@ export class Aleph {
       return {
         angles,
         boundingBoxVisible,
+        camera,
         cameraAnimating,
+        controlsEnabled,
         displayMode,
         edges,
         nodes,
         nodesEnabled,
-        nodesVisible,
-        optionsEnabled,
-        optionsVisible,
         orientation,
-        selectedAngle,
-        selectedEdge,
-        selectedNode,
+        selected,
         slicesIndex,
         slicesWindowCenter,
         slicesWindowWidth,
@@ -280,17 +303,24 @@ export class Aleph {
     });
 
     this.store.mapDispatchToProps(this, {
+      appClearAngles,
+      appClearEdges,
       appClearNodes,
+      appDeleteAngle,
+      appDeleteEdge,
       appDeleteNode,
+      appSelectAngle,
+      appSelectEdge,
       appSelectNode,
+      appSetAngle,
       appSetBoundingBoxVisible,
+      appSetCamera,
       appSetCameraAnimating,
+      appSetControlsEnabled,
       appSetDisplayMode,
+      appSetEdge,
       appSetNode,
       appSetNodesEnabled,
-      appSetNodesVisible,
-      appSetOptionsEnabled,
-      appSetOptionsVisible,
       appSetOrientation,
       appSetSlicesIndex,
       appSetSlicesWindowCenter,
@@ -303,10 +333,12 @@ export class Aleph {
     });
 
     // set up event handlers
-    this._srcLoaded = this._srcLoaded.bind(this);
-    this._setNodeEventHandler = this._setNodeEventHandler.bind(this);
-    this._validTargetEventHandler = this._validTargetEventHandler.bind(this);
-    this._nodeSelectedEventHandler = this._nodeSelectedEventHandler.bind(this);
+    //this._animationFinished = this._animationFinished.bind(this);
+    this._canvasMouseDown = this._canvasMouseDown.bind(this);
+    this._canvasMouseUp = this._canvasMouseUp.bind(this);
+    this._controlsDisabledHandler = this._controlsDisabledHandler.bind(this);
+    this._controlsEnabledHandler = this._controlsEnabledHandler.bind(this);
+    this._controlsUpdated = this._controlsUpdated.bind(this);
     this._intersectingNodeEventHandler = this._intersectingNodeEventHandler.bind(
       this
     );
@@ -314,33 +346,33 @@ export class Aleph {
       this
     );
     this._nodeMovedEventHandler = this._nodeMovedEventHandler.bind(this);
-    this._controlsInitEventHandler = this._controlsInitEventHandler.bind(this);
-    this._controlsEnabledHandler = this._controlsEnabledHandler.bind(this);
-    this._controlsDisabledHandler = this._controlsDisabledHandler.bind(this);
-    this._animationFinished = this._animationFinished.bind(this);
-    this._controlsMoved = this._controlsMoved.bind(this);
-
-    this._lastCameraPosition = new THREE.Vector3(0, 0, 0);
-    this._lastCameraTarget = new THREE.Vector3(0, 0, 0);
+    this._nodeSelectedEventHandler = this._nodeSelectedEventHandler.bind(this);
+    this._setNodeEventHandler = this._setNodeEventHandler.bind(this);
+    this._srcLoaded = this._srcLoaded.bind(this);
+    this._validTargetEventHandler = this._validTargetEventHandler.bind(this);
   }
 
-  //#region Rendering Methods
+  //#region Render Methods
   private _renderSpinner(): JSX.Element {
     if (!this.srcLoaded) {
       return (
         <a-entity
-          cursor
           position="0 0 -2"
           rotation="0 0 0"
-          animation="property: rotation; to: 0 120 0; loop: true; dur: 1000; easing: easeInOutQuad"
-          geometry="primitive: al-spinner;"
           scale="0.05 0.05 0.05"
-          material={`color: ${this.spinnerColor};`}
           al-fixed-to-orbit-camera={`
-            distanceFromTarget: 0.5
-            target: ${this._lastCameraTarget};
-          `}
-        />
+          distanceFromTarget: 0.5
+          target: ${
+            this.camera ? this.camera.target : new THREE.Vector3(0, 0, 0)
+          };
+        `}
+        >
+          <a-entity
+            animation="property: rotation; to: 0 120 0; loop: true; dur: 1000; easing: easeInOutQuad"
+            geometry="primitive: al-spinner;"
+            material={`color: ${this.spinnerColor};`}
+          />
+        </a-entity>
       );
     }
 
@@ -365,7 +397,9 @@ export class Aleph {
           geometry={`primitive: plane; height: ${backScale}; width: ${backScale}`}
           al-fixed-to-orbit-camera={`
           distanceFromTarget: ${this._boundingSphereRadius};
-          target: ${this._lastCameraTarget};
+          target: ${
+            this.camera ? this.camera.target : new THREE.Vector3(0, 0, 0)
+          };
         `}
           material={`
           wireframe: true;
@@ -422,7 +456,7 @@ export class Aleph {
                 distanceFromTarget: ${
                   this._boundingSphereRadius ? this._boundingSphereRadius : 2
                 };
-                target: ${this._lastCameraTarget};
+                target: ${this.camera.target};
               `}
               material={`
                 wireframe: true;
@@ -452,18 +486,18 @@ export class Aleph {
           al-node={`
             target: ${node.target};
             scale: ${node.scale};
-            selected: ${this.selectedNode === nodeId};
+            selected: ${this.selected === nodeId};
             nodesEnabled: ${this.nodesEnabled};
           `}
         >
           <a-entity
-            //geometry="primitive: plane; height: auto; width: auto"
             text={`
               value: ${node.text};
               side: double;
               baseline: bottom;
               anchor: left;
             `}
+            al-look-to-camera
             position={ThreeUtils.vector3ToString(textOffset)}
             id={`${nodeId}-label"`}
           />
@@ -480,11 +514,26 @@ export class Aleph {
         <a-entity
           class="collidable"
           id={edgeId}
-          al-edge={`
+          /*al-edge={`
             node1: ${edge.node1};
             node2: ${edge.node2};
+          `}*/
+          line={`
+            start: ${this.nodes.get(edge.node1Id).position}
+            end: ${this.nodes.get(edge.node2Id).position}
           `}
-        />
+        >
+          <a-entity
+            id={`${edgeId}-title`}
+            al-look-to-camera
+            text={`
+            value: ${edgeId}
+            side: double;
+            baseline: bottom;
+            anchor: center;
+          `}
+          />
+        </a-entity>
       );
     });
   }
@@ -504,39 +553,12 @@ export class Aleph {
   }
 
   private _renderCamera(): JSX.Element {
-    let camData = {
-      position: this._lastCameraPosition,
-      target: this._lastCameraTarget
-    } as AlCameraSerial;
-    let mesh: THREE.Mesh;
     let radius: number = 1;
 
-    // IF we're animating to a node
-    // TODO: Differentiate between Node -> Node && Target -> Target animations
-    if (this.cameraAnimating) {
-      // Get camera state from node and set as result
-      let result: AlCameraSerial | null = GetUtils.getCameraStateFromNode(
-        this.nodes.get(this.selectedNode),
-        this._boundingSphereRadius
-      );
-
-      if (result) {
-        // If we returned a result AND the difference between the last position and the result position is not 0
-        const diffPos: number = result.position.distanceTo(
-          this._lastCameraPosition
-        );
-
-        const diffTarg: number = result.target.distanceTo(
-          this._lastCameraTarget
-        );
-
-        if (diffPos !== 0 || diffTarg !== 0) {
-          camData = result;
-          this._lastCameraPosition = camData.position;
-          this._lastCameraTarget = camData.target;
-          mesh = this._targetEntity.object3DMap.mesh as THREE.Mesh;
-          radius = mesh.geometry.boundingSphere.radius;
-        }
+    if (this._targetEntity) {
+      let mesh: THREE.Mesh = this._targetEntity.object3DMap.mesh as THREE.Mesh;
+      if (mesh) {
+        radius = mesh.geometry.boundingSphere.radius;
       }
     }
 
@@ -550,18 +572,21 @@ export class Aleph {
         look-controls="enabled: false"
         far={Constants.cameraValues.far}
         al-orbit-control={`
-      maxPolarAngle: ${Constants.cameraValues.maxPolarAngle};
-      minDistance: ${Constants.cameraValues.minDistance};
-      screenSpacePanning: true;
-      rotateSpeed: ${Constants.cameraValues.rotateSpeed};
-      zoomSpeed: ${Constants.cameraValues.zoomSpeed};
-      enableDamping: true;
-      dampingFactor: ${Constants.cameraValues.dampingFactor};
-      targetPosition: ${ThreeUtils.vector3ToString(camData.target)};
-      cameraPosition: ${ThreeUtils.vector3ToString(camData.position)};
-      boundingRadius: ${radius};
-      cameraAnimating: ${this.cameraAnimating}
-    `}
+          maxPolarAngle: ${Constants.cameraValues.maxPolarAngle};
+          minDistance: ${Constants.cameraValues.minDistance};
+          screenSpacePanning: true;
+          rotateSpeed: ${Constants.cameraValues.rotateSpeed};
+          zoomSpeed: ${Constants.cameraValues.zoomSpeed};
+          enableDamping: true;
+          dampingFactor: ${Constants.cameraValues.dampingFactor};
+          targetPosition: ${ThreeUtils.vector3ToString(
+            this.camera ? this.camera.target : new THREE.Vector3(0, 0, 0)
+          )};
+          cameraPosition: ${ThreeUtils.vector3ToString(
+            this.camera ? this.camera.position : new THREE.Vector3(0, 0, 0)
+          )};
+          enabled: ${this.controlsEnabled};
+        `}
         ref={el => (this._camera = el)}
       >
         {this._renderSpinner()}
@@ -602,6 +627,15 @@ export class Aleph {
   //#endregion
 
   //#region Private Methods
+  private _createEdge(node1: string, node2: string): void {
+    const newEdge: AlEdgeSerial = {
+      node1Id: node1,
+      node2Id: node2
+    };
+    const edgeId: string = GetUtils.getNextEdgeId(this.edges);
+
+    this._setEdge([edgeId, newEdge]);
+  }
   private _getAppState(): AlAppState {
     // todo: can we watch the store object?
     return this.store.getState().app;
@@ -625,72 +659,118 @@ export class Aleph {
   }
 
   private _setNode(node: [string, AlNodeSerial]): void {
-    this.appSetNode(node);
+    window.setTimeout(() => {
+      this.appSetNode(node);
+      this.onChanged.emit(this._getAppState());
+    }, Constants.minFrameMS);
+  }
+
+  private _setEdge(edge: [string, AlEdgeSerial]): void {
+    this.appSetEdge(edge);
     this.onChanged.emit(this._getAppState());
   }
 
   private _selectNode(nodeId: string, animate: boolean): void {
-    if (animate && nodeId !== this.selectedNode) {
-      this.appSetCameraAnimating(true); // todo: can we pass boolean to appSelectNode to set cameraAnimating in the state?
-    }
+    console.log("animate ", animate);
+    // if (animate && nodeId !== this.selected) {
+    //   this.appSetCameraAnimating(true); // todo: can we pass boolean to appSelectNode to set cameraAnimating in the state?
+
+    //   // TODO: Differentiate between Node -> Node && Target -> Target animations
+    //   if (this.cameraAnimating) {
+    //     // Get camera state from node and set as result
+    //     let result: AlCameraSerial | null = GetUtils.getCameraStateFromNode(
+    //       this.nodes.get(this.selected),
+    //       this._boundingSphereRadius
+    //     );
+
+    //     if (result) {
+    //       // If we returned a result AND the difference between the last position and the result position is not 0
+    //       const diffPos: number = result.position.distanceTo(
+    //         this.camera.position
+    //       );
+
+    //       const diffTarg: number = result.target.distanceTo(this.camera.target);
+
+    //       if (diffPos !== 0 || diffTarg !== 0) {
+    //         this.appSetCamera(result);
+    //       }
+    //     }
+    //   }
+    // }
     this.appSelectNode(nodeId);
     this.onChanged.emit(this._getAppState());
   }
 
   private _setNodesEnabled(enabled: boolean): void {
     this.appSetNodesEnabled(enabled);
+    this.onChanged.emit(this._getAppState());
   }
 
   private _setBoundingBoxVisible(visible: boolean): void {
     this.appSetBoundingBoxVisible(visible);
+    this.onChanged.emit(this._getAppState());
+  }
+
+  private _setSrc(src: string): void {
+    this.appSetSrc(src);
+    this.onChanged.emit(this._getAppState());
   }
 
   private _srcLoaded(): void {
     const mesh: THREE.Mesh = this._targetEntity.object3DMap.mesh as THREE.Mesh;
     mesh.geometry.computeBoundingSphere();
     this._boundingSphereRadius = mesh.geometry.boundingSphere.radius;
-    this.appSetSrcLoaded(true);
-    this.onChanged.emit(this._getAppState());
+
     let result = GetUtils.getCameraStateFromEntity(this._targetEntity);
     if (result) {
-      this._lastCameraPosition = result.position;
+      this.appSetCamera({
+        position: result.position,
+        target: result.target
+      });
     }
+
+    this.appSetSrcLoaded(true);
+    this.onChanged.emit(this._getAppState());
   }
   //#endregion
 
   //#region Event Handlers
-  private _controlsMoved(event: CustomEvent): void {
-    // todo: add to redux store
-    this._lastCameraPosition = event.detail.position;
-    this._lastCameraTarget = event.detail.target;
+  private _canvasMouseDown(event: MouseEvent) {
+    this._isShiftDown = event.shiftKey;
   }
 
-  private _animationFinished(_event: CustomEvent): void {
-    this.appSetCameraAnimating(false);
+  private _canvasMouseUp(_event: MouseEvent) {
+    this._isShiftDown = false;
+  }
+
+  private _controlsUpdated(event: CustomEvent): void {
+    this.appSetCamera(event.detail);
   }
 
   private _controlsEnabledHandler(_event: CustomEvent): void {
-    this._tcontrols.enabled = true;
+    this.appSetControlsEnabled(true);
   }
 
   private _controlsDisabledHandler(_event: CustomEvent): void {
-    this._tcontrols.enabled = false;
+    this.appSetControlsEnabled(false);
+    console.log("controls: ", this.controlsEnabled);
   }
 
-  private _controlsInitEventHandler(event: CustomEvent): void {
-    this._tcontrols = event.detail.controls;
+  private _intersectionClearedEventHandler(_event): void {
+    this._intersectingNode = null;
   }
 
-  private _intersectionClearedEventHandler(_evt): void {
-    this._intersectingNode = false;
-  }
-
-  private _intersectingNodeEventHandler(_evt): void {
-    this._intersectingNode = true;
+  private _intersectingNodeEventHandler(event): void {
+    this._intersectingNode = event.detail.id;
   }
 
   private _setNodeEventHandler(event: CustomEvent): void {
-    if (this.nodesEnabled && this._validTarget && !this._intersectingNode) {
+    // IF creating a new node and NOT intersecting an existing node
+    if (
+      this.nodesEnabled && // Nodes are enabled
+      this._validTarget && // Target is valid
+      this._intersectingNode === null // Not intersecting a Node already
+    ) {
       let intersection: THREE.Intersection = event.detail.detail.intersection;
 
       const nodeId: string = GetUtils.getNextNodeId(this.nodes);
@@ -700,19 +780,38 @@ export class Aleph {
           this._targetEntity.object3D.position
         ),
         position: ThreeUtils.vector3ToString(intersection.point),
-        scale: this._boundingSphereRadius / Constants.nodeSize,
+        scale: this._boundingSphereRadius / Constants.nodeSizeRatio,
         text: nodeId
       };
 
+      const previousSelected = this.selected;
+
       this._setNode([nodeId, newNode]);
+
+      if (
+        this._isShiftDown && // Shift is down
+        this.selected // A Node is already selected
+      ) {
+        this._createEdge(previousSelected, nodeId);
+      }
     }
   }
 
   private _validTargetEventHandler(event: CustomEvent): void {
-    this._validTarget = event.detail.payload;
+    this._validTarget = event.detail.valid;
   }
 
   private _nodeSelectedEventHandler(event: CustomEvent): void {
+    // ELSE IF intersecting a node and it is NOT the selected node
+    if (
+      this._intersectingNode !== null && // We're are intersecting a node
+      this.nodesEnabled && // Nodes are enabled
+      this.selected !== null && // We have a node already selected
+      this.selected !== this._intersectingNode && // The selected & intersecting nodes are not the same
+      this._isShiftDown // The shift key is down
+    ) {
+      this._createEdge(this.selected, this._intersectingNode);
+    }
     this._selectNode(event.detail.id, false);
   }
 
@@ -725,6 +824,7 @@ export class Aleph {
       this._targetEntity
     ) as THREE.Intersection;
 
+    // Try backboard
     if (!intersection) {
       intersection = raycaster.getIntersection(
         this._backBoard
@@ -733,95 +833,100 @@ export class Aleph {
 
     // TODO: Add Edge Position event
     if (intersection) {
-      this.appSetNode([
+      this._setNode([
         nodeId,
         {
           position: ThreeUtils.vector3ToString(intersection.point)
         }
       ]);
-      const eventName = nodeId + Constants.movedString;
-      this._scene.emit(eventName, {newPosition: intersection.point}, true);
+      const eventName = nodeId + Constants.movedEventString;
+      this._scene.emit(eventName, {}, true);
     } else {
       console.log("No intersection!");
     }
   }
 
   private _addEventListeners(): void {
-    if (this._scene) {
-      this._scene.addEventListener(
-        AlOrbitControlEvents.HAS_MOVED,
-        this._controlsMoved,
-        false
-      );
-      this._scene.addEventListener(
-        AlOrbitControlEvents.ANIMATION_FINISHED,
-        this._animationFinished,
-        false
-      );
-      this._scene.addEventListener(
-        AlOrbitControlEvents.INIT,
-        this._controlsInitEventHandler,
-        false
-      );
-      this._scene.addEventListener(
-        AlNodeEvents.CONTROLS_ENABLED,
-        this._controlsEnabledHandler,
-        false
-      );
-      this._scene.addEventListener(
-        AlNodeEvents.CONTROLS_DISABLED,
-        this._controlsDisabledHandler,
-        false
-      );
-      this._scene.addEventListener(
-        AlNodeEvents.DRAGGING,
-        this._nodeMovedEventHandler,
-        false
-      );
-      this._scene.addEventListener(
-        AlNodeSpawnerEvents.ADD_NODE,
-        this._setNodeEventHandler,
-        false
-      );
-      this._scene.addEventListener(
-        AlNodeEvents.SELECTED,
-        this._nodeSelectedEventHandler,
-        false
-      );
-      this._scene.addEventListener(
-        AlNodeSpawnerEvents.VALID_TARGET,
-        this._validTargetEventHandler,
-        false
-      );
+    this._scene.canvas.addEventListener("mousedown", this._canvasMouseDown, {
+      capture: false,
+      once: false,
+      passive: true
+    });
 
-      if (this._targetEntity) {
-        this._targetEntity.addEventListener(
-          AlGltfModelEvents.LOADED,
-          this._srcLoaded,
-          false
-        );
-      }
+    this._scene.canvas.addEventListener("mouseup", this._canvasMouseUp, {
+      capture: false,
+      once: false,
+      passive: true
+    });
 
-      if (this._camera) {
-        this._camera.addEventListener(
-          AlNodeEvents.INTERSECTION,
-          this._intersectingNodeEventHandler,
-          false
-        );
-        this._camera.addEventListener(
-          AlNodeEvents.INTERSECTION_CLEARED,
-          this._intersectionClearedEventHandler,
-          false
-        );
-      }
-    }
+    this._scene.addEventListener(
+      AlOrbitControlEvents.UPDATED,
+      this._controlsUpdated,
+      false
+    );
+
+    this._scene.addEventListener(
+      AlNodeEvents.CONTROLS_ENABLED,
+      this._controlsEnabledHandler,
+      false
+    );
+
+    this._scene.addEventListener(
+      AlNodeEvents.CONTROLS_DISABLED,
+      this._controlsDisabledHandler,
+      false
+    );
+
+    this._scene.addEventListener(
+      AlNodeEvents.DRAGGING,
+      this._nodeMovedEventHandler,
+      false
+    );
+
+    this._scene.addEventListener(
+      AlNodeSpawnerEvents.ADD_NODE,
+      this._setNodeEventHandler,
+      false
+    );
+
+    this._scene.addEventListener(
+      AlNodeEvents.SELECTED,
+      this._nodeSelectedEventHandler,
+      false
+    );
+
+    this._scene.addEventListener(
+      AlNodeSpawnerEvents.VALID_TARGET,
+      this._validTargetEventHandler,
+      false
+    );
+
+    this._scene.addEventListener(
+      AlGltfModelEvents.LOADED,
+      this._srcLoaded,
+      false
+    );
+
+    this._scene.addEventListener(
+      AlNodeEvents.INTERSECTION,
+      this._intersectingNodeEventHandler,
+      false
+    );
+
+    this._scene.addEventListener(
+      AlNodeEvents.INTERSECTION_CLEARED,
+      this._intersectionClearedEventHandler,
+      false
+    );
   }
   //#endregion
 
   componentDidLoad() {}
 
   componentDidUpdate() {
-    this._addEventListeners();
+    if (this._scene) {
+      this._addEventListeners();
+    }
 
     // Turns debug text inside the models invisible
     // TODO: Wire to debug variable
