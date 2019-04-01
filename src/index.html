@@ -170,65 +170,80 @@
         //   aleph.setOptionsVisible(true); // can only show them after src loaded
         // }, false);
 
-        aleph.addEventListener(
-          "onChanged",
-          function(e) {
-            state.srcLoaded = e.detail.srcLoaded;
-            state.nodes = e.detail.nodes;
-            state.selected = e.detail.selected;
-          },
-          false
-        );
+        aleph.componentOnReady().then(function() {
+          //component.setDisplayMode("slices");
+          state.src = Array.from(urls)[1][0]; // load src when component ready
 
-        alUrlPicker.addEventListener("onUrlChanged", function(e) {
-          state.src = e.detail;
-        }, false);
+          aleph.addEventListener(
+            "onChanged",
+            function(e) {
+              state.srcLoaded = e.detail.srcLoaded;
+              state.nodes = e.detail.nodes;
+              state.selected = e.detail.selected;
+            },
+            false
+          );
+        });
 
-        alUrlPicker.urls = urls;
+        alUrlPicker.componentOnReady().then(function() {
+          alUrlPicker.addEventListener("onUrlChanged", function(e) {
+            state.src = e.detail;
+          }, false);
 
-        alNodeList.addEventListener(
-          "onSelectedChanged",
-          function(e) {
-            aleph.selectNode(e.detail);
-          },
-          false
-        );
+          alUrlPicker.urls = urls;
+        });
 
-        alNodeEditor.addEventListener(
-          "onDelete",
-          function(e) {
-            aleph.deleteNode(e.detail);
-          },
-          false
-        );
+        alNodeList.componentOnReady().then(function() {
+          alNodeList.addEventListener(
+            "onSelectedChanged",
+            function(e) {
+              aleph.selectNode(e.detail);
+            },
+            false
+          );
+        });
 
-        alNodeEditor.addEventListener(
-          "onSave",
-          function(e) {
-            aleph.setNode(e.detail);
-          },
-          false
-        );
+        alNodeEditor.componentOnReady().then(function() {
+          alNodeEditor.addEventListener(
+            "onDelete",
+            function(e) {
+              aleph.deleteNode(e.detail);
+            },
+            false
+          );
 
-        alConsole.addEventListener(
-          "onCmd",
-          function(e) {
-            const nodes = new Map(JSON.parse(alConsole.cmd));
-            if (nodes) {
-              aleph.clearNodes();
-              aleph.setNodes(nodes);
-            }
-          },
-          false
-        );
+          alNodeEditor.addEventListener(
+            "onSave",
+            function(e) {
+              aleph.setNode(e.detail);
+            },
+            false
+          );
+        });
 
-        alControlPanel.addEventListener("onSetNodesEnabled", function(e) {
-          aleph.setNodesEnabled(e.detail);
-        }, false);
+        alConsole.componentOnReady().then(function() {
+          alConsole.addEventListener(
+            "onCmd",
+            function(e) {
+              const nodes = new Map(JSON.parse(alConsole.cmd));
+              if (nodes) {
+                aleph.clearNodes();
+                aleph.setNodes(nodes);
+              }
+            },
+            false
+          );
+        });
 
-        alControlPanel.addEventListener("onSetBoundingBoxVisible", function(e) {
-          aleph.setBoundingBoxVisible(e.detail);
-        }, false);
+        alControlPanel.componentOnReady().then(function() {
+          alControlPanel.addEventListener("onSetNodesEnabled", function(e) {
+            aleph.setNodesEnabled(e.detail);
+          }, false);
+
+          alControlPanel.addEventListener("onSetBoundingBoxVisible", function(e) {
+            aleph.setBoundingBoxVisible(e.detail);
+          }, false);
+        });
 
         mobx.autorun(() => {
           render();
@@ -280,15 +295,8 @@
       }
 
       document.addEventListener("DOMContentLoaded", function(event) {
-
         init();
         resize();
-
-        aleph.componentOnReady().then(function() {
-          //component.setDisplayMode("slices");
-          state.src = urls.keys().next().value; // load src when component ready
-        });
-
       });
 
       function resize() {
