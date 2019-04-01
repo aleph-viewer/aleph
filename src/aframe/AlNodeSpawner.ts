@@ -1,8 +1,10 @@
 import { AframeRegistry, AframeComponent } from "../interfaces";
 import { AlNodeEvents } from ".";
+import { Constants } from "../Constants";
 
 interface AlNodeSpawnerState {
   left: boolean;
+  intersecting: boolean;
 }
 
 interface AlNodeSpawnerObject extends AframeComponent {
@@ -87,28 +89,39 @@ export class AlNodeSpawner implements AframeRegistry {
 
       canvasMouseDown(event: MouseEvent) {
         this.state.left = event.button === 0;
+        if (this.state.intersecting && this.data.nodesEnabled) {
+          this.el.sceneEl.emit(AlNodeEvents.CONTROLS_DISABLED, {}, false);
+        }
       },
 
       canvasMouseUp(_event: MouseEvent) {
-        this.state.left = false;
+        window.setTimeout(() => {
+          this.state.left = false;
+          this.el.sceneEl.emit(AlNodeEvents.CONTROLS_ENABLED, {}, false);
+        }, Constants.minFrameMS);
       },
 
       elRaycasterIntersected(_event: CustomEvent) {
-        this.el.emit(AlNodeSpawnerEvents.VALID_TARGET, true, true);
+        this.state.intersecting = true;
+        this.el.sceneEl.emit(
+          AlNodeSpawnerEvents.VALID_TARGET,
+          { valid: true },
+          false
+        );
       },
 
       elRaycasterIntersectedCleared(_event: CustomEvent) {
-        this.el.emit(
+        this.state.intersecting = false;
+        this.el.sceneEl.emit(
           AlNodeSpawnerEvents.VALID_TARGET,
-          { payload: false },
-          true
+          { valid: false },
+          false
         );
       },
 
       elClick(event: CustomEvent) {
-        if (this.state.left) {
-          this.el.emit(AlNodeSpawnerEvents.ADD_NODE, event, true);
-          this.state.left = false;
+        if (this.state.left && this.data.nodesEnabled) {
+          this.el.sceneEl.emit(AlNodeSpawnerEvents.ADD_NODE, event, false);
         }
       },
 
@@ -117,7 +130,8 @@ export class AlNodeSpawner implements AframeRegistry {
         this.addListeners();
 
         this.state = {
-          left: false
+          left: false,
+          intersecting: false
         } as AlNodeSpawnerState;
       },
 

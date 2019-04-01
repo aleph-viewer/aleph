@@ -90,7 +90,7 @@ export class AlOrbitControl implements AframeRegistry {
             target: controls.target
           } as AlCameraSerial;
 
-          this.el.emit(AlOrbitControlEvents.UPDATED, res, true);
+          this.el.emit(AlOrbitControlEvents.UPDATED, res, false);
         }
       },
 

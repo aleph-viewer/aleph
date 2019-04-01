@@ -767,6 +767,7 @@ export class Aleph {
   }
 
   private _setNodeEventHandler(event: CustomEvent): void {
+    console.log("aleph: new node!");
     // IF creating a new node and NOT intersecting an existing node
     if (
       this.nodesEnabled && // Nodes are enabled
@@ -800,7 +801,7 @@ export class Aleph {
   }
 
   private _validTargetEventHandler(event: CustomEvent): void {
-    this._validTarget = event.detail;
+    this._validTarget = event.detail.valid;
   }
 
   private _nodeSelectedEventHandler(event: CustomEvent): void {
