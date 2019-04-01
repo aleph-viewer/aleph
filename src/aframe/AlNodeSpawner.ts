@@ -132,7 +132,7 @@ export class AlNodeSpawner implements AframeRegistry {
       },
 
       //#region Here be dragons. Thou art forewarned.
-      // Number of hours waster "cleaning" this: 8.
+      // Number of hours waster "cleaning" this: 9.
       // Every time you try to clean this, please realize your mistakes, and cry
       // as you increment this counter.
       //
@@ -142,19 +142,21 @@ export class AlNodeSpawner implements AframeRegistry {
       // mouse state properly.
       elMouseDown(_event: CustomEvent) {
         if (this.data.nodesEnabled) {
-          this.el.sceneEl.camera.el.setAttribute(
-            "al-orbit-control",
-            "enabled: false"
-          );
+          // this.el.sceneEl.camera.el.setAttribute(
+          //   "al-orbit-control",
+          //   "enabled: false"
+          // );
+          this.el.sceneEl.emit(AlNodeEvents.CONTROLS_DISABLED, {}, false);
         }
       },
 
       elMouseUp(_event: CustomEvent) {
         if (this.data.nodesEnabled) {
-          this.el.sceneEl.camera.el.setAttribute(
-            "al-orbit-control",
-            "enabled: true"
-          );
+          // this.el.sceneEl.camera.el.setAttribute(
+          //   "al-orbit-control",
+          //   "enabled: true"
+          // );
+          this.el.sceneEl.emit(AlNodeEvents.CONTROLS_ENABLED, {}, false);
         }
       },
       //#endregion
