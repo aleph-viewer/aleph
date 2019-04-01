@@ -256,7 +256,7 @@ export class AlOrbitControl implements AframeRegistry {
       },
 
       tickFunction() {
-        console.log("controls enabled:", this.data.enabled);
+        //console.log("controls enabled:", this.data.enabled);
         let state = this.state as AlOrbitControlState;
         let controls = state.controls;
 
