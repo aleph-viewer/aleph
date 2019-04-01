@@ -19,6 +19,7 @@ interface AlOrbitControlObject extends AframeComponent {
   canvasMouseUp(event: MouseEvent): void;
   canvasMouseDown(event: MouseEvent): void;
   canvasWheel(event: WheelEvent): void;
+  emitNewSerial(): void;
 }
 
 export class AlOrbitControl implements AframeRegistry {
@@ -56,6 +57,7 @@ export class AlOrbitControl implements AframeRegistry {
         this.canvasMouseUp = this.canvasMouseUp.bind(this);
         this.canvasMouseDown = this.canvasMouseDown.bind(this);
         this.canvasWheel = this.canvasWheel.bind(this);
+        this.emitNewSerial = this.emitNewSerial.bind(this);
       },
 
       addListeners() {
@@ -88,17 +90,25 @@ export class AlOrbitControl implements AframeRegistry {
         this.el.sceneEl.canvas.addEventListener("wheel", this.canvasWheel);
       },
 
+      emitNewSerial() {
+        let res = {
+          position: this.state.controls.object.position,
+          target: this.state.controls.target
+        } as AlCameraSerial;
+
+        this.el.sceneEl.emit(
+          AlOrbitControlEvents.UPDATED,
+          { cameraSerial: res },
+          false
+        );
+      },
+
       canvasMouseUp(_event: MouseEvent) {
         document.body.style.cursor = "grab";
         let controls = this.state.controls;
 
         if (controls.enabled) {
-          let res = {
-            position: controls.object.position,
-            target: controls.target
-          } as AlCameraSerial;
-
-          this.el.sceneEl.emit(AlOrbitControlEvents.UPDATED, res, false);
+          this.emitNewSerial();
         }
       },
 
@@ -109,11 +119,7 @@ export class AlOrbitControl implements AframeRegistry {
       canvasWheel(_event: WheelEvent) {
         window.clearTimeout(this.canvasWheel);
         this.canvasWheel = window.setTimeout(() => {
-          let res = {
-            position: this.state.controls.object.position,
-            target: this.state.controls.target
-          } as AlCameraSerial;
-          this.el.sceneEl.emit(AlOrbitControlEvents.UPDATED, res, false);
+          this.emitNewSerial();
         }, Constants.minFrameMS);
       },
 
@@ -147,20 +153,15 @@ export class AlOrbitControl implements AframeRegistry {
         this.addListeners();
 
         // wait a frame before emitting initialised event
-        setTimeout(() => {
-          let res = {
-            position: controls.object.position,
-            target: controls.target
-          } as AlCameraSerial;
-          this.el.sceneEl.emit(AlOrbitControlEvents.UPDATED, res, false);
+        window.setTimeout(() => {
+          console.log("timeout!");
+          this.emitNewSerial();
         }, Constants.minFrameMS);
       },
 
       update(_oldData) {
         let controls = this.state.controls;
         const data = this.data;
-
-        console.log("orbit-controls-top: ", data.enabled);
 
         controls.target = ThreeUtils.objectToVector3(data.targetPosition);
         controls.autoRotate = data.autoRotate;
@@ -185,8 +186,6 @@ export class AlOrbitControl implements AframeRegistry {
         this.el
           .getObject3D("camera")
           .position.copy(ThreeUtils.objectToVector3(data.cameraPosition));
-
-        console.log("orbit-controls-bot: ", controls.enabled);
       },
 
       tickFunction() {

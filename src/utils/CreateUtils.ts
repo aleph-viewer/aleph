@@ -8,7 +8,8 @@ import {
   AlHalo,
   AlFixedToOrbitCamera,
   AlEdge,
-  AlLookToCamera
+  AlLookToCamera,
+  AlRenderOverlaid
 } from "../aframe";
 
 export class CreateUtils {
@@ -38,5 +39,6 @@ export class CreateUtils {
       AlLookToCamera.getName(),
       AlLookToCamera.getObject()
     );
+    AFRAME.registerComponent(AlRenderOverlaid.getName(), AlRenderOverlaid.getObject());
   }
 }
