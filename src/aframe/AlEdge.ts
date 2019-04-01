@@ -25,7 +25,7 @@ interface AlEdgeObject extends AframeComponent {
 }
 
 export class AlEdge implements AframeRegistry {
-  public static getObject(): AlEdgeObject {
+  public static get Object(): AlEdgeObject {
     return {
       schema: {
         node1: { type: "string" },
@@ -48,7 +48,7 @@ export class AlEdge implements AframeRegistry {
           "line",
           `
           start: ${ThreeUtils.vector3ToString(start)};
-          end: ${ThreeUtils.vector3ToString(end)}; 
+          end: ${ThreeUtils.vector3ToString(end)};
           color: ${this.state.color};
         `
         );
@@ -144,7 +144,7 @@ export class AlEdge implements AframeRegistry {
     } as AlEdgeObject;
   }
 
-  public static getName(): string {
+  public static get Tag(): string {
     return "al-edge";
   }
 }

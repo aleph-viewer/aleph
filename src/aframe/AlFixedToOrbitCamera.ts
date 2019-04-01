@@ -13,7 +13,7 @@ interface AlFixedToOrbitCameraObject extends AframeComponent {
 }
 
 export class AlFixedToOrbitCamera implements AframeRegistry {
-  public static getObject(): AlFixedToOrbitCameraObject {
+  public static get Object(): AlFixedToOrbitCameraObject {
     return {
       schema: {
         distanceFromTarget: { type: "number", default: 0.1 },
@@ -69,7 +69,7 @@ export class AlFixedToOrbitCamera implements AframeRegistry {
       }
     } as AlFixedToOrbitCameraObject;
   }
-  public static getName(): string {
+  public static get Tag(): string {
     return "al-fixed-to-orbit-camera";
   }
 }

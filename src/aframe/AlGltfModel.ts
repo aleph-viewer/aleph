@@ -7,7 +7,7 @@ interface AlGltfModelObject extends AframeComponent {
 }
 
 export class AlGltfModel implements AframeRegistry {
-  public static getObject(): AlGltfModelObject {
+  public static get Object(): AlGltfModelObject {
     return {
       schema: {
         src: { type: "model", default: "" },
@@ -72,7 +72,7 @@ export class AlGltfModel implements AframeRegistry {
     } as AlGltfModelObject;
   }
 
-  public static getName(): string {
+  public static get Tag(): string {
     return "al-gltf-model";
   }
 }

@@ -7,7 +7,7 @@ interface AlLookToCameraObject {
 }
 
 export class AlLookToCamera implements AframeRegistry {
-  public static getObject(): AlLookToCameraObject {
+  public static get Object(): AlLookToCameraObject {
     return {
       schema: {},
 
@@ -29,7 +29,7 @@ export class AlLookToCamera implements AframeRegistry {
     } as AlLookToCameraObject;
   }
 
-  public static getName(): string {
+  public static get Tag(): string {
     return "al-look-to-camera";
   }
 }

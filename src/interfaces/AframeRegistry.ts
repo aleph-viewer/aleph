@@ -14,10 +14,10 @@ import { AframeComponent, AframeShader } from ".";
  *         mapped attribute of the component plus applying defaults and mixins.
  */
 export class AframeRegistry {
-  public static getObject(): AframeComponent | AframeShader {
+  public static get Object(): AframeComponent | AframeShader {
     return null;
   }
-  public static getName(): string {
+  public static get Tag(): string {
     return null;
   }
 }

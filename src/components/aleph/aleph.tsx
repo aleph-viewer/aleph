@@ -361,7 +361,7 @@ export class Aleph {
       return (
         <a-entity
           al-fixed-to-orbit-camera={`
-          distanceFromTarget: 10;
+          distanceFromTarget: 20;
           target: ${
             this.camera ? this.camera.position : new THREE.Vector3(0, 0, 0)
           };
@@ -474,7 +474,7 @@ export class Aleph {
     return [...this.nodes].map((n: [string, AlNodeSerial]) => {
       const [nodeId, node] = n;
 
-      let textOffset: THREE.Vector3 = new THREE.Vector3(1.5, 0.5, 0);
+      let textOffset: THREE.Vector3 = new THREE.Vector3(0, 2.5, 0);
       textOffset.multiplyScalar(node.scale);
 
       return (
@@ -497,10 +497,12 @@ export class Aleph {
               material: "color: #fff";
               value: ${node.text};
               side: double;
-              baseline: center;
-              anchor: left;
+              align: center;
+              baseline: bottom;
+              anchor: center;
             `}
             al-look-to-camera
+            al-render-overlaid
             position={ThreeUtils.vector3ToString(textOffset)}
             id={`${nodeId}-label"`}
           />

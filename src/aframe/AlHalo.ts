@@ -1,7 +1,7 @@
 import { AframeRegistry, AframeShader } from "../interfaces";
 
 export class AlHalo implements AframeRegistry {
-  public static getObject(): AframeShader {
+  public static get Object(): AframeShader {
     return {
       schema: {},
 
@@ -32,7 +32,7 @@ export class AlHalo implements AframeRegistry {
     } as AframeShader;
   }
 
-  public static getName(): string {
+  public static get Tag(): string {
     return "al-halo";
   }
 }

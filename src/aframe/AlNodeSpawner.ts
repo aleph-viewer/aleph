@@ -23,7 +23,7 @@ interface AlNodeSpawnerObject extends AframeComponent {
 }
 
 export class AlNodeSpawner implements AframeRegistry {
-  public static getObject(): AlNodeSpawnerObject {
+  public static get Object(): AlNodeSpawnerObject {
     return {
       dependencies: ["raycaster"],
 
@@ -165,7 +165,7 @@ export class AlNodeSpawner implements AframeRegistry {
     } as AlNodeSpawnerObject;
   }
 
-  public static getName(): string {
+  public static get Tag(): string {
     return "al-node-spawner";
   }
 }

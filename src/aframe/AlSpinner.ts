@@ -1,7 +1,7 @@
 import { AframeRegistry, AframeComponent } from "../interfaces";
 
 export class AlSpinner implements AframeRegistry {
-  public static getObject(): AframeComponent {
+  public static get Object(): AframeComponent {
     return {
       schema: {
         detail: { default: 0, min: 0, max: 5, type: "int" },
@@ -20,7 +20,7 @@ export class AlSpinner implements AframeRegistry {
     } as AframeComponent;
   }
 
-  public static getName(): string {
+  public static get Tag(): string {
     return "al-spinner";
   }
 }

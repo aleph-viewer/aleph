@@ -14,31 +14,19 @@ import {
 
 export class CreateUtils {
   static createAframeComponents(): void {
-    AFRAME.registerShader(AlHalo.getName(), AlHalo.getObject());
-    AFRAME.registerGeometry(AlSpinner.getName(), AlSpinner.getObject());
-    AFRAME.registerComponent(AlGltfModel.getName(), AlGltfModel.getObject());
+    AFRAME.registerShader(AlHalo.Tag, AlHalo.Object);
+    AFRAME.registerGeometry(AlSpinner.Tag, AlSpinner.Object);
+    AFRAME.registerComponent(AlGltfModel.Tag, AlGltfModel.Object);
+    AFRAME.registerComponent(AlVolumetricModel.Tag, AlVolumetricModel.Object);
+    AFRAME.registerComponent(AlNode.Tag, AlNode.Object);
+    AFRAME.registerComponent(AlNodeSpawner.Tag, AlNodeSpawner.Object);
+    AFRAME.registerComponent(AlOrbitControl.Tag, AlOrbitControl.Object);
     AFRAME.registerComponent(
-      AlVolumetricModel.getName(),
-      AlVolumetricModel.getObject()
+      AlFixedToOrbitCamera.Tag,
+      AlFixedToOrbitCamera.Object
     );
-    AFRAME.registerComponent(AlNode.getName(), AlNode.getObject());
-    AFRAME.registerComponent(
-      AlNodeSpawner.getName(),
-      AlNodeSpawner.getObject()
-    );
-    AFRAME.registerComponent(
-      AlOrbitControl.getName(),
-      AlOrbitControl.getObject()
-    );
-    AFRAME.registerComponent(
-      AlFixedToOrbitCamera.getName(),
-      AlFixedToOrbitCamera.getObject()
-    );
-    AFRAME.registerComponent(AlEdge.getName(), AlEdge.getObject());
-    AFRAME.registerComponent(
-      AlLookToCamera.getName(),
-      AlLookToCamera.getObject()
-    );
-    AFRAME.registerComponent(AlRenderOverlaid.getName(), AlRenderOverlaid.getObject());
+    AFRAME.registerComponent(AlEdge.Tag, AlEdge.Object);
+    AFRAME.registerComponent(AlLookToCamera.Tag, AlLookToCamera.Object);
+    AFRAME.registerComponent(AlRenderOverlaid.Tag, AlRenderOverlaid.Object);
   }
 }

@@ -23,7 +23,7 @@ interface AlOrbitControlObject extends AframeComponent {
 }
 
 export class AlOrbitControl implements AframeRegistry {
-  public static getObject(): AlOrbitControlObject {
+  public static get Object(): AlOrbitControlObject {
     return {
       dependencies: ["camera"],
 
@@ -214,7 +214,7 @@ export class AlOrbitControl implements AframeRegistry {
     } as AlOrbitControlObject;
   }
 
-  public static getName(): string {
+  public static get Tag(): string {
     return "al-orbit-control";
   }
 }

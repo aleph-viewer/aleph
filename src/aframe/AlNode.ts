@@ -29,7 +29,7 @@ interface AlNodeObject extends AframeComponent {
 }
 
 export class AlNode implements AframeRegistry {
-  public static getObject(): AlNodeObject {
+  public static get Object(): AlNodeObject {
     return {
       schema: {
         target: { type: "vec3" },
@@ -192,7 +192,7 @@ export class AlNode implements AframeRegistry {
     } as AlNodeObject;
   }
 
-  public static getName(): string {
+  public static get Tag(): string {
     return "al-node";
   }
 }
