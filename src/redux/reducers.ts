@@ -14,7 +14,6 @@ export const getInitialState = () => {
     angles: new Map<string, AlAngleSerial>(),
     boundingBoxVisible: false,
     camera: null,
-    cameraAnimating: false,
     controlsEnabled: true,
     displayMode: DisplayMode.MESH,
     edges: new Map<string, AlEdgeSerial>(),
@@ -259,16 +258,13 @@ export const app = (
     }
     //#endregion
     //#region camera
-    case TypeKeys.APP_SET_CAMERA_ANIMATING: {
-      return {
-        ...state,
-        cameraAnimating: action.payload
-      };
-    }
     case TypeKeys.APP_SET_CAMERA: {
       return {
         ...state,
-        camera: action.payload
+        camera: {
+          ...state.camera,
+          ...action.payload
+        }
       };
     }
     case TypeKeys.APP_SET_CONTROLS_ENABLED: {

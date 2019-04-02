@@ -22,7 +22,6 @@ export type ActionTypes =
   | AppSelectNodeAction
   | AppSetAngleAction
   | AppSetBoundingBoxVisibleAction
-  | AppSetCameraAnimatingAction
   | AppSetCameraAction
   | AppSetControlsEnabledAction
   | AppSetDisplayModeAction
@@ -66,7 +65,6 @@ export enum TypeKeys {
   APP_SET_VOLUME_STEPS = "APP_SET_VOLUME_STEPS",
   APP_SET_VOLUME_WINDOW_WIDTH = "APP_SET_VOLUME_WINDOW_WIDTH",
   APP_SET_VOLUME_WINDOW_CENTER = "APP_SET_VOLUME_WINDOW_CENTER",
-  APP_SET_CAMERA_ANIMATING = "APP_SET_CAMERA_ANIMATING",
   APP_SET_CAMERA = "APP_SET_CAMERA",
   APP_SET_CONTROLS_ENABLED = "APP_SET_CONTROLS_ENABLED"
 }
@@ -446,21 +444,6 @@ export const appSetVolumeWindowCenter = (payload: number) => async (
 //#endregion
 
 //#region camera
-
-export interface AppSetCameraAnimatingAction {
-  type: TypeKeys.APP_SET_CAMERA_ANIMATING;
-  payload: boolean;
-}
-
-export const appSetCameraAnimating = (payload: boolean) => async (
-  dispatch,
-  _getState
-) => {
-  return dispatch({
-    type: TypeKeys.APP_SET_CAMERA_ANIMATING,
-    payload: payload
-  });
-};
 
 export interface AppSetCameraAction {
   type: TypeKeys.APP_SET_CAMERA;

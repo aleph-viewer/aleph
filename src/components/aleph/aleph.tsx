@@ -20,7 +20,6 @@ import {
   appSelectNode,
   appSetAngle,
   appSetBoundingBoxVisible,
-  appSetCameraAnimating,
   appSetCamera,
   appSetControlsEnabled,
   appSetDisplayMode,
@@ -99,7 +98,6 @@ export class Aleph {
   appSelectNode: Action;
   appSetAngle: Action;
   appSetBoundingBoxVisible: Action;
-  appSetCameraAnimating: Action;
   appSetCamera: Action;
   appSetControlsEnabled: Action;
   appSetDisplayMode: Action;
@@ -120,7 +118,6 @@ export class Aleph {
   //#region state
   @State() angles: Map<string, AlAngleSerial>;
   @State() boundingBoxVisible: boolean;
-  @State() cameraAnimating: boolean;
   @State() camera: AlCameraSerial;
   @State() controlsEnabled: boolean;
   @State() displayMode: DisplayMode;
@@ -263,7 +260,6 @@ export class Aleph {
           angles,
           boundingBoxVisible,
           camera,
-          cameraAnimating,
           controlsEnabled,
           displayMode,
           edges,
@@ -286,7 +282,6 @@ export class Aleph {
         angles,
         boundingBoxVisible,
         camera,
-        cameraAnimating,
         controlsEnabled,
         displayMode,
         edges,
@@ -318,7 +313,6 @@ export class Aleph {
       appSetAngle,
       appSetBoundingBoxVisible,
       appSetCamera,
-      appSetCameraAnimating,
       appSetControlsEnabled,
       appSetDisplayMode,
       appSetEdge,
@@ -683,6 +677,9 @@ export class Aleph {
 
   private _selectNode(nodeId: string, animate: boolean): void {
     if (animate && nodeId !== this.selected) {
+      this.appSetCamera({
+        animating: true
+      });
 
       this._animationStart = this.camera;
       this._animationEnd = this.camera;
