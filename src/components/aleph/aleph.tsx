@@ -542,11 +542,6 @@ export class Aleph {
     //console.log("render-camera animating: ", this.camera.animating);
     return (
       <a-camera
-        al-camera-controller={`cameraType: ${
-          this.camera && this.camera.type
-            ? this.camera.type
-            : CameraType.PERSPECTIVE
-        }`}
         id="mainCamera"
         cursor="rayOrigin: mouse"
         raycaster="objects: .collidable"
@@ -587,7 +582,17 @@ export class Aleph {
         `}
         ref={el => (this._camera = el)}
       >
-        {this._renderSpinner()}
+        {[
+          <a-entity
+            id="cameraController"
+            al-camera-controller={`cameraType: ${
+              this.camera && this.camera.type
+                ? this.camera.type
+                : CameraType.NONE
+            }`}
+          />,
+          this._renderSpinner()
+        ]}
       </a-camera>
     );
   }

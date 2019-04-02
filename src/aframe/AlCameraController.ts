@@ -42,21 +42,17 @@ export class AlCameraController implements AframeRegistry {
           perspective: perspectiveCamera
         } as AlCameraControllerState;
 
-        if (this.data.camera === CameraType.ORTHOGRAPHIC) {
+        if (this.data.cameraType === CameraType.ORTHOGRAPHIC) {
           this.el.sceneEl.camera = this.state.orthographic;
-        } else if (this.data.camera === CameraType.PERSPECTIVE) {
-          this.el.sceneEl.camera = this.state.perspective;
-        } else {
+        } else if (this.data.cameraType === CameraType.PERSPECTIVE) {
           this.el.sceneEl.camera = this.state.perspective;
         }
       },
 
       update(_oldData) {
-        if (this.data.camera === CameraType.ORTHOGRAPHIC) {
+        if (this.data.cameraType === CameraType.ORTHOGRAPHIC) {
           this.el.sceneEl.camera = this.state.orthographic;
-        } else if (this.data.camera === CameraType.PERSPECTIVE) {
-          this.el.sceneEl.camera = this.state.perspective;
-        } else {
+        } else if (this.data.cameraType === CameraType.PERSPECTIVE) {
           this.el.sceneEl.camera = this.state.perspective;
         }
         this.el.sceneEl.emit(AlCameraControllerEvents.UPDATED, {}, false);
