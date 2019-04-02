@@ -5,7 +5,6 @@ export interface AlAppState {
   angles: Map<string, AlAngleSerial>;
   boundingBoxVisible: boolean;
   camera: AlCameraSerial;
-  cameraAnimating: boolean;
   controlsEnabled: boolean;
   displayMode: DisplayMode;
   edges: Map<string, AlEdgeSerial>;

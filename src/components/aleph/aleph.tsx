@@ -20,7 +20,6 @@ import {
   appSelectNode,
   appSetAngle,
   appSetBoundingBoxVisible,
-  appSetCameraAnimating,
   appSetCamera,
   appSetControlsEnabled,
   appSetDisplayMode,
@@ -99,7 +98,6 @@ export class Aleph {
   appSelectNode: Action;
   appSetAngle: Action;
   appSetBoundingBoxVisible: Action;
-  appSetCameraAnimating: Action;
   appSetCamera: Action;
   appSetControlsEnabled: Action;
   appSetDisplayMode: Action;
@@ -263,7 +261,6 @@ export class Aleph {
           angles,
           boundingBoxVisible,
           camera,
-          cameraAnimating,
           controlsEnabled,
           displayMode,
           edges,
@@ -286,7 +283,6 @@ export class Aleph {
         angles,
         boundingBoxVisible,
         camera,
-        cameraAnimating,
         controlsEnabled,
         displayMode,
         edges,
@@ -318,7 +314,6 @@ export class Aleph {
       appSetAngle,
       appSetBoundingBoxVisible,
       appSetCamera,
-      appSetCameraAnimating,
       appSetControlsEnabled,
       appSetDisplayMode,
       appSetEdge,
