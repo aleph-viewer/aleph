@@ -1,10 +1,8 @@
 import { AframeRegistry, AframeComponent, AlCameraSerial } from "../interfaces";
 import { Constants } from "../Constants";
-import { ThreeUtils } from "../utils";
-import { AlNodeSpawnerEvents, AlNodeEvents } from ".";
-import { OrthographicCamera } from "three";
+import { CameraType } from "../enums/CameraType";
 
-interface AlOrbitControlState {
+interface AlCameraControllerState {
   orthographic: THREE.OrthographicCamera;
   perspective: THREE.PerspectiveCamera;
 }
@@ -20,7 +18,7 @@ export class AlCameraController implements AframeRegistry {
       dependencies: ["camera"],
 
       schema: {
-        camera: { type: "string", default: "perspective" }
+        cameraType: { type: "string", default: CameraType.PERSPECTIVE }
       },
 
       init() {
@@ -42,11 +40,11 @@ export class AlCameraController implements AframeRegistry {
         this.state = {
           orthographic: orthoCamera,
           perspective: perspectiveCamera
-        };
+        } as AlCameraControllerState;
 
-        if (this.data.camera === AlCameraTypes.ORTHOGRAPHIC) {
+        if (this.data.camera === CameraType.ORTHOGRAPHIC) {
           this.el.sceneEl.camera = this.state.orthographic;
-        } else if (this.data.camera === AlCameraTypes.PERSPECTIVE) {
+        } else if (this.data.camera === CameraType.PERSPECTIVE) {
           this.el.sceneEl.camera = this.state.perspective;
         } else {
           this.el.sceneEl.camera = this.state.perspective;
@@ -54,9 +52,9 @@ export class AlCameraController implements AframeRegistry {
       },
 
       update(_oldData) {
-        if (this.data.camera === AlCameraTypes.ORTHOGRAPHIC) {
+        if (this.data.camera === CameraType.ORTHOGRAPHIC) {
           this.el.sceneEl.camera = this.state.orthographic;
-        } else if (this.data.camera === AlCameraTypes.PERSPECTIVE) {
+        } else if (this.data.camera === CameraType.PERSPECTIVE) {
           this.el.sceneEl.camera = this.state.perspective;
         } else {
           this.el.sceneEl.camera = this.state.perspective;
@@ -73,9 +71,4 @@ export class AlCameraController implements AframeRegistry {
 
 export class AlCameraControllerEvents {
   static UPDATED: string = "al-camera-controller-updated";
-}
-
-export class AlCameraTypes {
-  static ORTHOGRAPHIC: string = "orthographic";
-  static PERSPECTIVE: string = "perspective";
 }

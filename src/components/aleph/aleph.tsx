@@ -54,6 +54,7 @@ import {
   AlOrbitControlEvents,
   AlCameraControllerEvents
 } from "../../aframe";
+import { CameraType } from "../../enums/CameraType";
 type Entity = import("aframe").Entity;
 type Scene = import("aframe").Scene;
 //#endregion
@@ -118,7 +119,6 @@ export class Aleph {
   //#region state
   @State() angles: Map<string, AlAngleSerial>;
   @State() boundingBoxVisible: boolean;
-  @State() cameraAnimating: boolean;
   @State() camera: AlCameraSerial;
   @State() controlsEnabled: boolean;
   @State() displayMode: DisplayMode;
@@ -539,10 +539,14 @@ export class Aleph {
   }
 
   private _renderCamera(): JSX.Element {
-    console.log("render-camera animating: ", this.cameraAnimating);
+    //console.log("render-camera animating: ", this.camera.animating);
     return (
       <a-camera
-        al-camera-controller
+        al-camera-controller={`cameraType: ${
+          this.camera && this.camera.type
+            ? this.camera.type
+            : CameraType.PERSPECTIVE
+        }`}
         id="mainCamera"
         cursor="rayOrigin: mouse"
         raycaster="objects: .collidable"
@@ -559,10 +563,14 @@ export class Aleph {
           enableDamping: true;
           dampingFactor: ${Constants.cameraValues.dampingFactor};
           controlsTarget: ${ThreeUtils.vector3ToString(
-            this.camera ? this.camera.target : new THREE.Vector3(0, 0, 0)
+            this.camera && this.camera.target
+              ? this.camera.target
+              : new THREE.Vector3(0, 0, 0)
           )};
           controlsPosition: ${ThreeUtils.vector3ToString(
-            this.camera ? this.camera.position : new THREE.Vector3(0, 0, 0)
+            this.camera && this.camera.position
+              ? this.camera.position
+              : new THREE.Vector3(0, 0, 0)
           )};
           enabled: ${this.controlsEnabled};
           animationTarget: ${
@@ -575,7 +583,7 @@ export class Aleph {
               ? this._animationCache.position
               : new THREE.Vector3(0, 0, -1)
           };
-          animating: ${this.cameraAnimating};
+          animating: ${this.camera ? this.camera.animating : false};
         `}
         ref={el => (this._camera = el)}
       >
@@ -671,7 +679,9 @@ export class Aleph {
       if (result) {
         this._animationCache = result;
         // Put a local cache of new anim targs here
-        this.appSetCameraAnimating(true);
+        this.appSetCamera({
+          animating: true
+        });
       }
     }
     this.appSelectNode(nodeId);
@@ -825,7 +835,9 @@ export class Aleph {
   }
 
   private _animationFinished(_event: CustomEvent) {
-    this.appSetCameraAnimating(false);
+    this.appSetCamera({
+      animating: false
+    });
   }
 
   private _cameraTypeHandler(_event: CustomEvent) {
