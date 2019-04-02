@@ -174,24 +174,27 @@ export class AlControlPanel {
 
   renderCameraType(): JSX.Element {
     return (
-      <ion-item>
+      <ion-item id="mode">
         <ion-label>Camera</ion-label>
-        <ion-radio-group value={this.cameraType}>
-          <ion-item>
-            <ion-radio
-              value={CameraType.PERSPECTIVE}
-              onClick={() => this._cameraType(CameraType.PERSPECTIVE)}
-            />
-            <ion-label>Perspective</ion-label>
-          </ion-item>
-          <ion-item>
-            <ion-radio
-              value={CameraType.ORTHOGRAPHIC}
-              onClick={() => this._cameraType(CameraType.ORTHOGRAPHIC)}
-            />
-            <ion-label>Orthographic</ion-label>
-          </ion-item>
-        </ion-radio-group>
+        <select
+          onChange={e =>
+            this._cameraType((e.srcElement as HTMLSelectElement)
+              .value as CameraType)
+          }
+        >
+          <option
+            selected={this.cameraType === CameraType.PERSPECTIVE}
+            value={CameraType.PERSPECTIVE}
+          >
+            Perspective
+          </option>
+          <option
+            selected={this.cameraType === CameraType.ORTHOGRAPHIC}
+            value={CameraType.ORTHOGRAPHIC}
+          >
+            Orthographic
+          </option>
+        </select>
       </ion-item>
     );
   }
