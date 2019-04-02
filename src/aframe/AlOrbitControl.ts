@@ -134,7 +134,7 @@ export class AlOrbitControl implements AframeRegistry {
         };
 
         let newControls = new THREE.OrbitControls(
-          this.el.sceneEl.camera,
+          this.el.getObject3D("camera"),
           this.el.sceneEl.renderer.domElement
         );
 
@@ -213,7 +213,7 @@ export class AlOrbitControl implements AframeRegistry {
         );
 
         let controls = new THREE.OrbitControls(
-          el.sceneEl.camera,
+          el.getObject3D("camera"),
           el.sceneEl.renderer.domElement
         );
 
@@ -227,7 +227,7 @@ export class AlOrbitControl implements AframeRegistry {
         let controlsTarget = ThreeUtils.objectToVector3(data.controlsTarget);
 
         controls.object.position.copy(controlsPosition);
-        el.sceneEl.camera.position.copy(controlsPosition);
+        el.getObject3D("camera").position.copy(controlsPosition);
         controls.target.copy(controlsTarget);
 
         (this.state as AlOrbitControlState) = {
@@ -317,9 +317,9 @@ export class AlOrbitControl implements AframeRegistry {
         } else {
           this.state.animating = data.animating;
           controls.target = ThreeUtils.objectToVector3(data.controlsTarget);
-          this.el.sceneEl.camera.position.copy(
-            ThreeUtils.objectToVector3(data.controlsPosition)
-          );
+          this.el
+            .getObject3D("camera")
+            .position.copy(ThreeUtils.objectToVector3(data.controlsPosition));
         }
 
         console.log("al-orbit-controls-update: ", controls.object.name);
