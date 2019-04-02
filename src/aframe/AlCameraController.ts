@@ -23,10 +23,10 @@ export class AlCameraController implements AframeRegistry {
 
       init() {
         let orthoCamera = new THREE.OrthographicCamera(
-          this.el.sceneEl.canvas.width / -2,
-          this.el.sceneEl.canvas.width / 2,
-          this.el.sceneEl.canvas.height / 2,
-          this.el.sceneEl.canvas.height / -2,
+          window.innerWidth / -2,
+          window.innerWidth / 2,
+          window.innerHeight / 2,
+          window.innerHeight / -2,
           Constants.cameraValues.near,
           Constants.cameraValues.far
         );
@@ -44,6 +44,7 @@ export class AlCameraController implements AframeRegistry {
       },
 
       update(_oldData) {
+        this.state.orthographic.updateProjectionMatrix();
         console.log("al-camera-controller-update: ", this.data.cameraType);
         if (this.data.cameraType === CameraType.ORTHOGRAPHIC) {
           this.el.sceneEl.camera = this.state.orthographic;
