@@ -475,10 +475,10 @@ export class Aleph {
           `}
         >
           <a-entity
+            geometry={`primitive: plane; width: ${this._boundingSphereRadius *
+              Constants.fontSize}; height: auto;`}
+            material="color: #aaa"
             text={`
-              geometry: "primitive: plane; width: ${this._boundingSphereRadius *
-                Constants.fontSize}; height: auto";
-              material: "color: #fff";
               value: ${node.text};
               side: double;
               align: center;
@@ -529,36 +529,32 @@ export class Aleph {
   private _renderLights(): JSX.Element {
     return [
       <a-entity
+        id="light-1"
         light="type: directional; color: #ffffff; intensity: 0.75"
         position="1 1 1"
       />,
       <a-entity
+        id="light-2"
         light="type: directional; color: #002958; intensity: 0.5"
         position="-1 -1 -1"
       />,
-      <a-entity light="type: ambient; color: #d0d0d0; intensity: 1" />
+      <a-entity
+        id="light-3"
+        light="type: ambient; color: #d0d0d0; intensity: 1"
+      />
     ];
   }
 
   private _renderCamera(): JSX.Element {
-    let radius: number = 1;
-
-    if (this._targetEntity) {
-      let mesh: THREE.Mesh = this._targetEntity.object3DMap.mesh as THREE.Mesh;
-      if (mesh) {
-        radius = mesh.geometry.boundingSphere.radius;
-      }
-    }
-
     return (
       <a-camera
-        id="mainCamera"
-        cursor="rayOrigin: mouse"
-        raycaster="objects: .collidable"
         fov={Constants.cameraValues.fov}
         near={Constants.cameraValues.near}
         look-controls="enabled: false"
         far={Constants.cameraValues.far}
+        id="mainCamera"
+        cursor="rayOrigin: mouse"
+        raycaster="objects: .collidable"
         al-orbit-control={`
           maxPolarAngle: ${Constants.cameraValues.maxPolarAngle};
           minDistance: ${Constants.cameraValues.minDistance};
@@ -589,12 +585,14 @@ export class Aleph {
         renderer="colorManagement: true;"
         vr-mode-ui="enabled: false"
         ref={el => (this._scene = el)}
+        ortho
       >
         {this._renderSrc()}
         {this._renderNodes()}
         {this._renderEdges()}
         {this._renderLights()}
         {this._renderCamera()}
+        />
       </a-scene>
     );
   }

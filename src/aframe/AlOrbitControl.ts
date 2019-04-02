@@ -154,7 +154,6 @@ export class AlOrbitControl implements AframeRegistry {
 
         // wait a frame before emitting initialised event
         window.setTimeout(() => {
-          console.log("timeout!");
           this.emitNewSerial();
         }, Constants.minFrameMS);
       },
