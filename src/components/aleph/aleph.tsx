@@ -330,7 +330,7 @@ export class Aleph {
     });
 
     // set up event handlers
-    //this._animationFinished = this._animationFinished.bind(this);
+    this._animationFinished = this._animationFinished.bind(this);
     this._canvasMouseDown = this._canvasMouseDown.bind(this);
     this._canvasMouseUp = this._canvasMouseUp.bind(this);
     this._controlsDisabledHandler = this._controlsDisabledHandler.bind(this);
@@ -542,7 +542,7 @@ export class Aleph {
     let animation = "";
     let animation__2 = "";
 
-    if (this.cameraAnimating) {
+    if (this.camera && this.camera.animating) {
       animation = `
         isRawProperty: true;
         property: al-orbit-control.controlPosition;
@@ -550,7 +550,7 @@ export class Aleph {
         to: ${this._animationEnd.position};
         elasticity: 200;
         dur: 1000;
-        ease: easeInOutSine;
+        easing: easeInOutSine;
       `;
       animation__2 = `
         isRawProperty: true;
@@ -559,7 +559,7 @@ export class Aleph {
         to: ${this._animationEnd.target};
         elasticity: 200;
         dur: 1000;
-        ease: easeInOutSine;
+        easing: easeInOutSine;
       `;
     }
 
@@ -681,8 +681,17 @@ export class Aleph {
         animating: true
       });
 
-      this._animationStart = this.camera;
-      this._animationEnd = this.camera;
+      // TODO: Not functioning!
+      let temp = {
+        position: this.camera.position,
+        target: this.camera.target
+      } as AlCameraSerial;
+      let temp2 = {
+        position: this.camera.position,
+        target: this.camera.target
+      } as AlCameraSerial;
+      this._animationStart = temp;
+      this._animationEnd = temp2;
 
       let result: AlCameraSerial | null = GetUtils.getCameraStateFromNode(
         this.nodes.get(this.selected),
@@ -695,12 +704,16 @@ export class Aleph {
         );
 
         let diffTarg: number;
-        this.camera.target?  diffTarg = result.target.distanceTo(this.camera.target) : diffTarg = 0;
+        this.camera.target
+          ? (diffTarg = result.target.distanceTo(this.camera.target))
+          : (diffTarg = 0);
 
         if (diffPos > 0 || diffTarg > 0) {
-          diffPos > 0? this._animationEnd.position = result.position : null;
-          diffTarg > 0? this._animationEnd.target = result.target : null;
-          this.appSetCameraAnimating(true); 
+          diffPos > 0 ? (this._animationEnd.position = result.position) : null;
+          diffTarg > 0 ? (this._animationEnd.target = result.target) : null;
+          this.appSetCamera({
+            animating: true
+          });
         }
       }
     }
@@ -809,6 +822,15 @@ export class Aleph {
     this._validTarget = event.detail.valid;
   }
 
+  private _animationFinished(event: CustomEvent): void {
+    console.log(event);
+    if (event.detail.name === "animation") {
+      this.appSetCamera({
+        animating: false
+      });
+    }
+  }
+
   private _nodeSelectedEventHandler(event: CustomEvent): void {
     // ELSE IF intersecting a node and it is NOT the selected node
     if (
@@ -866,6 +888,12 @@ export class Aleph {
       once: false,
       passive: true
     });
+
+    this._scene.addEventListener(
+      "animationcomplete",
+      this._animationFinished,
+      false
+    );
 
     this._scene.addEventListener(
       AlOrbitControlEvents.UPDATED,
