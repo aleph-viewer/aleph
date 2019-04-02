@@ -133,32 +133,37 @@ export class AlOrbitControl implements AframeRegistry {
           target: controls.target
         };
 
-        controls = new THREE.OrbitControls(
-          this.el.getObject3D("camera"),
+        let newControls = new THREE.OrbitControls(
+          this.el.sceneEl.camera,
           this.el.sceneEl.renderer.domElement
         );
 
-        controls.autoRotate = temp.autoRotate;
-        controls.autoRotateSpeed = temp.autoRotateSpeed;
-        controls.dampingFactor = temp.dampingFactor;
-        controls.enabled = temp.enabled;
-        controls.enableDamping = temp.enableDamping;
-        controls.enableKeys = temp.enableKeys;
-        controls.enablePan = temp.enablePan;
-        controls.enableRotate = temp.enableRotate;
-        controls.enableZoom = temp.enableZoom;
-        controls.keyPanSpeed = temp.keyPanSpeed;
-        controls.maxPolarAngle = temp.maxPolarAngle;
-        controls.maxAzimuthAngle = temp.maxAzimuthAngle;
-        controls.maxDistance = temp.maxDistance;
-        controls.minDistance = temp.minDistance;
-        controls.minPolarAngle = temp.minPolarAngle;
-        controls.minAzimuthAngle = temp.minAzimuthAngle;
-        controls.rotateSpeed = temp.rotateSpeed;
-        controls.screenSpacePanning = temp.screenSpacePanning;
-        controls.zoomSpeed = temp.zoomSpeed;
-        controls.object.position.copy(temp.position);
-        controls.target.copy(temp.target);
+        newControls.autoRotate = temp.autoRotate;
+        newControls.autoRotateSpeed = temp.autoRotateSpeed;
+        newControls.dampingFactor = temp.dampingFactor;
+        newControls.enabled = temp.enabled;
+        newControls.enableDamping = temp.enableDamping;
+        newControls.enableKeys = temp.enableKeys;
+        newControls.enablePan = temp.enablePan;
+        newControls.enableRotate = temp.enableRotate;
+        newControls.enableZoom = temp.enableZoom;
+        newControls.keyPanSpeed = temp.keyPanSpeed;
+        newControls.maxPolarAngle = temp.maxPolarAngle;
+        newControls.maxAzimuthAngle = temp.maxAzimuthAngle;
+        newControls.maxDistance = temp.maxDistance;
+        newControls.minDistance = temp.minDistance;
+        newControls.minPolarAngle = temp.minPolarAngle;
+        newControls.minAzimuthAngle = temp.minAzimuthAngle;
+        newControls.rotateSpeed = temp.rotateSpeed;
+        newControls.screenSpacePanning = temp.screenSpacePanning;
+        newControls.zoomSpeed = temp.zoomSpeed;
+        newControls.object.position.copy(temp.position);
+        newControls.target.copy(temp.target);
+
+        this.state.controls.dispose();
+        this.state.controls = newControls;
+
+        this.state.controls.object.name = "controls-newCamera";
 
         this.emitNewSerial();
       },
@@ -208,9 +213,12 @@ export class AlOrbitControl implements AframeRegistry {
         );
 
         let controls = new THREE.OrbitControls(
-          el.getObject3D("camera"),
+          el.sceneEl.camera,
           el.sceneEl.renderer.domElement
         );
+
+        controls.object.name = "controls-init";
+        console.log("al-orbit-controls-init: ", controls.object.name);
 
         // Convert the controlsPosition & controlsTarget Objects into THREE.Vector3
         let controlsPosition = ThreeUtils.objectToVector3(
@@ -313,6 +321,8 @@ export class AlOrbitControl implements AframeRegistry {
             .getObject3D("camera")
             .position.copy(ThreeUtils.objectToVector3(data.controlsPosition));
         }
+
+        console.log("al-orbit-controls-update: ", controls.object.name);
       },
 
       tickFunction() {
@@ -353,7 +363,7 @@ export class AlOrbitControl implements AframeRegistry {
       },
 
       remove() {
-        this.removeEventListener();
+        this.removeListeners();
         let state = this.state as AlOrbitControlState;
         state.controls.dispose();
         state = null;

@@ -539,8 +539,7 @@ export class Aleph {
   }
 
   private _renderCamera(): JSX.Element {
-    //console.log("render-camera animating: ", this.camera.animating);
-    return (
+    const camera = (
       <a-camera
         id="mainCamera"
         cursor="rayOrigin: mouse"
@@ -550,51 +549,53 @@ export class Aleph {
         look-controls="enabled: false"
         far={Constants.cameraValues.far}
         al-orbit-control={`
-          maxPolarAngle: ${Constants.cameraValues.maxPolarAngle};
-          minDistance: ${Constants.cameraValues.minDistance};
-          screenSpacePanning: true;
-          rotateSpeed: ${Constants.cameraValues.rotateSpeed};
-          zoomSpeed: ${Constants.cameraValues.zoomSpeed};
-          enableDamping: true;
-          dampingFactor: ${Constants.cameraValues.dampingFactor};
-          controlsTarget: ${ThreeUtils.vector3ToString(
-            this.camera && this.camera.target
-              ? this.camera.target
-              : new THREE.Vector3(0, 0, 0)
-          )};
-          controlsPosition: ${ThreeUtils.vector3ToString(
-            this.camera && this.camera.position
-              ? this.camera.position
-              : new THREE.Vector3(0, 0, 0)
-          )};
-          enabled: ${this.controlsEnabled};
-          animationTarget: ${
-            this._animationCache
-              ? this._animationCache.target
-              : new THREE.Vector3(0, 0, 0)
-          };
-          animationPosition: ${
-            this._animationCache
-              ? this._animationCache.position
-              : new THREE.Vector3(0, 0, -1)
-          };
-          animating: ${this.camera ? this.camera.animating : false};
-        `}
+        maxPolarAngle: ${Constants.cameraValues.maxPolarAngle};
+        minDistance: ${Constants.cameraValues.minDistance};
+        screenSpacePanning: true;
+        rotateSpeed: ${Constants.cameraValues.rotateSpeed};
+        zoomSpeed: ${Constants.cameraValues.zoomSpeed};
+        enableDamping: true;
+        dampingFactor: ${Constants.cameraValues.dampingFactor};
+        controlsTarget: ${ThreeUtils.vector3ToString(
+          this.camera && this.camera.target
+            ? this.camera.target
+            : new THREE.Vector3(0, 0, 0)
+        )};
+        controlsPosition: ${ThreeUtils.vector3ToString(
+          this.camera && this.camera.position
+            ? this.camera.position
+            : new THREE.Vector3(0, 0, 0)
+        )};
+        enabled: ${this.controlsEnabled};
+        animationTarget: ${
+          this._animationCache
+            ? this._animationCache.target
+            : new THREE.Vector3(0, 0, 0)
+        };
+        animationPosition: ${
+          this._animationCache
+            ? this._animationCache.position
+            : new THREE.Vector3(0, 0, -1)
+        };
+        animating: ${
+          this.camera && this.camera.animating ? this.camera.animating : false
+        };
+      `}
         ref={el => (this._camera = el)}
-      >
-        {[
-          <a-entity
-            id="cameraController"
-            al-camera-controller={`cameraType: ${
-              this.camera && this.camera.type
-                ? this.camera.type
-                : CameraType.NONE
-            }`}
-          />,
-          this._renderSpinner()
-        ]}
-      </a-camera>
+      />
     );
+
+    const spinner = this._renderSpinner();
+    const controller = (
+      <a-entity
+        id="cameraController"
+        al-camera-controller={`cameraType: ${
+          this.camera && this.camera.type ? this.camera.type : CameraType.NONE
+        }`}
+      />
+    );
+
+    return [camera, spinner, controller];
   }
 
   private _renderScene(): JSX.Element {
