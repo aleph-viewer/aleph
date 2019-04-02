@@ -51,7 +51,8 @@ import {
   AlGltfModelEvents,
   AlNodeEvents,
   AlNodeSpawnerEvents,
-  AlOrbitControlEvents
+  AlOrbitControlEvents,
+  AlCameraControllerEvents
 } from "../../aframe";
 type Entity = import("aframe").Entity;
 type Scene = import("aframe").Scene;
@@ -76,8 +77,7 @@ export class Aleph {
   private _intersectingNode: string | null = null;
   private _isShiftDown: boolean = false;
 
-  // private _animationStart: AlCameraSerial;
-  // private _animationEnd: AlCameraSerial;
+  private _animationCache: AlCameraSerial;
 
   @Prop({ context: "store" }) store: Store;
   @Prop() dracoDecoderPath: string | null;
@@ -331,7 +331,7 @@ export class Aleph {
     });
 
     // set up event handlers
-    //this._animationFinished = this._animationFinished.bind(this);
+    this._animationFinished = this._animationFinished.bind(this);
     this._canvasMouseDown = this._canvasMouseDown.bind(this);
     this._canvasMouseUp = this._canvasMouseUp.bind(this);
     this._controlsDisabledHandler = this._controlsDisabledHandler.bind(this);
@@ -348,6 +348,7 @@ export class Aleph {
     this._setNodeEventHandler = this._setNodeEventHandler.bind(this);
     this._srcLoaded = this._srcLoaded.bind(this);
     this._validTargetEventHandler = this._validTargetEventHandler.bind(this);
+    this._cameraTypeHandler = this._cameraTypeHandler.bind(this);
   }
 
   //#region Render Methods
@@ -470,17 +471,18 @@ export class Aleph {
           `}
         >
           <a-entity
+            geometry={`primitive: plane; width: ${this._boundingSphereRadius *
+              Constants.fontSize}; height: auto;`}
+            material="color: #aaa"
             text={`
-              geometry: "primitive: plane; width: ${this._boundingSphereRadius *
-                Constants.fontSize}; height: auto";
-              material: "color: #fff";
               value: ${node.text};
               side: double;
               align: center;
               baseline: bottom;
               anchor: center;
             `}
-            al-render-overlaid
+            al-look-to-camera
+            al-render-text-overlaid
             position={ThreeUtils.vector3ToString(textOffset)}
             id={`${nodeId}-label`}
           />
@@ -515,6 +517,7 @@ export class Aleph {
             baseline: bottom;
             anchor: center;
           `}
+            al-render-text-overlaid
           />
         </a-entity>
       );
@@ -536,17 +539,10 @@ export class Aleph {
   }
 
   private _renderCamera(): JSX.Element {
-    let radius: number = 1;
-
-    if (this._targetEntity) {
-      let mesh: THREE.Mesh = this._targetEntity.object3DMap.mesh as THREE.Mesh;
-      if (mesh) {
-        radius = mesh.geometry.boundingSphere.radius;
-      }
-    }
-
+    console.log("render-camera animating: ", this.cameraAnimating);
     return (
       <a-camera
+        al-camera-controller
         id="mainCamera"
         cursor="rayOrigin: mouse"
         raycaster="objects: .collidable"
@@ -562,13 +558,24 @@ export class Aleph {
           zoomSpeed: ${Constants.cameraValues.zoomSpeed};
           enableDamping: true;
           dampingFactor: ${Constants.cameraValues.dampingFactor};
-          targetPosition: ${ThreeUtils.vector3ToString(
+          controlsTarget: ${ThreeUtils.vector3ToString(
             this.camera ? this.camera.target : new THREE.Vector3(0, 0, 0)
           )};
-          cameraPosition: ${ThreeUtils.vector3ToString(
+          controlsPosition: ${ThreeUtils.vector3ToString(
             this.camera ? this.camera.position : new THREE.Vector3(0, 0, 0)
           )};
           enabled: ${this.controlsEnabled};
+          animationTarget: ${
+            this._animationCache
+              ? this._animationCache.target
+              : new THREE.Vector3(0, 0, 0)
+          };
+          animationPosition: ${
+            this._animationCache
+              ? this._animationCache.position
+              : new THREE.Vector3(0, 0, -1)
+          };
+          animating: ${this.cameraAnimating};
         `}
         ref={el => (this._camera = el)}
       >
@@ -654,74 +661,17 @@ export class Aleph {
   }
 
   private _selectNode(nodeId: string, animate: boolean): void {
-    console.log("animate ", animate);
     if (animate && nodeId !== this.selected) {
-      this.appSetCameraAnimating(true); // todo: can we pass boolean to appSelectNode to set cameraAnimating in the state?
+      // Get camera state from node and set as result
+      let result: AlCameraSerial | null = GetUtils.getCameraStateFromNode(
+        this.nodes.get(this.selected),
+        this._boundingSphereRadius
+      );
 
-      // TODO: Differentiate between Node -> Node && Target -> Target animations
-      if (this.cameraAnimating) {
-        // Get camera state from node and set as result
-        let result: AlCameraSerial | null = GetUtils.getCameraStateFromNode(
-          this.nodes.get(this.selected),
-          this._boundingSphereRadius
-        );
-
-        if (result) {
-          // If we returned a result AND the difference between the last position and the result position is not 0
-          const diffPos: number = result.position.distanceTo(
-            this.camera.position
-          );
-
-          let diffTarg: number;
-          if (this.camera.target) {
-            diffTarg = result.target.distanceTo(this.camera.target);
-          } else {
-            diffTarg = 0;
-          }
-
-          if (diffPos !== 0 || diffTarg !== 0) {
-            let steps: AlCameraSerial[] = [];
-
-            const animationStart = this.camera;
-            const animationEnd = result;
-
-            for (let step = 1; step <= Constants.maxAnimationSteps; step++) {
-              let percent = step / Constants.maxAnimationSteps;
-              let newPos = new THREE.Vector3().copy(animationStart.position);
-              let newTarg = new THREE.Vector3().copy(animationStart.target);
-
-              if (diffPos) {
-                newPos = ThreeUtils.slerp(
-                  animationStart.position.clone(),
-                  animationEnd.position.clone(),
-                  percent
-                );
-              }
-              if (diffTarg) {
-                newTarg = ThreeUtils.slerp(
-                  animationStart.target.clone(),
-                  animationEnd.target.clone(),
-                  percent
-                );
-              }
-
-              steps.push({
-                position: newPos,
-                target: newTarg
-              } as AlCameraSerial);
-            }
-
-            let step = 0;
-            let anim = window.setInterval(() => {
-              this.appSetCamera(steps[step]);
-              step++;
-            }, Constants.minFrameMS / 2);
-
-            window.setTimeout(() => {
-              window.clearInterval(anim);
-            }, Constants.minFrameMS * (Constants.maxAnimationSteps + 1));
-          }
-        }
+      if (result) {
+        this._animationCache = result;
+        // Put a local cache of new anim targs here
+        this.appSetCameraAnimating(true);
       }
     }
     this.appSelectNode(nodeId);
@@ -874,6 +824,14 @@ export class Aleph {
     }
   }
 
+  private _animationFinished(_event: CustomEvent) {
+    this.appSetCameraAnimating(false);
+  }
+
+  private _cameraTypeHandler(_event: CustomEvent) {
+    // TODO: Fire Redux Here
+  }
+
   private _addEventListeners(): void {
     this._scene.canvas.addEventListener("mousedown", this._canvasMouseDown, {
       capture: false,
@@ -944,6 +902,18 @@ export class Aleph {
     this._scene.addEventListener(
       AlNodeEvents.INTERSECTION_CLEARED,
       this._intersectionClearedEventHandler,
+      false
+    );
+
+    this._scene.addEventListener(
+      AlOrbitControlEvents.ANIMATION_FINISHED,
+      this._animationFinished,
+      false
+    );
+
+    this._scene.addEventListener(
+      AlCameraControllerEvents.UPDATED,
+      this._cameraTypeHandler,
       false
     );
   }
