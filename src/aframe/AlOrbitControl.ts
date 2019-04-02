@@ -1,7 +1,7 @@
 import { AframeRegistry, AframeComponent, AlCameraSerial } from "../interfaces";
 import { Constants } from "../Constants";
 import { ThreeUtils } from "../utils";
-import { AlNodeSpawnerEvents, AlNodeEvents } from ".";
+import { AlNodeSpawnerEvents, AlNodeEvents, AlCameraControllerEvents } from ".";
 
 interface AlOrbitControlState {
   controls: THREE.OrbitControls;
@@ -22,6 +22,7 @@ interface AlOrbitControlObject extends AframeComponent {
   canvasMouseDown(event: MouseEvent): void;
   canvasWheel(event: WheelEvent): void;
   emitNewSerial(): void;
+  sceneCameraChanged(): void;
 }
 
 export class AlOrbitControl implements AframeRegistry {
@@ -51,8 +52,6 @@ export class AlOrbitControl implements AframeRegistry {
         minAzimuthAngle: { type: "number", default: -Infinity },
         minDistance: { default: 1 },
         minPolarAngle: { default: 0 },
-        minZoom: { default: 0 },
-        panSpeed: { default: 1 },
         rotateSpeed: { default: 0.05 },
         screenSpacePanning: { default: false },
         zoomSpeed: { type: "number", default: 0.5 }
@@ -63,6 +62,7 @@ export class AlOrbitControl implements AframeRegistry {
         this.canvasMouseDown = this.canvasMouseDown.bind(this);
         this.canvasWheel = this.canvasWheel.bind(this);
         this.emitNewSerial = this.emitNewSerial.bind(this);
+        this.sceneCameraChanged = this.sceneCameraChanged.bind(this);
       },
 
       addListeners() {
@@ -81,6 +81,7 @@ export class AlOrbitControl implements AframeRegistry {
           once: false,
           passive: true
         });
+        this.el.sceneEl.addEventListener(AlCameraControllerEvents.UPDATED, this.sceneCameraChanged, false);
       },
 
       removeListeners() {
@@ -92,7 +93,66 @@ export class AlOrbitControl implements AframeRegistry {
           "mousedown",
           this.canvasMouseDown
         );
-        this.el.sceneEl.canvas.addEventListener("wheel", this.canvasWheel);
+        this.el.sceneEl.canvas.removeEventListener("wheel", this.canvasWheel);
+        this.el.sceneEl.removeEventListener(AlCameraControllerEvents.UPDATED, this.sceneCameraChanged, false);
+      },
+
+      sceneCameraChanged() {
+        let state = this.state;
+        let controls = state.controls as THREE.OrbitControls;
+        let temp = {
+          autoRotate: controls.autoRotate,
+          autoRotateSpeed: controls.autoRotateSpeed,
+          dampingFactor: controls.dampingFactor,
+          enabled: controls.enabled,
+          enableDamping: controls.enableDamping,
+          enableKeys: controls.enableKeys,
+          enablePan: controls.enablePan,
+          enableRotate: controls.enableRotate,
+          enableZoom: controls.enableZoom,
+          keyPanSpeed: controls.keyPanSpeed,
+          maxAzimuthAngle: controls.maxAzimuthAngle,
+          maxDistance: controls.maxDistance,
+          maxPolarAngle: controls.maxPolarAngle,
+          minAzimuthAngle: controls.minAzimuthAngle,
+          minDistance: controls.minDistance,
+          minPolarAngle: controls.minPolarAngle,
+          rotateSpeed: controls.rotateSpeed,
+          screenSpacePanning: controls.screenSpacePanning,
+          zoomSpeed: controls.zoomSpeed,
+
+          position: controls.object.position,
+          target: controls.target,
+        };
+
+        controls = new THREE.OrbitControls(
+          this.el.getObject3D("camera"),
+          this.el.sceneEl.renderer.domElement
+        );
+
+        controls.autoRotate = temp.autoRotate;
+        controls.autoRotateSpeed = temp.autoRotateSpeed;
+        controls.dampingFactor = temp.dampingFactor;
+        controls.enabled = temp.enabled;
+        controls.enableDamping = temp.enableDamping;
+        controls.enableKeys = temp.enableKeys;
+        controls.enablePan = temp.enablePan;
+        controls.enableRotate = temp.enableRotate;
+        controls.enableZoom = temp.enableZoom;
+        controls.keyPanSpeed = temp.keyPanSpeed;
+        controls.maxPolarAngle = temp.maxPolarAngle;
+        controls.maxAzimuthAngle = temp.maxAzimuthAngle;
+        controls.maxDistance = temp.maxDistance;
+        controls.minDistance = temp.minDistance;
+        controls.minPolarAngle = temp.minPolarAngle;
+        controls.minAzimuthAngle = temp.minAzimuthAngle;
+        controls.rotateSpeed = temp.rotateSpeed;
+        controls.screenSpacePanning = temp.screenSpacePanning;
+        controls.zoomSpeed = temp.zoomSpeed;
+        controls.object.position.copy(temp.position);
+        controls.target.copy(temp.target);
+
+        this.emitNewSerial();
       },
 
       emitNewSerial() {

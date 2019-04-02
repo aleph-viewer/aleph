@@ -9,6 +9,10 @@ import { AlFixedToOrbitCamera } from "./AlFixedToOrbitCamera";
 import { AlEdge } from "./AlEdge";
 import { AlLookToCamera } from "./AlLookToCamera";
 import { AlRenderTextOverlaid } from "./AlRenderTextOverlaid";
+import {
+  AlCameraController,
+  AlCameraControllerEvents
+} from "./AlCameraController";
 
 export {
   AlGltfModel,
@@ -25,5 +29,7 @@ export {
   AlFixedToOrbitCamera,
   AlEdge,
   AlLookToCamera,
-  AlRenderTextOverlaid
+  AlRenderTextOverlaid,
+  AlCameraController,
+  AlCameraControllerEvents
 };

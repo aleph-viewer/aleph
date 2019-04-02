@@ -9,7 +9,8 @@ import {
   AlFixedToOrbitCamera,
   AlEdge,
   AlLookToCamera,
-  AlRenderTextOverlaid
+  AlRenderTextOverlaid,
+  AlCameraController
 } from "../aframe";
 
 export class CreateUtils {
@@ -42,6 +43,10 @@ export class CreateUtils {
     AFRAME.registerComponent(
       AlRenderTextOverlaid.getName(),
       AlRenderTextOverlaid.getObject()
+    );
+    AFRAME.registerComponent(
+      AlCameraController.getName(),
+      AlCameraController.getObject()
     );
   }
 }

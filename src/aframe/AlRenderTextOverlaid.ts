@@ -6,7 +6,7 @@ export class AlRenderTextOverlaid implements AframeRegistry {
       schema: {},
 
       init(_data?: any) {
-        let mesh = this.el.object3DMap.text as THREE.Mesh;
+        let mesh = this.el.object3DMap.text;
         mesh.renderOrder = 999;
         (mesh.material as THREE.Material).depthTest = false;
       }

@@ -52,7 +52,8 @@ import {
   AlGltfModelEvents,
   AlNodeEvents,
   AlNodeSpawnerEvents,
-  AlOrbitControlEvents
+  AlOrbitControlEvents,
+  AlCameraControllerEvents
 } from "../../aframe";
 type Entity = import("aframe").Entity;
 type Scene = import("aframe").Scene;
@@ -352,6 +353,7 @@ export class Aleph {
     this._setNodeEventHandler = this._setNodeEventHandler.bind(this);
     this._srcLoaded = this._srcLoaded.bind(this);
     this._validTargetEventHandler = this._validTargetEventHandler.bind(this);
+    this._cameraTypeHandler = this._cameraTypeHandler.bind(this);
   }
 
   //#region Render Methods
@@ -490,10 +492,10 @@ export class Aleph {
           `}
         >
           <a-entity
+            geometry={`primitive: plane; width: ${this._boundingSphereRadius *
+              Constants.fontSize}; height: auto;`}
+            material="color: #aaa"
             text={`
-              geometry: "primitive: plane; width: ${this._boundingSphereRadius *
-                Constants.fontSize}; height: auto";
-              material: "color: #fff";
               value: ${node.text};
               side: double;
               baseline: center;
@@ -557,17 +559,10 @@ export class Aleph {
   }
 
   private _renderCamera(): JSX.Element {
-    let radius: number = 1;
-
-    if (this._targetEntity) {
-      let mesh: THREE.Mesh = this._targetEntity.object3DMap.mesh as THREE.Mesh;
-      if (mesh) {
-        radius = mesh.geometry.boundingSphere.radius;
-      }
-    }
-
+    console.log("render-camera animating: ", this.cameraAnimating);
     return (
       <a-camera
+        al-camera-controller
         id="mainCamera"
         cursor="rayOrigin: mouse"
         raycaster="objects: .collidable"
@@ -853,6 +848,10 @@ export class Aleph {
     this.appSetCameraAnimating(false);
   }
 
+  private _cameraTypeHandler(_event: CustomEvent) {
+    // TODO: Fire Redux Here
+  }
+
   private _addEventListeners(): void {
     this._scene.canvas.addEventListener("mousedown", this._canvasMouseDown, {
       capture: false,
@@ -929,6 +928,12 @@ export class Aleph {
     this._scene.addEventListener(
       AlOrbitControlEvents.ANIMATION_FINISHED,
       this._animationFinished,
+      false
+    );
+
+    this._scene.addEventListener(
+      AlCameraControllerEvents.UPDATED,
+      this._cameraTypeHandler,
       false
     );
   }
