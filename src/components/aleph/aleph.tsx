@@ -20,7 +20,6 @@ import {
   appSelectNode,
   appSetAngle,
   appSetBoundingBoxVisible,
-  appSetCameraAnimating,
   appSetCamera,
   appSetControlsEnabled,
   appSetDisplayMode,
@@ -99,7 +98,6 @@ export class Aleph {
   appSelectNode: Action;
   appSetAngle: Action;
   appSetBoundingBoxVisible: Action;
-  appSetCameraAnimating: Action;
   appSetCamera: Action;
   appSetControlsEnabled: Action;
   appSetDisplayMode: Action;
@@ -120,7 +118,6 @@ export class Aleph {
   //#region state
   @State() angles: Map<string, AlAngleSerial>;
   @State() boundingBoxVisible: boolean;
-  @State() cameraAnimating: boolean;
   @State() camera: AlCameraSerial;
   @State() controlsEnabled: boolean;
   @State() displayMode: DisplayMode;
@@ -263,7 +260,6 @@ export class Aleph {
           angles,
           boundingBoxVisible,
           camera,
-          cameraAnimating,
           controlsEnabled,
           displayMode,
           edges,
@@ -286,7 +282,6 @@ export class Aleph {
         angles,
         boundingBoxVisible,
         camera,
-        cameraAnimating,
         controlsEnabled,
         displayMode,
         edges,
@@ -318,7 +313,6 @@ export class Aleph {
       appSetAngle,
       appSetBoundingBoxVisible,
       appSetCamera,
-      appSetCameraAnimating,
       appSetControlsEnabled,
       appSetDisplayMode,
       appSetEdge,
@@ -659,10 +653,12 @@ export class Aleph {
   private _selectNode(nodeId: string, animate: boolean): void {
     console.log("animate ", animate);
     if (animate && nodeId !== this.selected) {
-      this.appSetCameraAnimating(true); // todo: can we pass boolean to appSelectNode to set cameraAnimating in the state?
+      this.appSetCamera({
+        animating: true
+      });
 
       // TODO: Differentiate between Node -> Node && Target -> Target animations
-      if (this.cameraAnimating) {
+      if (this.camera.animating) {
         // Get camera state from node and set as result
         let result: AlCameraSerial | null = GetUtils.getCameraStateFromNode(
           this.nodes.get(this.selected),
