@@ -7,9 +7,10 @@ import {
   AlSpinner,
   AlHalo,
   AlFixedToOrbitCamera,
-  AlEdge,
   AlLookToCamera,
-  AlRenderOverlaid
+  AlRenderOverlaid,
+  AlRenderOverlaidText,
+  AlRenderOverlaidLine
 } from "../aframe";
 
 export class CreateUtils {
@@ -25,8 +26,15 @@ export class CreateUtils {
       AlFixedToOrbitCamera.Tag,
       AlFixedToOrbitCamera.Object
     );
-    AFRAME.registerComponent(AlEdge.Tag, AlEdge.Object);
     AFRAME.registerComponent(AlLookToCamera.Tag, AlLookToCamera.Object);
     AFRAME.registerComponent(AlRenderOverlaid.Tag, AlRenderOverlaid.Object);
+    AFRAME.registerComponent(
+      AlRenderOverlaidText.Tag,
+      AlRenderOverlaidText.Object
+    );
+    AFRAME.registerComponent(
+      AlRenderOverlaidLine.Tag,
+      AlRenderOverlaidLine.Object
+    );
   }
 }

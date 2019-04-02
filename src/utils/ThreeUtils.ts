@@ -1,4 +1,9 @@
+import { AlCameraSerial } from "../interfaces";
+import { Constants } from "../Constants";
+import { AlOrbitControlEvents } from "../aframe";
+
 type Entity = import("aframe").Entity;
+type Scene = import("aframe").Scene;
 
 export class ThreeUtils {
   // Must use setAttribute, otherwise THREE.OrbitControls onMouseUp doesn't always pick up the change :-(
@@ -79,5 +84,33 @@ export class ThreeUtils {
     } else {
       return null;
     }
+  }
+
+  static sendAnimationCache(
+    scene: Scene,
+    start: AlCameraSerial,
+    end: AlCameraSerial,
+    positionChange: boolean,
+    targetChange: boolean
+  ): void {
+    let cache = [];
+
+    for (let frame = 1; frame <= Constants.maxAnimationSteps; frame++) {
+      let percent = frame / Constants.maxAnimationSteps;
+      cache.push({
+        position: positionChange
+          ? ThreeUtils.slerp(
+              start.position.clone(),
+              end.position.clone(),
+              percent
+            )
+          : end.position,
+        target: targetChange
+          ? ThreeUtils.slerp(start.target.clone(), end.target.clone(), percent)
+          : end.target
+      } as AlCameraSerial);
+    }
+
+    scene.emit(AlOrbitControlEvents.ANIMATION_STARTED, { cache }, false);
   }
 }
