@@ -9,7 +9,8 @@ import {
   AlFixedToOrbitCamera,
   AlEdge,
   AlLookToCamera,
-  AlRenderOverlaid
+  AlRenderOverlaid,
+  AlCamera
 } from "../aframe";
 
 export class CreateUtils {
@@ -28,5 +29,6 @@ export class CreateUtils {
     AFRAME.registerComponent(AlEdge.Tag, AlEdge.Object);
     AFRAME.registerComponent(AlLookToCamera.Tag, AlLookToCamera.Object);
     AFRAME.registerComponent(AlRenderOverlaid.Tag, AlRenderOverlaid.Object);
+    AFRAME.registerComponent(AlCamera.Tag, AlCamera.Object);
   }
 }
