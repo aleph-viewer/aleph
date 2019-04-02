@@ -30,7 +30,7 @@ export class AlOrbitControl implements AframeRegistry {
       schema: {
         autoRotate: { type: "boolean" },
         autoRotateSpeed: { default: 2 },
-        cameraPosition: { type: "vec3" },
+        controlPosition: { type: "vec3" },
         dampingFactor: { default: 0.1 },
         enabled: { default: true },
         enableDamping: { default: true },
@@ -45,11 +45,9 @@ export class AlOrbitControl implements AframeRegistry {
         minAzimuthAngle: { type: "number", default: -Infinity },
         minDistance: { default: 1 },
         minPolarAngle: { default: 0 },
-        minZoom: { default: 0 },
-        panSpeed: { default: 1 },
         rotateSpeed: { default: 0.05 },
         screenSpacePanning: { default: false },
-        targetPosition: { type: "vec3" },
+        controlTarget: { type: "vec3" },
         zoomSpeed: { type: "number", default: 0.5 }
       },
 
@@ -139,13 +137,13 @@ export class AlOrbitControl implements AframeRegistry {
           el.sceneEl.renderer.domElement
         );
 
-        // Convert the cameraPosition & targetPosition Objects into THREE.Vector3
-        let cameraPosition = ThreeUtils.objectToVector3(data.cameraPosition);
-        let targetPosition = ThreeUtils.objectToVector3(data.targetPosition);
+        // Convert the controlPosition & controlTarget Objects into THREE.Vector3
+        let controlPosition = ThreeUtils.objectToVector3(data.controlPosition);
+        let controlTarget = ThreeUtils.objectToVector3(data.controlTarget);
 
-        controls.object.position.copy(cameraPosition);
-        el.getObject3D("camera").position.copy(cameraPosition);
-        controls.target.copy(targetPosition);
+        controls.object.position.copy(controlPosition);
+        el.getObject3D("camera").position.copy(controlPosition);
+        controls.target.copy(controlTarget);
 
         (this.state as AlOrbitControlState) = { controls };
 
@@ -162,7 +160,7 @@ export class AlOrbitControl implements AframeRegistry {
         let controls = this.state.controls;
         const data = this.data;
 
-        controls.target = ThreeUtils.objectToVector3(data.targetPosition);
+        controls.target = ThreeUtils.objectToVector3(data.controlTarget);
         controls.autoRotate = data.autoRotate;
         controls.autoRotateSpeed = data.autoRotateSpeed;
         controls.dampingFactor = data.dampingFactor;
@@ -184,7 +182,7 @@ export class AlOrbitControl implements AframeRegistry {
         controls.zoomSpeed = data.zoomSpeed;
         this.el
           .getObject3D("camera")
-          .position.copy(ThreeUtils.objectToVector3(data.cameraPosition));
+          .position.copy(ThreeUtils.objectToVector3(data.controlPosition));
       },
 
       tickFunction() {

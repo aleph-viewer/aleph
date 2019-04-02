@@ -77,8 +77,8 @@ export class Aleph {
   private _intersectingNode: string | null = null;
   private _isShiftDown: boolean = false;
 
-  // private _animationStart: AlCameraSerial;
-  // private _animationEnd: AlCameraSerial;
+  private _animationStart: AlCameraSerial;
+  private _animationEnd: AlCameraSerial;
 
   @Prop({ context: "store" }) store: Store;
   @Prop() dracoDecoderPath: string | null;
@@ -378,7 +378,6 @@ export class Aleph {
 
     return null;
   }
-
   private _renderSrc(): JSX.Element {
     if (!this.src) {
       return null;
@@ -546,8 +545,34 @@ export class Aleph {
   }
 
   private _renderCamera(): JSX.Element {
+    let animation = "";
+    let animation__2 = "";
+
+    if (this.cameraAnimating) {
+      animation = `
+        isRawProperty: true;
+        property: al-orbit-control.controlPosition;
+        from: ${this._animationStart.position};
+        to: ${this._animationEnd.position};
+        elasticity: 200;
+        dur: 1000;
+        ease: easeInOutSine;
+      `;
+      animation__2 = `
+        isRawProperty: true;
+        property: al-orbit-control.controlTarget;
+        from: ${this._animationStart.target};
+        to: ${this._animationEnd.target};
+        elasticity: 200;
+        dur: 1000;
+        ease: easeInOutSine;
+      `;
+    }
+
     return (
       <a-camera
+        animation={animation}
+        animation__2={animation__2}
         fov={Constants.cameraValues.fov}
         near={Constants.cameraValues.near}
         look-controls="enabled: false"
@@ -563,10 +588,10 @@ export class Aleph {
           zoomSpeed: ${Constants.cameraValues.zoomSpeed};
           enableDamping: true;
           dampingFactor: ${Constants.cameraValues.dampingFactor};
-          targetPosition: ${ThreeUtils.vector3ToString(
+          controlTarget: ${ThreeUtils.vector3ToString(
             this.camera ? this.camera.target : new THREE.Vector3(0, 0, 0)
           )};
-          cameraPosition: ${ThreeUtils.vector3ToString(
+          controlPosition: ${ThreeUtils.vector3ToString(
             this.camera ? this.camera.position : new THREE.Vector3(0, 0, 0)
           )};
           enabled: ${this.controlsEnabled};
@@ -657,73 +682,29 @@ export class Aleph {
   }
 
   private _selectNode(nodeId: string, animate: boolean): void {
-    console.log("animate ", animate);
     if (animate && nodeId !== this.selected) {
-      this.appSetCameraAnimating(true); // todo: can we pass boolean to appSelectNode to set cameraAnimating in the state?
 
-      // TODO: Differentiate between Node -> Node && Target -> Target animations
-      if (this.cameraAnimating) {
-        // Get camera state from node and set as result
-        let result: AlCameraSerial | null = GetUtils.getCameraStateFromNode(
-          this.nodes.get(this.selected),
-          this._boundingSphereRadius
+      this._animationStart = this.camera;
+      this._animationEnd = this.camera;
+
+      let result: AlCameraSerial | null = GetUtils.getCameraStateFromNode(
+        this.nodes.get(this.selected),
+        this._boundingSphereRadius
+      );
+
+      if (result) {
+        const diffPos: number = result.position.distanceTo(
+          this.camera.position
         );
 
-        if (result) {
-          // If we returned a result AND the difference between the last position and the result position is not 0
-          const diffPos: number = result.position.distanceTo(
-            this.camera.position
-          );
+        let diffTarg: number;
 
-          let diffTarg: number;
-          if (this.camera.target) {
-            diffTarg = result.target.distanceTo(this.camera.target);
-          } else {
-            diffTarg = 0;
-          }
+        this.camera.target?  diffTarg = result.target.distanceTo(this.camera.target) : diffTarg = 0;
 
-          if (diffPos !== 0 || diffTarg !== 0) {
-            let steps: AlCameraSerial[] = [];
-
-            const animationStart = this.camera;
-            const animationEnd = result;
-
-            for (let step = 1; step <= Constants.maxAnimationSteps; step++) {
-              let percent = step / Constants.maxAnimationSteps;
-              let newPos = new THREE.Vector3().copy(animationStart.position);
-              let newTarg = new THREE.Vector3().copy(animationStart.target);
-
-              if (diffPos) {
-                newPos = ThreeUtils.slerp(
-                  animationStart.position.clone(),
-                  animationEnd.position.clone(),
-                  percent
-                );
-              }
-              if (diffTarg) {
-                newTarg = ThreeUtils.slerp(
-                  animationStart.target.clone(),
-                  animationEnd.target.clone(),
-                  percent
-                );
-              }
-
-              steps.push({
-                position: newPos,
-                target: newTarg
-              } as AlCameraSerial);
-            }
-
-            let step = 0;
-            let anim = window.setInterval(() => {
-              this.appSetCamera(steps[step]);
-              step++;
-            }, Constants.minFrameMS / 2);
-
-            window.setTimeout(() => {
-              window.clearInterval(anim);
-            }, Constants.minFrameMS * (Constants.maxAnimationSteps + 1));
-          }
+        if (diffPos > 0 || diffTarg > 0) {
+          diffPos > 0? this._animationEnd.position = result.position : null;
+          diffTarg > 0? this._animationEnd.target = result.target : null;
+          this.appSetCameraAnimating(true); 
         }
       }
     }
