@@ -44058,16 +44058,22 @@
                   var aspect = this.mapSize.width / this.mapSize.height;
                   var far = light.distance || camera.far;
 
-                  if (
-                    fov !== camera.fov ||
-                    aspect !== camera.aspect ||
-                    far !== camera.far
-                  ) {
-                    camera.fov = fov;
-                    camera.aspect = aspect;
-                    camera.far = far;
-                    camera.updateProjectionMatrix();
+                  // ALEPH: Updated for Orthographic support
+                  //---------------------------------------------------------------
+                  try {
+                    if (fov !== camera.fov || aspect !== camera.aspect) {
+                      camera.fov = fov;
+                      camera.aspect = aspect;
+                    }
                   }
+                  catch (e){
+                    console.log(e);
+                  }
+                  if (far !== camera.far) {                           
+                    camera.far = far;
+                  }
+                  camera.updateProjectionMatrix();
+                  //---------------------------------------------------------------
                 }
               }
             );
@@ -67476,13 +67482,21 @@
               var camera = this.camera;
 
               // Update properties.
-              camera.aspect =
-                data.aspect || window.innerWidth / window.innerHeight;
+              // ALEPH: Updated for Orthographic
+              //---------------------------------------------------------------
+              try {
+                camera.fov = data.fov;
+                camera.aspect =
+                  data.aspect || window.innerWidth / window.innerHeight;
+                  camera.zoom = data.zoom;
+              }
+              catch (e) {
+                console.log(e);
+              }
               camera.far = data.far;
-              camera.fov = data.fov;
               camera.near = data.near;
-              camera.zoom = data.zoom;
               camera.updateProjectionMatrix();
+              //---------------------------------------------------------------
 
               this.updateActiveCamera(oldData);
               this.updateSpectatorCamera(oldData);
@@ -80624,9 +80638,16 @@
                     this.maxCanvasSize,
                     this.is("vr-mode")
                   );
-                  camera.aspect = size.width / size.height;
+                  // ALEPH: Updated for Orthographic
+                  //---------------------------------------------------------------
+                  try {
+                    camera.aspect = size.width / size.height;
+                  }
+                  catch (e) {
+                    console.log(e);
+                  }
                   camera.updateProjectionMatrix();
-
+                  //---------------------------------------------------------------
                   // Notify renderer of size change.
                   this.renderer.setSize(size.width, size.height, false);
                   this.emit("rendererresize", null, false);
@@ -81138,8 +81159,16 @@
               sceneEl.maxCanvasSize,
               sceneEl.is("vr-mode")
             );
-            camera.aspect = size.width / size.height;
+            // ALEPH: Updated for Orthographic
+            //---------------------------------------------------------------
+            try {
+              camera.aspect = size.width / size.height;
+            }
+            catch (e){
+              console.log(e.toString());
+            }
             camera.updateProjectionMatrix();
+            //---------------------------------------------------------------
             // Notify renderer of size change.
             sceneEl.renderer.setSize(size.width, size.height, false);
           }
