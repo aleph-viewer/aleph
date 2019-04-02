@@ -433,7 +433,7 @@ export class Aleph {
       }
       default: {
         // TODO: Update this to new method
-        return (
+        return [
           <a-entity
             al-node-spawner={`
               nodesEnabled: ${this.nodesEnabled};
@@ -447,25 +447,9 @@ export class Aleph {
             position="0 0 0"
             scale="1 1 1"
             ref={(el: Entity) => (this._targetEntity = el)}
-          >
-            <a-entity
-              class="collidable"
-              id="back-board"
-              geometry={`primitive: plane; height: ${backScale}; width: ${backScale}`}
-              al-fixed-to-orbit-camera={`
-                distanceFromTarget: ${
-                  this._boundingSphereRadius ? this._boundingSphereRadius : 2
-                };
-                target: ${this.camera.target};
-              `}
-              material={`
-                wireframe: true;
-                side: double;
-              `}
-              ref={el => (this._backBoard = el)}
-            />
-          </a-entity>
-        );
+          />,
+          backBoard
+        ];
       }
     }
   }
@@ -481,8 +465,8 @@ export class Aleph {
         <a-entity
           class="collidable"
           id={nodeId}
-          rotation="0 0 0"
           position={node.position}
+          al-look-to-camera
           al-node={`
             target: ${node.target};
             scale: ${node.scale};
@@ -501,10 +485,9 @@ export class Aleph {
               baseline: bottom;
               anchor: center;
             `}
-            al-look-to-camera
             al-render-overlaid
             position={ThreeUtils.vector3ToString(textOffset)}
-            id={`${nodeId}-label"`}
+            id={`${nodeId}-label`}
           />
         </a-entity>
       );

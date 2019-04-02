@@ -5,6 +5,7 @@ import { ThreeUtils } from "../utils";
 interface AlNodeState {
   selected: boolean;
   hovered: boolean;
+  //geometry: THREE.CircleGeometry;
   geometry: THREE.SphereGeometry;
   material: THREE.MeshBasicMaterial;
   mesh: THREE.Mesh;
@@ -137,11 +138,17 @@ export class AlNode implements AframeRegistry {
 
         const camera = el.sceneEl.camera.el.object3DMap.camera;
         const geometry = new THREE.SphereGeometry(data.scale, 16, 16);
+        //const geometry = new THREE.CircleGeometry(data.scale, 32);
         let material = new THREE.MeshBasicMaterial();
-        material.color = new THREE.Color(Constants.nodeColors.selected);
         const mesh = new THREE.Mesh(geometry, material);
 
         el.setObject3D("mesh", mesh);
+
+        //material.depthTest = false;
+        //el.object3DMap.mesh.renderOrder = 999;
+        // state.mesh.onBeforeRender = function(renderer) {
+        //   renderer.clearDepth();
+        // };
 
         let targetPos = ThreeUtils.objectToVector3(data.target);
 
