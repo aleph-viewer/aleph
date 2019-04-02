@@ -9,7 +9,7 @@ import { AlFixedToOrbitCamera } from "./AlFixedToOrbitCamera";
 import { AlEdge } from "./AlEdge";
 import { AlLookToCamera } from "./AlLookToCamera";
 import { AlRenderOverlaid } from "./AlRenderOverlaid";
-import {AlCamera} from "./AlCamera";
+import { AlCamera } from "./AlCamera";
 
 export {
   AlGltfModel,
