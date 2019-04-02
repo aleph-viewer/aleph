@@ -23,10 +23,10 @@ export class AlCameraController implements AframeRegistry {
 
       init() {
         let orthoCamera = new THREE.OrthographicCamera(
-          Constants.cameraValues.left,
-          Constants.cameraValues.right,
-          Constants.cameraValues.top,
-          Constants.cameraValues.bottom,
+          this.el.sceneEl.canvas.width / -2,
+          this.el.sceneEl.canvas.width / 2,
+          this.el.sceneEl.canvas.height / 2,
+          this.el.sceneEl.canvas.height / -2,
           Constants.cameraValues.near,
           Constants.cameraValues.far
         );

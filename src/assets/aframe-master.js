@@ -44068,6 +44068,10 @@
                   }
                   catch (e){
                     console.log(e);
+                    camera.left = this.mapSize.width / -2;
+                    camera.right = this.mapSize.width / 2;
+                    camera.top = this.mapSize.height / 2;
+                    camera.bottom = this.mapSize.height / -2;
                   }
                   if (far !== camera.far) {                           
                     camera.far = far;
@@ -67492,6 +67496,10 @@
               }
               catch (e) {
                 console.log(e);
+                camera.left = window.innerWidth / -2;
+                camera.right = window.innerWidth / 2;
+                camera.top = window.innerHeight / 2;
+                camera.bottom = window.innerHeight / -2;
               }
               camera.far = data.far;
               camera.near = data.near;
@@ -80644,7 +80652,11 @@
                     camera.aspect = size.width / size.height;
                   }
                   catch (e) {
-                    console.log(e);
+                    console.log(e.toString());
+                    camera.left = size.width / -2;
+                    camera.right = size.width / 2;
+                    camera.top = size.height / 2;
+                    camera.bottom = size/height / -2;
                   }
                   camera.updateProjectionMatrix();
                   //---------------------------------------------------------------
@@ -81166,6 +81178,10 @@
             }
             catch (e){
               console.log(e.toString());
+              camera.left = size.width / -2;
+              camera.right = size.width / 2;
+              camera.top = size.height / 2;
+              camera.bottom = size/height / -2;
             }
             camera.updateProjectionMatrix();
             //---------------------------------------------------------------

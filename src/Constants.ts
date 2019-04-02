@@ -50,10 +50,6 @@ export class Constants {
     rotateSpeed: 0.5,
     zoomSpeed: 1,
     dampingFactor: 0.25,
-    minDistance: 0,
-    left: 1,
-    right: 1,
-    top: 1,
-    bottom: 1
+    minDistance: 0
   };
 }
