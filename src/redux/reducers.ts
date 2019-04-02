@@ -261,7 +261,10 @@ export const app = (
     case TypeKeys.APP_SET_CAMERA: {
       return {
         ...state,
-        camera: action.payload
+        camera: {
+          ...state.camera,
+          ...action.payload
+        }
       };
     }
     case TypeKeys.APP_SET_CONTROLS_ENABLED: {

@@ -126,10 +126,10 @@
 
       class AlephInspectorState {
         constructor() {
-          this.src = null;
-          this.srcLoaded = false;
           this.nodes = null;
           this.selected = null;
+          this.src = null;
+          this.srcLoaded = false;
         }
       }
 
@@ -238,6 +238,10 @@
         alControlPanel.componentOnReady().then(function() {
           alControlPanel.addEventListener("onSetNodesEnabled", function(e) {
             aleph.setNodesEnabled(e.detail);
+          }, false);
+
+          alControlPanel.addEventListener("onSetCameraType", function(e) {
+            aleph.setCameraType(e.detail);
           }, false);
 
           alControlPanel.addEventListener("onSetBoundingBoxVisible", function(e) {

@@ -1,6 +1,8 @@
 import { Component, Prop, Event, EventEmitter } from "@stencil/core";
 import { DisplayMode } from "../../enums/DisplayMode";
 import { Orientation } from "../../enums/Orientation";
+import { AlCameraSerial } from "../../interfaces";
+import { CameraType } from "../../enums/CameraType";
 
 @Component({
   tag: "al-control-panel",
@@ -9,6 +11,7 @@ import { Orientation } from "../../enums/Orientation";
 })
 export class AlControlPanel {
   @Event() onSetBoundingBoxVisible: EventEmitter;
+  @Event() onSetCameraType: EventEmitter;
   @Event() onSetDisplayMode: EventEmitter;
   @Event() onSetOptionsEnabled: EventEmitter;
   @Event() onSetOrientation: EventEmitter;
@@ -21,6 +24,7 @@ export class AlControlPanel {
   @Event() onSetVolumeWindowWidth: EventEmitter;
 
   @Prop({ mutable: true }) boundingBoxVisible: boolean = false;
+  @Prop({ mutable: true }) cameraType: CameraType = CameraType.PERSPECTIVE;
   @Prop({ mutable: true }) displayMode: DisplayMode = DisplayMode.MESH;
   @Prop({ mutable: true }) optionsEnabled: boolean = false;
   @Prop({ mutable: true }) optionsVisible: boolean = true;
@@ -39,6 +43,11 @@ export class AlControlPanel {
   private _boundingBoxVisible(visible: boolean) {
     this.boundingBoxVisible = visible;
     this.onSetBoundingBoxVisible.emit(visible);
+  }
+
+  private _cameraType(type: CameraType) {
+    this.cameraType = type;
+    this.onSetCameraType.emit(type);
   }
 
   private _displayMode(displayMode: DisplayMode) {
@@ -161,6 +170,30 @@ export class AlControlPanel {
         </ion-item>
       );
     }
+  }
+
+  renderCameraType(): JSX.Element {
+    return (
+      <ion-item>
+        <ion-label>Camera</ion-label>
+        <ion-radio-group value={this.cameraType}>
+          <ion-item>
+            <ion-radio
+              value={CameraType.PERSPECTIVE}
+              onClick={() => this._cameraType(CameraType.PERSPECTIVE)}
+            />
+            <ion-label>Perspective</ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-radio
+              value={CameraType.ORTHOGRAPHIC}
+              onClick={() => this._cameraType(CameraType.ORTHOGRAPHIC)}
+            />
+            <ion-label>Orthographic</ion-label>
+          </ion-item>
+        </ion-radio-group>
+      </ion-item>
+    );
   }
 
   renderBoundingBoxEnabled(): JSX.Element {
@@ -365,7 +398,7 @@ export class AlControlPanel {
       }*/
       case DisplayMode.MESH: {
         if (this.optionsVisible && this.optionsEnabled) {
-          return <div>{this.renderBoundingBoxEnabled()}</div>;
+          return [this.renderCameraType(), this.renderBoundingBoxEnabled()];
         }
       }
     }

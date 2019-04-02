@@ -9,6 +9,9 @@ import '@stencil/core';
 
 import '@stencil/redux';
 import {
+  CameraType,
+} from './enums/CameraType';
+import {
   DisplayMode,
 } from './enums/DisplayMode';
 import {
@@ -35,6 +38,7 @@ export namespace Components {
 
   interface AlControlPanel {
     'boundingBoxVisible': boolean;
+    'cameraType': CameraType;
     'displayMode': DisplayMode;
     'nodesEnabled': boolean;
     'nodesVisible': boolean;
@@ -52,10 +56,12 @@ export namespace Components {
   }
   interface AlControlPanelAttributes extends StencilHTMLAttributes {
     'boundingBoxVisible'?: boolean;
+    'cameraType'?: CameraType;
     'displayMode'?: DisplayMode;
     'nodesEnabled'?: boolean;
     'nodesVisible'?: boolean;
     'onOnSetBoundingBoxVisible'?: (event: CustomEvent) => void;
+    'onOnSetCameraType'?: (event: CustomEvent) => void;
     'onOnSetDisplayMode'?: (event: CustomEvent) => void;
     'onOnSetNodesEnabled'?: (event: CustomEvent) => void;
     'onOnSetOptionsEnabled'?: (event: CustomEvent) => void;
@@ -142,6 +148,7 @@ export namespace Components {
     'load': (src: string) => Promise<void>;
     'selectNode': (nodeId: string) => Promise<void>;
     'setBoundingBoxVisible': (visible: boolean) => Promise<void>;
+    'setCameraType': (type: CameraType) => Promise<void>;
     'setDisplayMode': (displayMode: DisplayMode) => Promise<void>;
     'setEdge': (edge: [string, AlEdgeSerial]) => Promise<void>;
     'setNode': (node: [string, AlNodeSerial]) => Promise<void>;

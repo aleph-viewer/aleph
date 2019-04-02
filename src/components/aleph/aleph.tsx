@@ -246,6 +246,11 @@ export class Aleph {
     this._setBoundingBoxVisible(visible);
   }
 
+  @Method()
+  async setCameraType(type: CameraType): Promise<void> {
+    this._setCameraType(type);
+  }
+
   //#endregion
 
   @Event() onChanged: EventEmitter;
@@ -701,6 +706,13 @@ export class Aleph {
 
   private _setBoundingBoxVisible(visible: boolean): void {
     this.appSetBoundingBoxVisible(visible);
+    this.onChanged.emit(this._getAppState());
+  }
+
+  private _setCameraType(type: CameraType): void {
+    this.appSetCamera({
+      type: type
+    });
     this.onChanged.emit(this._getAppState());
   }
 
