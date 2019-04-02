@@ -11,8 +11,8 @@ interface AlOrbitControlState {
 interface AlOrbitControlObject extends AframeComponent {
   dependencies: string[];
   update(_oldData): void;
-  tickFunction(): void;
-  tick(): void;
+  tickFunction(time?: number, timeDelta?: number): void;
+  tick(time?: number, timeDelta?: number): void;
   remove(): void;
   bindListeners(): void;
   addListeners(): void;
@@ -208,7 +208,7 @@ export class AlOrbitControl implements AframeRegistry {
           .position.copy(ThreeUtils.objectToVector3(data.controlPosition));
       },
 
-      tickFunction() {
+      tickFunction(timeDelta: number) {
         let controls = this.state.controls;
         if (!controls.enabled) {
           return;
@@ -216,6 +216,9 @@ export class AlOrbitControl implements AframeRegistry {
 
         if (this.data.animating) {
           let nextFrame: AlCameraSerial = this.state.animationCache.shift();
+
+          // todo: should we be storing a velocity and accelerating to the next
+          // point using the timeDelta?
 
           controls.object.position.copy(nextFrame.position);
           this.el.getObject3D("camera").position.copy(nextFrame.position);
@@ -238,8 +241,8 @@ export class AlOrbitControl implements AframeRegistry {
         }
       },
 
-      tick() {
-        this.tickFunction();
+      tick(time, timeDelta) {
+        this.tickFunction(timeDelta);
       },
 
       remove() {

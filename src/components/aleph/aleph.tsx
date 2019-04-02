@@ -712,7 +712,9 @@ export class Aleph {
             animationEnd,
             diffPos > 0,
             diffTarg > 0
-          ); // should sendAnimationCache be emitting the ANIMATION_STARTED event?
+          );
+          // todo: should sendAnimationCache be emitting the ANIMATION_STARTED event,
+          // or should it be happening here?
           ThreeUtils.waitOneFrame(() => {
             this.appSetCamera({
               animating: true
