@@ -456,7 +456,6 @@ export class Aleph {
           class="collidable"
           id={nodeId}
           position={node.position}
-          al-look-to-camera
           al-node={`
             target: ${node.target};
             scale: ${node.scale};
@@ -475,7 +474,8 @@ export class Aleph {
               baseline: bottom;
               anchor: center;
             `}
-            al-render-overlaid
+            al-look-to-camera
+            al-render-overlaid-text
             position={ThreeUtils.vector3ToString(textOffset)}
             id={`${nodeId}-label`}
           />
@@ -488,28 +488,52 @@ export class Aleph {
     return [...this.edges].map((n: [string, AlEdgeSerial]) => {
       const [edgeId, edge] = n;
 
+      let line = "";
+      let centoid = new THREE.Vector3(0, 0, 0);
+      let dist = 0;
+
+      if (this.nodes.get(edge.node2Id)) {
+        const start = this.nodes.get(edge.node1Id).position;
+        const end = this.nodes.get(edge.node2Id).position;
+        line = `
+        start: ${this.nodes.get(edge.node1Id).position};
+        end: ${this.nodes.get(edge.node2Id).position};
+        `;
+
+        const sv = ThreeUtils.stringToVector3(start);
+        const ev = ThreeUtils.stringToVector3(end);
+        dist = sv.clone().distanceTo(ev.clone());
+        centoid.copy(
+          sv
+            .clone()
+            .sub(ev.clone())
+            .normalize()
+            .multiplyScalar(dist / 2)
+        );
+      }
+
       return (
         <a-entity
           class="collidable"
           id={edgeId}
-          /*al-edge={`
-            node1: ${edge.node1};
-            node2: ${edge.node2};
-          `}*/
-          line={`
-            start: ${this.nodes.get(edge.node1Id).position}
-            end: ${this.nodes.get(edge.node2Id).position}
-          `}
+          line={line}
+          al-render-overlaid-line
         >
           <a-entity
             id={`${edgeId}-title`}
-            al-look-to-camera
+            geometry={`primitive: plane; width: ${this._boundingSphereRadius *
+              Constants.fontSize}; height: auto;`}
+            material="color: #aaa"
             text={`
-            value: ${edgeId}
-            side: double;
-            baseline: bottom;
-            anchor: center;
-          `}
+              value: ${dist + " units"};
+              side: double;
+              align: center;
+              baseline: bottom;
+              anchor: center;
+            `}
+            al-look-to-camera
+            al-render-overlaid-text
+            position={ThreeUtils.vector3ToString(centoid)}
           />
         </a-entity>
       );
