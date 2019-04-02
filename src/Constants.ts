@@ -5,6 +5,7 @@ export class Constants {
   static nodeSizeRatio = 50;
   static splashBackSize = 5;
   static zoomFactor = 2.5;
+  static minLoadingMS = 500;
 
   static maxAnimationSteps = 50;
 

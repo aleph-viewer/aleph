@@ -161,7 +161,7 @@ export class Aleph {
       this._setSrc(null); // shows loading spinner and resets gltf-model
       setTimeout(() => {
         this._setSrc(src);
-      }, 500);
+      }, Constants.minLoadingMS);
     } else {
       this._setSrc(src);
     }
@@ -662,10 +662,10 @@ export class Aleph {
   }
 
   private _setNode(node: [string, AlNodeSerial]): void {
-    window.setTimeout(() => {
+    ThreeUtils.waitOneFrame(() => {
       this.appSetNode(node);
       this.onChanged.emit(this._getAppState());
-    }, Constants.minFrameMS);
+    });
   }
 
   private _setEdge(edge: [string, AlEdgeSerial]): void {
@@ -712,14 +712,14 @@ export class Aleph {
             animationEnd,
             diffPos > 0,
             diffTarg > 0
-          );
-          window.setTimeout(() => {
+          ); // should sendAnimationCache be emitting the ANIMATION_STARTED event?
+          ThreeUtils.waitOneFrame(() => {
             this.appSetCamera({
               animating: true
             });
             this.appSelectNode(nodeId);
             this.onChanged.emit(this._getAppState());
-          }, Constants.minFrameMS);
+          });
         }
       }
     } else {

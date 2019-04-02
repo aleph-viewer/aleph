@@ -1,6 +1,7 @@
 import { AframeRegistry, AframeComponent } from "../interfaces";
 import { AlNodeEvents } from ".";
 import { Constants } from "../Constants";
+import { ThreeUtils } from "../utils";
 
 interface AlNodeSpawnerState {
   left: boolean;
@@ -108,9 +109,9 @@ export class AlNodeSpawner implements AframeRegistry {
       },
 
       canvasMouseUp(_event: MouseEvent) {
-        window.setTimeout(() => {
+        ThreeUtils.waitOneFrame(() => {
           this.state.left = false;
-        }, Constants.minFrameMS);
+        });
       },
 
       elRaycasterIntersected(_event: CustomEvent) {

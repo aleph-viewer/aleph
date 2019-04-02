@@ -11,6 +11,12 @@ export class ThreeUtils {
     camEntity.setAttribute("al-orbit-control", `enabled: ${enabled}`);
   }
 
+  static waitOneFrame(func: () => void) {
+    window.setTimeout(() => {
+      func();
+    }, Constants.minFrameMS);
+  }
+
   static objectToVector3(vec: {
     x: number;
     y: number;

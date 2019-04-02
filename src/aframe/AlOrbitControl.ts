@@ -134,9 +134,9 @@ export class AlOrbitControl implements AframeRegistry {
 
       canvasWheel(_event: WheelEvent) {
         window.clearTimeout(this.canvasWheel);
-        this.canvasWheel = window.setTimeout(() => {
+        this.canvasWheel = ThreeUtils.waitOneFrame(() => {
           this.emitNewSerial();
-        }, Constants.minFrameMS);
+        });
       },
 
       init() {
@@ -174,9 +174,9 @@ export class AlOrbitControl implements AframeRegistry {
         this.addListeners();
 
         // wait a frame before emitting initialised event
-        window.setTimeout(() => {
+        ThreeUtils.waitOneFrame(() => {
           this.emitNewSerial();
-        }, Constants.minFrameMS);
+        });
       },
 
       update(_oldData) {
