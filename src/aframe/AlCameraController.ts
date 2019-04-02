@@ -31,15 +31,9 @@ export class AlCameraController implements AframeRegistry {
           Constants.cameraValues.far
         );
 
-        let perspectiveCamera = new THREE.PerspectiveCamera(
-          Constants.cameraValues.fov,
-          Constants.cameraValues.near,
-          Constants.cameraValues.far
-        );
-
         this.state = {
           orthographic: orthoCamera,
-          perspective: perspectiveCamera
+          perspective: this.el.sceneEl.camera
         } as AlCameraControllerState;
 
         if (this.data.cameraType === CameraType.ORTHOGRAPHIC) {
@@ -50,6 +44,7 @@ export class AlCameraController implements AframeRegistry {
       },
 
       update(_oldData) {
+        console.log("al-camera-controller-update: ", this.data.cameraType);
         if (this.data.cameraType === CameraType.ORTHOGRAPHIC) {
           this.el.sceneEl.camera = this.state.orthographic;
         } else if (this.data.cameraType === CameraType.PERSPECTIVE) {
