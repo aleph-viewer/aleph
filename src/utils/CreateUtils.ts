@@ -10,7 +10,8 @@ import {
   AlEdge,
   AlLookToCamera,
   AlRenderTextOverlaid,
-  AlCameraController
+  AlCameraController,
+  AlRenderOverlaid
 } from "../aframe";
 
 export class CreateUtils {
@@ -28,10 +29,11 @@ export class CreateUtils {
     );
     AFRAME.registerComponent(AlEdge.Tag, AlEdge.Object);
     AFRAME.registerComponent(AlLookToCamera.Tag, AlLookToCamera.Object);
-    AFRAME.registerComponent(AlRenderOverlaid.Tag, AlRenderOverlaid.Object);
     AFRAME.registerComponent(
-      AlCameraController.getName(),
-      AlCameraController.getObject()
+      AlRenderTextOverlaid.Tag,
+      AlRenderTextOverlaid.Object
     );
+    AFRAME.registerComponent(AlCameraController.Tag, AlCameraController.Object);
+    AFRAME.registerComponent(AlRenderOverlaid.Tag, AlRenderOverlaid.Object);
   }
 }

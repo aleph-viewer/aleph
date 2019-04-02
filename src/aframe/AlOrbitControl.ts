@@ -81,7 +81,11 @@ export class AlOrbitControl implements AframeRegistry {
           once: false,
           passive: true
         });
-        this.el.sceneEl.addEventListener(AlCameraControllerEvents.UPDATED, this.sceneCameraChanged, false);
+        this.el.sceneEl.addEventListener(
+          AlCameraControllerEvents.UPDATED,
+          this.sceneCameraChanged,
+          false
+        );
       },
 
       removeListeners() {
@@ -94,7 +98,11 @@ export class AlOrbitControl implements AframeRegistry {
           this.canvasMouseDown
         );
         this.el.sceneEl.canvas.removeEventListener("wheel", this.canvasWheel);
-        this.el.sceneEl.removeEventListener(AlCameraControllerEvents.UPDATED, this.sceneCameraChanged, false);
+        this.el.sceneEl.removeEventListener(
+          AlCameraControllerEvents.UPDATED,
+          this.sceneCameraChanged,
+          false
+        );
       },
 
       sceneCameraChanged() {
@@ -122,7 +130,7 @@ export class AlOrbitControl implements AframeRegistry {
           zoomSpeed: controls.zoomSpeed,
 
           position: controls.object.position,
-          target: controls.target,
+          target: controls.target
         };
 
         controls = new THREE.OrbitControls(

@@ -1,7 +1,7 @@
 import { AframeRegistry, AframeComponent } from "../interfaces";
 
 export class AlRenderTextOverlaid implements AframeRegistry {
-  public static getObject(): AframeComponent {
+  public static get Object(): AframeComponent {
     return {
       schema: {},
 
@@ -12,7 +12,7 @@ export class AlRenderTextOverlaid implements AframeRegistry {
       }
     } as AframeComponent;
   }
-  public static getName(): string {
+  public static get Tag(): string {
     return "al-render-text-overlaid";
   }
 }

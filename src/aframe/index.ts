@@ -13,6 +13,7 @@ import {
   AlCameraController,
   AlCameraControllerEvents
 } from "./AlCameraController";
+import { AlRenderOverlaid } from "./AlRenderOverlaid";
 
 export {
   AlGltfModel,
@@ -31,5 +32,6 @@ export {
   AlLookToCamera,
   AlRenderTextOverlaid,
   AlCameraController,
-  AlCameraControllerEvents
+  AlCameraControllerEvents,
+  AlRenderOverlaid
 };

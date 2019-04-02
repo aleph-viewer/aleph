@@ -15,7 +15,7 @@ interface AlCameraControllerObject extends AframeComponent {
 }
 
 export class AlCameraController implements AframeRegistry {
-  public static getObject(): AlCameraControllerObject {
+  public static get Object(): AlCameraControllerObject {
     return {
       dependencies: ["camera"],
 
@@ -66,7 +66,7 @@ export class AlCameraController implements AframeRegistry {
     } as AlCameraControllerObject;
   }
 
-  public static getName(): string {
+  public static get Tag(): string {
     return "al-camera-controller";
   }
 }
