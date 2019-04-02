@@ -698,7 +698,6 @@ export class Aleph {
         );
 
         let diffTarg: number;
-
         this.camera.target?  diffTarg = result.target.distanceTo(this.camera.target) : diffTarg = 0;
 
         if (diffPos > 0 || diffTarg > 0) {
