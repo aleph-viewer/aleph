@@ -76,9 +76,6 @@ export class Aleph {
   private _intersectingNode: string | null = null;
   private _isShiftDown: boolean = false;
 
-  private _animationStart: AlCameraSerial;
-  private _animationEnd: AlCameraSerial;
-
   @Prop({ context: "store" }) store: Store;
   @Prop() dracoDecoderPath: string | null;
   @Prop() width: string = "640px";
@@ -539,34 +536,8 @@ export class Aleph {
   }
 
   private _renderCamera(): JSX.Element {
-    let animation = "";
-    let animation__2 = "";
-
-    if (this.camera && this.camera.animating) {
-      animation = `
-        isRawProperty: true;
-        property: al-orbit-control.controlPosition;
-        from: ${this._animationStart.position};
-        to: ${this._animationEnd.position};
-        elasticity: 200;
-        dur: 1000;
-        easing: easeInOutSine;
-      `;
-      animation__2 = `
-        isRawProperty: true;
-        property: al-orbit-control.controlTarget;
-        from: ${this._animationStart.target};
-        to: ${this._animationEnd.target};
-        elasticity: 200;
-        dur: 1000;
-        easing: easeInOutSine;
-      `;
-    }
-
     return (
       <a-camera
-        animation={animation}
-        animation__2={animation__2}
         fov={Constants.cameraValues.fov}
         near={Constants.cameraValues.near}
         look-controls="enabled: false"
@@ -589,6 +560,9 @@ export class Aleph {
             this.camera ? this.camera.position : new THREE.Vector3(0, 0, 0)
           )};
           enabled: ${this.controlsEnabled};
+          animating: ${
+            this.camera && this.camera.animating ? this.camera.animating : false
+          }
         `}
         ref={el => (this._camera = el)}
       >
@@ -677,24 +651,17 @@ export class Aleph {
 
   private _selectNode(nodeId: string, animate: boolean): void {
     if (animate && nodeId !== this.selected) {
-      this.appSetCamera({
-        animating: true
-      });
-
-      // TODO: Not functioning!
-      let temp = {
-        position: this.camera.position,
-        target: this.camera.target
+      let animationStart = {
+        position: this.camera.position.clone(),
+        target: this.camera.target.clone()
       } as AlCameraSerial;
-      let temp2 = {
-        position: this.camera.position,
-        target: this.camera.target
+      let animationEnd = {
+        position: new THREE.Vector3(-1, -1, -1),
+        target: new THREE.Vector3(-1, -1, -1)
       } as AlCameraSerial;
-      this._animationStart = temp;
-      this._animationEnd = temp2;
 
       let result: AlCameraSerial | null = GetUtils.getCameraStateFromNode(
-        this.nodes.get(this.selected),
+        this.nodes.get(nodeId),
         this._boundingSphereRadius
       );
 
@@ -709,16 +676,32 @@ export class Aleph {
           : (diffTarg = 0);
 
         if (diffPos > 0 || diffTarg > 0) {
-          diffPos > 0 ? (this._animationEnd.position = result.position) : null;
-          diffTarg > 0 ? (this._animationEnd.target = result.target) : null;
-          this.appSetCamera({
-            animating: true
-          });
+          diffPos > 0
+            ? animationEnd.position.copy(result.position)
+            : animationEnd.position.copy(this.camera.position);
+          diffTarg > 0
+            ? animationEnd.target.copy(result.target)
+            : animationEnd.target.copy(this.camera.target);
+          ThreeUtils.sendAnimationCache(
+            this._scene,
+            animationStart,
+            animationEnd,
+            diffPos > 0,
+            diffTarg > 0
+          );
+          window.setTimeout(() => {
+            this.appSetCamera({
+              animating: true
+            });
+            this.appSelectNode(nodeId);
+            this.onChanged.emit(this._getAppState());
+          }, Constants.minFrameMS);
         }
       }
+    } else {
+      this.appSelectNode(nodeId);
+      this.onChanged.emit(this._getAppState());
     }
-    this.appSelectNode(nodeId);
-    this.onChanged.emit(this._getAppState());
   }
 
   private _setNodesEnabled(enabled: boolean): void {
@@ -822,13 +805,10 @@ export class Aleph {
     this._validTarget = event.detail.valid;
   }
 
-  private _animationFinished(event: CustomEvent): void {
-    console.log(event);
-    if (event.detail.name === "animation") {
-      this.appSetCamera({
-        animating: false
-      });
-    }
+  private _animationFinished(_event: CustomEvent): void {
+    this.appSetCamera({
+      animating: false
+    });
   }
 
   private _nodeSelectedEventHandler(event: CustomEvent): void {
@@ -890,7 +870,7 @@ export class Aleph {
     });
 
     this._scene.addEventListener(
-      "animationcomplete",
+      AlOrbitControlEvents.ANIMATION_FINISHED,
       this._animationFinished,
       false
     );

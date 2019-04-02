@@ -5,6 +5,7 @@ import { AlNodeSpawnerEvents, AlNodeEvents } from ".";
 
 interface AlOrbitControlState {
   controls: THREE.OrbitControls;
+  animationCache: AlCameraSerial[];
 }
 
 interface AlOrbitControlObject extends AframeComponent {
@@ -20,6 +21,7 @@ interface AlOrbitControlObject extends AframeComponent {
   canvasMouseDown(event: MouseEvent): void;
   canvasWheel(event: WheelEvent): void;
   emitNewSerial(): void;
+  catchAnimationCache(event: CustomEvent): void;
 }
 
 export class AlOrbitControl implements AframeRegistry {
@@ -48,7 +50,8 @@ export class AlOrbitControl implements AframeRegistry {
         rotateSpeed: { default: 0.05 },
         screenSpacePanning: { default: false },
         controlTarget: { type: "vec3" },
-        zoomSpeed: { type: "number", default: 0.5 }
+        zoomSpeed: { type: "number", default: 0.5 },
+        animating: { type: "boolean", default: false }
       },
 
       bindListeners() {
@@ -56,6 +59,7 @@ export class AlOrbitControl implements AframeRegistry {
         this.canvasMouseDown = this.canvasMouseDown.bind(this);
         this.canvasWheel = this.canvasWheel.bind(this);
         this.emitNewSerial = this.emitNewSerial.bind(this);
+        this.catchAnimationCache = this.catchAnimationCache.bind(this);
       },
 
       addListeners() {
@@ -74,6 +78,11 @@ export class AlOrbitControl implements AframeRegistry {
           once: false,
           passive: true
         });
+        this.el.sceneEl.addEventListener(
+          AlOrbitControlEvents.ANIMATION_STARTED,
+          this.catchAnimationCache,
+          false
+        );
       },
 
       removeListeners() {
@@ -85,7 +94,16 @@ export class AlOrbitControl implements AframeRegistry {
           "mousedown",
           this.canvasMouseDown
         );
-        this.el.sceneEl.canvas.addEventListener("wheel", this.canvasWheel);
+        this.el.sceneEl.canvas.removeEventListener("wheel", this.canvasWheel);
+        this.el.sceneEl.removeEventListener(
+          AlOrbitControlEvents.ANIMATION_STARTED,
+          this.catchAnimationCache,
+          false
+        );
+      },
+
+      catchAnimationCache(event: CustomEvent) {
+        this.state.animationCache = event.detail.cache;
       },
 
       emitNewSerial() {
@@ -145,7 +163,12 @@ export class AlOrbitControl implements AframeRegistry {
         el.getObject3D("camera").position.copy(controlPosition);
         controls.target.copy(controlTarget);
 
-        (this.state as AlOrbitControlState) = { controls };
+        let animationCache = [];
+
+        (this.state as AlOrbitControlState) = {
+          controls,
+          animationCache
+        };
 
         this.bindListeners();
         this.addListeners();
@@ -190,6 +213,23 @@ export class AlOrbitControl implements AframeRegistry {
         if (!controls.enabled) {
           return;
         }
+
+        if (this.data.animating) {
+          let nextFrame: AlCameraSerial = this.state.animationCache.shift();
+
+          controls.object.position.copy(nextFrame.position);
+          this.el.getObject3D("camera").position.copy(nextFrame.position);
+          controls.target.copy(nextFrame.target);
+
+          if (this.state.animationCache.length === 0) {
+            this.el.sceneEl.emit(
+              AlOrbitControlEvents.ANIMATION_FINISHED,
+              {},
+              false
+            );
+          }
+        }
+
         if (
           controls.enabled &&
           (controls.enableDamping || controls.autoRotate)
@@ -218,4 +258,6 @@ export class AlOrbitControl implements AframeRegistry {
 
 export class AlOrbitControlEvents {
   static UPDATED: string = "al-orbit-controls-updated";
+  static ANIMATION_STARTED: string = "al-orbit-controls-animation-started";
+  static ANIMATION_FINISHED: string = "al-orbit-controls-animation-finished";
 }
