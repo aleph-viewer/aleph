@@ -471,7 +471,7 @@ export class Aleph {
           <a-entity
             geometry={`primitive: plane; width: ${this._boundingSphereRadius *
               Constants.fontSize}; height: auto;`}
-            material="color: #aaa"
+            material="color: #000; transparent: true; opacity: 0"
             text={`
               value: ${node.text};
               side: double;
