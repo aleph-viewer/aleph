@@ -78,6 +78,9 @@ export class Aleph {
   private _intersectingNode: string | null = null;
   private _isShiftDown: boolean = false;
 
+  // This needs to be removed ASAP - Fixes a perceieved issue with Aframe & Depth Testing
+  private _numEmptyNodes: number;
+
   @Prop({ context: "store" }) store: Store;
   @Prop() dracoDecoderPath: string | null;
   @Prop() width: string = "640px";
@@ -362,6 +365,8 @@ export class Aleph {
     this._setNodeEventHandler = this._setNodeEventHandler.bind(this);
     this._srcLoaded = this._srcLoaded.bind(this);
     this._validTargetEventHandler = this._validTargetEventHandler.bind(this);
+
+    this._numEmptyNodes = 3;
   }
 
   //#region Render Methods
@@ -460,7 +465,7 @@ export class Aleph {
   }
 
   private _renderNodes(): JSX.Element {
-    let result = this.camera ? this.getEmptyNodes(3) : [];
+    let result = this.camera ? this.getEmptyNodes(this._numEmptyNodes) : [];
     result.push(
       [...this.nodes].map((n: [string, AlNodeSerial]) => {
         const [nodeId, node] = n;
@@ -487,6 +492,7 @@ export class Aleph {
               align: center;
               baseline: bottom;
               anchor: center;
+              width: ${Constants.fontSize * this._boundingSphereRadius}
             `}
               al-look-to-camera
               al-render-overlaid-text
@@ -504,9 +510,10 @@ export class Aleph {
   private _renderEdges(): JSX.Element {
     return [...this.edges].map((n: [string, AlEdgeSerial]) => {
       const [edgeId, edge] = n;
-      if (this.nodes.get(edge.node2Id)) {
-        const node1 = this.nodes.get(edge.node1Id);
-        const node2 = this.nodes.get(edge.node2Id);
+      const node1 = this.nodes.get(edge.node1Id);
+      const node2 = this.nodes.get(edge.node2Id);
+
+      if (node1 && node2) {
         const sv = ThreeUtils.stringToVector3(node1.position);
         const ev = ThreeUtils.stringToVector3(node2.position);
 
@@ -540,6 +547,7 @@ export class Aleph {
                 align: center;
                 baseline: bottom;
                 anchor: center;
+                width: ${Constants.fontSize * this._boundingSphereRadius}
               `}
               position={ThreeUtils.vector3ToString(textOffset)}
               al-look-to-camera
@@ -758,6 +766,7 @@ export class Aleph {
   }
 
   private _srcLoaded(): void {
+    this._numEmptyNodes += 3;
     const mesh: THREE.Mesh = this._targetEntity.object3DMap.mesh as THREE.Mesh;
     mesh.geometry.computeBoundingSphere();
     this._boundingSphereRadius = mesh.geometry.boundingSphere.radius;
