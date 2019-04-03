@@ -407,7 +407,6 @@ export class Aleph {
             al-node-spawner={`
               nodesEnabled: ${this.nodesEnabled};
             `}
-            al-edge-spawner
             class="collidable"
             id="target-entity"
             al-gltf-model={`
@@ -422,13 +421,11 @@ export class Aleph {
         ];
       }
       default: {
-        // TODO: Update this to new method
         return [
           <a-entity
             al-node-spawner={`
               nodesEnabled: ${this.nodesEnabled};
             `}
-            al-edge-spawner
             class="collidable"
             id="target-entity"
             al-volumetric-model={`
@@ -462,6 +459,7 @@ export class Aleph {
             selected: ${this.selected === nodeId};
             nodesEnabled: ${this.nodesEnabled};
           `}
+          al-render-order={"order: 998;"}
         >
           <a-entity
             text={`
@@ -475,6 +473,7 @@ export class Aleph {
             al-render-overlaid-text
             position={ThreeUtils.vector3ToString(textOffset)}
             id={`${nodeId}-label`}
+            al-render-order={"order: 999;"}
           />
         </a-entity>
       );
@@ -515,11 +514,12 @@ export class Aleph {
           id={edgeId}
           line={line}
           al-render-overlaid-line
+          al-render-order={"order: 997;"}
         >
           <a-entity
             id={`${edgeId}-title`}
             text={`
-              value: ${dist + " units"};
+              value: ${dist.toFixed(Constants.decimalPlaces) + " units"};
               side: double;
               align: center;
               baseline: bottom;
@@ -528,6 +528,7 @@ export class Aleph {
             al-look-to-camera
             al-render-overlaid-text
             position={ThreeUtils.vector3ToString(centoid)}
+            al-render-order={"order: 999;"}
           />
         </a-entity>
       );
@@ -870,6 +871,7 @@ export class Aleph {
         }
       ]);
       const eventName = nodeId + Constants.movedEventString;
+      console.log("emit: ", eventName);
       this._scene.emit(eventName, {}, true);
     } else {
       console.log("No intersection!");

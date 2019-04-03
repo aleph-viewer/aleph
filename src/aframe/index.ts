@@ -10,6 +10,7 @@ import { AlLookToCamera } from "./AlLookToCamera";
 import { AlRenderOverlaid } from "./AlRenderOverlaid";
 import { AlRenderOverlaidText } from "./AlRenderOverlaidText";
 import { AlRenderOverlaidLine } from "./AlRenderOverlaidLine";
+import { AlRenderOrder } from "./AlRenderOrder";
 
 export {
   AlGltfModel,
@@ -27,5 +28,6 @@ export {
   AlRenderOverlaid,
   AlFixedToOrbitCamera,
   AlRenderOverlaidText,
-  AlRenderOverlaidLine
+  AlRenderOverlaidLine,
+  AlRenderOrder
 };

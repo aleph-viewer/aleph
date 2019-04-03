@@ -112,6 +112,7 @@ export class AlOrbitControl implements AframeRegistry {
           target: this.state.controls.target
         } as AlCameraSerial;
 
+        console.log("control-emit: ", AlOrbitControlEvents.UPDATED);
         this.el.sceneEl.emit(
           AlOrbitControlEvents.UPDATED,
           { cameraSerial: res },
@@ -225,6 +226,7 @@ export class AlOrbitControl implements AframeRegistry {
           controls.target.copy(nextFrame.target);
 
           if (this.state.animationCache.length === 0) {
+            console.log("control-emit: ", AlOrbitControlEvents.UPDATED);
             this.el.sceneEl.emit(
               AlOrbitControlEvents.ANIMATION_FINISHED,
               {},
