@@ -143,10 +143,10 @@ export class AlNode implements AframeRegistry {
 
         const camera = el.sceneEl.camera.el.object3DMap.camera;
         const geometry = new THREE.SphereGeometry(data.scale, 16, 16);
-        let material = new THREE.MeshBasicMaterial({
-          depthTest: false
-        });
+        let material = new THREE.MeshBasicMaterial();
+        material.depthTest = false;
         const mesh = new THREE.Mesh(geometry, material);
+        mesh.renderOrder = 999;
 
         el.setObject3D("mesh", mesh);
 

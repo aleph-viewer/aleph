@@ -459,7 +459,6 @@ export class Aleph {
             selected: ${this.selected === nodeId};
             nodesEnabled: ${this.nodesEnabled};
           `}
-          al-render-order={"order: 998;"}
         >
           <a-entity
             text={`
@@ -473,7 +472,6 @@ export class Aleph {
             al-render-overlaid-text
             position={ThreeUtils.vector3ToString(textOffset)}
             id={`${nodeId}-label`}
-            al-render-order={"order: 999;"}
           />
         </a-entity>
       );
@@ -509,7 +507,7 @@ export class Aleph {
             position={ThreeUtils.vector3ToString(centoid)}
             look-at={node2.position}
             height={dist}
-            al-render-order={"order: 997;"}
+            al-render-overlaid
           >
             <a-entity
               id={`${edgeId}-title`}
@@ -523,7 +521,6 @@ export class Aleph {
               position={ThreeUtils.vector3ToString(textOffset)}
               al-look-to-camera
               al-render-overlaid-text
-              al-render-order={"order: 999;"}
             />
           </a-cylinder>
         );
@@ -592,7 +589,7 @@ export class Aleph {
     return (
       <a-scene
         embedded
-        // renderer="colorManagement: true;"
+        renderer="colorManagement: true;"
         vr-mode-ui="enabled: false"
         ref={el => (this._scene = el)}
       >

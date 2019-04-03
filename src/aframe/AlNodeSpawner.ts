@@ -116,11 +116,6 @@ export class AlNodeSpawner implements AframeRegistry {
 
       elRaycasterIntersected(_event: CustomEvent) {
         this.state.intersecting = true;
-        //console.log(
-          "spawner-emit: ",
-          AlNodeSpawnerEvents.VALID_TARGET,
-          " true"
-        );
         this.el.sceneEl.emit(
           AlNodeSpawnerEvents.VALID_TARGET,
           { valid: true },
@@ -130,11 +125,6 @@ export class AlNodeSpawner implements AframeRegistry {
 
       elRaycasterIntersectedCleared(_event: CustomEvent) {
         this.state.intersecting = false;
-        //console.log(
-          "spawner-emit: ",
-          AlNodeSpawnerEvents.VALID_TARGET,
-          " false"
-        );
         this.el.sceneEl.emit(
           AlNodeSpawnerEvents.VALID_TARGET,
           { valid: false },
