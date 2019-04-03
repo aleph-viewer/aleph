@@ -460,40 +460,45 @@ export class Aleph {
   }
 
   private _renderNodes(): JSX.Element {
-    return [...this.nodes].map((n: [string, AlNodeSerial]) => {
-      const [nodeId, node] = n;
+    let result = this.camera ? this.getEmptyNodes(3) : [];
+    result.push(
+      [...this.nodes].map((n: [string, AlNodeSerial]) => {
+        const [nodeId, node] = n;
 
-      let textOffset: THREE.Vector3 = new THREE.Vector3(0, 2.5, 0);
-      textOffset.multiplyScalar(node.scale);
+        let textOffset: THREE.Vector3 = new THREE.Vector3(0, 2.5, 0);
+        textOffset.multiplyScalar(node.scale);
 
-      return (
-        <a-entity
-          class="collidable"
-          id={nodeId}
-          position={node.position}
-          al-node={`
+        return (
+          <a-entity
+            class="collidable"
+            id={nodeId}
+            position={node.position}
+            al-node={`
             target: ${node.target};
             scale: ${node.scale};
             selected: ${this.selected === nodeId};
             nodesEnabled: ${this.nodesEnabled};
           `}
-        >
-          <a-entity
-            text={`
+          >
+            <a-entity
+              text={`
               value: ${node.text};
               side: double;
               align: center;
               baseline: bottom;
               anchor: center;
             `}
-            al-look-to-camera
-            al-render-overlaid-text
-            position={ThreeUtils.vector3ToString(textOffset)}
-            id={`${nodeId}-label`}
-          />
-        </a-entity>
-      );
-    });
+              al-look-to-camera
+              al-render-overlaid-text
+              position={ThreeUtils.vector3ToString(textOffset)}
+              id={`${nodeId}-label`}
+            />
+          </a-entity>
+        );
+      })
+    );
+
+    return result;
   }
 
   private _renderEdges(): JSX.Element {
@@ -890,6 +895,28 @@ export class Aleph {
     } else {
       //console.log("No intersection!");
     }
+  }
+
+  private getEmptyNodes(maxEmptyNodes: number): any[] {
+    let result = [];
+
+    for (let i = 0; i < maxEmptyNodes; i++) {
+      let emptyNode = (
+        <a-entity
+          id={"nodeEmpty-" + i}
+          position="0 0 0"
+          al-node={`
+            target: "0 0 0";
+            scale: "0.1 0.1 0.1";
+            selected: "false";
+            nodesEnabled: ${this.nodesEnabled};
+          `}
+          visible="false"
+        />
+      );
+      result.push(emptyNode);
+    }
+    return result;
   }
 
   private _addEventListeners(): void {
