@@ -1,6 +1,7 @@
 //#region Imports
 import {
   Component,
+  Element,
   Prop,
   State,
   Method,
@@ -67,6 +68,7 @@ export class Aleph {
   private _stack: any;
   private _stackHelper: AMI.StackHelper;
 
+  private _container: HTMLElement;
   private _targetEntity: Entity;
   private _backBoard: Entity;
   private _scene: Scene;
@@ -136,7 +138,7 @@ export class Aleph {
   @State() volumeWindowWidth: number;
   //#endregion
 
-  //#region src methods
+  //#region general methods
 
   @Method()
   async load(src: string): Promise<void> {
@@ -164,6 +166,22 @@ export class Aleph {
       }, Constants.minLoadingMS);
     } else {
       this._setSrc(src);
+    }
+  }
+
+  @Method()
+  public resize(): void {
+    if (this.srcLoaded) {
+      const camera: THREE.PerspectiveCamera = this._scene.sceneEl
+        .camera as THREE.PerspectiveCamera;
+      const renderer: THREE.Renderer = this._scene.sceneEl.renderer;
+      camera.aspect =
+        this._container.offsetWidth / this._container.offsetHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(
+        this._container.offsetWidth,
+        this._container.offsetHeight
+      );
     }
   }
 
@@ -622,6 +640,7 @@ export class Aleph {
           width: this.width,
           height: this.height
         }}
+        ref={el => (this._container = el)}
       >
         {this._renderScene()}
       </div>

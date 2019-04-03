@@ -140,6 +140,7 @@ export namespace Components {
     'dracoDecoderPath': string | null;
     'height': string;
     'load': (src: string) => Promise<void>;
+    'resize': () => void;
     'selectNode': (nodeId: string) => Promise<void>;
     'setBoundingBoxVisible': (visible: boolean) => Promise<void>;
     'setDisplayMode': (displayMode: DisplayMode) => Promise<void>;
