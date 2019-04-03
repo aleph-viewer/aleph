@@ -142,7 +142,10 @@ export class AlControlPanel {
       return (
         <ion-item>
           <ion-icon name="add-circle" />
-          <ion-toggle onIonChange={e => this._nodesEnabled(e.detail.checked)} />
+          <ion-toggle
+            checked={this.nodesEnabled}
+            onIonChange={e => this._nodesEnabled(e.detail.checked)}
+          />
         </ion-item>
       );
     }
@@ -156,6 +159,7 @@ export class AlControlPanel {
         <ion-item>
           <ion-icon name="options" />
           <ion-toggle
+            checked={this.optionsEnabled}
             onIonChange={e => this._optionsEnabled(e.detail.checked)}
           />
         </ion-item>
