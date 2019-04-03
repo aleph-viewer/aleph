@@ -116,7 +116,7 @@ export class AlNodeSpawner implements AframeRegistry {
 
       elRaycasterIntersected(_event: CustomEvent) {
         this.state.intersecting = true;
-        console.log(
+        //console.log(
           "spawner-emit: ",
           AlNodeSpawnerEvents.VALID_TARGET,
           " true"
@@ -130,7 +130,7 @@ export class AlNodeSpawner implements AframeRegistry {
 
       elRaycasterIntersectedCleared(_event: CustomEvent) {
         this.state.intersecting = false;
-        console.log(
+        //console.log(
           "spawner-emit: ",
           AlNodeSpawnerEvents.VALID_TARGET,
           " false"
@@ -144,21 +144,21 @@ export class AlNodeSpawner implements AframeRegistry {
 
       elMouseDown(_event: CustomEvent) {
         if (this.data.nodesEnabled) {
-          console.log("spawner-emit: ", AlNodeEvents.CONTROLS_DISABLED);
+          //console.log("spawner-emit: ", AlNodeEvents.CONTROLS_DISABLED);
           this.el.sceneEl.emit(AlNodeEvents.CONTROLS_DISABLED, {}, false);
         }
       },
 
       elMouseUp(_event: CustomEvent) {
         if (this.data.nodesEnabled) {
-          console.log("spawner-emit: ", AlNodeEvents.CONTROLS_ENABLED);
+          //console.log("spawner-emit: ", AlNodeEvents.CONTROLS_ENABLED);
           this.el.sceneEl.emit(AlNodeEvents.CONTROLS_ENABLED, {}, false);
         }
       },
 
       elClick(event: CustomEvent) {
         if (this.state.left && this.data.nodesEnabled) {
-          console.log("spawner-emit: ", AlNodeSpawnerEvents.ADD_NODE);
+          //console.log("spawner-emit: ", AlNodeSpawnerEvents.ADD_NODE);
           this.el.sceneEl.emit(AlNodeSpawnerEvents.ADD_NODE, event, false);
         }
       },

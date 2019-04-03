@@ -117,7 +117,7 @@ export class ThreeUtils {
       } as AlCameraSerial);
     }
 
-    console.log("utils-emit: ", AlOrbitControlEvents.ANIMATION_STARTED);
+    //console.log("utils-emit: ", AlOrbitControlEvents.ANIMATION_STARTED);
     scene.emit(AlOrbitControlEvents.ANIMATION_STARTED, { cache }, false);
   }
 }

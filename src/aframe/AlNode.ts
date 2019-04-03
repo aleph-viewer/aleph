@@ -86,13 +86,13 @@ export class AlNode implements AframeRegistry {
 
       elMouseDown(_event: CustomEvent): void {
         ThreeUtils.waitOneFrame(() => {
-          console.log("node-emit: ", AlNodeEvents.SELECTED);
+          //console.log("node-emit: ", AlNodeEvents.SELECTED);
           this.el.sceneEl.emit(AlNodeEvents.SELECTED, { id: this.el.id }, true);
 
           if (this.data.nodesEnabled) {
             let state = this.state as AlNodeState;
             state.mouseDown = true;
-            console.log("node-emit: ", AlNodeEvents.CONTROLS_DISABLED);
+            //console.log("node-emit: ", AlNodeEvents.CONTROLS_DISABLED);
             this.el.sceneEl.emit(AlNodeEvents.CONTROLS_DISABLED, {}, true);
           }
         });
@@ -103,7 +103,7 @@ export class AlNode implements AframeRegistry {
           let state = this.state as AlNodeState;
           state.dragging = false;
           state.mouseDown = false;
-          console.log("node-emit: ", AlNodeEvents.CONTROLS_ENABLED);
+          //console.log("node-emit: ", AlNodeEvents.CONTROLS_ENABLED);
           this.el.sceneEl.emit(AlNodeEvents.CONTROLS_ENABLED, {}, true);
         }
       },
@@ -111,7 +111,7 @@ export class AlNode implements AframeRegistry {
       elRaycasterIntersected(_event: CustomEvent): void {
         let state = this.state as AlNodeState;
         state.hovered = true;
-        console.log("node-emit: ", AlNodeEvents.INTERSECTION);
+        //console.log("node-emit: ", AlNodeEvents.INTERSECTION);
         this.el.sceneEl.emit(
           AlNodeEvents.INTERSECTION,
           { id: this.el.id },
@@ -125,7 +125,7 @@ export class AlNode implements AframeRegistry {
         if (state.mouseDown && state.selected) {
           state.dragging = true;
         }
-        console.log("node-emit: ", AlNodeEvents.INTERSECTION_CLEARED);
+        //console.log("node-emit: ", AlNodeEvents.INTERSECTION_CLEARED);
         this.el.sceneEl.emit(AlNodeEvents.INTERSECTION_CLEARED, {}, true);
       },
 
