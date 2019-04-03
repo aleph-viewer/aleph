@@ -11,6 +11,7 @@ import { AlRenderOverlaid } from "./AlRenderOverlaid";
 import { AlRenderOverlaidText } from "./AlRenderOverlaidText";
 import { AlRenderOverlaidLine } from "./AlRenderOverlaidLine";
 import { AlRenderOrder } from "./AlRenderOrder";
+import { AlEdge } from "./AlEdge";
 
 export {
   AlGltfModel,
@@ -29,5 +30,6 @@ export {
   AlFixedToOrbitCamera,
   AlRenderOverlaidText,
   AlRenderOverlaidLine,
-  AlRenderOrder
+  AlRenderOrder,
+  AlEdge
 };
