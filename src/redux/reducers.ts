@@ -85,6 +85,12 @@ export const app = (
         selected: state.selected === action.payload ? null : state.selected,
         nodes: new Map(
           [...state.nodes].filter(([key]) => key !== action.payload)
+        ),
+        edges: new Map(
+          [...state.edges].filter(
+            ([_key, edge]) =>
+              action.payload !== edge.node1Id && action.payload !== edge.node2Id
+          )
         )
       };
     }
