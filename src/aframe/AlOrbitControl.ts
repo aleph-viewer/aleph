@@ -11,8 +11,8 @@ interface AlOrbitControlState {
 interface AlOrbitControlObject extends AframeComponent {
   dependencies: string[];
   update(_oldData): void;
-  tickFunction(time?: number, timeDelta?: number): void;
-  tick(time?: number, timeDelta?: number): void;
+  tickFunction(): void;
+  tick(): void;
   remove(): void;
   bindListeners(): void;
   addListeners(): void;
@@ -208,7 +208,7 @@ export class AlOrbitControl implements AframeRegistry {
           .position.copy(ThreeUtils.objectToVector3(data.controlPosition));
       },
 
-      tickFunction(timeDelta: number) {
+      tickFunction() {
         let controls = this.state.controls;
         if (!controls.enabled) {
           return;
@@ -241,8 +241,8 @@ export class AlOrbitControl implements AframeRegistry {
         }
       },
 
-      tick(time, timeDelta) {
-        this.tickFunction(timeDelta);
+      tick() {
+        this.tickFunction();
       },
 
       remove() {
