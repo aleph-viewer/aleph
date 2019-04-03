@@ -621,7 +621,6 @@ export class Aleph {
         {this._renderEdges()}
         {this._renderLights()}
         {this._renderCamera()}
-        />
       </a-scene>
     );
   }

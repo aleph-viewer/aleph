@@ -67,6 +67,16 @@ Type: `Promise<void>`
 
 
 
+### `resize() => void`
+
+
+
+#### Returns
+
+Type: `void`
+
+
+
 ### `selectNode(nodeId: string) => Promise<void>`
 
 
