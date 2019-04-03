@@ -7,7 +7,7 @@ export class Constants {
   static zoomFactor = 2.5;
   static minLoadingMS = 500;
 
-  static maxAnimationSteps = 50;
+  static maxAnimationSteps = 25;
 
   static minFrameMS = 15; // Should never be higher than the returned frame time
   static minTimeForThrottle = Constants.minFrameMS * 5;
