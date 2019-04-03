@@ -10,7 +10,7 @@ export class Constants {
   static decimalPlaces = 3;
   static edgeSize = 0.005;
 
-  static maxAnimationSteps = 25;
+  static maxAnimationSteps = 50;
 
   static minFrameMS = 15; // Should never be higher than the returned frame time
   static minTimeForThrottle = Constants.minFrameMS * 5;

@@ -726,16 +726,18 @@ export class Aleph {
           diffTarg > 0
             ? animationEnd.target.copy(result.target)
             : animationEnd.target.copy(this.camera.target);
-          ThreeUtils.sendAnimationCache(
-            this._scene,
+          const slerpPath: number[] = ThreeUtils.getSlerpPath(
             animationStart,
             animationEnd,
             diffPos > 0,
             diffTarg > 0
           );
-          // todo: should sendAnimationCache be emitting the ANIMATION_STARTED event,
-          // or should it be happening here?
           ThreeUtils.waitOneFrame(() => {
+            this._scene.emit(
+              AlOrbitControlEvents.ANIMATION_STARTED,
+              { slerpPath },
+              false
+            );
             this.appSetCamera({
               animating: true
             });

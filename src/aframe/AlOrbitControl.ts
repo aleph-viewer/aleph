@@ -103,7 +103,7 @@ export class AlOrbitControl implements AframeRegistry {
       },
 
       catchAnimationCache(event: CustomEvent) {
-        this.state.animationCache = event.detail.cache;
+        this.state.animationCache = event.detail.slerpPath;
       },
 
       emitNewSerial() {
@@ -218,12 +218,11 @@ export class AlOrbitControl implements AframeRegistry {
         if (this.data.animating) {
           let nextFrame: AlCameraSerial = this.state.animationCache.shift();
 
-          // todo: should we be storing a velocity and accelerating to the next
-          // point using the timeDelta?
-
-          controls.object.position.copy(nextFrame.position);
-          this.el.getObject3D("camera").position.copy(nextFrame.position);
-          controls.target.copy(nextFrame.target);
+          if (nextFrame.position) {
+            controls.object.position.copy(nextFrame.position);
+            this.el.getObject3D("camera").position.copy(nextFrame.position);
+            controls.target.copy(nextFrame.target);
+          }
 
           if (this.state.animationCache.length === 0) {
             console.log("control-emit: ", AlOrbitControlEvents.UPDATED);

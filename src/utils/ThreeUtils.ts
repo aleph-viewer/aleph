@@ -92,18 +92,21 @@ export class ThreeUtils {
     }
   }
 
-  static sendAnimationCache(
-    scene: Scene,
+  static easeInOutCubic(t) {
+    return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
+  }
+
+  static getSlerpPath(
     start: AlCameraSerial,
     end: AlCameraSerial,
     positionChange: boolean,
     targetChange: boolean
-  ): void {
-    let cache = [];
+  ): number[] {
+    let path = [];
 
     for (let frame = 1; frame <= Constants.maxAnimationSteps; frame++) {
-      let percent = frame / Constants.maxAnimationSteps;
-      cache.push({
+      let percent = this.easeInOutCubic(frame / Constants.maxAnimationSteps);
+      path.push({
         position: positionChange
           ? ThreeUtils.slerp(
               start.position.clone(),
@@ -117,7 +120,6 @@ export class ThreeUtils {
       } as AlCameraSerial);
     }
 
-    //console.log("utils-emit: ", AlOrbitControlEvents.ANIMATION_STARTED);
-    scene.emit(AlOrbitControlEvents.ANIMATION_STARTED, { cache }, false);
+    return path;
   }
 }
