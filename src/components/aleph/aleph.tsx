@@ -464,9 +464,6 @@ export class Aleph {
           `}
         >
           <a-entity
-            geometry={`primitive: plane; width: ${this._boundingSphereRadius *
-              Constants.fontSize}; height: auto;`}
-            material="color: #aaa;"
             text={`
               value: ${node.text};
               side: double;
@@ -521,9 +518,6 @@ export class Aleph {
         >
           <a-entity
             id={`${edgeId}-title`}
-            geometry={`primitive: plane; width: ${this._boundingSphereRadius *
-              Constants.fontSize}; height: auto;`}
-            material="color: #aaa"
             text={`
               value: ${dist + " units"};
               side: double;
