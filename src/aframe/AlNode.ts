@@ -85,15 +85,17 @@ export class AlNode implements AframeRegistry {
       },
 
       elMouseDown(_event: CustomEvent): void {
-        //ThreeUtils.waitOneFrame(() => {
-        this.el.sceneEl.emit(AlNodeEvents.SELECTED, { id: this.el.id }, true);
+        ThreeUtils.waitOneFrame(() => {
+          //console.log("node-emit: ", AlNodeEvents.SELECTED);
+          this.el.sceneEl.emit(AlNodeEvents.SELECTED, { id: this.el.id }, true);
 
-        if (this.data.nodesEnabled) {
-          let state = this.state as AlNodeState;
-          state.mouseDown = true;
-          this.el.sceneEl.emit(AlNodeEvents.CONTROLS_DISABLED, {}, true);
-        }
-        //});
+          if (this.data.nodesEnabled) {
+            let state = this.state as AlNodeState;
+            state.mouseDown = true;
+            //console.log("node-emit: ", AlNodeEvents.CONTROLS_DISABLED);
+            this.el.sceneEl.emit(AlNodeEvents.CONTROLS_DISABLED, {}, true);
+          }
+        });
       },
 
       canvasMouseUp(_event: MouseEvent): void {
@@ -101,6 +103,7 @@ export class AlNode implements AframeRegistry {
           let state = this.state as AlNodeState;
           state.dragging = false;
           state.mouseDown = false;
+          //console.log("node-emit: ", AlNodeEvents.CONTROLS_ENABLED);
           this.el.sceneEl.emit(AlNodeEvents.CONTROLS_ENABLED, {}, true);
         }
       },
@@ -108,6 +111,7 @@ export class AlNode implements AframeRegistry {
       elRaycasterIntersected(_event: CustomEvent): void {
         let state = this.state as AlNodeState;
         state.hovered = true;
+        //console.log("node-emit: ", AlNodeEvents.INTERSECTION);
         this.el.sceneEl.emit(
           AlNodeEvents.INTERSECTION,
           { id: this.el.id },
@@ -121,6 +125,7 @@ export class AlNode implements AframeRegistry {
         if (state.mouseDown && state.selected) {
           state.dragging = true;
         }
+        //console.log("node-emit: ", AlNodeEvents.INTERSECTION_CLEARED);
         this.el.sceneEl.emit(AlNodeEvents.INTERSECTION_CLEARED, {}, true);
       },
 
@@ -138,17 +143,12 @@ export class AlNode implements AframeRegistry {
 
         const camera = el.sceneEl.camera.el.object3DMap.camera;
         const geometry = new THREE.SphereGeometry(data.scale, 16, 16);
-        //const geometry = new THREE.CircleGeometry(data.scale, 32);
         let material = new THREE.MeshBasicMaterial();
+        material.depthTest = false;
         const mesh = new THREE.Mesh(geometry, material);
+        mesh.renderOrder = 999;
 
         el.setObject3D("mesh", mesh);
-
-        //material.depthTest = false;
-        //el.object3DMap.mesh.renderOrder = 999;
-        // state.mesh.onBeforeRender = function(renderer) {
-        //   renderer.clearDepth();
-        // };
 
         let targetPos = ThreeUtils.objectToVector3(data.target);
 

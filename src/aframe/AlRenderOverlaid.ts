@@ -8,7 +8,7 @@ export class AlRenderOverlaid implements AframeRegistry {
       init(_data?: any) {
         let mesh = this.el.object3DMap.mesh as THREE.Mesh;
         mesh.renderOrder = 999;
-        (mesh.material as THREE.Material).depthTest = false;
+        //(mesh.material as THREE.Material).depthTest = false;
       }
     } as AframeComponent;
   }

@@ -10,7 +10,8 @@ import {
   AlLookToCamera,
   AlRenderOverlaid,
   AlRenderOverlaidText,
-  AlRenderOverlaidLine
+  AlRenderOverlaidLine,
+  AlRenderOrder
 } from "../aframe";
 
 export class CreateUtils {
@@ -36,5 +37,6 @@ export class CreateUtils {
       AlRenderOverlaidLine.Tag,
       AlRenderOverlaidLine.Object
     );
+    AFRAME.registerComponent(AlRenderOrder.Tag, AlRenderOrder.Object);
   }
 }

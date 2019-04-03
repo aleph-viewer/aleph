@@ -425,7 +425,6 @@ export class Aleph {
             al-node-spawner={`
               nodesEnabled: ${this.nodesEnabled};
             `}
-            al-edge-spawner
             class="collidable"
             id="target-entity"
             al-gltf-model={`
@@ -440,13 +439,11 @@ export class Aleph {
         ];
       }
       default: {
-        // TODO: Update this to new method
         return [
           <a-entity
             al-node-spawner={`
               nodesEnabled: ${this.nodesEnabled};
             `}
-            al-edge-spawner
             class="collidable"
             id="target-entity"
             al-volumetric-model={`
@@ -502,53 +499,52 @@ export class Aleph {
   private _renderEdges(): JSX.Element {
     return [...this.edges].map((n: [string, AlEdgeSerial]) => {
       const [edgeId, edge] = n;
-
-      let line = "";
-      let centoid = new THREE.Vector3(0, 0, 0);
-      let dist = 0;
-
       if (this.nodes.get(edge.node2Id)) {
-        const start = this.nodes.get(edge.node1Id).position;
-        const end = this.nodes.get(edge.node2Id).position;
-        line = `
-        start: ${this.nodes.get(edge.node1Id).position};
-        end: ${this.nodes.get(edge.node2Id).position};
-        `;
+        const node1 = this.nodes.get(edge.node1Id);
+        const node2 = this.nodes.get(edge.node2Id);
+        const sv = ThreeUtils.stringToVector3(node1.position);
+        const ev = ThreeUtils.stringToVector3(node2.position);
 
-        const sv = ThreeUtils.stringToVector3(start);
-        const ev = ThreeUtils.stringToVector3(end);
-        dist = sv.clone().distanceTo(ev.clone());
-        centoid.copy(
-          sv
-            .clone()
-            .sub(ev.clone())
-            .normalize()
-            .multiplyScalar(dist / 2)
-        );
-      }
+        let dir = ev.clone().sub(sv);
+        let dist = dir.length();
+        dir = dir.normalize().multiplyScalar(dist * 0.5);
+        let centoid = sv.clone().add(dir);
+        //console.log("centoid: ", centoid);
 
-      return (
-        <a-entity
-          class="collidable"
-          id={edgeId}
-          line={line}
-          al-render-overlaid-line
-        >
-          <a-entity
-            id={`${edgeId}-title`}
-            text={`
-              value: ${dist + " units"};
-              side: double;
-              align: center;
-              baseline: bottom;
-              anchor: center;
-            `}
-            al-look-to-camera
-            al-render-overlaid-text
+        let textOffset: THREE.Vector3 = new THREE.Vector3(0, 2.5, 0);
+        let scale = (node1.scale + node2.scale) / 2;
+        textOffset.multiplyScalar(scale);
+
+        return (
+          <a-cylinder
+            class="collidable"
+            id={edgeId}
+            //line={line}
+            //al-render-overlaid-line
+            radius={this._boundingSphereRadius * Constants.edgeSize}
             position={ThreeUtils.vector3ToString(centoid)}
-          />
-        </a-entity>
-      );
+            look-at={node2.position}
+            height={dist}
+            al-render-overlaid
+          >
+            <a-entity
+              id={`${edgeId}-title`}
+              text={`
+                value: ${dist.toFixed(Constants.decimalPlaces) + " units"};
+                side: double;
+                align: center;
+                baseline: bottom;
+                anchor: center;
+              `}
+              position={ThreeUtils.vector3ToString(textOffset)}
+              al-look-to-camera
+              al-render-overlaid-text
+            />
+          </a-cylinder>
+        );
+      } else {
+        return;
+      }
     });
   }
 
@@ -614,7 +610,6 @@ export class Aleph {
         renderer="colorManagement: true;"
         vr-mode-ui="enabled: false"
         ref={el => (this._scene = el)}
-        ortho
       >
         {this._renderSrc()}
         {this._renderNodes()}
@@ -834,7 +829,9 @@ export class Aleph {
         this._isShiftDown && // Shift is down
         this.selected // A Node is already selected
       ) {
-        this._createEdge(previousSelected, nodeId);
+        ThreeUtils.waitOneFrame(() => {
+          this._createEdge(previousSelected, nodeId);
+        });
       }
     }
   }
@@ -888,9 +885,10 @@ export class Aleph {
         }
       ]);
       const eventName = nodeId + Constants.movedEventString;
+      //console.log("emit: ", eventName);
       this._scene.emit(eventName, {}, true);
     } else {
-      console.log("No intersection!");
+      //console.log("No intersection!");
     }
   }
 

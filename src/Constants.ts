@@ -6,6 +6,9 @@ export class Constants {
   static splashBackSize = 5;
   static zoomFactor = 2.5;
   static minLoadingMS = 500;
+  static topLayerRenderOrder = 999;
+  static decimalPlaces = 3;
+  static edgeSize = 0.005;
 
   static maxAnimationSteps = 25;
 
