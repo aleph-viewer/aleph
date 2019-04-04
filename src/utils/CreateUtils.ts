@@ -12,7 +12,8 @@ import {
   AlRenderOverlaidText,
   AlRenderOverlaidLine,
   AlRenderOrder,
-  AlEdge
+  AlEdge,
+  AlAngle
 } from "../aframe";
 
 export class CreateUtils {
@@ -40,5 +41,6 @@ export class CreateUtils {
     );
     AFRAME.registerComponent(AlRenderOrder.Tag, AlRenderOrder.Object);
     AFRAME.registerComponent(AlEdge.Tag, AlEdge.Object);
+    AFRAME.registerComponent(AlAngle.Tag, AlAngle.Object);
   }
 }

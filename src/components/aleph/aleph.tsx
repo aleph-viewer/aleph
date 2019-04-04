@@ -570,56 +570,60 @@ export class Aleph {
       const edge1 = this.edges.get(angle.edge1Id);
       const edge2 = this.edges.get(angle.edge2Id);
 
-      let centralNode;
-      let node1;
-      let node2;
-      // IF E1N1 === E2N1
-      if (edge1.node1Id === edge2.node1Id) {
-        centralNode = this.nodes.get(edge2.node1Id);
-        node1 = this.nodes.get(edge1.node2Id);
-        node2 = this.nodes.get(edge2.node2Id);
-      }
-      // IF E1N1 === E2N2
-      else if (edge1.node1Id === edge2.node2Id) {
-        centralNode = this.nodes.get(edge2.node2Id);
-        node1 = this.nodes.get(edge1.node2Id);
-        node2 = this.nodes.get(edge2.node1Id);
-      }
+      if (edge1 && edge2) {
+        let centralNode;
+        let node1;
+        let node2;
+        // IF E1N1 === E2N1
+        if (edge1.node1Id === edge2.node1Id) {
+          centralNode = this.nodes.get(edge2.node1Id);
+          node1 = this.nodes.get(edge1.node2Id);
+          node2 = this.nodes.get(edge2.node2Id);
+        }
+        // IF E1N1 === E2N2
+        else if (edge1.node1Id === edge2.node2Id) {
+          centralNode = this.nodes.get(edge2.node2Id);
+          node1 = this.nodes.get(edge1.node2Id);
+          node2 = this.nodes.get(edge2.node1Id);
+        }
+        // IF E1N2 === E2N1
+        else if (edge1.node2Id === edge2.node1Id) {
+          centralNode = this.nodes.get(edge2.node1Id);
+          node1 = this.nodes.get(edge1.node1Id);
+          node2 = this.nodes.get(edge2.node2Id);
+        }
+        // IF E1N2 === E2N2
+        else if (edge1.node2Id === edge2.node2Id) {
+          centralNode = this.nodes.get(edge2.node2Id);
+          node1 = this.nodes.get(edge1.node1Id);
+          node2 = this.nodes.get(edge2.node1Id);
+        }
 
-
-      if (node1 && node2) {
-        const sv = ThreeUtils.stringToVector3(node1.position);
-        const ev = ThreeUtils.stringToVector3(node2.position);
-
-        let dir = ev.clone().sub(sv);
-        let dist = dir.length();
-        dir = dir.normalize().multiplyScalar(dist * 0.5);
-        let centoid = sv.clone().add(dir);
-        //console.log("centoid: ", centoid);
+        let dir1: THREE.Vector3 = node1.clone().sub(centralNode).normalize();
+        let dir2: THREE.Vector3 = node2.clone().sub(centralNode).normalize();
+        let angle = dir2.angleTo(dir1);
 
         let textOffset: THREE.Vector3 = new THREE.Vector3(0, 2.5, 0);
-        let scale = (node1.scale + node2.scale) / 2;
+        let scale = (node1.scale + node2.scale + centralNode.scale) / 3;
         let radius = this._boundingSphereRadius * Constants.edgeSize;
         textOffset.multiplyScalar(scale);
 
         return (
           <a-entity
             class="collidable"
-            id={edgeId}
-            position={ThreeUtils.vector3ToString(centoid)}
+            id={angleId}
+            position={ThreeUtils.vector3ToString(centralNode.position)}
             al-angle={`
-              height: ${dist};
-              node1: ${node1.position};
-              node2: ${node2.position};
               selected: ${false};
-              radius: ${radius};
+              nodeLeftPosition: ${ThreeUtils.vector3ToString(node1.position)};
+              nodeRightPosition: ${ThreeUtils.vector3ToString(node2.position)};
+              nodeCenterPosition: ${ThreeUtils.vector3ToString(centralNode.position)};
             `}
           >
-          {/* value: ${dist.toFixed(Constants.decimalPlaces) + " units"}; */}
             <a-entity
               id={`${angleId}-title`}
               text={`
-
+                value: ${angle.toFixed(Constants.decimalPlaces) + " units"};
                 side: double;
                 align: center;
                 baseline: bottom;

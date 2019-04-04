@@ -99,7 +99,7 @@ export class AlAngle implements AframeRegistry {
         const nodeRightPosition = ThreeUtils.objectToVector3(this.data.nodeRightPosition);
         const nodeCenterPosition = ThreeUtils.objectToVector3(this.data.nodeCenterPosition);
 
-        let centoid = nodeLeftPosition.clone().add(nodeRightPosition);
+        let centoid = nodeLeftPosition.clone().add(nodeRightPosition).divideScalar(2);
 
         var orientation = new THREE.Matrix4();
         orientation.lookAt(nodeCenterPosition, centoid, new THREE.Object3D().up);
@@ -124,7 +124,7 @@ export class AlAngle implements AframeRegistry {
           )
         );
 
-        var geometry = new THREE.CylinderGeometry(
+        var geometry = new THREE.TorusGeometry(
           this.data.radius,
           this.data.radius,
           this.data.height,
@@ -135,7 +135,7 @@ export class AlAngle implements AframeRegistry {
         material.depthTest = false;
         const mesh = new THREE.Mesh(geometry, material);
         mesh.applyMatrix(orientation);
-        mesh.renderOrder = 997;
+        mesh.renderOrder = 996;
 
         this.state.geometry = geometry;
         this.state.material = material;
@@ -156,11 +156,11 @@ export class AlAngle implements AframeRegistry {
         this.state = {
           selected: true,
           hovered: false
-        } as AlEdgeState;
+        } as AlAngleState;
       },
 
       update(oldData): void {
-        let state = this.state as AlEdgeState;
+        let state = this.state as AlAngleState;
         state.selected = this.data.selected;
 
         // If height or radius has changed, create a new mesh
@@ -174,7 +174,7 @@ export class AlAngle implements AframeRegistry {
       },
 
       tickFunction(): void {
-        let state = this.state as AlEdgeState;
+        let state = this.state as AlAngleState;
 
         if (state.hovered) {
           state.material.color = new THREE.Color(Constants.nodeColors.hovered);
@@ -193,11 +193,11 @@ export class AlAngle implements AframeRegistry {
         this.removeListeners();
         this.el.removeObject3D("mesh");
       }
-    } as AlEdgeObject;
+    } as AlAngleObject;
   }
 
   public static get Tag(): string {
-    return "al-edge";
+    return "al-angle";
   }
 }
 
