@@ -1,6 +1,7 @@
 import { AframeRegistry, AframeComponent } from "../interfaces";
 import { Constants } from "../Constants";
 import { ThreeUtils } from "../utils";
+import { AlGraphEvents } from "../utils";
 
 interface AlNodeState {
   selected: boolean;
@@ -86,14 +87,12 @@ export class AlNode implements AframeRegistry {
 
       elMouseDown(_event: CustomEvent): void {
         ThreeUtils.waitOneFrame(() => {
-          //console.log("node-emit: ", AlNodeEvents.SELECTED);
-          this.el.sceneEl.emit(AlNodeEvents.SELECTED, { id: this.el.id }, true);
+          this.el.sceneEl.emit(AlGraphEvents.SELECTED, { id: this.el.id }, true);
 
           if (this.data.nodesEnabled) {
             let state = this.state as AlNodeState;
             state.mouseDown = true;
-            //console.log("node-emit: ", AlNodeEvents.CONTROLS_DISABLED);
-            this.el.sceneEl.emit(AlNodeEvents.CONTROLS_DISABLED, {}, true);
+            this.el.sceneEl.emit(AlGraphEvents.CONTROLS_DISABLED, {}, true);
           }
         });
       },
@@ -104,16 +103,15 @@ export class AlNode implements AframeRegistry {
           state.dragging = false;
           state.mouseDown = false;
           //console.log("node-emit: ", AlNodeEvents.CONTROLS_ENABLED);
-          this.el.sceneEl.emit(AlNodeEvents.CONTROLS_ENABLED, {}, true);
+          this.el.sceneEl.emit(AlGraphEvents.CONTROLS_ENABLED, {}, true);
         }
       },
 
       elRaycasterIntersected(_event: CustomEvent): void {
         let state = this.state as AlNodeState;
         state.hovered = true;
-        //console.log("node-emit: ", AlNodeEvents.INTERSECTION);
         this.el.sceneEl.emit(
-          AlNodeEvents.INTERSECTION,
+          AlGraphEvents.INTERSECTION,
           { id: this.el.id },
           true
         );
@@ -125,8 +123,7 @@ export class AlNode implements AframeRegistry {
         if (state.mouseDown && state.selected) {
           state.dragging = true;
         }
-        //console.log("node-emit: ", AlNodeEvents.INTERSECTION_CLEARED);
-        this.el.sceneEl.emit(AlNodeEvents.INTERSECTION_CLEARED, {}, true);
+        this.el.sceneEl.emit(AlGraphEvents.INTERSECTION_CLEARED, {}, true);
       },
 
       init(): void {
@@ -173,7 +170,7 @@ export class AlNode implements AframeRegistry {
       tickFunction(): void {
         let state = this.state as AlNodeState;
         if (this.data.nodesEnabled && state.dragging) {
-          this.el.sceneEl.emit(AlNodeEvents.DRAGGING, { id: this.el.id }, true);
+          this.el.sceneEl.emit(AlGraphEvents.DRAGGING, { id: this.el.id }, true);
         }
 
         if (state.hovered || state.dragging) {
@@ -202,11 +199,5 @@ export class AlNode implements AframeRegistry {
 }
 
 export class AlNodeEvents {
-  static SELECTED: string = "al-node-selected";
-  static INTERSECTION: string = "al-node-intersection";
-  static INTERSECTION_CLEARED: string = "al-node-intersection-cleared";
-  static DRAGGING: string = "al-node-dragging";
-  static CONTROLS_ENABLED: string = "al-controls-enabled";
-  static CONTROLS_DISABLED: string = "al-controls-disabled";
   static ANIMATION_STARTED: string = "al-animation-started";
 }

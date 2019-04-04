@@ -45,7 +45,7 @@ import {
   AlEdgeSerial,
   AlAngleSerial
 } from "../../interfaces";
-import { GetUtils, ThreeUtils, CreateUtils } from "../../utils";
+import { GetUtils, ThreeUtils, CreateUtils, GraphUtils, AlGraphEvents } from "../../utils";
 import { Constants } from "../../Constants";
 import { MeshFileType, Orientation, DisplayMode } from "../../enums";
 import {
@@ -75,7 +75,7 @@ export class Aleph {
   private _boundingSphereRadius: number;
   private _validTarget: boolean;
   private _camera: Entity;
-  private _intersectingNode: string | null = null;
+  private _graphIntersection: string | null = null;
   private _isShiftDown: boolean = false;
 
   // This needs to be removed ASAP - Fixes a perceieved issue with Aframe & Depth Testing
@@ -349,19 +349,19 @@ export class Aleph {
 
     // set up event handlers
     this._animationFinished = this._animationFinished.bind(this);
-    this._canvasMouseDown = this._canvasMouseDown.bind(this);
-    this._canvasMouseUp = this._canvasMouseUp.bind(this);
+    this._canvasMouseDownHandler = this._canvasMouseDownHandler.bind(this);
+    this._canvasMouseUpHandler = this._canvasMouseUpHandler.bind(this);
     this._controlsDisabledHandler = this._controlsDisabledHandler.bind(this);
     this._controlsEnabledHandler = this._controlsEnabledHandler.bind(this);
-    this._controlsUpdated = this._controlsUpdated.bind(this);
-    this._intersectingNodeEventHandler = this._intersectingNodeEventHandler.bind(
+    this._controlsUpdatedHandler = this._controlsUpdatedHandler.bind(this);
+    this._intersectingGraphHandler = this._intersectingGraphHandler.bind(
       this
     );
-    this._intersectionClearedEventHandler = this._intersectionClearedEventHandler.bind(
+    this._intersectionGraphClearedHandler = this._intersectionGraphClearedHandler.bind(
       this
     );
     this._nodeMovedEventHandler = this._nodeMovedEventHandler.bind(this);
-    this._nodeSelectedEventHandler = this._nodeSelectedEventHandler.bind(this);
+    this._graphSelectedHandler = this._graphSelectedHandler.bind(this);
     this._setNodeEventHandler = this._setNodeEventHandler.bind(this);
     this._srcLoaded = this._srcLoaded.bind(this);
     this._validTargetEventHandler = this._validTargetEventHandler.bind(this);
@@ -463,7 +463,6 @@ export class Aleph {
       }
     }
   }
-
   private _renderNodes(): JSX.Element {
     let result = this.camera ? this.getEmptyNodes(this._numEmptyNodes) : [];
     result.push(
@@ -706,8 +705,9 @@ export class Aleph {
         ref={el => (this._scene = el)}
       >
         {this._renderSrc()}
-        {this._renderNodes()}
+        {this._renderAngles()}
         {this._renderEdges()}
+        {this._renderNodes()}
         {this._renderLights()}
         {this._renderCamera()}
       </a-scene>
@@ -736,10 +736,21 @@ export class Aleph {
       node1Id: node1,
       node2Id: node2
     };
-    const edgeId: string = GetUtils.getNextEdgeId(this.edges);
+    const edgeId: string = GraphUtils.getNextEdgeId(this.edges);
 
     this._setEdge([edgeId, newEdge]);
   }
+
+  private _createAngle(edge1: string, edge2: string): void {
+    const newAngle: AlAngleSerial = {
+      edge1Id: edge1,
+      edge2Id: edge2
+    };
+    const angleId: string = GraphUtils.getNextAngleId(this.angles);
+
+    this._setAngle([angleId, newAngle]);
+  }
+
   private _getAppState(): AlAppState {
     // todo: can we watch the store object?
     return this.store.getState().app;
@@ -866,15 +877,15 @@ export class Aleph {
   //#endregion
 
   //#region Event Handlers
-  private _canvasMouseDown(event: MouseEvent) {
+  private _canvasMouseDownHandler(event: MouseEvent) {
     this._isShiftDown = event.shiftKey;
   }
 
-  private _canvasMouseUp(_event: MouseEvent) {
+  private _canvasMouseUpHandler(_event: MouseEvent) {
     this._isShiftDown = false;
   }
 
-  private _controlsUpdated(event: CustomEvent): void {
+  private _controlsUpdatedHandler(event: CustomEvent): void {
     this.appSetCamera(event.detail.cameraSerial);
   }
 
@@ -888,12 +899,12 @@ export class Aleph {
     ThreeUtils.enableCamera(this._camera, false);
   }
 
-  private _intersectionClearedEventHandler(_event): void {
-    this._intersectingNode = null;
+  private _intersectionGraphClearedHandler(_event): void {
+    this._graphIntersection = null;
   }
 
-  private _intersectingNodeEventHandler(event): void {
-    this._intersectingNode = event.detail.id;
+  private _intersectingGraphHandler(event): void {
+    this._graphIntersection = event.detail.id;
   }
 
   private _setNodeEventHandler(event: CustomEvent): void {
@@ -901,11 +912,11 @@ export class Aleph {
     if (
       this.nodesEnabled && // Nodes are enabled
       this._validTarget && // Target is valid
-      this._intersectingNode === null // Not intersecting a Node already
+      this._graphIntersection === null // Not intersecting a Node already
     ) {
       let intersection: THREE.Intersection = event.detail.detail.intersection;
 
-      const nodeId: string = GetUtils.getNextNodeId(this.nodes);
+      const nodeId: string = GraphUtils.getNextNodeId(this.nodes);
 
       const newNode: AlNodeSerial = {
         target: ThreeUtils.vector3ToString(
@@ -941,16 +952,17 @@ export class Aleph {
     });
   }
 
-  private _nodeSelectedEventHandler(event: CustomEvent): void {
+  // TODO: Add Angle selection by accounting for type of the selected graph item
+  private _graphSelectedHandler(event: CustomEvent): void {
     // ELSE IF intersecting a node and it is NOT the selected node
     if (
-      this._intersectingNode !== null && // We're are intersecting a node
+      this._graphIntersection !== null && // We're are intersecting a node
       this.nodesEnabled && // Nodes are enabled
       this.selected !== null && // We have a node already selected
-      this.selected !== this._intersectingNode && // The selected & intersecting nodes are not the same
+      this.selected !== this._graphIntersection && // The selected & intersecting nodes are not the same
       this._isShiftDown // The shift key is down
     ) {
-      this._createEdge(this.selected, this._intersectingNode);
+      this._createEdge(this.selected, this._graphIntersection);
     }
     this._selectNode(event.detail.id, false);
   }
@@ -1010,13 +1022,13 @@ export class Aleph {
   }
 
   private _addEventListeners(): void {
-    this._scene.canvas.addEventListener("mousedown", this._canvasMouseDown, {
+    this._scene.canvas.addEventListener("mousedown", this._canvasMouseDownHandler, {
       capture: false,
       once: false,
       passive: true
     });
 
-    this._scene.canvas.addEventListener("mouseup", this._canvasMouseUp, {
+    this._scene.canvas.addEventListener("mouseup", this._canvasMouseUpHandler, {
       capture: false,
       once: false,
       passive: true
@@ -1030,24 +1042,24 @@ export class Aleph {
 
     this._scene.addEventListener(
       AlOrbitControlEvents.UPDATED,
-      this._controlsUpdated,
+      this._controlsUpdatedHandler,
       false
     );
 
     this._scene.addEventListener(
-      AlNodeEvents.CONTROLS_ENABLED,
+      AlGraphEvents.CONTROLS_ENABLED,
       this._controlsEnabledHandler,
       false
     );
 
     this._scene.addEventListener(
-      AlNodeEvents.CONTROLS_DISABLED,
+      AlGraphEvents.CONTROLS_DISABLED,
       this._controlsDisabledHandler,
       false
     );
 
     this._scene.addEventListener(
-      AlNodeEvents.DRAGGING,
+      AlGraphEvents.DRAGGING,
       this._nodeMovedEventHandler,
       false
     );
@@ -1059,8 +1071,8 @@ export class Aleph {
     );
 
     this._scene.addEventListener(
-      AlNodeEvents.SELECTED,
-      this._nodeSelectedEventHandler,
+      AlGraphEvents.SELECTED,
+      this._graphSelectedHandler,
       false
     );
 
@@ -1077,14 +1089,14 @@ export class Aleph {
     );
 
     this._scene.addEventListener(
-      AlNodeEvents.INTERSECTION,
-      this._intersectingNodeEventHandler,
+      AlGraphEvents.INTERSECTION,
+      this._intersectingGraphHandler,
       false
     );
 
     this._scene.addEventListener(
-      AlNodeEvents.INTERSECTION_CLEARED,
-      this._intersectionClearedEventHandler,
+      AlGraphEvents.INTERSECTION_CLEARED,
+      this._intersectionGraphClearedHandler,
       false
     );
   }

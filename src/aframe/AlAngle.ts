@@ -1,6 +1,6 @@
 import { AframeRegistry, AframeComponent } from "../interfaces";
 import { Constants } from "../Constants";
-import { ThreeUtils } from "../utils";
+import { ThreeUtils, AlGraphEvents } from "../utils";
 
 interface AlAngleState {
   selected: boolean;
@@ -74,7 +74,7 @@ export class AlAngle implements AframeRegistry {
 
       elMouseDown(_event: CustomEvent): void {
         ThreeUtils.waitOneFrame(() => {
-          this.el.sceneEl.emit(AlEdgeEvents.SELECTED, { id: this.el.id }, true);
+          this.el.sceneEl.emit(AlGraphEvents.SELECTED, { id: this.el.id }, true);
         });
       },
 
@@ -82,7 +82,7 @@ export class AlAngle implements AframeRegistry {
         let state = this.state as AlAngleState;
         state.hovered = true;
         this.el.sceneEl.emit(
-          AlEdgeEvents.INTERSECTION,
+          AlGraphEvents.INTERSECTION,
           { id: this.el.id },
           true
         );
@@ -91,7 +91,7 @@ export class AlAngle implements AframeRegistry {
       elRaycasterIntersectedCleared(_event: CustomEvent): void {
         let state = this.state as AlAngleState;
         state.hovered = false;
-        this.el.sceneEl.emit(AlEdgeEvents.INTERSECTION_CLEARED, {}, true);
+        this.el.sceneEl.emit(AlGraphEvents.INTERSECTION_CLEARED, {}, true);
       },
 
       createMesh() {
@@ -199,10 +199,4 @@ export class AlAngle implements AframeRegistry {
   public static get Tag(): string {
     return "al-angle";
   }
-}
-
-export class AlEdgeEvents {
-  static SELECTED: string = "al-edge-selected";
-  static INTERSECTION: string = "al-edge-intersection";
-  static INTERSECTION_CLEARED: string = "al-edge-intersection-cleared";
 }
