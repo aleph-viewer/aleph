@@ -359,8 +359,8 @@ export class Aleph {
 
     // set up event handlers
     this._animationFinished = this._animationFinished.bind(this);
-    this._canvasMouseDownHandler = this._canvasMouseDownHandler.bind(this);
-    this._canvasMouseUpHandler = this._canvasMouseUpHandler.bind(this);
+    this._keyDownHandler = this._keyDownHandler.bind(this);
+    this._keyUpHandler = this._keyUpHandler.bind(this);
     this._controlsDisabledHandler = this._controlsDisabledHandler.bind(this);
     this._controlsEnabledHandler = this._controlsEnabledHandler.bind(this);
     this._controlsUpdatedHandler = this._controlsUpdatedHandler.bind(this);
@@ -499,7 +499,7 @@ export class Aleph {
               align: center;
               baseline: bottom;
               anchor: center;
-              width: ${Constants.fontSize * this._boundingSphereRadius}
+              width: ${Constants.fontSizeMedium * this._boundingSphereRadius}
             `}
               al-look-to-camera
               al-render-overlaid-text
@@ -542,7 +542,7 @@ export class Aleph {
             position={ThreeUtils.vector3ToString(centoid)}
             // This.SelectedEdge
             al-edge={`
-              height: ${dist};
+              length: ${dist};
               node1: ${node1.position};
               node2: ${node2.position};
               selected: ${this.selected === edgeId};
@@ -557,7 +557,7 @@ export class Aleph {
                 align: center;
                 baseline: bottom;
                 anchor: center;
-                width: ${Constants.fontSize * this._boundingSphereRadius}
+                width: ${Constants.fontSizeSmall * this._boundingSphereRadius}
               `}
               position={ThreeUtils.vector3ToString(textOffset)}
               al-look-to-camera
@@ -565,8 +565,6 @@ export class Aleph {
             />
           </a-entity>
         );
-      } else {
-        return;
       }
     });
   }
@@ -643,7 +641,7 @@ export class Aleph {
                 align: center;
                 baseline: bottom;
                 anchor: center;
-                width: ${Constants.fontSize * this._boundingSphereRadius}
+                width: ${Constants.fontSizeMedium * this._boundingSphereRadius}
               `}
               position={ThreeUtils.vector3ToString(textOffset)}
               al-look-to-camera
@@ -651,8 +649,6 @@ export class Aleph {
             />
           </a-entity>
         );
-      } else {
-        return;
       }
     });
   }
@@ -721,9 +717,9 @@ export class Aleph {
         ref={el => (this._scene = el)}
       >
         {this._renderSrc()}
-        {this._renderAngles()}
-        {this._renderEdges()}
         {this._renderNodes()}
+        {this._renderEdges()}
+        {/* {this._renderAngles()} */}
         {this._renderLights()}
         {this._renderCamera()}
       </a-scene>
@@ -748,7 +744,7 @@ export class Aleph {
 
   //#region Private Methods
   private _createEdge(node1: string, node2: string): void {
-    console.log("create edge");
+    //console.log("create edge");
     const newEdge: AlEdgeSerial = {
       node1Id: node1,
       node2Id: node2
@@ -912,11 +908,11 @@ export class Aleph {
   //#endregion
 
   //#region Event Handlers
-  private _canvasMouseDownHandler(event: MouseEvent) {
+  private _keyDownHandler(event: KeyboardEvent) {
     this._isShiftDown = event.shiftKey;
   }
 
-  private _canvasMouseUpHandler(_event: MouseEvent) {
+  private _keyUpHandler(_event: KeyboardEvent) {
     this._isShiftDown = false;
   }
 
@@ -1068,7 +1064,7 @@ export class Aleph {
     for (let i = 0; i < maxEmptyNodes; i++) {
       let emptyNode = (
         <a-entity
-          id={"nodeEmpty-" + i}
+          id={"node-empty-" + i}
           position="0 0 0"
           al-node={`
             target: "0 0 0";
@@ -1085,21 +1081,9 @@ export class Aleph {
   }
 
   private _addEventListeners(): void {
-    this._scene.canvas.addEventListener(
-      "mousedown",
-      this._canvasMouseDownHandler,
-      {
-        capture: false,
-        once: false,
-        passive: true
-      }
-    );
+    document.addEventListener("keydown", this._keyDownHandler, false);
 
-    this._scene.canvas.addEventListener("mouseup", this._canvasMouseUpHandler, {
-      capture: false,
-      once: false,
-      passive: true
-    });
+    document.addEventListener("keyup", this._keyUpHandler, false);
 
     this._scene.addEventListener(
       AlOrbitControlEvents.ANIMATION_FINISHED,

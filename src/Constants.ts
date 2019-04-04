@@ -1,5 +1,7 @@
 export class Constants {
-  static fontSize = 1.5;
+  static fontSizeSmall = 0.75;
+  static fontSizeMedium = 1.5;
+  static fontSizeLarge = 2.5;
   static movedEventString = "-moved";
   static titleIdString = "-title";
   static nodeSizeRatio = 50;
@@ -8,7 +10,7 @@ export class Constants {
   static minLoadingMS = 500;
   static topLayerRenderOrder = 999;
   static decimalPlaces = 3;
-  static edgeSize = 0.005;
+  static edgeSize = 0.008;
 
   static maxAnimationSteps = 50;
 

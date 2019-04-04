@@ -31,7 +31,7 @@ export class AlEdge implements AframeRegistry {
         selected: { type: "boolean" },
         node1: { type: "vec3" },
         node2: { type: "vec3" },
-        height: { type: "number" },
+        length: { type: "number" },
         radius: { type: "number" }
       },
 
@@ -130,10 +130,11 @@ export class AlEdge implements AframeRegistry {
         var geometry = new THREE.CylinderGeometry(
           this.data.radius,
           this.data.radius,
-          this.data.height,
+          this.data.length,
           6,
           4
         );
+        //var geometry = new THREE.BoxGeometry(0.03, this.data.length, 0.03);
         let material = new THREE.MeshBasicMaterial();
         material.depthTest = false;
         const mesh = new THREE.Mesh(geometry, material);
@@ -166,11 +167,11 @@ export class AlEdge implements AframeRegistry {
         let state = this.state as AlEdgeState;
         state.selected = this.data.selected;
 
-        // If height or radius has changed, create a new mesh
+        // If length or radius has changed, create a new mesh
         if (
           oldData &&
           (oldData.radius !== this.data.radius ||
-            oldData.height !== this.data.height)
+            oldData.length !== this.data.length)
         ) {
           this.createMesh();
         }

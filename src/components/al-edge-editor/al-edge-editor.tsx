@@ -12,10 +12,10 @@ export class AlEdgeEditor {
   @Prop({ mutable: true }) edge: [string, AlEdgeSerial];
 
   render(): JSX.Element {
-    console.log("render edge", this.edge);
-
     if (this.edge) {
       const [edgeId] = this.edge;
+
+      console.log(this.edge);
 
       return (
         <form onSubmit={e => e.preventDefault()}>

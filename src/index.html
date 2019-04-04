@@ -296,22 +296,7 @@
         alNodeList.nodes = state.nodes;
         alNodeList.selected = state.selected;
         alNodeEditor.node = getSelectedNode();
-        alEdgeEditor.node = getSelectedEdge();
-
-        // if (state.selected) {
-        //   const type = state.selected.split("-")[0];
-
-        //   switch (type) {
-        //     case "node": {
-        //       alNodeEditor.node = getSelectedNode();
-        //       break;
-        //     };
-        //     case "edge": {
-        //       alEdgeEditor.edge = getSelectedEdge();
-        //       break;
-        //     };
-        //   }
-        // }
+        alEdgeEditor.edge = getSelectedEdge();
 
         lastState = Object.assign({}, state);
       }
