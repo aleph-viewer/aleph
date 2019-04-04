@@ -79,6 +79,14 @@ export namespace Components {
     'volumeWindowWidth'?: number;
   }
 
+  interface AlEdgeEditor {
+    'edge': [string, AlEdgeSerial];
+  }
+  interface AlEdgeEditorAttributes extends StencilHTMLAttributes {
+    'edge'?: [string, AlEdgeSerial];
+    'onOnDelete'?: (event: CustomEvent) => void;
+  }
+
   interface AlNodeEditor {
     'node': [string, AlNodeSerial];
   }
@@ -136,6 +144,7 @@ export namespace Components {
   interface UvAleph {
     'clearNodes': () => Promise<void>;
     'debug': boolean;
+    'deleteEdge': (edgeId: string) => Promise<void>;
     'deleteNode': (nodeId: string) => Promise<void>;
     'dracoDecoderPath': string | null;
     'height': string;
@@ -165,6 +174,7 @@ declare global {
   interface StencilElementInterfaces {
     'AlConsole': Components.AlConsole;
     'AlControlPanel': Components.AlControlPanel;
+    'AlEdgeEditor': Components.AlEdgeEditor;
     'AlNodeEditor': Components.AlNodeEditor;
     'AlNodeList': Components.AlNodeList;
     'AlTabs': Components.AlTabs;
@@ -175,6 +185,7 @@ declare global {
   interface StencilIntrinsicElements {
     'al-console': Components.AlConsoleAttributes;
     'al-control-panel': Components.AlControlPanelAttributes;
+    'al-edge-editor': Components.AlEdgeEditorAttributes;
     'al-node-editor': Components.AlNodeEditorAttributes;
     'al-node-list': Components.AlNodeListAttributes;
     'al-tabs': Components.AlTabsAttributes;
@@ -193,6 +204,12 @@ declare global {
   var HTMLAlControlPanelElement: {
     prototype: HTMLAlControlPanelElement;
     new (): HTMLAlControlPanelElement;
+  };
+
+  interface HTMLAlEdgeEditorElement extends Components.AlEdgeEditor, HTMLStencilElement {}
+  var HTMLAlEdgeEditorElement: {
+    prototype: HTMLAlEdgeEditorElement;
+    new (): HTMLAlEdgeEditorElement;
   };
 
   interface HTMLAlNodeEditorElement extends Components.AlNodeEditor, HTMLStencilElement {}
@@ -228,6 +245,7 @@ declare global {
   interface HTMLElementTagNameMap {
     'al-console': HTMLAlConsoleElement
     'al-control-panel': HTMLAlControlPanelElement
+    'al-edge-editor': HTMLAlEdgeEditorElement
     'al-node-editor': HTMLAlNodeEditorElement
     'al-node-list': HTMLAlNodeListElement
     'al-tabs': HTMLAlTabsElement
@@ -238,6 +256,7 @@ declare global {
   interface ElementTagNameMap {
     'al-console': HTMLAlConsoleElement;
     'al-control-panel': HTMLAlControlPanelElement;
+    'al-edge-editor': HTMLAlEdgeEditorElement;
     'al-node-editor': HTMLAlNodeEditorElement;
     'al-node-list': HTMLAlNodeListElement;
     'al-tabs': HTMLAlTabsElement;

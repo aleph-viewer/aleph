@@ -54,6 +54,7 @@ import {
   AlNodeSpawnerEvents,
   AlOrbitControlEvents
 } from "../../aframe";
+import { AlEdgeEvents } from "../../aframe/AlEdge";
 type Entity = import("aframe").Entity;
 type Scene = import("aframe").Scene;
 //#endregion
@@ -217,6 +218,11 @@ export class Aleph {
     this._selectNode(nodeId, true);
   }
 
+  @Method()
+  async deleteEdge(edgeId: string): Promise<void> {
+    this._deleteEdge(edgeId);
+  }
+
   //#endregion
 
   //#region Edge Methods
@@ -362,11 +368,12 @@ export class Aleph {
     );
     this._nodeMovedEventHandler = this._nodeMovedEventHandler.bind(this);
     this._nodeSelectedEventHandler = this._nodeSelectedEventHandler.bind(this);
+    this._edgeSelectedEventHandler = this._edgeSelectedEventHandler.bind(this);
     this._setNodeEventHandler = this._setNodeEventHandler.bind(this);
     this._srcLoaded = this._srcLoaded.bind(this);
     this._validTargetEventHandler = this._validTargetEventHandler.bind(this);
 
-    this._numEmptyNodes = 3;
+    this._numEmptyNodes = 3; // todo: remove this when rendering bug fixed
   }
 
   //#region Render Methods
@@ -537,7 +544,7 @@ export class Aleph {
             al-edge={`
               height: ${dist};
               node2: ${node2.position};
-              selected: ${false};
+              selected: ${this.selected === edgeId};
               radius: ${radius};
             `}
             al-render-overlaid
@@ -691,11 +698,6 @@ export class Aleph {
     });
   }
 
-  private _setEdge(edge: [string, AlEdgeSerial]): void {
-    this.appSetEdge(edge);
-    this.onChanged.emit(this._getAppState());
-  }
-
   private _selectNode(nodeId: string, animate: boolean): void {
     if (animate && nodeId !== this.selected) {
       let animationStart = {
@@ -753,6 +755,21 @@ export class Aleph {
       this.appSelectNode(nodeId);
       this.onChanged.emit(this._getAppState());
     }
+  }
+
+  private _setEdge(edge: [string, AlEdgeSerial]): void {
+    this.appSetEdge(edge);
+    this.onChanged.emit(this._getAppState());
+  }
+
+  private _deleteEdge(edgeId: string): void {
+    this.appDeleteEdge(edgeId);
+    this.onChanged.emit(this._getAppState());
+  }
+
+  private _selectEdge(edgeId: string): void {
+    this.appSelectEdge(edgeId);
+    this.onChanged.emit(this._getAppState());
   }
 
   private _setNodesEnabled(enabled: boolean): void {
@@ -879,6 +896,10 @@ export class Aleph {
     this._selectNode(event.detail.id, false);
   }
 
+  private _edgeSelectedEventHandler(event: CustomEvent): void {
+    this._selectEdge(event.detail.id);
+  }
+
   private _nodeMovedEventHandler(event: CustomEvent): void {
     const nodeId: string = event.detail.id;
     const raycaster = this._camera.components.raycaster as any;
@@ -985,6 +1006,12 @@ export class Aleph {
     this._scene.addEventListener(
       AlNodeEvents.SELECTED,
       this._nodeSelectedEventHandler,
+      false
+    );
+
+    this._scene.addEventListener(
+      AlEdgeEvents.SELECTED,
+      this._edgeSelectedEventHandler,
       false
     );
 

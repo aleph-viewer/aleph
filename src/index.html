@@ -110,6 +110,7 @@
             <ion-tab tab="graph">
               <al-node-list></al-node-list>
               <al-node-editor></al-node-editor>
+              <al-edge-editor></al-edge-editor>
             </ion-tab>
             <ion-tab tab="settings">
               <al-control-panel></al-control-panel>
@@ -124,7 +125,7 @@
 
     <script>
 
-      let state, lastState, urls, container, debug, aleph, alUrlPicker, alNodeList, alConsole, alNodeEditor, alControlPanel;
+      let state, lastState, urls, container, debug, aleph, alUrlPicker, alNodeList, alConsole, alNodeEditor, alEdgeEditor, alControlPanel;
 
       class AlephInspectorState {
         constructor() {
@@ -162,6 +163,7 @@
         alConsole = document.querySelector("al-console");
         alNodeList = document.querySelector("al-node-list");
         alNodeEditor = document.querySelector("al-node-editor");
+        alEdgeEditor = document.querySelector("al-edge-editor");
         alControlPanel = document.querySelector("al-control-panel");
         loadSrcButton = document.getElementById("load-src-button");
         nodesTextArea = document.getElementById("nodes-textarea");
@@ -181,6 +183,7 @@
             function(e) {
               state.srcLoaded = e.detail.srcLoaded;
               state.nodes = e.detail.nodes;
+              state.edges = e.detail.edges;
               state.selected = e.detail.selected;
             },
             false
@@ -218,6 +221,16 @@
             "onSave",
             function(e) {
               aleph.setNode(e.detail);
+            },
+            false
+          );
+        });
+
+        alEdgeEditor.componentOnReady().then(function() {
+          alEdgeEditor.addEventListener(
+            "onDelete",
+            function(e) {
+              aleph.deleteEdge(e.detail);
             },
             false
           );
@@ -282,16 +295,42 @@
         alConsole.cmd = state.nodes ? JSON.stringify([...state.nodes]) : "";
         alNodeList.nodes = state.nodes;
         alNodeList.selected = state.selected;
-        alNodeEditor.node = getSelected();
+        alNodeEditor.node = getSelectedNode();
+        alEdgeEditor.node = getSelectedEdge();
+
+        // if (state.selected) {
+        //   const type = state.selected.split("-")[0];
+
+        //   switch (type) {
+        //     case "node": {
+        //       alNodeEditor.node = getSelectedNode();
+        //       break;
+        //     };
+        //     case "edge": {
+        //       alEdgeEditor.edge = getSelectedEdge();
+        //       break;
+        //     };
+        //   }
+        // }
 
         lastState = Object.assign({}, state);
       }
 
-      function getSelected() {
+      function getSelectedNode() {
         if (state.selected && state.nodes) {
           const n = state.nodes.get(state.selected);
           if (n) {
             return [state.selected, n];
+          }
+        }
+        return null;
+      }
+
+      function getSelectedEdge() {
+        if (state.selected && state.edges) {
+          const e = state.edges.get(state.selected);
+          if (e) {
+            return [state.selected, e];
           }
         }
         return null;

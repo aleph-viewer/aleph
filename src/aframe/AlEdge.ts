@@ -144,7 +144,7 @@ export class AlEdge implements AframeRegistry {
           mesh.lookAt(ThreeUtils.objectToVector3(this.data.node2));
           //mesh.rotateX(60);
           //mesh.rotateY(60);
-         // mesh.rotateZ(60);
+          // mesh.rotateZ(60);
         }
       },
 
