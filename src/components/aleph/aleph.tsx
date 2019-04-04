@@ -526,11 +526,10 @@ export class Aleph {
         let textOffset: THREE.Vector3 = new THREE.Vector3(0, 2.5, 0);
         let scale = (node1.scale + node2.scale) / 2;
         let radius = this._boundingSphereRadius * Constants.edgeSize;
-        console.log(radius);
         textOffset.multiplyScalar(scale);
 
         return (
-          <a-cylinder
+          <a-entity
             class="collidable"
             id={edgeId}
             position={ThreeUtils.vector3ToString(centoid)}
@@ -557,7 +556,7 @@ export class Aleph {
               al-look-to-camera
               al-render-overlaid-text
             />
-          </a-cylinder>
+          </a-entity>
         );
       } else {
         return;

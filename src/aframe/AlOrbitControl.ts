@@ -225,7 +225,6 @@ export class AlOrbitControl implements AframeRegistry {
           }
 
           if (this.state.animationCache.length === 0) {
-            console.log("control-emit: ", AlOrbitControlEvents.UPDATED);
             this.el.sceneEl.emit(
               AlOrbitControlEvents.ANIMATION_FINISHED,
               {},
