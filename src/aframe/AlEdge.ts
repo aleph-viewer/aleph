@@ -95,11 +95,6 @@ export class AlEdge implements AframeRegistry {
       },
 
       createMesh() {
-        // IF a mesh already exsists, delete it
-        if (this.el.object3DMap.mesh) {
-          this.el.removeObject3D(this.state.mesh);
-        }
-
         const geometry = new THREE.CylinderGeometry(
           this.data.radius,
           this.data.radius,
@@ -115,7 +110,6 @@ export class AlEdge implements AframeRegistry {
         this.state.geometry = geometry;
         this.state.material = material;
         this.state.mesh = mesh;
-        this.state.mesh.lookAt(ThreeUtils.stringToVector3(this.data.node2));
 
         this.el.setObject3D("mesh", mesh);
       },
@@ -128,9 +122,6 @@ export class AlEdge implements AframeRegistry {
         );
         this.bindListeners();
         this.addListeners();
-
-        const data = this.data;
-        let el = this.el;
 
         this.state = {
           selected: true,
@@ -149,6 +140,11 @@ export class AlEdge implements AframeRegistry {
             oldData.height !== this.data.height)
         ) {
           this.createMesh();
+          const mesh = this.state.mesh as THREE.Mesh;
+          mesh.lookAt(ThreeUtils.objectToVector3(this.data.node2));
+          //mesh.rotateX(60);
+          //mesh.rotateY(60);
+         // mesh.rotateZ(60);
         }
       },
 
