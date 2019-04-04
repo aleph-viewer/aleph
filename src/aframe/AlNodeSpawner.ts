@@ -136,14 +136,14 @@ export class AlNodeSpawner implements AframeRegistry {
       elMouseDown(_event: CustomEvent) {
         if (this.data.nodesEnabled) {
           //console.log("spawner-emit: ", AlNodeEvents.CONTROLS_DISABLED);
-          this.el.sceneEl.emit(AlGraphEvents.CONTROLS_DISABLED, {}, false);
+          this.el.sceneEl.emit(AlGraphEvents.POINTER_DOWN, {}, false);
         }
       },
 
       elMouseUp(_event: CustomEvent) {
         if (this.data.nodesEnabled) {
           //console.log("spawner-emit: ", AlNodeEvents.CONTROLS_ENABLED);
-          this.el.sceneEl.emit(AlGraphEvents.CONTROLS_ENABLED, {}, false);
+          this.el.sceneEl.emit(AlGraphEvents.POINTER_UP, {}, false);
         }
       },
 

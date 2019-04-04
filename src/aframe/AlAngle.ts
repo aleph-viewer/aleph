@@ -74,13 +74,13 @@ export class AlAngle implements AframeRegistry {
       },
 
       elMouseDown(_event: CustomEvent): void {
-        ThreeUtils.waitOneFrame(() => {
-          this.el.sceneEl.emit(
-            AlGraphEvents.SELECTED,
-            { type: AlGraphEntryType.ANGLE, id: this.el.id },
-            true
-          );
-        });
+        //ThreeUtils.waitOneFrame(() => {
+        this.el.sceneEl.emit(
+          AlGraphEvents.SELECTED,
+          { type: AlGraphEntryType.ANGLE, id: this.el.id },
+          true
+        );
+        //});
       },
 
       elRaycasterIntersected(_event: CustomEvent): void {

@@ -1,4 +1,3 @@
-import { AlNodeSerial, AlEdgeSerial, AlAngleSerial } from "../interfaces";
 import { AlGraphEntry } from "../interfaces/AlGraphEntry";
 import { AlGraphEntryType } from "../enums/AlGraphEntryType";
 
@@ -7,8 +6,8 @@ export class AlGraphEvents {
   static INTERSECTION: string = "al-graph-intersection";
   static INTERSECTION_CLEARED: string = "al-graph-intersection-cleared";
   static DRAGGING: string = "al-graph-dragging";
-  static CONTROLS_ENABLED: string = "al-graph-controls-enabled";
-  static CONTROLS_DISABLED: string = "al-graph-controls-disabled";
+  static POINTER_DOWN: string = "al-graph-pointer-down";
+  static POINTER_UP: string = "al-graph-pointer-up";
 }
 
 export class GraphUtils {

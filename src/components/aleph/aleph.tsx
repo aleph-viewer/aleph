@@ -793,10 +793,10 @@ export class Aleph {
   }
 
   private _setNode(node: [string, AlNodeSerial]): void {
-    ThreeUtils.waitOneFrame(() => {
-      this.appSetNode(node);
-      this.onChanged.emit(this._getAppState());
-    });
+    //ThreeUtils.waitOneFrame(() => {
+    this.appSetNode(node);
+    this.onChanged.emit(this._getAppState());
+    //});
   }
 
   private _selectNode(nodeId: string, animate: boolean = false): void {
@@ -838,18 +838,18 @@ export class Aleph {
             diffPos > 0,
             diffTarg > 0
           );
-          ThreeUtils.waitOneFrame(() => {
-            this._scene.emit(
-              AlOrbitControlEvents.ANIMATION_STARTED,
-              { slerpPath },
-              false
-            );
-            this.appSetCamera({
-              animating: true
-            });
-            this.appSelectNode(nodeId);
-            this.onChanged.emit(this._getAppState());
+          //ThreeUtils.waitOneFrame(() => {
+          this._scene.emit(
+            AlOrbitControlEvents.ANIMATION_STARTED,
+            { slerpPath },
+            false
+          );
+          this.appSetCamera({
+            animating: true
           });
+          this.appSelectNode(nodeId);
+          this.onChanged.emit(this._getAppState());
+          //});
         }
       }
     } else {
@@ -969,10 +969,10 @@ export class Aleph {
         this._isShiftDown && // Shift is down
         this.nodes.has(previousSelected) // A Node is already selected
       ) {
-        ThreeUtils.waitOneFrame(() => {
-          this._createEdge(previousSelected, nodeId);
-          this._selectNode(nodeId);
-        });
+        //ThreeUtils.waitOneFrame(() => {
+        this._createEdge(previousSelected, nodeId);
+        this._selectNode(nodeId);
+        //});
       }
     }
   }
@@ -999,7 +999,6 @@ export class Aleph {
 
     switch (type) {
       case AlGraphEntryType.NODE: {
-        console.log("selected node: ", id);
         if (
           this._graphIntersection !== null &&
           this.nodes.has(this._graphIntersection) && // We're intersecting a node
@@ -1013,7 +1012,6 @@ export class Aleph {
         break;
       }
       case AlGraphEntryType.EDGE: {
-        console.log("selected edge: ", id);
         if (
           this._graphIntersection !== null &&
           this.edges.has(this._graphIntersection)
@@ -1082,7 +1080,6 @@ export class Aleph {
 
   private _addEventListeners(): void {
     document.addEventListener("keydown", this._keyDownHandler, false);
-
     document.addEventListener("keyup", this._keyUpHandler, false);
 
     this._scene.addEventListener(
@@ -1098,13 +1095,13 @@ export class Aleph {
     );
 
     this._scene.addEventListener(
-      AlGraphEvents.CONTROLS_ENABLED,
+      AlGraphEvents.POINTER_UP,
       this._controlsEnabledHandler,
       false
     );
 
     this._scene.addEventListener(
-      AlGraphEvents.CONTROLS_DISABLED,
+      AlGraphEvents.POINTER_DOWN,
       this._controlsDisabledHandler,
       false
     );
@@ -1126,12 +1123,6 @@ export class Aleph {
       this._graphSelectedHandler,
       false
     );
-
-    // this._scene.addEventListener(
-    //   AlGraphEvents.SELECTED,
-    //   this._edgeSelectedEventHandler,
-    //   false
-    // );
 
     this._scene.addEventListener(
       AlNodeSpawnerEvents.VALID_TARGET,

@@ -26,7 +26,7 @@ interface AlNodeObject extends AframeComponent {
   addListeners(): void;
   removeListeners(): void;
   elMouseDown(_event: CustomEvent): void;
-  canvasMouseUp(_event: MouseEvent): void;
+  elMouseUp(_event: MouseEvent): void;
   elRaycasterIntersected(_event: CustomEvent): void;
   elRaycasterIntersectedCleared(_event: CustomEvent): void;
 }
@@ -43,7 +43,7 @@ export class AlNode implements AframeRegistry {
 
       bindListeners(): void {
         this.elMouseDown = this.elMouseDown.bind(this);
-        this.canvasMouseUp = this.canvasMouseUp.bind(this);
+        this.elMouseUp = this.elMouseUp.bind(this);
         this.elRaycasterIntersected = this.elRaycasterIntersected.bind(this);
         this.elRaycasterIntersectedCleared = this.elRaycasterIntersectedCleared.bind(
           this
@@ -51,12 +51,17 @@ export class AlNode implements AframeRegistry {
       },
 
       addListeners(): void {
-        this.el.addEventListener("mousedown", this.elMouseDown, {
+        this.el.sceneEl.addEventListener("mousedown", this.elMouseDown, {
           capture: false,
           once: false,
           passive: true
         });
-        this.el.sceneEl.canvas.addEventListener("mouseup", this.canvasMouseUp, {
+        this.el.addEventListener("mouseup", this.elMouseUp, {
+          capture: false,
+          once: false,
+          passive: true
+        });
+        this.el.sceneEl.addEventListener("mouseup", this.elMouseUp, {
           capture: false,
           once: false,
           passive: true
@@ -74,8 +79,9 @@ export class AlNode implements AframeRegistry {
       },
 
       removeListeners(): void {
-        this.el.removeEventListener("mousedown", this.elMouseDown);
-        this.el.removeEventListener("mouseup", this.canvasMouseUp);
+        this.el.sceneEl.removeEventListener("mousedown", this.elMouseDown);
+        this.el.sceneEl.removeEventListener("mouseup", this.elMouseUp);
+        this.el.removeEventListener("mouseup", this.elMouseUp);
         this.el.removeEventListener(
           "raycaster-intersected",
           this.elRaycasterIntersected
@@ -87,7 +93,8 @@ export class AlNode implements AframeRegistry {
       },
 
       elMouseDown(_event: CustomEvent): void {
-        ThreeUtils.waitOneFrame(() => {
+        let state = this.state as AlNodeState;
+        if (state.hovered) {
           this.el.sceneEl.emit(
             AlGraphEvents.SELECTED,
             { type: AlGraphEntryType.NODE, id: this.el.id },
@@ -97,18 +104,18 @@ export class AlNode implements AframeRegistry {
           if (this.data.nodesEnabled) {
             let state = this.state as AlNodeState;
             state.mouseDown = true;
-            this.el.sceneEl.emit(AlGraphEvents.CONTROLS_DISABLED, {}, true);
+            this.el.sceneEl.emit(AlGraphEvents.POINTER_DOWN, {}, true);
           }
-        });
+        }
       },
 
-      canvasMouseUp(_event: MouseEvent): void {
+      elMouseUp(_event: MouseEvent): void {
+        let state = this.state as AlNodeState;
         if (this.data.nodesEnabled) {
-          let state = this.state as AlNodeState;
           state.dragging = false;
           state.mouseDown = false;
           //console.log("node-emit: ", AlNodeEvents.CONTROLS_ENABLED);
-          this.el.sceneEl.emit(AlGraphEvents.CONTROLS_ENABLED, {}, true);
+          this.el.sceneEl.emit(AlGraphEvents.POINTER_UP, {}, true);
         }
       },
 

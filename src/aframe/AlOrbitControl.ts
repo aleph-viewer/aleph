@@ -134,10 +134,10 @@ export class AlOrbitControl implements AframeRegistry {
       },
 
       canvasWheel(_event: WheelEvent) {
-        window.clearTimeout(this.canvasWheel);
-        this.canvasWheel = ThreeUtils.waitOneFrame(() => {
-          this.emitNewSerial();
-        });
+        //window.clearTimeout(this.canvasWheel);
+        //this.canvasWheel = ThreeUtils.waitOneFrame(() => {
+        this.emitNewSerial();
+        //});
       },
 
       init() {
