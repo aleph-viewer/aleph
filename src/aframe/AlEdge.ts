@@ -28,6 +28,7 @@ export class AlEdge implements AframeRegistry {
     return {
       schema: {
         selected: { type: "boolean" },
+        node1: { type: "vec3" },
         node2: { type: "vec3" },
         height: { type: "number" },
         radius: { type: "number" }
@@ -95,17 +96,44 @@ export class AlEdge implements AframeRegistry {
       },
 
       createMesh() {
-        const geometry = new THREE.CylinderGeometry(
+        const node1Pos = ThreeUtils.objectToVector3(this.data.node1);
+        const node2Pos = ThreeUtils.objectToVector3(this.data.node2);
+
+        var orientation = new THREE.Matrix4();
+        orientation.lookAt(node1Pos, node2Pos, new THREE.Object3D().up);
+        orientation.multiply(
+          new THREE.Matrix4().set(
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            -1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1
+          )
+        );
+
+        var geometry = new THREE.CylinderGeometry(
           this.data.radius,
           this.data.radius,
           this.data.height,
-          8,
-          8,
-          false
+          6,
+          4
         );
         let material = new THREE.MeshBasicMaterial();
         material.depthTest = false;
         const mesh = new THREE.Mesh(geometry, material);
+        mesh.applyMatrix(orientation);
+        mesh.renderOrder = 997;
 
         this.state.geometry = geometry;
         this.state.material = material;
@@ -140,11 +168,6 @@ export class AlEdge implements AframeRegistry {
             oldData.height !== this.data.height)
         ) {
           this.createMesh();
-          const mesh = this.state.mesh as THREE.Mesh;
-          mesh.lookAt(ThreeUtils.objectToVector3(this.data.node2));
-          //mesh.rotateX(60);
-          //mesh.rotateY(60);
-         // mesh.rotateZ(60);
         }
       },
 
@@ -152,11 +175,11 @@ export class AlEdge implements AframeRegistry {
         let state = this.state as AlEdgeState;
 
         if (state.hovered) {
-          state.material.color = new THREE.Color(Constants.edgeColors.hovered);
+          state.material.color = new THREE.Color(Constants.nodeColors.hovered);
         } else if (state.selected) {
-          state.material.color = new THREE.Color(Constants.edgeColors.selected);
+          state.material.color = new THREE.Color(Constants.nodeColors.selected);
         } else {
-          state.material.color = new THREE.Color(Constants.edgeColors.normal);
+          state.material.color = new THREE.Color(Constants.nodeColors.normal);
         }
       },
 

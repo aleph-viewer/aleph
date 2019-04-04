@@ -4,204 +4,199 @@
  * It contains typing information for all components that exist in this project.
  */
 
+import "@stencil/core";
 
-import '@stencil/core';
-
-import '@stencil/redux';
-import {
-  DisplayMode,
-} from './enums/DisplayMode';
-import {
-  Orientation,
-} from './enums/Orientation';
-import {
-  AlEdgeSerial,
-  AlNodeSerial,
-} from './interfaces';
-import {
-  DisplayMode as DisplayMode2,
-} from './enums';
-
+import "@stencil/redux";
+import { DisplayMode } from "./enums/DisplayMode";
+import { Orientation } from "./enums/Orientation";
+import { AlEdgeSerial, AlNodeSerial } from "./interfaces";
+import { DisplayMode as DisplayMode2 } from "./enums";
 
 export namespace Components {
-
   interface AlConsole {
-    'cmd': string;
+    cmd: string;
   }
   interface AlConsoleAttributes extends StencilHTMLAttributes {
-    'cmd'?: string;
-    'onOnCmd'?: (event: CustomEvent) => void;
+    cmd?: string;
+    onOnCmd?: (event: CustomEvent) => void;
   }
 
   interface AlControlPanel {
-    'boundingBoxVisible': boolean;
-    'displayMode': DisplayMode;
-    'nodesEnabled': boolean;
-    'nodesVisible': boolean;
-    'optionsEnabled': boolean;
-    'optionsVisible': boolean;
-    'orientation': Orientation;
-    'slicesIndex': number;
-    'slicesWindowCenter': number;
-    'slicesWindowWidth': number;
-    'stack': any;
-    'stackHelper': AMI.StackHelper;
-    'volumeSteps': number;
-    'volumeWindowCenter': number;
-    'volumeWindowWidth': number;
+    boundingBoxVisible: boolean;
+    displayMode: DisplayMode;
+    nodesEnabled: boolean;
+    nodesVisible: boolean;
+    optionsEnabled: boolean;
+    optionsVisible: boolean;
+    orientation: Orientation;
+    slicesIndex: number;
+    slicesWindowCenter: number;
+    slicesWindowWidth: number;
+    stack: any;
+    stackHelper: AMI.StackHelper;
+    volumeSteps: number;
+    volumeWindowCenter: number;
+    volumeWindowWidth: number;
   }
   interface AlControlPanelAttributes extends StencilHTMLAttributes {
-    'boundingBoxVisible'?: boolean;
-    'displayMode'?: DisplayMode;
-    'nodesEnabled'?: boolean;
-    'nodesVisible'?: boolean;
-    'onOnSetBoundingBoxVisible'?: (event: CustomEvent) => void;
-    'onOnSetDisplayMode'?: (event: CustomEvent) => void;
-    'onOnSetNodesEnabled'?: (event: CustomEvent) => void;
-    'onOnSetOptionsEnabled'?: (event: CustomEvent) => void;
-    'onOnSetOrientation'?: (event: CustomEvent) => void;
-    'onOnSetSlicesIndex'?: (event: CustomEvent) => void;
-    'onOnSetSlicesWindowCenter'?: (event: CustomEvent) => void;
-    'onOnSetSlicesWindowWidth'?: (event: CustomEvent) => void;
-    'onOnSetVolumeSteps'?: (event: CustomEvent) => void;
-    'onOnSetVolumeWindowCenter'?: (event: CustomEvent) => void;
-    'onOnSetVolumeWindowWidth'?: (event: CustomEvent) => void;
-    'optionsEnabled'?: boolean;
-    'optionsVisible'?: boolean;
-    'orientation'?: Orientation;
-    'slicesIndex'?: number;
-    'slicesWindowCenter'?: number;
-    'slicesWindowWidth'?: number;
-    'stack'?: any;
-    'stackHelper'?: AMI.StackHelper;
-    'volumeSteps'?: number;
-    'volumeWindowCenter'?: number;
-    'volumeWindowWidth'?: number;
+    boundingBoxVisible?: boolean;
+    displayMode?: DisplayMode;
+    nodesEnabled?: boolean;
+    nodesVisible?: boolean;
+    onOnSetBoundingBoxVisible?: (event: CustomEvent) => void;
+    onOnSetDisplayMode?: (event: CustomEvent) => void;
+    onOnSetNodesEnabled?: (event: CustomEvent) => void;
+    onOnSetOptionsEnabled?: (event: CustomEvent) => void;
+    onOnSetOrientation?: (event: CustomEvent) => void;
+    onOnSetSlicesIndex?: (event: CustomEvent) => void;
+    onOnSetSlicesWindowCenter?: (event: CustomEvent) => void;
+    onOnSetSlicesWindowWidth?: (event: CustomEvent) => void;
+    onOnSetVolumeSteps?: (event: CustomEvent) => void;
+    onOnSetVolumeWindowCenter?: (event: CustomEvent) => void;
+    onOnSetVolumeWindowWidth?: (event: CustomEvent) => void;
+    optionsEnabled?: boolean;
+    optionsVisible?: boolean;
+    orientation?: Orientation;
+    slicesIndex?: number;
+    slicesWindowCenter?: number;
+    slicesWindowWidth?: number;
+    stack?: any;
+    stackHelper?: AMI.StackHelper;
+    volumeSteps?: number;
+    volumeWindowCenter?: number;
+    volumeWindowWidth?: number;
   }
 
   interface AlNodeEditor {
-    'node': [string, AlNodeSerial];
+    node: [string, AlNodeSerial];
   }
   interface AlNodeEditorAttributes extends StencilHTMLAttributes {
-    'node'?: [string, AlNodeSerial];
-    'onOnDelete'?: (event: CustomEvent) => void;
-    'onOnSave'?: (event: CustomEvent) => void;
+    node?: [string, AlNodeSerial];
+    onOnDelete?: (event: CustomEvent) => void;
+    onOnSave?: (event: CustomEvent) => void;
   }
 
   interface AlNodeList {
-    'nodes': Map<string, AlNodeSerial> | null;
-    'selected': string | null;
+    nodes: Map<string, AlNodeSerial> | null;
+    selected: string | null;
   }
   interface AlNodeListAttributes extends StencilHTMLAttributes {
-    'nodes'?: Map<string, AlNodeSerial> | null;
-    'onOnSelectedChanged'?: (event: CustomEvent) => void;
-    'selected'?: string | null;
+    nodes?: Map<string, AlNodeSerial> | null;
+    onOnSelectedChanged?: (event: CustomEvent) => void;
+    selected?: string | null;
   }
 
   interface AlTabs {
     /**
-    * Get the currently selected tab
-    */
-    'getSelected': () => Promise<string>;
+     * Get the currently selected tab
+     */
+    getSelected: () => Promise<string>;
     /**
-    * Get the tab element given the tab name
-    */
-    'getTab': (tab: any) => Promise<any>;
+     * Get the tab element given the tab name
+     */
+    getTab: (tab: any) => Promise<any>;
     /**
-    * Index or the Tab instance, of the tab to select.
-    */
-    'select': (tab: any) => Promise<boolean>;
+     * Index or the Tab instance, of the tab to select.
+     */
+    select: (tab: any) => Promise<boolean>;
   }
   interface AlTabsAttributes extends StencilHTMLAttributes {
     /**
-    * Emitted when the navigation has finished transitioning to a new component.
-    */
-    'onIonTabsDidChange'?: (event: CustomEvent<{ tab: string }>) => void;
+     * Emitted when the navigation has finished transitioning to a new component.
+     */
+    onIonTabsDidChange?: (event: CustomEvent<{ tab: string }>) => void;
     /**
-    * Emitted when the navigation is about to transition to a new component.
-    */
-    'onIonTabsWillChange'?: (event: CustomEvent<{ tab: string }>) => void;
+     * Emitted when the navigation is about to transition to a new component.
+     */
+    onIonTabsWillChange?: (event: CustomEvent<{ tab: string }>) => void;
   }
 
   interface AlUrlPicker {
-    'url': string | null;
-    'urls': Map<string, string> | null;
+    url: string | null;
+    urls: Map<string, string> | null;
   }
   interface AlUrlPickerAttributes extends StencilHTMLAttributes {
-    'onOnUrlChanged'?: (event: CustomEvent) => void;
-    'url'?: string | null;
-    'urls'?: Map<string, string> | null;
+    onOnUrlChanged?: (event: CustomEvent) => void;
+    url?: string | null;
+    urls?: Map<string, string> | null;
   }
 
   interface UvAleph {
-    'clearNodes': () => Promise<void>;
-    'debug': boolean;
-    'deleteNode': (nodeId: string) => Promise<void>;
-    'dracoDecoderPath': string | null;
-    'height': string;
-    'load': (src: string) => Promise<void>;
-    'resize': () => void;
-    'selectNode': (nodeId: string) => Promise<void>;
-    'setBoundingBoxVisible': (visible: boolean) => Promise<void>;
-    'setDisplayMode': (displayMode: DisplayMode) => Promise<void>;
-    'setEdge': (edge: [string, AlEdgeSerial]) => Promise<void>;
-    'setNode': (node: [string, AlNodeSerial]) => Promise<void>;
-    'setNodes': (nodes: Map<string, AlNodeSerial>) => Promise<void>;
-    'setNodesEnabled': (enabled: boolean) => Promise<void>;
-    'spinnerColor': string;
-    'width': string;
+    clearNodes: () => Promise<void>;
+    debug: boolean;
+    deleteNode: (nodeId: string) => Promise<void>;
+    dracoDecoderPath: string | null;
+    height: string;
+    load: (src: string) => Promise<void>;
+    resize: () => void;
+    selectNode: (nodeId: string) => Promise<void>;
+    setBoundingBoxVisible: (visible: boolean) => Promise<void>;
+    setDisplayMode: (displayMode: DisplayMode) => Promise<void>;
+    setEdge: (edge: [string, AlEdgeSerial]) => Promise<void>;
+    setNode: (node: [string, AlNodeSerial]) => Promise<void>;
+    setNodes: (nodes: Map<string, AlNodeSerial>) => Promise<void>;
+    setNodesEnabled: (enabled: boolean) => Promise<void>;
+    spinnerColor: string;
+    width: string;
   }
   interface UvAlephAttributes extends StencilHTMLAttributes {
-    'debug'?: boolean;
-    'dracoDecoderPath'?: string | null;
-    'height'?: string;
-    'onOnChanged'?: (event: CustomEvent) => void;
-    'spinnerColor'?: string;
-    'width'?: string;
+    debug?: boolean;
+    dracoDecoderPath?: string | null;
+    height?: string;
+    onOnChanged?: (event: CustomEvent) => void;
+    spinnerColor?: string;
+    width?: string;
   }
 }
 
 declare global {
   interface StencilElementInterfaces {
-    'AlConsole': Components.AlConsole;
-    'AlControlPanel': Components.AlControlPanel;
-    'AlNodeEditor': Components.AlNodeEditor;
-    'AlNodeList': Components.AlNodeList;
-    'AlTabs': Components.AlTabs;
-    'AlUrlPicker': Components.AlUrlPicker;
-    'UvAleph': Components.UvAleph;
+    AlConsole: Components.AlConsole;
+    AlControlPanel: Components.AlControlPanel;
+    AlNodeEditor: Components.AlNodeEditor;
+    AlNodeList: Components.AlNodeList;
+    AlTabs: Components.AlTabs;
+    AlUrlPicker: Components.AlUrlPicker;
+    UvAleph: Components.UvAleph;
   }
 
   interface StencilIntrinsicElements {
-    'al-console': Components.AlConsoleAttributes;
-    'al-control-panel': Components.AlControlPanelAttributes;
-    'al-node-editor': Components.AlNodeEditorAttributes;
-    'al-node-list': Components.AlNodeListAttributes;
-    'al-tabs': Components.AlTabsAttributes;
-    'al-url-picker': Components.AlUrlPickerAttributes;
-    'uv-aleph': Components.UvAlephAttributes;
+    "al-console": Components.AlConsoleAttributes;
+    "al-control-panel": Components.AlControlPanelAttributes;
+    "al-node-editor": Components.AlNodeEditorAttributes;
+    "al-node-list": Components.AlNodeListAttributes;
+    "al-tabs": Components.AlTabsAttributes;
+    "al-url-picker": Components.AlUrlPickerAttributes;
+    "uv-aleph": Components.UvAlephAttributes;
   }
 
-
-  interface HTMLAlConsoleElement extends Components.AlConsole, HTMLStencilElement {}
+  interface HTMLAlConsoleElement
+    extends Components.AlConsole,
+      HTMLStencilElement {}
   var HTMLAlConsoleElement: {
     prototype: HTMLAlConsoleElement;
     new (): HTMLAlConsoleElement;
   };
 
-  interface HTMLAlControlPanelElement extends Components.AlControlPanel, HTMLStencilElement {}
+  interface HTMLAlControlPanelElement
+    extends Components.AlControlPanel,
+      HTMLStencilElement {}
   var HTMLAlControlPanelElement: {
     prototype: HTMLAlControlPanelElement;
     new (): HTMLAlControlPanelElement;
   };
 
-  interface HTMLAlNodeEditorElement extends Components.AlNodeEditor, HTMLStencilElement {}
+  interface HTMLAlNodeEditorElement
+    extends Components.AlNodeEditor,
+      HTMLStencilElement {}
   var HTMLAlNodeEditorElement: {
     prototype: HTMLAlNodeEditorElement;
     new (): HTMLAlNodeEditorElement;
   };
 
-  interface HTMLAlNodeListElement extends Components.AlNodeList, HTMLStencilElement {}
+  interface HTMLAlNodeListElement
+    extends Components.AlNodeList,
+      HTMLStencilElement {}
   var HTMLAlNodeListElement: {
     prototype: HTMLAlNodeListElement;
     new (): HTMLAlNodeListElement;
@@ -213,7 +208,9 @@ declare global {
     new (): HTMLAlTabsElement;
   };
 
-  interface HTMLAlUrlPickerElement extends Components.AlUrlPicker, HTMLStencilElement {}
+  interface HTMLAlUrlPickerElement
+    extends Components.AlUrlPicker,
+      HTMLStencilElement {}
   var HTMLAlUrlPickerElement: {
     prototype: HTMLAlUrlPickerElement;
     new (): HTMLAlUrlPickerElement;
@@ -226,25 +223,24 @@ declare global {
   };
 
   interface HTMLElementTagNameMap {
-    'al-console': HTMLAlConsoleElement
-    'al-control-panel': HTMLAlControlPanelElement
-    'al-node-editor': HTMLAlNodeEditorElement
-    'al-node-list': HTMLAlNodeListElement
-    'al-tabs': HTMLAlTabsElement
-    'al-url-picker': HTMLAlUrlPickerElement
-    'uv-aleph': HTMLUvAlephElement
+    "al-console": HTMLAlConsoleElement;
+    "al-control-panel": HTMLAlControlPanelElement;
+    "al-node-editor": HTMLAlNodeEditorElement;
+    "al-node-list": HTMLAlNodeListElement;
+    "al-tabs": HTMLAlTabsElement;
+    "al-url-picker": HTMLAlUrlPickerElement;
+    "uv-aleph": HTMLUvAlephElement;
   }
 
   interface ElementTagNameMap {
-    'al-console': HTMLAlConsoleElement;
-    'al-control-panel': HTMLAlControlPanelElement;
-    'al-node-editor': HTMLAlNodeEditorElement;
-    'al-node-list': HTMLAlNodeListElement;
-    'al-tabs': HTMLAlTabsElement;
-    'al-url-picker': HTMLAlUrlPickerElement;
-    'uv-aleph': HTMLUvAlephElement;
+    "al-console": HTMLAlConsoleElement;
+    "al-control-panel": HTMLAlControlPanelElement;
+    "al-node-editor": HTMLAlNodeEditorElement;
+    "al-node-list": HTMLAlNodeListElement;
+    "al-tabs": HTMLAlTabsElement;
+    "al-url-picker": HTMLAlUrlPickerElement;
+    "uv-aleph": HTMLUvAlephElement;
   }
-
 
   export namespace JSX {
     export interface Element {}
@@ -253,5 +249,4 @@ declare global {
     }
   }
   export interface HTMLAttributes extends StencilHTMLAttributes {}
-
 }
