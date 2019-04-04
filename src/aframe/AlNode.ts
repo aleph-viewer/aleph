@@ -2,6 +2,7 @@ import { AframeRegistry, AframeComponent } from "../interfaces";
 import { Constants } from "../Constants";
 import { ThreeUtils } from "../utils";
 import { AlGraphEvents } from "../utils";
+import { AlGraphEntryType } from "../enums/AlGraphEntryType";
 
 interface AlNodeState {
   selected: boolean;
@@ -87,7 +88,11 @@ export class AlNode implements AframeRegistry {
 
       elMouseDown(_event: CustomEvent): void {
         ThreeUtils.waitOneFrame(() => {
-          this.el.sceneEl.emit(AlGraphEvents.SELECTED, { id: this.el.id }, true);
+          this.el.sceneEl.emit(
+            AlGraphEvents.SELECTED,
+            { type: AlGraphEntryType.NODE, id: this.el.id },
+            true
+          );
 
           if (this.data.nodesEnabled) {
             let state = this.state as AlNodeState;
@@ -170,7 +175,11 @@ export class AlNode implements AframeRegistry {
       tickFunction(): void {
         let state = this.state as AlNodeState;
         if (this.data.nodesEnabled && state.dragging) {
-          this.el.sceneEl.emit(AlGraphEvents.DRAGGING, { id: this.el.id }, true);
+          this.el.sceneEl.emit(
+            AlGraphEvents.DRAGGING,
+            { id: this.el.id },
+            true
+          );
         }
 
         if (state.hovered || state.dragging) {

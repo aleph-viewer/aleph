@@ -1,6 +1,6 @@
-import { AlGraphItem } from "./AlGraphItem";
+import { AlGraphEntry } from "./AlGraphEntry";
 
-export interface AlAngleSerial extends AlGraphItem {
+export interface AlAngleSerial extends AlGraphEntry {
   edge1Id: string;
   edge2Id: string;
 }

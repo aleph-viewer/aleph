@@ -1,7 +1,6 @@
 //#region Imports
 import {
   Component,
-  Element,
   Prop,
   State,
   Method,
@@ -45,16 +44,21 @@ import {
   AlEdgeSerial,
   AlAngleSerial
 } from "../../interfaces";
-import { GetUtils, ThreeUtils, CreateUtils, GraphUtils, AlGraphEvents } from "../../utils";
+import {
+  GetUtils,
+  ThreeUtils,
+  CreateUtils,
+  GraphUtils,
+  AlGraphEvents
+} from "../../utils";
 import { Constants } from "../../Constants";
 import { MeshFileType, Orientation, DisplayMode } from "../../enums";
 import {
   AlGltfModelEvents,
-  AlNodeEvents,
   AlNodeSpawnerEvents,
   AlOrbitControlEvents
 } from "../../aframe";
-import { AlEdgeEvents } from "../../aframe/AlEdge";
+import { AlGraphEntryType } from "../../enums/AlGraphEntryType";
 type Entity = import("aframe").Entity;
 type Scene = import("aframe").Scene;
 //#endregion
@@ -360,15 +364,13 @@ export class Aleph {
     this._controlsDisabledHandler = this._controlsDisabledHandler.bind(this);
     this._controlsEnabledHandler = this._controlsEnabledHandler.bind(this);
     this._controlsUpdatedHandler = this._controlsUpdatedHandler.bind(this);
-    this._intersectingGraphHandler = this._intersectingGraphHandler.bind(
-      this
-    );
+    this._intersectingGraphHandler = this._intersectingGraphHandler.bind(this);
     this._intersectionGraphClearedHandler = this._intersectionGraphClearedHandler.bind(
       this
     );
     this._nodeMovedEventHandler = this._nodeMovedEventHandler.bind(this);
     this._graphSelectedHandler = this._graphSelectedHandler.bind(this);
-    this._setNodeEventHandler = this._setNodeEventHandler.bind(this);
+    this._spawnNodeEventHandler = this._spawnNodeEventHandler.bind(this);
     this._srcLoaded = this._srcLoaded.bind(this);
     this._validTargetEventHandler = this._validTargetEventHandler.bind(this);
 
@@ -604,8 +606,14 @@ export class Aleph {
           node2 = this.nodes.get(edge2.node1Id);
         }
 
-        let dir1: THREE.Vector3 = node1.clone().sub(centralNode).normalize();
-        let dir2: THREE.Vector3 = node2.clone().sub(centralNode).normalize();
+        let dir1: THREE.Vector3 = node1
+          .clone()
+          .sub(centralNode)
+          .normalize();
+        let dir2: THREE.Vector3 = node2
+          .clone()
+          .sub(centralNode)
+          .normalize();
         let angle = dir2.angleTo(dir1);
 
         let textOffset: THREE.Vector3 = new THREE.Vector3(0, 2.5, 0);
@@ -622,7 +630,9 @@ export class Aleph {
               selected: ${false};
               nodeLeftPosition: ${ThreeUtils.vector3ToString(node1.position)};
               nodeRightPosition: ${ThreeUtils.vector3ToString(node2.position)};
-              nodeCenterPosition: ${ThreeUtils.vector3ToString(centralNode.position)};
+              nodeCenterPosition: ${ThreeUtils.vector3ToString(
+                centralNode.position
+              )};
             `}
           >
             <a-entity
@@ -738,11 +748,15 @@ export class Aleph {
 
   //#region Private Methods
   private _createEdge(node1: string, node2: string): void {
+    console.log("create edge");
     const newEdge: AlEdgeSerial = {
       node1Id: node1,
       node2Id: node2
     };
-    const edgeId: string = GraphUtils.getNextEdgeId(this.edges);
+    const edgeId: string = GraphUtils.getNextId(
+      AlGraphEntryType.EDGE,
+      this.edges
+    );
 
     this._setEdge([edgeId, newEdge]);
   }
@@ -752,9 +766,12 @@ export class Aleph {
       edge1Id: edge1,
       edge2Id: edge2
     };
-    const angleId: string = GraphUtils.getNextAngleId(this.angles);
+    const angleId: string = GraphUtils.getNextId(
+      AlGraphEntryType.ANGLE,
+      this.angles
+    );
 
-    this._setAngle([angleId, newAngle]);
+    //this._setAngle([angleId, newAngle]);
   }
 
   private _getAppState(): AlAppState {
@@ -786,7 +803,7 @@ export class Aleph {
     });
   }
 
-  private _selectNode(nodeId: string, animate: boolean): void {
+  private _selectNode(nodeId: string, animate: boolean = false): void {
     if (animate && nodeId !== this.selected) {
       let animationStart = {
         position: this.camera.position.clone(),
@@ -925,7 +942,7 @@ export class Aleph {
     this._graphIntersection = event.detail.id;
   }
 
-  private _setNodeEventHandler(event: CustomEvent): void {
+  private _spawnNodeEventHandler(event: CustomEvent): void {
     // IF creating a new node and NOT intersecting an existing node
     if (
       this.nodesEnabled && // Nodes are enabled
@@ -934,7 +951,10 @@ export class Aleph {
     ) {
       let intersection: THREE.Intersection = event.detail.detail.intersection;
 
-      const nodeId: string = GraphUtils.getNextNodeId(this.nodes);
+      const nodeId: string = GraphUtils.getNextId(
+        AlGraphEntryType.NODE,
+        this.nodes
+      );
 
       const newNode: AlNodeSerial = {
         target: ThreeUtils.vector3ToString(
@@ -951,10 +971,11 @@ export class Aleph {
 
       if (
         this._isShiftDown && // Shift is down
-        this.selected // A Node is already selected
+        this.nodes.has(previousSelected) // A Node is already selected
       ) {
         ThreeUtils.waitOneFrame(() => {
           this._createEdge(previousSelected, nodeId);
+          this._selectNode(nodeId);
         });
       }
     }
@@ -972,21 +993,41 @@ export class Aleph {
 
   // TODO: Add Angle selection by accounting for type of the selected graph item
   private _graphSelectedHandler(event: CustomEvent): void {
-    // ELSE IF intersecting a node and it is NOT the selected node
-    if (
-      this._graphIntersection !== null && // We're are intersecting a node
-      this.nodesEnabled && // Nodes are enabled
-      this.selected !== null && // We have a node already selected
-      this.selected !== this._graphIntersection && // The selected & intersecting nodes are not the same
-      this._isShiftDown // The shift key is down
-    ) {
-      this._createEdge(this.selected, this._graphIntersection);
+    // todo: change to graphEnabled
+    if (!this.nodesEnabled) {
+      return;
     }
-    this._selectNode(event.detail.id, false);
-  }
 
-  private _edgeSelectedEventHandler(event: CustomEvent): void {
-    this._selectEdge(event.detail.id);
+    const type: AlGraphEntryType = event.detail.type;
+    const id: string = event.detail.id;
+
+    switch (type) {
+      case AlGraphEntryType.NODE: {
+        console.log("selected node: ", id);
+        if (
+          this._graphIntersection !== null &&
+          this.nodes.has(this._graphIntersection) && // We're intersecting a node
+          (this.selected !== null && this.nodes.has(this.selected)) && // We have a node already selected
+          this.selected !== this._graphIntersection && // The selected & intersecting nodes are not the same
+          this._isShiftDown // The shift key is down
+        ) {
+          this._createEdge(this.selected, this._graphIntersection);
+        }
+        this._selectNode(id, false);
+        break;
+      }
+      case AlGraphEntryType.EDGE: {
+        console.log("selected edge: ", id);
+        if (
+          this._graphIntersection !== null &&
+          this.edges.has(this._graphIntersection)
+        ) {
+          // We're intersecting an edge
+          this._selectEdge(id);
+        }
+        break;
+      }
+    }
   }
 
   private _nodeMovedEventHandler(event: CustomEvent): void {
@@ -1044,11 +1085,15 @@ export class Aleph {
   }
 
   private _addEventListeners(): void {
-    this._scene.canvas.addEventListener("mousedown", this._canvasMouseDownHandler, {
-      capture: false,
-      once: false,
-      passive: true
-    });
+    this._scene.canvas.addEventListener(
+      "mousedown",
+      this._canvasMouseDownHandler,
+      {
+        capture: false,
+        once: false,
+        passive: true
+      }
+    );
 
     this._scene.canvas.addEventListener("mouseup", this._canvasMouseUpHandler, {
       capture: false,
@@ -1088,7 +1133,7 @@ export class Aleph {
 
     this._scene.addEventListener(
       AlNodeSpawnerEvents.ADD_NODE,
-      this._setNodeEventHandler,
+      this._spawnNodeEventHandler,
       false
     );
 
@@ -1098,11 +1143,11 @@ export class Aleph {
       false
     );
 
-    this._scene.addEventListener(
-      AlEdgeEvents.SELECTED,
-      this._edgeSelectedEventHandler,
-      false
-    );
+    // this._scene.addEventListener(
+    //   AlGraphEvents.SELECTED,
+    //   this._edgeSelectedEventHandler,
+    //   false
+    // );
 
     this._scene.addEventListener(
       AlNodeSpawnerEvents.VALID_TARGET,

@@ -1,6 +1,7 @@
 import { AframeRegistry, AframeComponent } from "../interfaces";
 import { Constants } from "../Constants";
 import { ThreeUtils, AlGraphEvents } from "../utils";
+import { AlGraphEntryType } from "../enums/AlGraphEntryType";
 
 interface AlAngleState {
   selected: boolean;
@@ -74,7 +75,11 @@ export class AlAngle implements AframeRegistry {
 
       elMouseDown(_event: CustomEvent): void {
         ThreeUtils.waitOneFrame(() => {
-          this.el.sceneEl.emit(AlGraphEvents.SELECTED, { id: this.el.id }, true);
+          this.el.sceneEl.emit(
+            AlGraphEvents.SELECTED,
+            { type: AlGraphEntryType.ANGLE, id: this.el.id },
+            true
+          );
         });
       },
 
@@ -95,14 +100,27 @@ export class AlAngle implements AframeRegistry {
       },
 
       createMesh() {
-        const nodeLeftPosition = ThreeUtils.objectToVector3(this.data.nodeLeftPosition);
-        const nodeRightPosition = ThreeUtils.objectToVector3(this.data.nodeRightPosition);
-        const nodeCenterPosition = ThreeUtils.objectToVector3(this.data.nodeCenterPosition);
+        const nodeLeftPosition = ThreeUtils.objectToVector3(
+          this.data.nodeLeftPosition
+        );
+        const nodeRightPosition = ThreeUtils.objectToVector3(
+          this.data.nodeRightPosition
+        );
+        const nodeCenterPosition = ThreeUtils.objectToVector3(
+          this.data.nodeCenterPosition
+        );
 
-        let centoid = nodeLeftPosition.clone().add(nodeRightPosition).divideScalar(2);
+        let centoid = nodeLeftPosition
+          .clone()
+          .add(nodeRightPosition)
+          .divideScalar(2);
 
         var orientation = new THREE.Matrix4();
-        orientation.lookAt(nodeCenterPosition, centoid, new THREE.Object3D().up);
+        orientation.lookAt(
+          nodeCenterPosition,
+          centoid,
+          new THREE.Object3D().up
+        );
         orientation.multiply(
           new THREE.Matrix4().set(
             1,

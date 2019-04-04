@@ -1,4 +1,9 @@
-import { AlNodeSerial, AlCameraSerial, AlEdgeSerial, AlAngleSerial } from "../interfaces";
+import {
+  AlNodeSerial,
+  AlCameraSerial,
+  AlEdgeSerial,
+  AlAngleSerial
+} from "../interfaces";
 import { Constants } from "../Constants";
 import { Entity } from "aframe";
 import { ThreeUtils } from ".";

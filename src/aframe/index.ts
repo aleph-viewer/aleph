@@ -12,7 +12,7 @@ import { AlRenderOverlaidText } from "./AlRenderOverlaidText";
 import { AlRenderOverlaidLine } from "./AlRenderOverlaidLine";
 import { AlRenderOrder } from "./AlRenderOrder";
 import { AlEdge } from "./AlEdge";
-import {AlAngle} from "./AlAngle";
+import { AlAngle } from "./AlAngle";
 
 export {
   AlGltfModel,

@@ -2,6 +2,7 @@ import { AframeRegistry, AframeComponent } from "../interfaces";
 import { AlNodeEvents } from ".";
 import { Constants } from "../Constants";
 import { ThreeUtils } from "../utils";
+import { AlGraphEvents } from "../utils/GraphUtils";
 
 interface AlNodeSpawnerState {
   left: boolean;
@@ -135,14 +136,14 @@ export class AlNodeSpawner implements AframeRegistry {
       elMouseDown(_event: CustomEvent) {
         if (this.data.nodesEnabled) {
           //console.log("spawner-emit: ", AlNodeEvents.CONTROLS_DISABLED);
-          this.el.sceneEl.emit(AlNodeEvents.CONTROLS_DISABLED, {}, false);
+          this.el.sceneEl.emit(AlGraphEvents.CONTROLS_DISABLED, {}, false);
         }
       },
 
       elMouseUp(_event: CustomEvent) {
         if (this.data.nodesEnabled) {
           //console.log("spawner-emit: ", AlNodeEvents.CONTROLS_ENABLED);
-          this.el.sceneEl.emit(AlNodeEvents.CONTROLS_ENABLED, {}, false);
+          this.el.sceneEl.emit(AlGraphEvents.CONTROLS_ENABLED, {}, false);
         }
       },
 

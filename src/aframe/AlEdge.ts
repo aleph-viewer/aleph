@@ -1,6 +1,7 @@
 import { AframeRegistry, AframeComponent } from "../interfaces";
 import { Constants } from "../Constants";
 import { ThreeUtils, AlGraphEvents } from "../utils";
+import { AlGraphEntryType } from "../enums/AlGraphEntryType";
 
 interface AlEdgeState {
   selected: boolean;
@@ -75,7 +76,11 @@ export class AlEdge implements AframeRegistry {
 
       elMouseDown(_event: CustomEvent): void {
         ThreeUtils.waitOneFrame(() => {
-          this.el.sceneEl.emit(AlGraphEvents.SELECTED, { id: this.el.id }, true);
+          this.el.sceneEl.emit(
+            AlGraphEvents.SELECTED,
+            { type: AlGraphEntryType.EDGE, id: this.el.id },
+            true
+          );
         });
       },
 
