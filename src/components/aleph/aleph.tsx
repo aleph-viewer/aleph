@@ -543,11 +543,11 @@ export class Aleph {
             // This.SelectedEdge
             al-edge={`
               height: ${dist};
+              node1: ${node1.position};
               node2: ${node2.position};
               selected: ${this.selected === edgeId};
               radius: ${radius};
             `}
-            al-render-overlaid
           >
             <a-entity
               id={`${edgeId}-title`}
