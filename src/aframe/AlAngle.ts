@@ -1,22 +1,16 @@
 import { AframeRegistry, AframeComponent } from "../interfaces";
 import { Constants } from "../Constants";
-import { ThreeUtils } from "../utils";
-import { AlGraphEvents } from "../utils";
+import { ThreeUtils, AlGraphEvents } from "../utils";
 
-interface AlNodeState {
+interface AlAngleState {
   selected: boolean;
   hovered: boolean;
-  //geometry: THREE.CircleGeometry;
-  geometry: THREE.SphereGeometry;
+  geometry: THREE.CylinderGeometry;
   material: THREE.MeshBasicMaterial;
   mesh: THREE.Mesh;
-  camera: THREE.Camera;
-  target: THREE.Vector3;
-  dragging: boolean;
-  mouseDown: boolean;
 }
 
-interface AlNodeObject extends AframeComponent {
+interface AlAngleObject extends AframeComponent {
   update(oldData): void;
   tickFunction(): void;
   tick(): void;
@@ -25,37 +19,31 @@ interface AlNodeObject extends AframeComponent {
   addListeners(): void;
   removeListeners(): void;
   elMouseDown(_event: CustomEvent): void;
-  canvasMouseUp(_event: MouseEvent): void;
   elRaycasterIntersected(_event: CustomEvent): void;
   elRaycasterIntersectedCleared(_event: CustomEvent): void;
 }
 
-export class AlNode implements AframeRegistry {
-  public static get Object(): AlNodeObject {
+export class AlAngle implements AframeRegistry {
+  public static get Object(): AlAngleObject {
     return {
       schema: {
-        target: { type: "vec3" },
-        scale: { type: "number", default: 1 },
         selected: { type: "boolean" },
-        nodesEnabled: { type: "boolean" }
+        nodeLeftPosition: { type: "vec3" },
+        nodeRightPosition: { type: "vec3" },
+        nodeCenterPosition: { type: "vec3" }
       },
 
       bindListeners(): void {
         this.elMouseDown = this.elMouseDown.bind(this);
-        this.canvasMouseUp = this.canvasMouseUp.bind(this);
         this.elRaycasterIntersected = this.elRaycasterIntersected.bind(this);
         this.elRaycasterIntersectedCleared = this.elRaycasterIntersectedCleared.bind(
           this
         );
+        this.createMesh = this.createMesh.bind(this);
       },
 
       addListeners(): void {
         this.el.addEventListener("mousedown", this.elMouseDown, {
-          capture: false,
-          once: false,
-          passive: true
-        });
-        this.el.sceneEl.canvas.addEventListener("mouseup", this.canvasMouseUp, {
           capture: false,
           once: false,
           passive: true
@@ -74,7 +62,6 @@ export class AlNode implements AframeRegistry {
 
       removeListeners(): void {
         this.el.removeEventListener("mousedown", this.elMouseDown);
-        this.el.removeEventListener("mouseup", this.canvasMouseUp);
         this.el.removeEventListener(
           "raycaster-intersected",
           this.elRaycasterIntersected
@@ -88,27 +75,11 @@ export class AlNode implements AframeRegistry {
       elMouseDown(_event: CustomEvent): void {
         ThreeUtils.waitOneFrame(() => {
           this.el.sceneEl.emit(AlGraphEvents.SELECTED, { id: this.el.id }, true);
-
-          if (this.data.nodesEnabled) {
-            let state = this.state as AlNodeState;
-            state.mouseDown = true;
-            this.el.sceneEl.emit(AlGraphEvents.CONTROLS_DISABLED, {}, true);
-          }
         });
       },
 
-      canvasMouseUp(_event: MouseEvent): void {
-        if (this.data.nodesEnabled) {
-          let state = this.state as AlNodeState;
-          state.dragging = false;
-          state.mouseDown = false;
-          //console.log("node-emit: ", AlNodeEvents.CONTROLS_ENABLED);
-          this.el.sceneEl.emit(AlGraphEvents.CONTROLS_ENABLED, {}, true);
-        }
-      },
-
       elRaycasterIntersected(_event: CustomEvent): void {
-        let state = this.state as AlNodeState;
+        let state = this.state as AlAngleState;
         state.hovered = true;
         this.el.sceneEl.emit(
           AlGraphEvents.INTERSECTION,
@@ -118,12 +89,59 @@ export class AlNode implements AframeRegistry {
       },
 
       elRaycasterIntersectedCleared(_event: CustomEvent): void {
-        let state = this.state as AlNodeState;
+        let state = this.state as AlAngleState;
         state.hovered = false;
-        if (state.mouseDown && state.selected) {
-          state.dragging = true;
-        }
         this.el.sceneEl.emit(AlGraphEvents.INTERSECTION_CLEARED, {}, true);
+      },
+
+      createMesh() {
+        const nodeLeftPosition = ThreeUtils.objectToVector3(this.data.nodeLeftPosition);
+        const nodeRightPosition = ThreeUtils.objectToVector3(this.data.nodeRightPosition);
+        const nodeCenterPosition = ThreeUtils.objectToVector3(this.data.nodeCenterPosition);
+
+        let centoid = nodeLeftPosition.clone().add(nodeRightPosition).divideScalar(2);
+
+        var orientation = new THREE.Matrix4();
+        orientation.lookAt(nodeCenterPosition, centoid, new THREE.Object3D().up);
+        orientation.multiply(
+          new THREE.Matrix4().set(
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            -1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1
+          )
+        );
+
+        var geometry = new THREE.TorusGeometry(
+          this.data.radius,
+          this.data.radius,
+          this.data.height,
+          6,
+          4
+        );
+        let material = new THREE.MeshBasicMaterial();
+        material.depthTest = false;
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.applyMatrix(orientation);
+        mesh.renderOrder = 996;
+
+        this.state.geometry = geometry;
+        this.state.material = material;
+        this.state.mesh = mesh;
+
+        this.el.setObject3D("mesh", mesh);
       },
 
       init(): void {
@@ -135,45 +153,30 @@ export class AlNode implements AframeRegistry {
         this.bindListeners();
         this.addListeners();
 
-        const data = this.data;
-        let el = this.el;
-
-        const camera = el.sceneEl.camera.el.object3DMap.camera;
-        const geometry = new THREE.SphereGeometry(data.scale, 16, 16);
-        let material = new THREE.MeshBasicMaterial();
-        material.depthTest = false;
-        const mesh = new THREE.Mesh(geometry, material);
-        mesh.renderOrder = 998;
-
-        el.setObject3D("mesh", mesh);
-
-        let targetPos = ThreeUtils.objectToVector3(data.target);
-
         this.state = {
           selected: true,
-          hovered: false,
-          geometry,
-          material,
-          mesh,
-          camera,
-          target: targetPos,
-          dragging: false
-        } as AlNodeState;
+          hovered: false
+        } as AlAngleState;
       },
 
-      update(): void {
-        let state = this.state as AlNodeState;
-        state.target = this.data.target;
+      update(oldData): void {
+        let state = this.state as AlAngleState;
         state.selected = this.data.selected;
+
+        // If height or radius has changed, create a new mesh
+        if (
+          oldData &&
+          (oldData.radius !== this.data.radius ||
+            oldData.height !== this.data.height)
+        ) {
+          this.createMesh();
+        }
       },
 
       tickFunction(): void {
-        let state = this.state as AlNodeState;
-        if (this.data.nodesEnabled && state.dragging) {
-          this.el.sceneEl.emit(AlGraphEvents.DRAGGING, { id: this.el.id }, true);
-        }
+        let state = this.state as AlAngleState;
 
-        if (state.hovered || state.dragging) {
+        if (state.hovered) {
           state.material.color = new THREE.Color(Constants.nodeColors.hovered);
         } else if (state.selected) {
           state.material.color = new THREE.Color(Constants.nodeColors.selected);
@@ -190,14 +193,10 @@ export class AlNode implements AframeRegistry {
         this.removeListeners();
         this.el.removeObject3D("mesh");
       }
-    } as AlNodeObject;
+    } as AlAngleObject;
   }
 
   public static get Tag(): string {
-    return "al-node";
+    return "al-angle";
   }
-}
-
-export class AlNodeEvents {
-  static ANIMATION_STARTED: string = "al-animation-started";
 }
