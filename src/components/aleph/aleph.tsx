@@ -564,6 +564,80 @@ export class Aleph {
     });
   }
 
+  private _renderAngles(): JSX.Element {
+    return [...this.angles].map((n: [string, AlAngleSerial]) => {
+      const [angleId, angle] = n;
+      const edge1 = this.edges.get(angle.edge1Id);
+      const edge2 = this.edges.get(angle.edge2Id);
+
+      let centralNode;
+      let node1;
+      let node2;
+      // IF E1N1 === E2N1
+      if (edge1.node1Id === edge2.node1Id) {
+        centralNode = this.nodes.get(edge2.node1Id);
+        node1 = this.nodes.get(edge1.node2Id);
+        node2 = this.nodes.get(edge2.node2Id);
+      }
+      // IF E1N1 === E2N2
+      else if (edge1.node1Id === edge2.node2Id) {
+        centralNode = this.nodes.get(edge2.node2Id);
+        node1 = this.nodes.get(edge1.node2Id);
+        node2 = this.nodes.get(edge2.node1Id);
+      }
+
+
+      if (node1 && node2) {
+        const sv = ThreeUtils.stringToVector3(node1.position);
+        const ev = ThreeUtils.stringToVector3(node2.position);
+
+        let dir = ev.clone().sub(sv);
+        let dist = dir.length();
+        dir = dir.normalize().multiplyScalar(dist * 0.5);
+        let centoid = sv.clone().add(dir);
+        //console.log("centoid: ", centoid);
+
+        let textOffset: THREE.Vector3 = new THREE.Vector3(0, 2.5, 0);
+        let scale = (node1.scale + node2.scale) / 2;
+        let radius = this._boundingSphereRadius * Constants.edgeSize;
+        textOffset.multiplyScalar(scale);
+
+        return (
+          <a-entity
+            class="collidable"
+            id={edgeId}
+            position={ThreeUtils.vector3ToString(centoid)}
+            al-angle={`
+              height: ${dist};
+              node1: ${node1.position};
+              node2: ${node2.position};
+              selected: ${false};
+              radius: ${radius};
+            `}
+          >
+          {/* value: ${dist.toFixed(Constants.decimalPlaces) + " units"}; */}
+            <a-entity
+              id={`${angleId}-title`}
+              text={`
+
+                side: double;
+                align: center;
+                baseline: bottom;
+                anchor: center;
+                width: ${Constants.fontSize * this._boundingSphereRadius}
+              `}
+              position={ThreeUtils.vector3ToString(textOffset)}
+              al-look-to-camera
+              al-render-overlaid-text
+            />
+          </a-entity>
+        );
+      } else {
+        return;
+      }
+    });
+  }
+
   private _renderLights(): JSX.Element {
     return [
       <a-entity
