@@ -38,7 +38,7 @@ export class AlNode implements AframeRegistry {
         target: { type: "vec3" },
         scale: { type: "number", default: 1 },
         selected: { type: "boolean" },
-        nodesEnabled: { type: "boolean" }
+        graphEnabled: { type: "boolean" }
       },
 
       bindListeners(): void {
@@ -101,7 +101,7 @@ export class AlNode implements AframeRegistry {
             true
           );
 
-          if (this.data.nodesEnabled) {
+          if (this.data.graphEnabled) {
             let state = this.state as AlNodeState;
             state.mouseDown = true;
             this.el.sceneEl.emit(AlGraphEvents.POINTER_DOWN, {}, true);
@@ -111,7 +111,7 @@ export class AlNode implements AframeRegistry {
 
       elMouseUp(_event: MouseEvent): void {
         let state = this.state as AlNodeState;
-        if (this.data.nodesEnabled) {
+        if (this.data.graphEnabled) {
           state.dragging = false;
           state.mouseDown = false;
           //console.log("node-emit: ", AlNodeEvents.CONTROLS_ENABLED);
@@ -181,7 +181,7 @@ export class AlNode implements AframeRegistry {
 
       tickFunction(): void {
         let state = this.state as AlNodeState;
-        if (this.data.nodesEnabled && state.dragging) {
+        if (this.data.graphEnabled && state.dragging) {
           this.el.sceneEl.emit(
             AlGraphEvents.DRAGGING,
             { id: this.el.id },

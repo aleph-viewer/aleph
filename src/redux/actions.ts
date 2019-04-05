@@ -27,7 +27,7 @@ export type ActionTypes =
   | AppSetDisplayModeAction
   | AppSetEdgeAction
   | AppSetNodeAction
-  | AppSetNodesEnabledAction
+  | AppSetGraphEnabledAction
   | AppSetOrientationAction
   | AppSetSlicesIndexAction
   | AppSetSlicesWindowCenterAction
@@ -302,12 +302,12 @@ export const appSetDisplayMode = (payload: DisplayMode) => async (
   });
 };
 
-export interface AppSetNodesEnabledAction {
+export interface AppSetGraphEnabledAction {
   type: TypeKeys.APP_SET_NODES_ENABLED;
   payload: boolean;
 }
 
-export const appSetNodesEnabled = (payload: boolean) => async (
+export const appSetGraphEnabled = (payload: boolean) => async (
   dispatch,
   _getState
 ) => {

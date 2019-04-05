@@ -8,8 +8,8 @@ export interface AlAppState {
   controlsEnabled: boolean;
   displayMode: DisplayMode;
   edges: Map<string, AlEdgeSerial>;
+  graphEnabled: boolean;
   nodes: Map<string, AlNodeSerial>;
-  nodesEnabled: boolean;
   orientation: Orientation;
   selected: string | null;
   slicesIndex: number;

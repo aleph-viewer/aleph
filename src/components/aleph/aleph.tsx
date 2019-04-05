@@ -8,6 +8,7 @@ import {
   EventEmitter
 } from "@stencil/core";
 import { Store, Action } from "@stencil/redux";
+import { KeyDown } from "@edsilv/key-codes";
 import {
   appClearAngles,
   appClearEdges,
@@ -24,8 +25,8 @@ import {
   appSetControlsEnabled,
   appSetDisplayMode,
   appSetEdge,
+  appSetGraphEnabled,
   appSetNode,
-  appSetNodesEnabled,
   appSetOrientation,
   appSetSlicesIndex,
   appSetSlicesWindowCenter,
@@ -110,8 +111,8 @@ export class Aleph {
   appSetControlsEnabled: Action;
   appSetDisplayMode: Action;
   appSetEdge: Action;
+  appSetGraphEnabled: Action;
   appSetNode: Action;
-  appSetNodesEnabled: Action;
   appSetOrientation: Action;
   appSetSlicesIndex: Action;
   appSetSlicesWindowCenter: Action;
@@ -130,8 +131,8 @@ export class Aleph {
   @State() controlsEnabled: boolean;
   @State() displayMode: DisplayMode;
   @State() edges: Map<string, AlEdgeSerial>;
+  @State() graphEnabled: boolean;
   @State() nodes: Map<string, AlNodeSerial>;
-  @State() nodesEnabled: boolean;
   @State() nodesVisible: boolean;
   @State() optionsEnabled: boolean;
   @State() optionsVisible: boolean;
@@ -265,8 +266,8 @@ export class Aleph {
   }
 
   @Method()
-  async setNodesEnabled(enabled: boolean): Promise<void> {
-    this._setNodesEnabled(enabled);
+  async setGraphEnabled(enabled: boolean): Promise<void> {
+    this._setGraphEnabled(enabled);
   }
 
   @Method()
@@ -292,8 +293,8 @@ export class Aleph {
           controlsEnabled,
           displayMode,
           edges,
+          graphEnabled,
           nodes,
-          nodesEnabled,
           orientation,
           selected,
           slicesIndex,
@@ -314,8 +315,8 @@ export class Aleph {
         controlsEnabled,
         displayMode,
         edges,
+        graphEnabled,
         nodes,
-        nodesEnabled,
         orientation,
         selected,
         slicesIndex,
@@ -345,8 +346,8 @@ export class Aleph {
       appSetControlsEnabled,
       appSetDisplayMode,
       appSetEdge,
+      appSetGraphEnabled,
       appSetNode,
-      appSetNodesEnabled,
       appSetOrientation,
       appSetSlicesIndex,
       appSetSlicesWindowCenter,
@@ -439,7 +440,7 @@ export class Aleph {
         return [
           <a-entity
             al-node-spawner={`
-              nodesEnabled: ${this.nodesEnabled};
+              graphEnabled: ${this.graphEnabled};
             `}
             class="collidable"
             id="target-entity"
@@ -458,7 +459,7 @@ export class Aleph {
         return [
           <a-entity
             al-node-spawner={`
-              nodesEnabled: ${this.nodesEnabled};
+              graphEnabled: ${this.graphEnabled};
             `}
             class="collidable"
             id="target-entity"
@@ -492,7 +493,7 @@ export class Aleph {
             target: ${node.target};
             scale: ${node.scale};
             selected: ${this.selected === nodeId};
-            nodesEnabled: ${this.nodesEnabled};
+            graphEnabled: ${this.graphEnabled};
           `}
           >
             <a-entity
@@ -888,8 +889,8 @@ export class Aleph {
     this.onChanged.emit(this._getAppState());
   }
 
-  private _setNodesEnabled(enabled: boolean): void {
-    this.appSetNodesEnabled(enabled);
+  private _setGraphEnabled(enabled: boolean): void {
+    this.appSetGraphEnabled(enabled);
     this.onChanged.emit(this._getAppState());
   }
 
@@ -925,6 +926,16 @@ export class Aleph {
   //#region Event Handlers
   private _keyDownHandler(event: KeyboardEvent) {
     this._isShiftDown = event.shiftKey;
+
+    if (event.keyCode === KeyDown.Delete) {
+      if (this.selected) {
+        if (this.nodes.has(this.selected)) {
+          this._deleteNode(this.selected);
+        } else if (this.edges.has(this.selected)) {
+          this._deleteEdge(this.selected);
+        }
+      }
+    }
   }
 
   private _keyUpHandler(_event: KeyboardEvent) {
@@ -956,7 +967,7 @@ export class Aleph {
   private _spawnNodeEventHandler(event: CustomEvent): void {
     // IF creating a new node and NOT intersecting an existing node
     if (
-      this.nodesEnabled && // Nodes are enabled
+      this.graphEnabled && // Nodes are enabled
       this._validTarget && // Target is valid
       this._graphIntersection === null // Not intersecting a Node already
     ) {
@@ -1005,7 +1016,7 @@ export class Aleph {
   // TODO: Add Angle selection by accounting for type of the selected graph item
   private _graphSelectedHandler(event: CustomEvent): void {
     // todo: change to graphEnabled
-    if (!this.nodesEnabled) {
+    if (!this.graphEnabled) {
       return;
     }
 
@@ -1083,7 +1094,7 @@ export class Aleph {
             target: "0 0 0";
             scale: "0.1 0.1 0.1";
             selected: "false";
-            nodesEnabled: ${this.nodesEnabled};
+            graphEnabled: ${this.graphEnabled};
           `}
           visible="false"
         />
