@@ -36,7 +36,7 @@ export namespace Components {
   interface AlControlPanel {
     'boundingBoxVisible': boolean;
     'displayMode': DisplayMode;
-    'nodesEnabled': boolean;
+    'graphEnabled': boolean;
     'nodesVisible': boolean;
     'optionsEnabled': boolean;
     'optionsVisible': boolean;
@@ -53,11 +53,11 @@ export namespace Components {
   interface AlControlPanelAttributes extends StencilHTMLAttributes {
     'boundingBoxVisible'?: boolean;
     'displayMode'?: DisplayMode;
-    'nodesEnabled'?: boolean;
+    'graphEnabled'?: boolean;
     'nodesVisible'?: boolean;
     'onOnSetBoundingBoxVisible'?: (event: CustomEvent) => void;
     'onOnSetDisplayMode'?: (event: CustomEvent) => void;
-    'onOnSetNodesEnabled'?: (event: CustomEvent) => void;
+    'onOnSetGraphEnabled'?: (event: CustomEvent) => void;
     'onOnSetOptionsEnabled'?: (event: CustomEvent) => void;
     'onOnSetOrientation'?: (event: CustomEvent) => void;
     'onOnSetSlicesIndex'?: (event: CustomEvent) => void;
@@ -154,9 +154,9 @@ export namespace Components {
     'setBoundingBoxVisible': (visible: boolean) => Promise<void>;
     'setDisplayMode': (displayMode: DisplayMode) => Promise<void>;
     'setEdge': (edge: [string, AlEdgeSerial]) => Promise<void>;
+    'setGraphEnabled': (enabled: boolean) => Promise<void>;
     'setNode': (node: [string, AlNodeSerial]) => Promise<void>;
     'setNodes': (nodes: Map<string, AlNodeSerial>) => Promise<void>;
-    'setNodesEnabled': (enabled: boolean) => Promise<void>;
     'spinnerColor': string;
     'width': string;
   }

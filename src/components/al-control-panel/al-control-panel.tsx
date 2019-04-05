@@ -15,7 +15,7 @@ export class AlControlPanel {
   @Event() onSetSlicesIndex: EventEmitter;
   @Event() onSetSlicesWindowCenter: EventEmitter;
   @Event() onSetSlicesWindowWidth: EventEmitter;
-  @Event() onSetNodesEnabled: EventEmitter;
+  @Event() onSetGraphEnabled: EventEmitter;
   @Event() onSetVolumeSteps: EventEmitter;
   @Event() onSetVolumeWindowCenter: EventEmitter;
   @Event() onSetVolumeWindowWidth: EventEmitter;
@@ -30,7 +30,7 @@ export class AlControlPanel {
   @Prop({ mutable: true }) slicesWindowWidth: number;
   @Prop({ mutable: true }) stack: any;
   @Prop({ mutable: true }) stackHelper: AMI.StackHelper;
-  @Prop({ mutable: true }) nodesEnabled: boolean = false;
+  @Prop({ mutable: true }) graphEnabled: boolean = false;
   @Prop({ mutable: true }) nodesVisible: boolean = true;
   @Prop({ mutable: true }) volumeSteps: number;
   @Prop({ mutable: true }) volumeWindowCenter: number;
@@ -83,9 +83,9 @@ export class AlControlPanel {
     this.stackHelper = helper;
   }
 
-  private _nodesEnabled(enabled: boolean) {
-    this.nodesEnabled = enabled;
-    this.onSetNodesEnabled.emit(enabled);
+  private _graphEnabled(enabled: boolean) {
+    this.graphEnabled = enabled;
+    this.onSetGraphEnabled.emit(enabled);
   }
 
   private _nodesVisible(vislbe: boolean) {
@@ -143,8 +143,8 @@ export class AlControlPanel {
         <ion-item>
           <ion-icon name="add-circle" />
           <ion-toggle
-            checked={this.nodesEnabled}
-            onIonChange={e => this._nodesEnabled(e.detail.checked)}
+            checked={this.graphEnabled}
+            onIonChange={e => this._graphEnabled(e.detail.checked)}
           />
         </ion-item>
       );

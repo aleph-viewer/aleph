@@ -11,7 +11,7 @@ export class AlGraphEvents {
 }
 
 export class GraphUtils {
-  static getMapEntryWithHighestId(entries: Map<string, AlGraphEntry>): number {
+  static getEntryWithHighestId(entries: Map<string, AlGraphEntry>): number {
     if (entries.size) {
       return Math.max.apply(
         Math,
@@ -28,6 +28,6 @@ export class GraphUtils {
     type: AlGraphEntryType,
     entries: Map<string, AlGraphEntry>
   ): string {
-    return type + "-" + Number(this.getMapEntryWithHighestId(entries) + 1);
+    return type + "-" + Number(this.getEntryWithHighestId(entries) + 1);
   }
 }

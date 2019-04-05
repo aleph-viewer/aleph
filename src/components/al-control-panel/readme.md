@@ -11,7 +11,7 @@
 | -------------------- | ---------------------- | ----------- | ------------------------------------------------------------------ | --------------------- |
 | `boundingBoxVisible` | `bounding-box-visible` |             | `boolean`                                                          | `false`               |
 | `displayMode`        | `display-mode`         |             | `DisplayMode.MESH \| DisplayMode.SLICES \| DisplayMode.VOLUME`     | `DisplayMode.MESH`    |
-| `nodesEnabled`       | `nodes-enabled`        |             | `boolean`                                                          | `false`               |
+| `graphEnabled`       | `nodes-enabled`        |             | `boolean`                                                          | `false`               |
 | `nodesVisible`       | `nodes-visible`        |             | `boolean`                                                          | `true`                |
 | `optionsEnabled`     | `options-enabled`      |             | `boolean`                                                          | `false`               |
 | `optionsVisible`     | `options-visible`      |             | `boolean`                                                          | `true`                |
@@ -32,7 +32,7 @@
 | ------------------------- | ----------- | ------------------- |
 | `onSetBoundingBoxVisible` |             | `CustomEvent<void>` |
 | `onSetDisplayMode`        |             | `CustomEvent<void>` |
-| `onSetNodesEnabled`       |             | `CustomEvent<void>` |
+| `onSetGraphEnabled`       |             | `CustomEvent<void>` |
 | `onSetOptionsEnabled`     |             | `CustomEvent<void>` |
 | `onSetOrientation`        |             | `CustomEvent<void>` |
 | `onSetSlicesIndex`        |             | `CustomEvent<void>` |

@@ -18,7 +18,7 @@ export const getInitialState = () => {
     displayMode: DisplayMode.MESH,
     edges: new Map<string, AlEdgeSerial>(),
     nodes: new Map<string, AlNodeSerial>(),
-    nodesEnabled: false,
+    graphEnabled: false,
     orientation: Orientation.CORONAL,
     selected: null,
     slicesIndex: undefined,
@@ -215,7 +215,7 @@ export const app = (
     case TypeKeys.APP_SET_NODES_ENABLED: {
       return {
         ...state,
-        nodesEnabled: action.payload
+        graphEnabled: action.payload
       };
     }
     case TypeKeys.APP_SET_BOUNDINGBOX_VISIBLE: {

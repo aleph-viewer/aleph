@@ -30,7 +30,7 @@ export class AlNodeSpawner implements AframeRegistry {
       dependencies: ["raycaster"],
 
       schema: {
-        nodesEnabled: { type: "boolean" }
+        graphEnabled: { type: "boolean" }
       },
 
       bindListeners() {
@@ -134,21 +134,21 @@ export class AlNodeSpawner implements AframeRegistry {
       },
 
       elMouseDown(_event: CustomEvent) {
-        if (this.data.nodesEnabled) {
+        if (this.data.graphEnabled) {
           //console.log("spawner-emit: ", AlNodeEvents.CONTROLS_DISABLED);
           this.el.sceneEl.emit(AlGraphEvents.POINTER_DOWN, {}, false);
         }
       },
 
       elMouseUp(_event: CustomEvent) {
-        if (this.data.nodesEnabled) {
+        if (this.data.graphEnabled) {
           //console.log("spawner-emit: ", AlNodeEvents.CONTROLS_ENABLED);
           this.el.sceneEl.emit(AlGraphEvents.POINTER_UP, {}, false);
         }
       },
 
       elClick(event: CustomEvent) {
-        if (this.state.left && this.data.nodesEnabled) {
+        if (this.state.left && this.data.graphEnabled) {
           //console.log("spawner-emit: ", AlNodeSpawnerEvents.ADD_NODE);
           this.el.sceneEl.emit(AlNodeSpawnerEvents.ADD_NODE, event, false);
         }
