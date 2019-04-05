@@ -713,7 +713,7 @@ export class Aleph {
         {this._renderSrc()}
         {this._renderNodes()}
         {this._renderEdges()}
-        {/* {this._renderAngles()} */}
+        {this._renderAngles()}
         {this._renderLights()}
         {this._renderCamera()}
       </a-scene>
@@ -877,6 +877,16 @@ export class Aleph {
 
   private _selectEdge(edgeId: string): void {
     this.appSelectEdge(edgeId);
+    this.onChanged.emit(this._getAppState());
+  }
+
+  private _setAngle(angle: [string, AlAngleSerial]): void {
+    this.appSetAngle(angle);
+    this.onChanged.emit(this._getAppState());
+  }
+
+  private _selectAngle(angleId: string): void {
+    this.appSelectAngle(angleId);
     this.onChanged.emit(this._getAppState());
   }
 
