@@ -173,7 +173,7 @@ Type: `Promise<void>`
 
 
 
-### `setNodesEnabled(enabled: boolean) => Promise<void>`
+### `setGraphEnabled(enabled: boolean) => Promise<void>`
 
 
 
