@@ -1,6 +1,6 @@
 import { AframeRegistry, AframeComponent } from "../interfaces";
 import { Constants } from "../Constants";
-import { ThreeUtils, AlGraphEvents } from "../utils";
+import { ThreeUtils, AlGraphEvents, ShaderUtils } from "../utils";
 import { AlGraphEntryType } from "../enums/AlGraphEntryType";
 
 interface AlEdgeState {
@@ -9,6 +9,9 @@ interface AlEdgeState {
   geometry: THREE.CylinderGeometry;
   material: THREE.MeshBasicMaterial;
   mesh: THREE.Mesh;
+  outlineGeometry: THREE.CylinderGeometry;
+  outlineMaterial: THREE.MeshBasicMaterial;
+  outlineMesh: THREE.Mesh;
 }
 
 interface AlEdgeObject extends AframeComponent {
@@ -32,7 +35,8 @@ export class AlEdge implements AframeRegistry {
         node1: { type: "vec3" },
         node2: { type: "vec3" },
         length: { type: "number" },
-        radius: { type: "number" }
+        radius: { type: "number" },
+        nodeScale: { type: "number" }
       },
 
       bindListeners(): void {
@@ -128,22 +132,37 @@ export class AlEdge implements AframeRegistry {
           )
         );
 
-        var geometry = new THREE.CylinderGeometry(
+        let geometry = new THREE.CylinderGeometry(
           this.data.radius,
           this.data.radius,
           this.data.length,
           6,
           4
         );
-        //var geometry = new THREE.BoxGeometry(0.03, this.data.length, 0.03);
         let material = new THREE.MeshBasicMaterial();
-        material.depthTest = false;
+        // material.depthTest = false;
         const mesh = new THREE.Mesh(geometry, material);
         mesh.applyMatrix(orientation);
 
         this.state.geometry = geometry;
         this.state.material = material;
         this.state.mesh = mesh;
+
+        let outlineGeometry = new THREE.CylinderGeometry(
+          this.data.radius,
+          this.data.radius,
+          this.data.length - this.data.nodeScale * 2,
+          6,
+          4
+        );
+        let outlineMaterial = ShaderUtils.getHaloMaterial();
+        const outlineMesh = new THREE.Mesh(outlineGeometry, outlineMaterial);
+
+        this.state.outlineGeometry = outlineGeometry;
+        this.state.outlineMaterialt = outlineMaterial;
+        this.state.outlineMesh = outlineMesh;
+
+        mesh.add(outlineMesh);
 
         this.el.setObject3D("mesh", mesh);
         (this.el.object3D as THREE.Object3D).renderOrder = 997;

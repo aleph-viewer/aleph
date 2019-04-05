@@ -3,7 +3,6 @@ import { AlVolumetricModel } from "./AlVolumetricModel";
 import { AlNode, AlNodeEvents } from "./AlNode";
 import { AlNodeSpawner, AlNodeSpawnerEvents } from "./AlNodeSpawner";
 import { AlOrbitControl, AlOrbitControlEvents } from "./AlOrbitControl";
-import { AlHalo } from "./AlHalo";
 import { AlSpinner } from "./AlSpinner";
 import { AlFixedToOrbitCamera } from "./AlFixedToOrbitCamera";
 import { AlLookToCamera } from "./AlLookToCamera";
@@ -20,7 +19,6 @@ export {
   AlNode,
   AlNodeSpawner,
   AlOrbitControl,
-  AlHalo,
   AlSpinner,
   AlNodeSpawnerEvents,
   AlGltfModelEvents,

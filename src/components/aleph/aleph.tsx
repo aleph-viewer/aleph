@@ -83,9 +83,6 @@ export class Aleph {
   private _graphIntersection: string | null = null;
   private _isShiftDown: boolean = false;
 
-  // This needs to be removed ASAP - Fixes a perceieved issue with Aframe & Depth Testing
-  private _numEmptyNodes: number;
-
   @Prop({ context: "store" }) store: Store;
   @Prop() dracoDecoderPath: string | null;
   @Prop() width: string = "640px";
@@ -373,8 +370,6 @@ export class Aleph {
     this._spawnNodeEventHandler = this._spawnNodeEventHandler.bind(this);
     this._srcLoaded = this._srcLoaded.bind(this);
     this._validTargetEventHandler = this._validTargetEventHandler.bind(this);
-
-    this._numEmptyNodes = 3; // todo: remove this when rendering bug fixed
   }
 
   //#region Render Methods
@@ -472,28 +467,26 @@ export class Aleph {
     }
   }
   private _renderNodes(): JSX.Element {
-    let result = this.camera ? this.getEmptyNodes(this._numEmptyNodes) : [];
-    result.push(
-      [...this.nodes].map((n: [string, AlNodeSerial]) => {
-        const [nodeId, node] = n;
+    return [...this.nodes].map((n: [string, AlNodeSerial]) => {
+      const [nodeId, node] = n;
 
-        let textOffset: THREE.Vector3 = new THREE.Vector3(0, 2.5, 0);
-        textOffset.multiplyScalar(node.scale);
+      let textOffset: THREE.Vector3 = new THREE.Vector3(0, 2.5, 0);
+      textOffset.multiplyScalar(node.scale);
 
-        return (
-          <a-entity
-            class="collidable"
-            id={nodeId}
-            position={node.position}
-            al-node={`
+      return (
+        <a-entity
+          class="collidable"
+          id={nodeId}
+          position={node.position}
+          al-node={`
             target: ${node.target};
             scale: ${node.scale};
             selected: ${this.selected === nodeId};
             nodesEnabled: ${this.nodesEnabled};
           `}
-          >
-            <a-entity
-              text={`
+        >
+          <a-entity
+            text={`
               value: ${node.text};
               side: double;
               align: center;
@@ -501,17 +494,14 @@ export class Aleph {
               anchor: center;
               width: ${Constants.fontSizeMedium * this._boundingSphereRadius}
             `}
-              al-look-to-camera
-              al-render-overlaid-text
-              position={ThreeUtils.vector3ToString(textOffset)}
-              id={`${nodeId}-label`}
-            />
-          </a-entity>
-        );
-      })
-    );
-
-    return result;
+            al-look-to-camera
+            al-render-overlaid-text
+            position={ThreeUtils.vector3ToString(textOffset)}
+            id={`${nodeId}-label`}
+          />
+        </a-entity>
+      );
+    });
   }
 
   private _renderEdges(): JSX.Element {
@@ -546,6 +536,7 @@ export class Aleph {
               node2: ${node2.position};
               selected: ${this.selected === edgeId};
               radius: ${radius};
+              nodeScale: ${scale};
             `}
           >
             <a-entity
@@ -888,7 +879,6 @@ export class Aleph {
   }
 
   private _srcLoaded(): void {
-    this._numEmptyNodes += 3;
     const mesh: THREE.Mesh = this._targetEntity.object3DMap.mesh as THREE.Mesh;
     mesh.geometry.computeBoundingSphere();
     this._boundingSphereRadius = mesh.geometry.boundingSphere.radius;
@@ -1048,33 +1038,8 @@ export class Aleph {
         }
       ]);
       const eventName = nodeId + Constants.movedEventString;
-      //console.log("emit: ", eventName);
       this._scene.emit(eventName, {}, true);
-    } else {
-      //console.log("No intersection!");
     }
-  }
-
-  private getEmptyNodes(maxEmptyNodes: number): any[] {
-    let result = [];
-
-    for (let i = 0; i < maxEmptyNodes; i++) {
-      let emptyNode = (
-        <a-entity
-          id={"node-empty-" + i}
-          position="0 0 0"
-          al-node={`
-            target: "0 0 0";
-            scale: "0.1 0.1 0.1";
-            selected: "false";
-            nodesEnabled: ${this.nodesEnabled};
-          `}
-          visible="false"
-        />
-      );
-      result.push(emptyNode);
-    }
-    return result;
   }
 
   private _addEventListeners(): void {

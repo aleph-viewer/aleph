@@ -5,7 +5,6 @@ import {
   AlNodeSpawner,
   AlOrbitControl,
   AlSpinner,
-  AlHalo,
   AlFixedToOrbitCamera,
   AlLookToCamera,
   AlRenderOverlaid,
@@ -18,7 +17,6 @@ import {
 
 export class CreateUtils {
   static createAframeComponents(): void {
-    AFRAME.registerShader(AlHalo.Tag, AlHalo.Object);
     AFRAME.registerGeometry(AlSpinner.Tag, AlSpinner.Object);
     AFRAME.registerComponent(AlGltfModel.Tag, AlGltfModel.Object);
     AFRAME.registerComponent(AlVolumetricModel.Tag, AlVolumetricModel.Object);

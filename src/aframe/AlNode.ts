@@ -1,16 +1,18 @@
 import { AframeRegistry, AframeComponent } from "../interfaces";
 import { Constants } from "../Constants";
-import { ThreeUtils } from "../utils";
+import { ThreeUtils, ShaderUtils } from "../utils";
 import { AlGraphEvents } from "../utils";
 import { AlGraphEntryType } from "../enums/AlGraphEntryType";
 
 interface AlNodeState {
   selected: boolean;
   hovered: boolean;
-  //geometry: THREE.CircleGeometry;
   geometry: THREE.SphereGeometry;
   material: THREE.MeshBasicMaterial;
   mesh: THREE.Mesh;
+  outlineGeometry: THREE.SphereGeometry;
+  outlineMaterial: THREE.ShaderMaterial;
+  outlineMesh: THREE.Mesh;
   camera: THREE.Camera;
   target: THREE.Vector3;
   dragging: boolean;
@@ -153,8 +155,12 @@ export class AlNode implements AframeRegistry {
         const camera = el.sceneEl.camera.el.object3DMap.camera;
         const geometry = new THREE.SphereGeometry(data.scale, 16, 16);
         let material = new THREE.MeshBasicMaterial();
-        material.depthTest = false;
         const mesh = new THREE.Mesh(geometry, material);
+
+        let outlineGeometry = new THREE.SphereGeometry(data.scale, 16, 16);
+        let outlineMaterial = ShaderUtils.getHaloMaterial();
+        const outlineMesh = new THREE.Mesh(outlineGeometry, outlineMaterial);
+        mesh.add(outlineMesh);
 
         el.setObject3D("mesh", mesh);
         (el.object3D as THREE.Object3D).renderOrder = 998;
@@ -167,6 +173,9 @@ export class AlNode implements AframeRegistry {
           geometry,
           material,
           mesh,
+          outlineGeometry,
+          outlineMaterial,
+          outlineMesh,
           camera,
           target: targetPos,
           dragging: false
