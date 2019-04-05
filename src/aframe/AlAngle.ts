@@ -31,7 +31,9 @@ export class AlAngle implements AframeRegistry {
         selected: { type: "boolean" },
         nodeLeftPosition: { type: "vec3" },
         nodeRightPosition: { type: "vec3" },
-        nodeCenterPosition: { type: "vec3" }
+        nodeCenterPosition: { type: "vec3" },
+        radius: { type: "number" },
+        angle: { type: "number" }
       },
 
       bindListeners(): void {
@@ -74,13 +76,11 @@ export class AlAngle implements AframeRegistry {
       },
 
       elMouseDown(_event: CustomEvent): void {
-        //ThreeUtils.waitOneFrame(() => {
         this.el.sceneEl.emit(
           AlGraphEvents.SELECTED,
           { type: AlGraphEntryType.ANGLE, id: this.el.id },
           true
         );
-        //});
       },
 
       elRaycasterIntersected(_event: CustomEvent): void {
@@ -110,10 +110,10 @@ export class AlAngle implements AframeRegistry {
           this.data.nodeCenterPosition
         );
 
-        let centoid = nodeLeftPosition
-          .clone()
-          .add(nodeRightPosition)
-          .divideScalar(2);
+        let centoid = new THREE.Vector3();
+        centoid.x = (nodeRightPosition.x + nodeLeftPosition.x) / 2;
+        centoid.y = (nodeRightPosition.y + nodeLeftPosition.y) / 2;
+        centoid.z = (nodeRightPosition.z + nodeLeftPosition.z) / 2;
 
         var orientation = new THREE.Matrix4();
         orientation.lookAt(
@@ -123,13 +123,13 @@ export class AlAngle implements AframeRegistry {
         );
         orientation.multiply(
           new THREE.Matrix4().set(
-            1,
+            -1,
             0,
             0,
             0,
             0,
             0,
-            1,
+            -1,
             0,
             0,
             -1,
@@ -143,11 +143,11 @@ export class AlAngle implements AframeRegistry {
         );
 
         var geometry = new THREE.TorusGeometry(
-          this.data.radius,
-          this.data.radius,
-          this.data.height,
+          this.data.radius * 0.1,
+          this.data.radius * 0.01,
           6,
-          4
+          4,
+          this.data.angle
         );
         let material = new THREE.MeshBasicMaterial();
         material.depthTest = false;
@@ -175,6 +175,8 @@ export class AlAngle implements AframeRegistry {
           selected: true,
           hovered: false
         } as AlAngleState;
+
+        this.createMesh();
       },
 
       update(oldData): void {
@@ -182,11 +184,7 @@ export class AlAngle implements AframeRegistry {
         state.selected = this.data.selected;
 
         // If height or radius has changed, create a new mesh
-        if (
-          oldData &&
-          (oldData.radius !== this.data.radius ||
-            oldData.height !== this.data.height)
-        ) {
+        if (oldData && oldData.angle !== this.data.angle) {
           this.createMesh();
         }
       },

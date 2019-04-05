@@ -546,7 +546,7 @@ export class Aleph {
             <a-entity
               id={`${edgeId}-title`}
               text={`
-                value: ${dist.toFixed(Constants.decimalPlaces) + " units"};
+                value: ${dist.toFixed(Constants.decimalPlaces) + " m"};
                 side: double;
                 align: center;
                 baseline: bottom;
@@ -598,44 +598,50 @@ export class Aleph {
           node2 = this.nodes.get(edge2.node1Id);
         }
 
-        let dir1: THREE.Vector3 = node1
+        const node1Pos = ThreeUtils.stringToVector3(node1.position);
+        const node2Pos = ThreeUtils.stringToVector3(node2.position);
+        const centralPos = ThreeUtils.stringToVector3(centralNode.position);
+
+        let dir1: THREE.Vector3 = node1Pos
           .clone()
-          .sub(centralNode)
+          .sub(centralPos)
           .normalize();
-        let dir2: THREE.Vector3 = node2
+        let dir2: THREE.Vector3 = node2Pos
           .clone()
-          .sub(centralNode)
+          .sub(centralPos)
           .normalize();
         let angle = dir2.angleTo(dir1);
 
-        let textOffset: THREE.Vector3 = new THREE.Vector3(0, 2.5, 0);
+        let textOffset: THREE.Vector3 = new THREE.Vector3(0, 7.5, 0);
         let scale = (node1.scale + node2.scale + centralNode.scale) / 3;
-        let radius = this._boundingSphereRadius * Constants.edgeSize;
+        //let radius = this._boundingSphereRadius * Constants.edgeSize;
         textOffset.multiplyScalar(scale);
 
         return (
           <a-entity
             class="collidable"
             id={angleId}
-            position={ThreeUtils.vector3ToString(centralNode.position)}
+            position={centralNode.position}
             al-angle={`
               selected: ${false};
-              nodeLeftPosition: ${ThreeUtils.vector3ToString(node1.position)};
-              nodeRightPosition: ${ThreeUtils.vector3ToString(node2.position)};
-              nodeCenterPosition: ${ThreeUtils.vector3ToString(
-                centralNode.position
-              )};
+              nodeLeftPosition: ${node1.position};
+              nodeRightPosition: ${node2.position};
+              nodeCenterPosition: ${centralNode.position};
+              radius: ${this._boundingSphereRadius};
+              angle: ${angle};
             `}
           >
             <a-entity
               id={`${angleId}-title`}
               text={`
-                value: ${angle.toFixed(Constants.decimalPlaces) + " units"};
+                value: ${THREE.Math.radToDeg(angle).toFixed(
+                  Constants.decimalPlaces
+                ) + " deg"};
                 side: double;
                 align: center;
                 baseline: bottom;
                 anchor: center;
-                width: ${Constants.fontSizeMedium * this._boundingSphereRadius}
+                width: ${Constants.fontSizeSmall * this._boundingSphereRadius}
               `}
               position={ThreeUtils.vector3ToString(textOffset)}
               al-look-to-camera
