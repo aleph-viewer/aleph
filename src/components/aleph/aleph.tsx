@@ -75,7 +75,8 @@ export class Aleph {
 
   private _container: HTMLElement;
   private _targetEntity: Entity;
-  private _backBoard: Entity;
+  private _backboard: Entity;
+  private _backboardVisible: boolean = false;
   private _scene: Scene;
   private _boundingSphereRadius: number;
   private _validTarget: boolean;
@@ -423,10 +424,12 @@ export class Aleph {
           };
         `}
           material={`
-          wireframe: true;
+          wireframe: ${this._backboardVisible};
+          transparent: true;
+          opacity: 0.0;
           side: double;
         `}
-          ref={el => (this._backBoard = el)}
+          ref={el => (this._backboard = el)}
         />
       );
     }
@@ -1048,7 +1051,7 @@ export class Aleph {
     // Try backboard
     if (!intersection) {
       intersection = raycaster.getIntersection(
-        this._backBoard
+        this._backboard
       ) as THREE.Intersection;
     }
 
