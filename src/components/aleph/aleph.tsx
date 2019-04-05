@@ -774,7 +774,7 @@ export class Aleph {
       this.angles
     );
 
-    //this._setAngle([angleId, newAngle]);
+    this._setAngle([angleId, newAngle]);
   }
 
   private _getAppState(): AlAppState {
@@ -1022,7 +1022,7 @@ export class Aleph {
         ) {
           this._createEdge(this.selected, this._graphIntersection);
         }
-        this._selectNode(id, false);
+        this._selectNode(id);
         break;
       }
       case AlGraphEntryType.EDGE: {
@@ -1036,6 +1036,7 @@ export class Aleph {
           // We're intersecting an edge
           this._createAngle(this.selected, this._graphIntersection);
         }
+        this._selectEdge(id);
         break;
       }
     }
