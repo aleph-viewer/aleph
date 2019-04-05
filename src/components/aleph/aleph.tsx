@@ -528,7 +528,6 @@ export class Aleph {
         let dist = dir.length();
         dir = dir.normalize().multiplyScalar(dist * 0.5);
         let centoid = sv.clone().add(dir);
-        //console.log("centoid: ", centoid);
 
         let textOffset: THREE.Vector3 = new THREE.Vector3(0, 2.5, 0);
         let scale = (node1.scale + node2.scale) / 2;
@@ -712,7 +711,7 @@ export class Aleph {
     return (
       <a-scene
         embedded
-        renderer="colorManagement: true;"
+        renderer="colorManagement: true; sortObjects: true;"
         vr-mode-ui="enabled: false"
         ref={el => (this._scene = el)}
       >

@@ -140,13 +140,13 @@ export class AlEdge implements AframeRegistry {
         material.depthTest = false;
         const mesh = new THREE.Mesh(geometry, material);
         mesh.applyMatrix(orientation);
-        mesh.renderOrder = 997;
 
         this.state.geometry = geometry;
         this.state.material = material;
         this.state.mesh = mesh;
 
         this.el.setObject3D("mesh", mesh);
+        (this.el.object3D as THREE.Object3D).renderOrder = 997;
       },
 
       init(): void {
