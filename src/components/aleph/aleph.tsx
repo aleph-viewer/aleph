@@ -734,7 +734,6 @@ export class Aleph {
 
   //#region Private Methods
   private _createEdge(node1: string, node2: string): void {
-    //console.log("create edge");
     const newEdge: AlEdgeSerial = {
       node1Id: node1,
       node2Id: node2
@@ -958,10 +957,8 @@ export class Aleph {
         this._isShiftDown && // Shift is down
         this.nodes.has(previousSelected) // A Node is already selected
       ) {
-        //ThreeUtils.waitOneFrame(() => {
         this._createEdge(previousSelected, nodeId);
         this._selectNode(nodeId);
-        //});
       }
     }
   }
@@ -992,7 +989,7 @@ export class Aleph {
           this._graphIntersection !== null &&
           this.nodes.has(this._graphIntersection) && // We're intersecting a node
           (this.selected !== null && this.nodes.has(this.selected)) && // We have a node already selected
-          this.selected !== this._graphIntersection && // The selected & intersecting nodes are not the same
+          this.selected !== this._graphIntersection && // The selected & intersecting elements are not the same
           this._isShiftDown // The shift key is down
         ) {
           this._createEdge(this.selected, this._graphIntersection);
@@ -1003,10 +1000,13 @@ export class Aleph {
       case AlGraphEntryType.EDGE: {
         if (
           this._graphIntersection !== null &&
-          this.edges.has(this._graphIntersection)
+          this.edges.has(this._graphIntersection) && // We're intersecting an edge
+          (this.selected !== null && this.edges.has(this.selected)) && // We have an edge already selected
+          this.selected !== this._graphIntersection && // The selected & intersecting elements are not the same
+          this._isShiftDown // The shift key is down
         ) {
           // We're intersecting an edge
-          this._selectEdge(id);
+          this._createAngle(this.selected, this._graphIntersection);
         }
         break;
       }

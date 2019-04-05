@@ -116,7 +116,6 @@ export class AlNode implements AframeRegistry {
         if (this.data.nodesEnabled) {
           state.dragging = false;
           state.mouseDown = false;
-          //console.log("node-emit: ", AlNodeEvents.CONTROLS_ENABLED);
           this.el.sceneEl.emit(AlGraphEvents.POINTER_UP, {}, true);
         }
       },
