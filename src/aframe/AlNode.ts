@@ -155,9 +155,9 @@ export class AlNode implements AframeRegistry {
         let material = new THREE.MeshBasicMaterial();
         material.depthTest = false;
         const mesh = new THREE.Mesh(geometry, material);
-        mesh.renderOrder = 998;
 
         el.setObject3D("mesh", mesh);
+        (el.object3D as THREE.Object3D).renderOrder = 998;
 
         let targetPos = ThreeUtils.objectToVector3(data.target);
 
