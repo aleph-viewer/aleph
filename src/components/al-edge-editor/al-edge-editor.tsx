@@ -15,8 +15,6 @@ export class AlEdgeEditor {
     if (this.edge) {
       const [edgeId] = this.edge;
 
-      console.log(this.edge);
-
       return (
         <form onSubmit={e => e.preventDefault()}>
           <ion-button
