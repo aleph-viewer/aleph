@@ -742,18 +742,31 @@ export class Aleph {
   //#endregion
 
   //#region Private Methods
-  private _createEdge(node1: string, node2: string): void {
-    //console.log("create edge");
-    const newEdge: AlEdgeSerial = {
-      node1Id: node1,
-      node2Id: node2
-    };
-    const edgeId: string = GraphUtils.getNextId(
-      AlGraphEntryType.EDGE,
-      this.edges
+  private _createEdge(node1Id: string, node2Id: string): void {
+    // check if there is already an edge connecting these two nodes
+    const match: [string, AlEdgeSerial] | undefined = [...this.edges].find(
+      ([_id, edge]) => {
+        return (
+          (edge.node1Id === node1Id && edge.node2Id === node2Id) ||
+          (edge.node1Id === node2Id && edge.node2Id === node1Id)
+        );
+      }
     );
 
-    this._setEdge([edgeId, newEdge]);
+    if (!match) {
+      const newEdge: AlEdgeSerial = {
+        node1Id: node1Id,
+        node2Id: node2Id
+      };
+      const edgeId: string = GraphUtils.getNextId(
+        AlGraphEntryType.EDGE,
+        this.edges
+      );
+
+      this._setEdge([edgeId, newEdge]);
+    } else {
+      console.log("matching edge found");
+    }
   }
 
   private _createAngle(edge1: string, edge2: string): void {
