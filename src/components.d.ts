@@ -9,21 +9,33 @@ import '@stencil/core';
 
 import '@stencil/redux';
 import {
+  AlAngleSerial,
+  AlEdgeSerial,
+  AlNodeSerial,
+} from './interfaces';
+import {
   DisplayMode,
 } from './enums/DisplayMode';
 import {
   Orientation,
 } from './enums/Orientation';
 import {
-  AlEdgeSerial,
-  AlNodeSerial,
-} from './interfaces';
+  AlGraph,
+} from './interfaces/AlGraph';
 import {
   DisplayMode as DisplayMode2,
 } from './enums';
 
 
 export namespace Components {
+
+  interface AlAngleEditor {
+    'angle': [string, AlAngleSerial];
+  }
+  interface AlAngleEditorAttributes extends StencilHTMLAttributes {
+    'angle'?: [string, AlAngleSerial];
+    'onOnDelete'?: (event: CustomEvent) => void;
+  }
 
   interface AlConsole {
     'cmd': string;
@@ -142,8 +154,9 @@ export namespace Components {
   }
 
   interface UvAleph {
-    'clearNodes': () => Promise<void>;
+    'clearGraph': () => Promise<void>;
     'debug': boolean;
+    'deleteAngle': (angleId: string) => Promise<void>;
     'deleteEdge': (edgeId: string) => Promise<void>;
     'deleteNode': (nodeId: string) => Promise<void>;
     'dracoDecoderPath': string | null;
@@ -154,9 +167,9 @@ export namespace Components {
     'setBoundingBoxVisible': (visible: boolean) => Promise<void>;
     'setDisplayMode': (displayMode: DisplayMode) => Promise<void>;
     'setEdge': (edge: [string, AlEdgeSerial]) => Promise<void>;
+    'setGraph': (graph: AlGraph) => Promise<void>;
     'setGraphEnabled': (enabled: boolean) => Promise<void>;
     'setNode': (node: [string, AlNodeSerial]) => Promise<void>;
-    'setNodes': (nodes: Map<string, AlNodeSerial>) => Promise<void>;
     'spinnerColor': string;
     'width': string;
   }
@@ -172,6 +185,7 @@ export namespace Components {
 
 declare global {
   interface StencilElementInterfaces {
+    'AlAngleEditor': Components.AlAngleEditor;
     'AlConsole': Components.AlConsole;
     'AlControlPanel': Components.AlControlPanel;
     'AlEdgeEditor': Components.AlEdgeEditor;
@@ -183,6 +197,7 @@ declare global {
   }
 
   interface StencilIntrinsicElements {
+    'al-angle-editor': Components.AlAngleEditorAttributes;
     'al-console': Components.AlConsoleAttributes;
     'al-control-panel': Components.AlControlPanelAttributes;
     'al-edge-editor': Components.AlEdgeEditorAttributes;
@@ -193,6 +208,12 @@ declare global {
     'uv-aleph': Components.UvAlephAttributes;
   }
 
+
+  interface HTMLAlAngleEditorElement extends Components.AlAngleEditor, HTMLStencilElement {}
+  var HTMLAlAngleEditorElement: {
+    prototype: HTMLAlAngleEditorElement;
+    new (): HTMLAlAngleEditorElement;
+  };
 
   interface HTMLAlConsoleElement extends Components.AlConsole, HTMLStencilElement {}
   var HTMLAlConsoleElement: {
@@ -243,6 +264,7 @@ declare global {
   };
 
   interface HTMLElementTagNameMap {
+    'al-angle-editor': HTMLAlAngleEditorElement
     'al-console': HTMLAlConsoleElement
     'al-control-panel': HTMLAlControlPanelElement
     'al-edge-editor': HTMLAlEdgeEditorElement
@@ -254,6 +276,7 @@ declare global {
   }
 
   interface ElementTagNameMap {
+    'al-angle-editor': HTMLAlAngleEditorElement;
     'al-console': HTMLAlConsoleElement;
     'al-control-panel': HTMLAlControlPanelElement;
     'al-edge-editor': HTMLAlEdgeEditorElement;

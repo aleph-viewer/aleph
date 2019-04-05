@@ -111,6 +111,7 @@
               <al-node-list></al-node-list>
               <al-node-editor></al-node-editor>
               <al-edge-editor></al-edge-editor>
+              <al-angle-editor></al-angle-editor>
             </ion-tab>
             <ion-tab tab="settings">
               <al-control-panel></al-control-panel>
@@ -125,7 +126,7 @@
 
     <script>
 
-      let state, lastState, urls, container, debug, aleph, alUrlPicker, alNodeList, alConsole, alNodeEditor, alEdgeEditor, alControlPanel;
+      let state, lastState, urls, container, debug, aleph, alUrlPicker, alNodeList, alConsole, alNodeEditor, alEdgeEditor, alAngleEditor, alControlPanel;
 
       class AlephInspectorState {
         constructor() {
@@ -164,6 +165,7 @@
         alNodeList = document.querySelector("al-node-list");
         alNodeEditor = document.querySelector("al-node-editor");
         alEdgeEditor = document.querySelector("al-edge-editor");
+        alAngleEditor = document.querySelector("al-angle-editor");
         alControlPanel = document.querySelector("al-control-panel");
         loadSrcButton = document.getElementById("load-src-button");
         nodesTextArea = document.getElementById("nodes-textarea");
@@ -184,6 +186,7 @@
               state.srcLoaded = e.detail.srcLoaded;
               state.nodes = e.detail.nodes;
               state.edges = e.detail.edges;
+              state.angles = e.detail.angles;
               state.selected = e.detail.selected;
             },
             false
@@ -236,14 +239,24 @@
           );
         });
 
+        alAngleEditor.componentOnReady().then(function() {
+          alAngleEditor.addEventListener(
+            "onDelete",
+            function(e) {
+              aleph.deleteAngle(e.detail);
+            },
+            false
+          );
+        });
+
         alConsole.componentOnReady().then(function() {
           alConsole.addEventListener(
             "onCmd",
             function(e) {
-              const nodes = new Map(JSON.parse(alConsole.cmd));
-              if (nodes) {
-                aleph.clearNodes();
-                aleph.setNodes(nodes);
+              const graph = JSON.parse(alConsole.cmd);
+              if (graph) {
+                aleph.clearGraph();
+                aleph.setGraph(graph);
               }
             },
             false
@@ -279,7 +292,6 @@
           debug.classList.add("disabled");
         } else {
           debug.classList.remove("disabled");
-          //aleph.resize();
         }
 
         // if (state.srcLoaded) {
@@ -292,13 +304,29 @@
         //   }, 250);
         // }
 
-        alConsole.cmd = state.nodes ? JSON.stringify([...state.nodes]) : "";
+        alConsole.cmd = getGraphJson();
         alNodeList.nodes = state.nodes;
         alNodeList.selected = state.selected;
         alNodeEditor.node = getSelectedNode();
         alEdgeEditor.edge = getSelectedEdge();
+        alAngleEditor.angle = getSelectedAngle();
 
         lastState = Object.assign({}, state);
+      }
+
+      function getGraphJson() {
+
+        if (state.nodes && state.edges && state.angles) {
+          var graph = {
+            nodes: [...state.nodes],
+            edges: [...state.edges],
+            angles: [...state.angles]
+          }
+
+          return JSON.stringify(graph);
+        }
+
+        return "";
       }
 
       function getSelectedNode() {
@@ -316,6 +344,16 @@
           const e = state.edges.get(state.selected);
           if (e) {
             return [state.selected, e];
+          }
+        }
+        return null;
+      }
+
+      function getSelectedAngle() {
+        if (state.selected && state.angles) {
+          const a = state.angles.get(state.selected);
+          if (a) {
+            return [state.selected, a];
           }
         }
         return null;

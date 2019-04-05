@@ -60,6 +60,7 @@ import {
   AlOrbitControlEvents
 } from "../../aframe";
 import { AlGraphEntryType } from "../../enums/AlGraphEntryType";
+import { AlGraph } from "../../interfaces/AlGraph";
 type Entity = import("aframe").Entity;
 type Scene = import("aframe").Scene;
 //#endregion
@@ -202,8 +203,29 @@ export class Aleph {
   }
 
   @Method()
-  async setNodes(nodes: Map<string, AlNodeSerial>): Promise<void> {
-    this._setNodes(nodes);
+  async setGraph(graph: AlGraph): Promise<void> {
+    if (graph.nodes) {
+      const nodes: Map<string, AlNodeSerial> = new Map(graph.nodes);
+      nodes.forEach((value: AlNodeSerial, key: string) => {
+        this.appSetNode([key, value]);
+      });
+    }
+
+    if (graph.edges) {
+      const edges: Map<string, AlEdgeSerial> = new Map(graph.edges);
+      edges.forEach((value: AlEdgeSerial, key: string) => {
+        this.appSetEdge([key, value]);
+      });
+    }
+
+    if (graph.angles) {
+      const angles: Map<string, AlAngleSerial> = new Map(graph.angles);
+      angles.forEach((value: AlAngleSerial, key: string) => {
+        this.appSetAngle([key, value]);
+      });
+    }
+
+    this.onChanged.emit(this._getAppState());
   }
 
   @Method()
@@ -212,8 +234,8 @@ export class Aleph {
   }
 
   @Method()
-  async clearNodes(): Promise<void> {
-    this._clearNodes();
+  async clearGraph(): Promise<void> {
+    this._clearGraph();
   }
 
   @Method()
@@ -224,6 +246,11 @@ export class Aleph {
   @Method()
   async deleteEdge(edgeId: string): Promise<void> {
     this._deleteEdge(edgeId);
+  }
+
+  @Method()
+  async deleteAngle(angleId: string): Promise<void> {
+    this._deleteAngle(angleId);
   }
 
   //#endregion
@@ -500,6 +527,7 @@ export class Aleph {
             `}
             al-look-to-camera
             al-render-overlaid-text
+            visible={`${this.selected === nodeId}`}
             position={ThreeUtils.vector3ToString(textOffset)}
             id={`${nodeId}-label`}
           />
@@ -554,6 +582,7 @@ export class Aleph {
                 width: ${Constants.fontSizeSmall * this._boundingSphereRadius}
               `}
               position={ThreeUtils.vector3ToString(textOffset)}
+              visible={`${this.selected === edgeId}`}
               al-look-to-camera
               al-render-overlaid-text
             />
@@ -623,7 +652,7 @@ export class Aleph {
             id={angleId}
             position={centralNode.position}
             al-angle={`
-              selected: ${false};
+              selected: ${this.selected === angleId};
               nodeLeftPosition: ${node1.position};
               nodeRightPosition: ${node2.position};
               nodeCenterPosition: ${centralNode.position};
@@ -644,6 +673,7 @@ export class Aleph {
                 width: ${Constants.fontSizeSmall * this._boundingSphereRadius}
               `}
               position={ThreeUtils.vector3ToString(textOffset)}
+              visible={`${this.selected === angleId}`}
               al-look-to-camera
               al-render-overlaid-text
             />
@@ -788,15 +818,10 @@ export class Aleph {
     return this.store.getState().app;
   }
 
-  private _clearNodes(): void {
+  private _clearGraph(): void {
     this.appClearNodes();
-    this.onChanged.emit(this._getAppState());
-  }
-
-  private _setNodes(nodes: Map<string, AlNodeSerial>): void {
-    nodes.forEach((value: AlNodeSerial, key: string) => {
-      this.appSetNode([key, value]);
-    });
+    this.appClearEdges();
+    this.appClearAngles();
     this.onChanged.emit(this._getAppState());
   }
 
@@ -896,6 +921,11 @@ export class Aleph {
     this.onChanged.emit(this._getAppState());
   }
 
+  private _deleteAngle(angleId: string): void {
+    this.appDeleteAngle(angleId);
+    this.onChanged.emit(this._getAppState());
+  }
+
   private _setGraphEnabled(enabled: boolean): void {
     this.appSetGraphEnabled(enabled);
     this.onChanged.emit(this._getAppState());
@@ -939,6 +969,8 @@ export class Aleph {
           this._deleteNode(this.selected);
         } else if (this.edges.has(this.selected)) {
           this._deleteEdge(this.selected);
+        } else if (this.angles.has(this.selected)) {
+          this._deleteAngle(this.selected);
         }
       }
     }
@@ -1055,6 +1087,10 @@ export class Aleph {
         this._selectEdge(id);
         break;
       }
+      case AlGraphEntryType.ANGLE: {
+        this._selectAngle(id);
+        break;
+      }
     }
   }
 
@@ -1146,13 +1182,13 @@ export class Aleph {
     );
 
     this._scene.addEventListener(
-      AlGraphEvents.INTERSECTION,
+      AlGraphEvents.POINTER_OVER,
       this._intersectingGraphHandler,
       false
     );
 
     this._scene.addEventListener(
-      AlGraphEvents.INTERSECTION_CLEARED,
+      AlGraphEvents.POINTER_OUT,
       this._intersectionGraphClearedHandler,
       false
     );

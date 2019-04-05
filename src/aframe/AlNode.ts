@@ -27,10 +27,10 @@ interface AlNodeObject extends AframeComponent {
   bindListeners(): void;
   addListeners(): void;
   removeListeners(): void;
-  elMouseDown(_event: CustomEvent): void;
-  elMouseUp(_event: MouseEvent): void;
-  elRaycasterIntersected(_event: CustomEvent): void;
-  elRaycasterIntersectedCleared(_event: CustomEvent): void;
+  pointerDown(_event: CustomEvent): void;
+  pointerUp(_event: MouseEvent): void;
+  pointerOver(_event: CustomEvent): void;
+  pointerOut(_event: CustomEvent): void;
 }
 
 export class AlNode implements AframeRegistry {
@@ -44,57 +44,52 @@ export class AlNode implements AframeRegistry {
       },
 
       bindListeners(): void {
-        this.elMouseDown = this.elMouseDown.bind(this);
-        this.elMouseUp = this.elMouseUp.bind(this);
-        this.elRaycasterIntersected = this.elRaycasterIntersected.bind(this);
-        this.elRaycasterIntersectedCleared = this.elRaycasterIntersectedCleared.bind(
-          this
-        );
+        this.pointerDown = this.pointerDown.bind(this);
+        this.pointerUp = this.pointerUp.bind(this);
+        this.pointerOver = this.pointerOver.bind(this);
+        this.pointerOut = this.pointerOut.bind(this);
       },
 
       addListeners(): void {
-        this.el.sceneEl.addEventListener("mousedown", this.elMouseDown, {
+        this.el.sceneEl.addEventListener("mousedown", this.pointerDown, {
           capture: false,
           once: false,
           passive: true
         });
-        this.el.addEventListener("mouseup", this.elMouseUp, {
+        this.el.addEventListener("mouseup", this.pointerUp, {
           capture: false,
           once: false,
           passive: true
         });
-        this.el.sceneEl.addEventListener("mouseup", this.elMouseUp, {
+        this.el.sceneEl.addEventListener("mouseup", this.pointerUp, {
           capture: false,
           once: false,
           passive: true
         });
-        this.el.addEventListener(
-          "raycaster-intersected",
-          this.elRaycasterIntersected,
-          { capture: false, once: false, passive: true }
-        );
+        this.el.addEventListener("raycaster-intersected", this.pointerOver, {
+          capture: false,
+          once: false,
+          passive: true
+        });
         this.el.addEventListener(
           "raycaster-intersected-cleared",
-          this.elRaycasterIntersectedCleared,
+          this.pointerOut,
           { capture: false, once: false, passive: true }
         );
       },
 
       removeListeners(): void {
-        this.el.sceneEl.removeEventListener("mousedown", this.elMouseDown);
-        this.el.sceneEl.removeEventListener("mouseup", this.elMouseUp);
-        this.el.removeEventListener("mouseup", this.elMouseUp);
-        this.el.removeEventListener(
-          "raycaster-intersected",
-          this.elRaycasterIntersected
-        );
+        this.el.sceneEl.removeEventListener("mousedown", this.pointerDown);
+        this.el.sceneEl.removeEventListener("mouseup", this.pointerUp);
+        this.el.removeEventListener("mouseup", this.pointerUp);
+        this.el.removeEventListener("raycaster-intersected", this.pointerOver);
         this.el.removeEventListener(
           "raycaster-intersected-cleared",
-          this.elRaycasterIntersectedCleared
+          this.pointerOut
         );
       },
 
-      elMouseDown(_event: CustomEvent): void {
+      pointerDown(_event: CustomEvent): void {
         let state = this.state as AlNodeState;
         if (state.hovered) {
           this.el.sceneEl.emit(
@@ -111,7 +106,7 @@ export class AlNode implements AframeRegistry {
         }
       },
 
-      elMouseUp(_event: MouseEvent): void {
+      pointerUp(_event: MouseEvent): void {
         let state = this.state as AlNodeState;
         if (this.data.graphEnabled) {
           state.dragging = false;
@@ -120,23 +115,23 @@ export class AlNode implements AframeRegistry {
         }
       },
 
-      elRaycasterIntersected(_event: CustomEvent): void {
+      pointerOver(_event: CustomEvent): void {
         let state = this.state as AlNodeState;
         state.hovered = true;
         this.el.sceneEl.emit(
-          AlGraphEvents.INTERSECTION,
+          AlGraphEvents.POINTER_OVER,
           { id: this.el.id },
           true
         );
       },
 
-      elRaycasterIntersectedCleared(_event: CustomEvent): void {
+      pointerOut(_event: CustomEvent): void {
         let state = this.state as AlNodeState;
         state.hovered = false;
         if (state.mouseDown && state.selected) {
           state.dragging = true;
         }
-        this.el.sceneEl.emit(AlGraphEvents.INTERSECTION_CLEARED, {}, true);
+        this.el.sceneEl.emit(AlGraphEvents.POINTER_OUT, {}, true);
       },
 
       init(): void {
