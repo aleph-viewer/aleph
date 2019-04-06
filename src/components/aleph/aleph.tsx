@@ -796,21 +796,34 @@ export class Aleph {
 
       this._setEdge([edgeId, newEdge]);
     } else {
-      console.log("matching edge found");
+      console.log("edge already exists");
     }
   }
 
-  private _createAngle(edge1: string, edge2: string): void {
-    const newAngle: AlAngleSerial = {
-      edge1Id: edge1,
-      edge2Id: edge2
-    };
-    const angleId: string = GraphUtils.getNextId(
-      AlGraphEntryType.ANGLE,
-      this.angles
+  private _createAngle(edge1Id: string, edge2Id: string): void {
+    // check if there is already an angle connecting these two edges
+    const match: [string, AlAngleSerial] | undefined = [...this.angles].find(
+      ([_id, angle]) => {
+        return (
+          (angle.edge1Id === edge1Id && angle.edge2Id === edge2Id) ||
+          (angle.edge1Id === edge2Id && angle.edge2Id === edge1Id)
+        );
+      }
     );
+    if (!match) {
+      const newAngle: AlAngleSerial = {
+        edge1Id: edge1Id,
+        edge2Id: edge2Id
+      };
+      const angleId: string = GraphUtils.getNextId(
+        AlGraphEntryType.ANGLE,
+        this.angles
+      );
 
-    this._setAngle([angleId, newAngle]);
+      this._setAngle([angleId, newAngle]);
+    } else {
+      console.log("angle already exists");
+    }
   }
 
   private _getAppState(): AlAppState {
