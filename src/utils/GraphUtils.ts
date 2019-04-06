@@ -1,5 +1,5 @@
-import { AlGraphEntry } from "../interfaces/AlGraphEntry";
-import { AlGraphEntryType } from "../enums/AlGraphEntryType";
+import { AlGraphEntry } from "../interfaces";
+import { AlGraphEntryType } from "../enums";
 
 export class AlGraphEvents {
   static SELECTED: string = "al-graph-selected";

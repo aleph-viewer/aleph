@@ -2,7 +2,7 @@ import { AframeRegistry, AframeComponent } from "../interfaces";
 import { Constants } from "../Constants";
 import { ThreeUtils, ShaderUtils } from "../utils";
 import { AlGraphEvents } from "../utils";
-import { AlGraphEntryType } from "../enums/AlGraphEntryType";
+import { AlGraphEntryType } from "../enums";
 
 interface AlNodeState {
   selected: boolean;

@@ -59,7 +59,7 @@ import {
   AlNodeSpawnerEvents,
   AlOrbitControlEvents
 } from "../../aframe";
-import { AlGraphEntryType } from "../../enums/AlGraphEntryType";
+import { AlGraphEntryType } from "../../enums";
 import { AlGraph } from "../../interfaces/AlGraph";
 type Entity = import("aframe").Entity;
 type Scene = import("aframe").Scene;
