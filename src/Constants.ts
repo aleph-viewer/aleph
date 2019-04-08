@@ -4,6 +4,7 @@ export class Constants {
   static fontSizeLarge = 2.5;
   static movedEventString = "-moved";
   static titleIdString = "-title";
+  static controllerString = "-controller";
   static nodeSizeRatio = 50;
   static splashBackSize = 5;
   static zoomFactor = 2.5;

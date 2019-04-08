@@ -29,9 +29,10 @@ export class AlAngle implements AframeRegistry {
     return {
       schema: {
         selected: { type: "boolean" },
-        nodeLeftPosition: { type: "vec3" },
-        nodeRightPosition: { type: "vec3" },
-        nodeCenterPosition: { type: "vec3" },
+        edge0Pos: { type: "vec3" },
+        edge1Pos: { type: "vec3" },
+        position: { type: "vec3" },
+        length: { type: "number" },
         radius: { type: "number" },
         angle: { type: "number" }
       },
@@ -100,36 +101,24 @@ export class AlAngle implements AframeRegistry {
       },
 
       createMesh() {
-        const nodeLeftPosition = ThreeUtils.objectToVector3(
-          this.data.nodeLeftPosition
+        const edgePos0: THREE.Vector3 = ThreeUtils.objectToVector3(
+          this.data.edge0Pos
         );
-        const nodeRightPosition = ThreeUtils.objectToVector3(
-          this.data.nodeRightPosition
+        const edgePos1: THREE.Vector3 = ThreeUtils.objectToVector3(
+          this.data.edge1Pos
         );
-        const nodeCenterPosition = ThreeUtils.objectToVector3(
-          this.data.nodeCenterPosition
-        );
-
-        let centoid = new THREE.Vector3();
-        centoid.x = (nodeRightPosition.x + nodeLeftPosition.x) / 2;
-        centoid.y = (nodeRightPosition.y + nodeLeftPosition.y) / 2;
-        centoid.z = (nodeRightPosition.z + nodeLeftPosition.z) / 2;
 
         var orientation = new THREE.Matrix4();
-        orientation.lookAt(
-          nodeCenterPosition,
-          centoid,
-          new THREE.Object3D().up
-        );
+        orientation.lookAt(edgePos0, edgePos1, new THREE.Object3D().up);
         orientation.multiply(
           new THREE.Matrix4().set(
-            -1,
+            1,
             0,
             0,
             0,
             0,
             0,
-            -1,
+            1,
             0,
             0,
             -1,
@@ -142,17 +131,19 @@ export class AlAngle implements AframeRegistry {
           )
         );
 
-        var geometry = new THREE.TorusGeometry(
-          this.data.radius * 0.1,
-          this.data.radius * 0.01,
+        let geometry = new THREE.CylinderGeometry(
+          this.data.radius,
+          this.data.radius,
+          this.data.length,
           6,
-          4,
-          this.data.angle
+          4
         );
+
         let material = new THREE.MeshBasicMaterial();
         material.depthTest = false;
         const mesh = new THREE.Mesh(geometry, material);
         mesh.applyMatrix(orientation);
+        mesh.position.copy(ThreeUtils.objectToVector3(this.data.position));
 
         this.state.geometry = geometry;
         this.state.material = material;
