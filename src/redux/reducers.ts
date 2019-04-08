@@ -136,6 +136,13 @@ export const app = (
         selected: state.selected === action.payload ? null : state.selected,
         edges: new Map(
           [...state.edges].filter(([key]) => key !== action.payload)
+        ),
+        angles: new Map(
+          [...state.angles].filter(
+            ([_key, angle]) =>
+              action.payload !== angle.edge1Id &&
+              action.payload !== angle.edge2Id
+          )
         )
       };
     }

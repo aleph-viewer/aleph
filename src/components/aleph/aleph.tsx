@@ -1062,7 +1062,6 @@ export class Aleph {
     });
   }
 
-  // TODO: Add Angle selection by accounting for type of the selected graph item
   private _graphSelectedHandler(event: CustomEvent): void {
     // todo: change to graphEnabled
     if (!this.graphEnabled) {

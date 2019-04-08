@@ -1,7 +1,7 @@
 import { AframeRegistry, AframeComponent } from "../interfaces";
 import { Constants } from "../Constants";
 import { ThreeUtils, AlGraphEvents } from "../utils";
-import { AlGraphEntryType } from "../enums/";
+import { AlGraphEntryType } from "../enums";
 
 interface AlAngleState {
   selected: boolean;
