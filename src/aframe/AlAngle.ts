@@ -191,6 +191,14 @@ export class AlAngle implements AframeRegistry {
         if (oldData && oldData.angle !== this.data.angle) {
           this.createMesh();
         }
+
+        if (state.hovered) {
+          state.material.color = new THREE.Color(Constants.nodeColors.hovered);
+        } else if (state.selected) {
+          state.material.color = new THREE.Color(Constants.nodeColors.selected);
+        } else {
+          state.material.color = new THREE.Color(Constants.nodeColors.normal);
+        }
       },
 
       tickFunction(): void {

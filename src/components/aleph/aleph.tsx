@@ -645,7 +645,7 @@ export class Aleph {
             id={angleId}
             position={centralNode.position}
             al-angle={`
-              selected: ${false};
+              selected: ${this.selected === angleId};
               edge0Pos: ${ThreeUtils.vector3ToString(edge1Pos)};
               edge1Pos: ${ThreeUtils.vector3ToString(edge2Pos)};
               position: ${ThreeUtils.vector3ToString(position)};
