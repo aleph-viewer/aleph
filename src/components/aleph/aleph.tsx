@@ -151,21 +151,6 @@ export class Aleph {
   @Method()
   async load(src: string): Promise<void> {
     // validate
-    const fileExtension: string = GetUtils.getFileExtension(src);
-
-    if (Object.values(MeshFileType).includes(fileExtension)) {
-      if (this.displayMode !== DisplayMode.MESH) {
-        throw new Error(
-          "When setting 'src' to a mesh file you must set 'displayMode' to 'mesh'"
-        );
-      }
-    } else {
-      if (this.displayMode === DisplayMode.MESH) {
-        throw new Error(
-          "When setting 'src' to a non-mesh file you must set 'displayMode' to either 'slices' or 'volume'"
-        );
-      }
-    }
 
     if (this.src) {
       this._setSrc(null); // shows loading spinner and resets gltf-model
