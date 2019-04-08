@@ -59,7 +59,8 @@ import {
   AlNodeSpawnerEvents,
   AlOrbitControlEvents
 } from "../../aframe";
-import { AlGraphEntryType } from "../../enums/AlGraphEntryType";
+import { AlGraphEntryType } from "../../enums";
+import { AlGraph } from "../../interfaces/AlGraph";
 type Entity = import("aframe").Entity;
 type Scene = import("aframe").Scene;
 //#endregion
@@ -150,21 +151,6 @@ export class Aleph {
   @Method()
   async load(src: string): Promise<void> {
     // validate
-    const fileExtension: string = GetUtils.getFileExtension(src);
-
-    if (Object.values(MeshFileType).includes(fileExtension)) {
-      if (this.displayMode !== DisplayMode.MESH) {
-        throw new Error(
-          "When setting 'src' to a mesh file you must set 'displayMode' to 'mesh'"
-        );
-      }
-    } else {
-      if (this.displayMode === DisplayMode.MESH) {
-        throw new Error(
-          "When setting 'src' to a non-mesh file you must set 'displayMode' to either 'slices' or 'volume'"
-        );
-      }
-    }
 
     if (this.src) {
       this._setSrc(null); // shows loading spinner and resets gltf-model
@@ -202,8 +188,29 @@ export class Aleph {
   }
 
   @Method()
-  async setNodes(nodes: Map<string, AlNodeSerial>): Promise<void> {
-    this._setNodes(nodes);
+  async setGraph(graph: AlGraph): Promise<void> {
+    if (graph.nodes) {
+      const nodes: Map<string, AlNodeSerial> = new Map(graph.nodes);
+      nodes.forEach((value: AlNodeSerial, key: string) => {
+        this.appSetNode([key, value]);
+      });
+    }
+
+    if (graph.edges) {
+      const edges: Map<string, AlEdgeSerial> = new Map(graph.edges);
+      edges.forEach((value: AlEdgeSerial, key: string) => {
+        this.appSetEdge([key, value]);
+      });
+    }
+
+    if (graph.angles) {
+      const angles: Map<string, AlAngleSerial> = new Map(graph.angles);
+      angles.forEach((value: AlAngleSerial, key: string) => {
+        this.appSetAngle([key, value]);
+      });
+    }
+
+    this.onChanged.emit(this._getAppState());
   }
 
   @Method()
@@ -212,8 +219,8 @@ export class Aleph {
   }
 
   @Method()
-  async clearNodes(): Promise<void> {
-    this._clearNodes();
+  async clearGraph(): Promise<void> {
+    this._clearGraph();
   }
 
   @Method()
@@ -224,6 +231,11 @@ export class Aleph {
   @Method()
   async deleteEdge(edgeId: string): Promise<void> {
     this._deleteEdge(edgeId);
+  }
+
+  @Method()
+  async deleteAngle(angleId: string): Promise<void> {
+    this._deleteAngle(angleId);
   }
 
   //#endregion
@@ -500,6 +512,7 @@ export class Aleph {
             `}
             al-look-to-camera
             al-render-overlaid-text
+            visible={`${this.selected === nodeId}`}
             position={ThreeUtils.vector3ToString(textOffset)}
             id={`${nodeId}-label`}
           />
@@ -554,6 +567,7 @@ export class Aleph {
                 width: ${Constants.fontSizeSmall * this._boundingSphereRadius}
               `}
               position={ThreeUtils.vector3ToString(textOffset)}
+              visible={`${this.selected === edgeId}`}
               al-look-to-camera
               al-render-overlaid-text
             />
@@ -655,6 +669,7 @@ export class Aleph {
               position={ThreeUtils.vector3ToString(
                 position.clone().add(textOffset)
               )}
+              visible={`${this.selected === angleId}`}
               al-look-to-camera
               al-render-overlaid-text
             />
@@ -777,21 +792,34 @@ export class Aleph {
 
       this._setEdge([edgeId, newEdge]);
     } else {
-      console.log("matching edge found");
+      console.log("edge already exists");
     }
   }
 
-  private _createAngle(edge1: string, edge2: string): void {
-    const newAngle: AlAngleSerial = {
-      edge1Id: edge1,
-      edge2Id: edge2
-    };
-    const angleId: string = GraphUtils.getNextId(
-      AlGraphEntryType.ANGLE,
-      this.angles
+  private _createAngle(edge1Id: string, edge2Id: string): void {
+    // check if there is already an angle connecting these two edges
+    const match: [string, AlAngleSerial] | undefined = [...this.angles].find(
+      ([_id, angle]) => {
+        return (
+          (angle.edge1Id === edge1Id && angle.edge2Id === edge2Id) ||
+          (angle.edge1Id === edge2Id && angle.edge2Id === edge1Id)
+        );
+      }
     );
+    if (!match) {
+      const newAngle: AlAngleSerial = {
+        edge1Id: edge1Id,
+        edge2Id: edge2Id
+      };
+      const angleId: string = GraphUtils.getNextId(
+        AlGraphEntryType.ANGLE,
+        this.angles
+      );
 
-    this._setAngle([angleId, newAngle]);
+      this._setAngle([angleId, newAngle]);
+    } else {
+      console.log("angle already exists");
+    }
   }
 
   private _getAppState(): AlAppState {
@@ -799,15 +827,10 @@ export class Aleph {
     return this.store.getState().app;
   }
 
-  private _clearNodes(): void {
+  private _clearGraph(): void {
     this.appClearNodes();
-    this.onChanged.emit(this._getAppState());
-  }
-
-  private _setNodes(nodes: Map<string, AlNodeSerial>): void {
-    nodes.forEach((value: AlNodeSerial, key: string) => {
-      this.appSetNode([key, value]);
-    });
+    this.appClearEdges();
+    this.appClearAngles();
     this.onChanged.emit(this._getAppState());
   }
 
@@ -907,6 +930,11 @@ export class Aleph {
     this.onChanged.emit(this._getAppState());
   }
 
+  private _deleteAngle(angleId: string): void {
+    this.appDeleteAngle(angleId);
+    this.onChanged.emit(this._getAppState());
+  }
+
   private _setGraphEnabled(enabled: boolean): void {
     this.appSetGraphEnabled(enabled);
     this.onChanged.emit(this._getAppState());
@@ -950,6 +978,8 @@ export class Aleph {
           this._deleteNode(this.selected);
         } else if (this.edges.has(this.selected)) {
           this._deleteEdge(this.selected);
+        } else if (this.angles.has(this.selected)) {
+          this._deleteAngle(this.selected);
         }
       }
     }
@@ -1028,7 +1058,6 @@ export class Aleph {
     });
   }
 
-  // TODO: Add Angle selection by accounting for type of the selected graph item
   private _graphSelectedHandler(event: CustomEvent): void {
     // todo: change to graphEnabled
     if (!this.graphEnabled) {
@@ -1064,6 +1093,10 @@ export class Aleph {
           this._createAngle(this.selected, this._graphIntersection);
         }
         this._selectEdge(id);
+        break;
+      }
+      case AlGraphEntryType.ANGLE: {
+        this._selectAngle(id);
         break;
       }
     }
@@ -1157,13 +1190,13 @@ export class Aleph {
     );
 
     this._scene.addEventListener(
-      AlGraphEvents.INTERSECTION,
+      AlGraphEvents.POINTER_OVER,
       this._intersectingGraphHandler,
       false
     );
 
     this._scene.addEventListener(
-      AlGraphEvents.INTERSECTION_CLEARED,
+      AlGraphEvents.POINTER_OUT,
       this._intersectionGraphClearedHandler,
       false
     );

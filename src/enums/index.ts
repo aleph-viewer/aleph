@@ -1,6 +1,7 @@
-import { RayType } from "./RayType";
+import { AlGraphEntryType } from "./AlGraphEntryType";
+import { DisplayMode } from "./DisplayMode";
 import { MeshFileType } from "./MeshFileType";
 import { Orientation } from "./Orientation";
-import { DisplayMode } from "./DisplayMode";
+import { RayType } from "./RayType";
 
-export { RayType, MeshFileType, Orientation, DisplayMode };
+export { AlGraphEntryType, RayType, MeshFileType, Orientation, DisplayMode };

@@ -1,7 +1,7 @@
 import { AframeRegistry, AframeComponent } from "../interfaces";
 import { Constants } from "../Constants";
 import { ThreeUtils, AlGraphEvents, ShaderUtils } from "../utils";
-import { AlGraphEntryType } from "../enums/AlGraphEntryType";
+import { AlGraphEntryType } from "../enums";
 
 interface AlEdgeState {
   selected: boolean;
@@ -22,9 +22,9 @@ interface AlEdgeObject extends AframeComponent {
   bindListeners(): void;
   addListeners(): void;
   removeListeners(): void;
-  elMouseDown(_event: CustomEvent): void;
-  elRaycasterIntersected(_event: CustomEvent): void;
-  elRaycasterIntersectedCleared(_event: CustomEvent): void;
+  pointerDown(_event: CustomEvent): void;
+  pointerOver(_event: CustomEvent): void;
+  pointerOut(_event: CustomEvent): void;
 }
 
 export class AlEdge implements AframeRegistry {
@@ -40,45 +40,40 @@ export class AlEdge implements AframeRegistry {
       },
 
       bindListeners(): void {
-        this.elMouseDown = this.elMouseDown.bind(this);
-        this.elRaycasterIntersected = this.elRaycasterIntersected.bind(this);
-        this.elRaycasterIntersectedCleared = this.elRaycasterIntersectedCleared.bind(
-          this
-        );
+        this.pointerDown = this.pointerDown.bind(this);
+        this.pointerOver = this.pointerOver.bind(this);
+        this.pointerOut = this.pointerOut.bind(this);
         this.createMesh = this.createMesh.bind(this);
       },
 
       addListeners(): void {
-        this.el.sceneEl.addEventListener("mousedown", this.elMouseDown, {
+        this.el.sceneEl.addEventListener("mousedown", this.pointerDown, {
+          capture: false,
+          once: false,
+          passive: true
+        });
+        this.el.addEventListener("raycaster-intersected", this.pointerOver, {
           capture: false,
           once: false,
           passive: true
         });
         this.el.addEventListener(
-          "raycaster-intersected",
-          this.elRaycasterIntersected,
-          { capture: false, once: false, passive: true }
-        );
-        this.el.addEventListener(
           "raycaster-intersected-cleared",
-          this.elRaycasterIntersectedCleared,
+          this.pointerOut,
           { capture: false, once: false, passive: true }
         );
       },
 
       removeListeners(): void {
-        this.el.sceneEl.removeEventListener("mousedown", this.elMouseDown);
-        this.el.removeEventListener(
-          "raycaster-intersected",
-          this.elRaycasterIntersected
-        );
+        this.el.sceneEl.removeEventListener("mousedown", this.pointerDown);
+        this.el.removeEventListener("raycaster-intersected", this.pointerOver);
         this.el.removeEventListener(
           "raycaster-intersected-cleared",
-          this.elRaycasterIntersectedCleared
+          this.pointerOut
         );
       },
 
-      elMouseDown(_event: CustomEvent): void {
+      pointerDown(_event: CustomEvent): void {
         let state = this.state as AlEdgeState;
         if (state.hovered) {
           this.el.sceneEl.emit(
@@ -89,20 +84,20 @@ export class AlEdge implements AframeRegistry {
         }
       },
 
-      elRaycasterIntersected(_event: CustomEvent): void {
+      pointerOver(_event: CustomEvent): void {
         let state = this.state as AlEdgeState;
         state.hovered = true;
         this.el.sceneEl.emit(
-          AlGraphEvents.INTERSECTION,
+          AlGraphEvents.POINTER_OVER,
           { id: this.el.id },
           false
         );
       },
 
-      elRaycasterIntersectedCleared(_event: CustomEvent): void {
+      pointerOut(_event: CustomEvent): void {
         let state = this.state as AlEdgeState;
         state.hovered = false;
-        this.el.sceneEl.emit(AlGraphEvents.INTERSECTION_CLEARED, {}, false);
+        this.el.sceneEl.emit(AlGraphEvents.POINTER_OUT, {}, false);
       },
 
       createMesh() {

@@ -216,7 +216,7 @@ export class AlOrbitControl implements AframeRegistry {
         if (this.data.animating) {
           let nextFrame: AlCameraSerial = this.state.animationCache.shift();
 
-          if (nextFrame.position) {
+          if (nextFrame && nextFrame.position && nextFrame.target) {
             controls.object.position.copy(nextFrame.position);
             this.el.getObject3D("camera").position.copy(nextFrame.position);
             controls.target.copy(nextFrame.target);

@@ -1,10 +1,10 @@
-import { AlGraphEntry } from "../interfaces/AlGraphEntry";
-import { AlGraphEntryType } from "../enums/AlGraphEntryType";
+import { AlGraphEntry } from "../interfaces";
+import { AlGraphEntryType } from "../enums";
 
 export class AlGraphEvents {
   static SELECTED: string = "al-graph-selected";
-  static INTERSECTION: string = "al-graph-intersection";
-  static INTERSECTION_CLEARED: string = "al-graph-intersection-cleared";
+  static POINTER_OVER: string = "al-graph-pointer-over";
+  static POINTER_OUT: string = "al-graph-pointer-out";
   static DRAGGING: string = "al-graph-dragging";
   static POINTER_DOWN: string = "al-graph-pointer-down";
   static POINTER_UP: string = "al-graph-pointer-up";

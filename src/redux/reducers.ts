@@ -8,6 +8,8 @@ import {
   AlEdgeSerial,
   AlAngleSerial
 } from "../interfaces";
+import { GetUtils } from "../utils";
+import { MeshFileType } from "../enums";
 
 export const getInitialState = () => {
   return {
@@ -39,10 +41,20 @@ export const app = (
   switch (action.type) {
     //#region src
     case TypeKeys.APP_SET_SRC: {
+      let displayMode: DisplayMode = DisplayMode.MESH;
+
+      if (action.payload) {
+        const fileExtension: string = GetUtils.getFileExtension(action.payload);
+        if (!Object.values(MeshFileType).includes(fileExtension)) {
+          displayMode = DisplayMode.SLICES;
+        }
+      }
+
       return {
         ...state,
         src: action.payload,
         srcLoaded: false,
+        displayMode: displayMode,
         selected: null,
         nodes: new Map<string, AlNodeSerial>(),
         edges: new Map<string, AlEdgeSerial>(),
@@ -136,6 +148,13 @@ export const app = (
         selected: state.selected === action.payload ? null : state.selected,
         edges: new Map(
           [...state.edges].filter(([key]) => key !== action.payload)
+        ),
+        angles: new Map(
+          [...state.angles].filter(
+            ([_key, angle]) =>
+              action.payload !== angle.edge1Id &&
+              action.payload !== angle.edge2Id
+          )
         )
       };
     }
