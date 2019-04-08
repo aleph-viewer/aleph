@@ -14,9 +14,6 @@ export class AlVolumetricModel implements AframeRegistry {
       },
 
       init(): void {
-        this.onEnterVR = this.onEnterVR.bind(this);
-        this.onExitVR = this.onExitVR.bind(this);
-
         this.model = null;
         this.loader = new VolumetricLoader();
 
