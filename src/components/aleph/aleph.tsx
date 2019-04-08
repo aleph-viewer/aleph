@@ -283,7 +283,6 @@ export class Aleph {
   async setBoundingBoxVisible(visible: boolean): Promise<void> {
     this._setBoundingBoxVisible(visible);
   }
-
   //#endregion
 
   @Event() onChanged: EventEmitter;
@@ -546,7 +545,6 @@ export class Aleph {
             class="collidable"
             id={edgeId}
             position={ThreeUtils.vector3ToString(centoid)}
-            // This.SelectedEdge
             al-edge={`
               length: ${dist};
               node1: ${node1.position};
@@ -751,7 +749,6 @@ export class Aleph {
       </a-scene>
     );
   }
-
   render(): JSX.Element {
     return (
       <div
