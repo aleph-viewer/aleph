@@ -7,6 +7,7 @@ import {
 import { Constants } from "../Constants";
 import { Entity } from "aframe";
 import { ThreeUtils } from ".";
+import { Mesh } from "three";
 
 export class GetUtils {
   static getFileExtension(file: string): string {
@@ -26,10 +27,7 @@ export class GetUtils {
     return geom.boundingSphere.center;
   }
 
-  static getCameraStateFromEntity(entity: Entity): AlCameraSerial {
-    const entityMap = entity.object3DMap;
-    let entityMesh: THREE.Mesh = entityMap.mesh as THREE.Mesh;
-
+  static getCameraStateFromMesh(entityMesh: Mesh): AlCameraSerial {
     let sceneCenter: THREE.Vector3;
     let initialPosition: THREE.Vector3;
     let sceneDistance: number;

@@ -1,5 +1,5 @@
 import { AlGltfModel, AlGltfModelEvents } from "./AlGltfModel";
-import { AlVolumetricModel } from "./AlVolumetricModel";
+import { AlVolumetricSlices } from "./AlVolumetricSlices";
 import { AlNode, AlNodeEvents } from "./AlNode";
 import { AlNodeSpawner, AlNodeSpawnerEvents } from "./AlNodeSpawner";
 import { AlOrbitControl, AlOrbitControlEvents } from "./AlOrbitControl";
@@ -14,22 +14,22 @@ import { AlEdge } from "./AlEdge";
 import { AlAngle } from "./AlAngle";
 
 export {
-  AlGltfModel,
-  AlVolumetricModel,
-  AlNode,
-  AlNodeSpawner,
-  AlOrbitControl,
-  AlSpinner,
-  AlNodeSpawnerEvents,
-  AlGltfModelEvents,
-  AlOrbitControlEvents,
-  AlNodeEvents,
-  AlLookToCamera,
-  AlRenderOverlaid,
-  AlFixedToOrbitCamera,
-  AlRenderOverlaidText,
-  AlRenderOverlaidLine,
-  AlRenderOrder,
+  AlAngle,
   AlEdge,
-  AlAngle
+  AlFixedToOrbitCamera,
+  AlGltfModel,
+  AlGltfModelEvents,
+  AlLookToCamera,
+  AlNode,
+  AlNodeEvents,
+  AlNodeSpawner,
+  AlNodeSpawnerEvents,
+  AlOrbitControl,
+  AlOrbitControlEvents,
+  AlRenderOrder,
+  AlRenderOverlaid,
+  AlRenderOverlaidLine,
+  AlRenderOverlaidText,
+  AlSpinner,
+  AlVolumetricSlices
 };

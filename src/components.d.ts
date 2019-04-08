@@ -49,7 +49,7 @@ export namespace Components {
     'boundingBoxVisible': boolean;
     'displayMode': DisplayMode;
     'graphEnabled': boolean;
-    'nodesVisible': boolean;
+    'graphVisible': boolean;
     'optionsEnabled': boolean;
     'optionsVisible': boolean;
     'orientation': Orientation;
@@ -57,7 +57,7 @@ export namespace Components {
     'slicesWindowCenter': number;
     'slicesWindowWidth': number;
     'stack': any;
-    'stackHelper': AMI.StackHelper;
+    'stackhelper': AMI.StackHelper;
     'volumeSteps': number;
     'volumeWindowCenter': number;
     'volumeWindowWidth': number;
@@ -66,7 +66,7 @@ export namespace Components {
     'boundingBoxVisible'?: boolean;
     'displayMode'?: DisplayMode;
     'graphEnabled'?: boolean;
-    'nodesVisible'?: boolean;
+    'graphVisible'?: boolean;
     'onOnSetBoundingBoxVisible'?: (event: CustomEvent) => void;
     'onOnSetDisplayMode'?: (event: CustomEvent) => void;
     'onOnSetGraphEnabled'?: (event: CustomEvent) => void;
@@ -85,7 +85,7 @@ export namespace Components {
     'slicesWindowCenter'?: number;
     'slicesWindowWidth'?: number;
     'stack'?: any;
-    'stackHelper'?: AMI.StackHelper;
+    'stackhelper'?: AMI.StackHelper;
     'volumeSteps'?: number;
     'volumeWindowCenter'?: number;
     'volumeWindowWidth'?: number;
@@ -178,6 +178,7 @@ export namespace Components {
     'dracoDecoderPath'?: string | null;
     'height'?: string;
     'onOnChanged'?: (event: CustomEvent) => void;
+    'onOnLoad'?: (event: CustomEvent) => void;
     'spinnerColor'?: string;
     'width'?: string;
   }

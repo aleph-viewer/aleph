@@ -183,6 +183,7 @@
           aleph.addEventListener(
             "onChanged",
             function(e) {
+              state.displayMode = e.detail.displayMode;
               state.srcLoaded = e.detail.srcLoaded;
               state.nodes = e.detail.nodes;
               state.edges = e.detail.edges;
@@ -191,6 +192,18 @@
             },
             false
           );
+
+          aleph.addEventListener(
+            "onLoad",
+            function(ev) {
+              if (state.displayMode === "slices") {
+                alControlPanel.stack = ev.detail.stack;
+                alControlPanel.stackhelper = ev.detail.stackhelper;
+              }
+            },
+            false
+          );
+
         });
 
         alUrlPicker.componentOnReady().then(function() {
@@ -310,6 +323,7 @@
         alNodeEditor.node = getSelectedNode();
         alEdgeEditor.edge = getSelectedEdge();
         alAngleEditor.angle = getSelectedAngle();
+        alControlPanel.displayMode = state.displayMode;
 
         lastState = Object.assign({}, state);
       }
