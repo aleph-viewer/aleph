@@ -38,14 +38,13 @@ export class AlGltfModel implements AframeRegistry {
             let res = GLTFUtils.setup(gltfModel);
             self.model = res.mesh;
             el.setObject3D("mesh", self.model);
-            el.sceneEl.emit(AlGltfModelEvents.LOADED, {
-              format: "gltf",
-              model: self.model
-            });
             el.sceneEl.emit(
-              AlGltfModelEvents.MESH_DISTANCE,
-              { dist: res.maxDist },
-              true
+              AlGltfModelEvents.LOADED,
+              {
+                format: "gltf",
+                model: self.model
+              },
+              false
             );
           },
           undefined /* onProgress */,
@@ -55,10 +54,14 @@ export class AlGltfModel implements AframeRegistry {
                 ? error.message
                 : "Failed to load glTF model";
             console.warn(message);
-            el.sceneEl.emit(AlGltfModelEvents.ERROR, {
-              format: "gltf",
-              src: src
-            });
+            el.sceneEl.emit(
+              AlGltfModelEvents.ERROR,
+              {
+                format: "gltf",
+                src: src
+              },
+              false
+            );
           }
         );
       },
@@ -79,6 +82,5 @@ export class AlGltfModel implements AframeRegistry {
 
 export class AlGltfModelEvents {
   static LOADED: string = "al-model-loaded";
-  static MESH_DISTANCE: string = "al-mesh-distance";
   static ERROR: string = "al-model-error";
 }

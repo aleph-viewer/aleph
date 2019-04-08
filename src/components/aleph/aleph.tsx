@@ -61,6 +61,7 @@ import {
 } from "../../aframe";
 import { AlGraphEntryType } from "../../enums";
 import { AlGraph } from "../../interfaces/AlGraph";
+import { AlVolumetricSlicesEvents } from "../../aframe/AlVolumetricSlices";
 type Entity = import("aframe").Entity;
 type Scene = import("aframe").Scene;
 //#endregion
@@ -287,6 +288,7 @@ export class Aleph {
   //#endregion
 
   @Event() onChanged: EventEmitter;
+  @Event() onLoad: EventEmitter;
 
   componentWillLoad() {
     CreateUtils.createAframeComponents();
@@ -434,7 +436,7 @@ export class Aleph {
           material={`
           wireframe: ${this._backboardVisible};
           transparent: true;
-          opacity: 0.0;
+          opacity: ${this._backboardVisible ? `1.0` : `0.0`};
           side: double;
         `}
           ref={el => (this._backboard = el)}
@@ -939,21 +941,35 @@ export class Aleph {
     this.onChanged.emit(this._getAppState());
   }
 
-  private _srcLoaded(): void {
-    const mesh: THREE.Mesh = this._targetEntity.object3DMap.mesh as THREE.Mesh;
-    mesh.geometry.computeBoundingSphere();
+  private _srcLoaded(ev: any): void {
+    const aframeMesh: THREE.Mesh = this._targetEntity.object3DMap
+      .mesh as THREE.Mesh;
+    let mesh: THREE.Mesh;
+
+    switch (this.displayMode) {
+      case DisplayMode.MESH: {
+        mesh = aframeMesh;
+        break;
+      }
+      case DisplayMode.SLICES: {
+        mesh = aframeMesh.children[1].children[0] as THREE.Mesh;
+        break;
+      }
+      case DisplayMode.VOLUME: {
+        break;
+      }
+    }
+
+    let result: AlCameraSerial = GetUtils.getCameraStateFromMesh(mesh);
     this._boundingSphereRadius = mesh.geometry.boundingSphere.radius;
 
-    let result = GetUtils.getCameraStateFromEntity(this._targetEntity);
     if (result) {
-      this.appSetCamera({
-        position: result.position,
-        target: result.target
-      });
+      this.appSetCamera(result);
     }
 
     this.appSetSrcLoaded(true);
     this.onChanged.emit(this._getAppState());
+    this.onLoad.emit(ev.detail);
   }
   //#endregion
 
@@ -1174,6 +1190,12 @@ export class Aleph {
 
     this._scene.addEventListener(
       AlGltfModelEvents.LOADED,
+      this._srcLoaded,
+      false
+    );
+
+    this._scene.addEventListener(
+      AlVolumetricSlicesEvents.LOADED,
       this._srcLoaded,
       false
     );

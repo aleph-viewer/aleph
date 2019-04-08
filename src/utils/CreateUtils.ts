@@ -1,25 +1,25 @@
 import {
+  AlAngle,
+  AlEdge,
+  AlFixedToOrbitCamera,
   AlGltfModel,
-  AlVolumetricModel,
+  AlLookToCamera,
   AlNode,
   AlNodeSpawner,
   AlOrbitControl,
-  AlSpinner,
-  AlFixedToOrbitCamera,
-  AlLookToCamera,
-  AlRenderOverlaid,
-  AlRenderOverlaidText,
-  AlRenderOverlaidLine,
   AlRenderOrder,
-  AlEdge,
-  AlAngle
+  AlRenderOverlaid,
+  AlRenderOverlaidLine,
+  AlRenderOverlaidText,
+  AlSpinner,
+  AlVolumetricSlices
 } from "../aframe";
 
 export class CreateUtils {
   static createAframeComponents(): void {
     AFRAME.registerGeometry(AlSpinner.Tag, AlSpinner.Object);
     AFRAME.registerComponent(AlGltfModel.Tag, AlGltfModel.Object);
-    AFRAME.registerComponent(AlVolumetricModel.Tag, AlVolumetricModel.Object);
+    AFRAME.registerComponent(AlVolumetricSlices.Tag, AlVolumetricSlices.Object);
     AFRAME.registerComponent(AlNode.Tag, AlNode.Object);
     AFRAME.registerComponent(AlNodeSpawner.Tag, AlNodeSpawner.Object);
     AFRAME.registerComponent(AlOrbitControl.Tag, AlOrbitControl.Object);
