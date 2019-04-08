@@ -1,11 +1,14 @@
 import { AframeRegistry, AframeComponent } from "../interfaces";
 import { Constants } from "../Constants";
-import { ThreeUtils, AlGraphEvents } from "../utils";
+import { ThreeUtils, AlGraphEvents, ShaderUtils } from "../utils";
 import { AlGraphEntryType } from "../enums";
 
 interface AlAngleState {
   selected: boolean;
   hovered: boolean;
+  outlineGeometry: THREE.CylinderGeometry;
+  outlineMaterial: THREE.MeshBasicMaterial;
+  outlineMesh: THREE.Mesh;
   geometry: THREE.CylinderGeometry;
   material: THREE.MeshBasicMaterial;
   mesh: THREE.Mesh;
@@ -135,7 +138,6 @@ export class AlAngle implements AframeRegistry {
         );
 
         let material = new THREE.MeshBasicMaterial();
-        material.depthTest = false;
         const mesh = new THREE.Mesh(geometry, material);
         mesh.applyMatrix(orientation);
         mesh.position.copy(ThreeUtils.objectToVector3(this.data.position));
@@ -143,6 +145,22 @@ export class AlAngle implements AframeRegistry {
         this.state.geometry = geometry;
         this.state.material = material;
         this.state.mesh = mesh;
+
+        let outlineGeometry = new THREE.CylinderGeometry(
+          this.data.radius,
+          this.data.radius,
+          this.data.length,
+          6,
+          4
+        );
+        let outlineMaterial = ShaderUtils.getHaloMaterial();
+        const outlineMesh = new THREE.Mesh(outlineGeometry, outlineMaterial);
+
+        this.state.outlineGeometry = outlineGeometry;
+        this.state.outlineMaterialt = outlineMaterial;
+        this.state.outlineMesh = outlineMesh;
+
+        mesh.add(outlineMesh);
 
         this.el.setObject3D("mesh", mesh);
         (this.el.object3D as THREE.Object3D).renderOrder = 996;
