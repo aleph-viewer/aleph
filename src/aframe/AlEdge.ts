@@ -135,7 +135,6 @@ export class AlEdge implements AframeRegistry {
           4
         );
         let material = new THREE.MeshBasicMaterial();
-        // material.depthTest = false;
         const mesh = new THREE.Mesh(geometry, material);
         mesh.applyMatrix(orientation);
 

@@ -284,7 +284,6 @@ export class Aleph {
   async setBoundingBoxVisible(visible: boolean): Promise<void> {
     this._setBoundingBoxVisible(visible);
   }
-
   //#endregion
 
   @Event() onChanged: EventEmitter;
@@ -548,7 +547,6 @@ export class Aleph {
             class="collidable"
             id={edgeId}
             position={ThreeUtils.vector3ToString(centoid)}
-            // This.SelectedEdge
             al-edge={`
               length: ${dist};
               node1: ${node1.position};
@@ -586,6 +584,7 @@ export class Aleph {
       const edge2 = this.edges.get(angle.edge2Id);
 
       if (edge1 && edge2) {
+        let radius = this._boundingSphereRadius * Constants.edgeSize;
         let centralNode;
         let node1;
         let node2;
@@ -628,9 +627,16 @@ export class Aleph {
           .normalize();
         let angle = dir2.angleTo(dir1);
 
-        let textOffset: THREE.Vector3 = new THREE.Vector3(0, 7.5, 0);
+        let edge1Pos: THREE.Vector3 = dir1.clone().multiplyScalar(radius * 25);
+        let edge2Pos: THREE.Vector3 = dir2.clone().multiplyScalar(radius * 25);
+        let length = edge1Pos.clone().distanceTo(edge2Pos.clone());
+        let position: THREE.Vector3 = edge1Pos
+          .clone()
+          .add(edge2Pos.clone())
+          .divideScalar(2);
+
+        let textOffset: THREE.Vector3 = new THREE.Vector3(0, 2.5, 0);
         let scale = (node1.scale + node2.scale + centralNode.scale) / 3;
-        //let radius = this._boundingSphereRadius * Constants.edgeSize;
         textOffset.multiplyScalar(scale);
 
         return (
@@ -640,10 +646,11 @@ export class Aleph {
             position={centralNode.position}
             al-angle={`
               selected: ${this.selected === angleId};
-              nodeLeftPosition: ${node1.position};
-              nodeRightPosition: ${node2.position};
-              nodeCenterPosition: ${centralNode.position};
-              radius: ${this._boundingSphereRadius};
+              edge0Pos: ${ThreeUtils.vector3ToString(edge1Pos)};
+              edge1Pos: ${ThreeUtils.vector3ToString(edge2Pos)};
+              position: ${ThreeUtils.vector3ToString(position)};
+              length: ${length};
+              radius: ${radius};
               angle: ${angle};
             `}
           >
@@ -659,7 +666,9 @@ export class Aleph {
                 anchor: center;
                 width: ${Constants.fontSizeSmall * this._boundingSphereRadius}
               `}
-              position={ThreeUtils.vector3ToString(textOffset)}
+              position={ThreeUtils.vector3ToString(
+                position.clone().add(textOffset)
+              )}
               visible={`${this.selected === angleId}`}
               al-look-to-camera
               al-render-overlaid-text
@@ -742,7 +751,6 @@ export class Aleph {
       </a-scene>
     );
   }
-
   render(): JSX.Element {
     return (
       <div

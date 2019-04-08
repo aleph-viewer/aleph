@@ -23,7 +23,7 @@ export class AlFixedToOrbitCamera implements AframeRegistry {
       init(_data?: any) {
         this.tickFunction = AFRAME.utils.throttle(
           this.tickFunction,
-          Constants.minFrameMS,
+          Constants.minFrameMS / 2,
           this
         );
 
