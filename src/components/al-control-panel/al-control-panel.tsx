@@ -22,7 +22,7 @@ export class AlControlPanel {
 
   @Prop({ mutable: true }) boundingBoxVisible: boolean = false;
   @Prop({ mutable: true }) displayMode: DisplayMode = DisplayMode.MESH;
-  @Prop({ mutable: true }) optionsEnabled: boolean = false;
+  @Prop({ mutable: true }) optionsEnabled: boolean = true;
   @Prop({ mutable: true }) optionsVisible: boolean = true;
   @Prop({ mutable: true }) orientation: Orientation = Orientation.CORONAL;
   @Prop({ mutable: true }) slicesIndex: number;
@@ -125,6 +125,7 @@ export class AlControlPanel {
         <ion-item id="mode">
           <ion-icon name="eye" slot="start" />
           <select
+            slot="end"
             onChange={e =>
               this._displayMode((e.srcElement as HTMLSelectElement)
                 .value as DisplayMode)
@@ -167,6 +168,7 @@ export class AlControlPanel {
     return null;
   }
 
+  /*
   renderOptionsToggle(): JSX.Element {
     if (this.optionsVisible) {
       return (
@@ -181,17 +183,23 @@ export class AlControlPanel {
       );
     }
   }
+  */
 
   renderBoundingBoxEnabled(): JSX.Element {
     return (
       <ion-item>
-        <ion-label>Bounding box</ion-label>
+        <ion-icon name="cube" slot="start" />
         <ion-toggle
+          slot="end"
           checked={this.boundingBoxVisible}
           onIonChange={e => this._boundingBoxVisible(e.detail.checked)}
         />
       </ion-item>
     );
+  }
+
+  private _reverseNumber(num: number, min: number, max: number): number {
+    return max + min - num;
   }
 
   renderOptions(): JSX.Element {
@@ -278,9 +286,9 @@ export class AlControlPanel {
             <div>
               {this.renderBoundingBoxEnabled()}
               <ion-item>
-                <ion-label>Index</ion-label>
+                <ion-icon name="swap" slot="start" />
                 <ion-range
-                  pin="true"
+                  slot="end"
                   min="0"
                   max={indexMax}
                   value={index}
@@ -288,8 +296,9 @@ export class AlControlPanel {
                 />
               </ion-item>
               <ion-item>
-                <ion-label>Orientation</ion-label>
+                <ion-icon name="compass" slot="start" />
                 <select
+                  slot="end"
                   onChange={e =>
                     this._orientation((e.srcElement as HTMLSelectElement)
                       .value as Orientation)
@@ -316,23 +325,47 @@ export class AlControlPanel {
                 </select>
               </ion-item>
               <ion-item>
-                <ion-icon name="sunny" />
+                <ion-icon name="sunny" slot="start" />
                 <ion-range
-                  pin="true"
+                  slot="end"
                   min={windowCenterMin}
                   max={windowCenterMax}
-                  value={windowCenter}
-                  onIonChange={e => this._slicesWindowCenter(e.detail.value)}
+                  value={this._reverseNumber(
+                    windowCenter,
+                    windowCenterMin,
+                    windowCenterMax
+                  )}
+                  onIonChange={e =>
+                    this._slicesWindowCenter(
+                      this._reverseNumber(
+                        e.detail.value,
+                        windowCenterMin,
+                        windowCenterMax
+                      )
+                    )
+                  }
                 />
               </ion-item>
               <ion-item>
-                <ion-icon name="contrast" />
+                <ion-icon name="contrast" slot="start" />
                 <ion-range
-                  pin="true"
+                  slot="end"
                   min={windowWidthMin}
                   max={windowWidthMax}
-                  value={windowWidth}
-                  onIonChange={e => this._slicesWindowWidth(e.detail.value)}
+                  value={this._reverseNumber(
+                    windowWidth,
+                    windowWidthMin,
+                    windowWidthMax
+                  )}
+                  onIonChange={e =>
+                    this._slicesWindowWidth(
+                      this._reverseNumber(
+                        e.detail.value,
+                        windowWidthMin,
+                        windowWidthMax
+                      )
+                    )
+                  }
                 />
               </ion-item>
             </div>
@@ -440,7 +473,7 @@ export class AlControlPanel {
     return [
       this.renderDisplayModeToggle(),
       this.renderNodesToggle(),
-      this.renderOptionsToggle(),
+      //this.renderOptionsToggle(),
       this.renderOptions()
     ];
   }
