@@ -792,18 +792,30 @@ export class Aleph {
       }
     );
     if (!match) {
-      const newAngle: AlAngleSerial = {
-        edge1Id: edge1Id,
-        edge2Id: edge2Id
-      };
-      const angleId: string = GraphUtils.getNextId(
-        AlGraphEntryType.ANGLE,
-        this.angles
-      );
+      let edge1 = this.edges.get(edge1Id);
+      let edge2 = this.edges.get(edge2Id);
 
-      this._setAngle([angleId, newAngle]);
+      if (
+        edge1.node1Id === edge2.node1Id ||
+        edge1.node1Id == edge2.node2Id ||
+        edge1.node2Id == edge2.node1Id ||
+        edge1.node2Id === edge2.node2Id
+      ) {
+        const newAngle: AlAngleSerial = {
+          edge1Id: edge1Id,
+          edge2Id: edge2Id
+        };
+        const angleId: string = GraphUtils.getNextId(
+          AlGraphEntryType.ANGLE,
+          this.angles
+        );
+
+        this._setAngle([angleId, newAngle]);
+      } else {
+        console.warn("cannot create angle: edges not connected");
+      }
     } else {
-      console.log("angle already exists");
+      console.warn("cannot create angle: angle already exists");
     }
   }
 
