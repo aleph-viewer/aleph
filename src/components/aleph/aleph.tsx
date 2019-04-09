@@ -449,23 +449,23 @@ export class Aleph {
         ];
       }
       case DisplayMode.SLICES: {
-        return [
+        let ent = (
           <a-entity
             al-node-spawner={`
-              graphEnabled: ${this.graphEnabled};
-            `}
+            graphEnabled: ${this.graphEnabled};
+          `}
             class="collidable"
             id="target-entity"
             al-volumetric-slices={`
-              src: ${this.src};
-              index: ${this.slicesIndex};
-            `}
+            src: ${this.src};
+            index: ${this.slicesIndex};
+          `}
             position="0 0 0"
             scale="1 1 1"
             ref={(el: Entity) => (this._targetEntity = el)}
-          />,
-          backboard
-        ];
+          />
+        );
+        return [ent, backboard];
       }
     }
   }

@@ -21,8 +21,8 @@ export class AlVolumetricSlices implements AframeRegistry {
   public static get Object(): AlVolumetricSlicesObject {
     return {
       schema: {
-        src: { type: "string", default: "" },
-        index: { type: "number", default: 0 }
+        src: { type: "string" },
+        index: { type: "number" }
       },
 
       bindListeners(): void {
@@ -31,11 +31,18 @@ export class AlVolumetricSlices implements AframeRegistry {
       },
 
       addListeners(): void {
-        this.el.sceneEl.addEventListener(AlVolumetricSlicesEvents.INDEX_CHANGED, this.indexChanged(), false);
+        this.el.sceneEl.addEventListener(
+          AlVolumetricSlicesEvents.INDEX_CHANGED,
+          this.indexChanged,
+          false
+        );
       },
 
       removeListeners(): void {
-        this.el.sceneEl.removeEventListener(AlVolumetricSlicesEvents.INDEX_CHANGED);
+        this.el.sceneEl.removeEventListener(
+          AlVolumetricSlicesEvents.INDEX_CHANGED,
+          this.indexChanged
+        );
       },
 
       indexChanged(): void {
@@ -91,7 +98,7 @@ export class AlVolumetricSlices implements AframeRegistry {
           this.loadSrc();
         }
 
-        if (oldData.index !== this.data.index) {
+        if (oldData && oldData.index !== this.data.index) {
           if (this.state.stackhelper) {
             console.log("new index: ", this.data.index);
             this.state.stackhelper.index = this.data.index;
