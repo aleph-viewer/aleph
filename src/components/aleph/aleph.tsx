@@ -457,9 +457,9 @@ export class Aleph {
             class="collidable"
             id="target-entity"
             al-volumetric-slices={`
-            src: ${this.src};
-            index: ${this.slicesIndex};
-          `}
+              path: ${this.src};
+              index: ${this.slicesIndex};
+            `}
             position="0 0 0"
             scale="1 1 1"
             ref={(el: Entity) => (this._targetEntity = el)}

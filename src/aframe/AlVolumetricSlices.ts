@@ -10,45 +10,20 @@ interface AlVolumetricSlicesState {
 interface AlVolumetricSlicesObject extends AframeComponent {
   update(oldData): void;
   remove(): void;
-  loadSrc(): void;
-  bindListeners(): void;
-  addListeners(): void;
-  removeListeners(): void;
-  indexChanged(): void;
+  loadPath(): void;
+  bindMethods(): void;
 }
 
 export class AlVolumetricSlices implements AframeRegistry {
   public static get Object(): AlVolumetricSlicesObject {
     return {
       schema: {
-        src: { type: "string" },
+        path: { type: "string" },
         index: { type: "number" }
       },
 
-      bindListeners(): void {
-        this.loadSrc = this.loadSrc.bind(this);
-        this.indexChanged = this.indexChanged.bind(this);
-      },
-
-      addListeners(): void {
-        this.el.sceneEl.addEventListener(
-          AlVolumetricSlicesEvents.INDEX_CHANGED,
-          this.indexChanged,
-          false
-        );
-      },
-
-      removeListeners(): void {
-        this.el.sceneEl.removeEventListener(
-          AlVolumetricSlicesEvents.INDEX_CHANGED,
-          this.indexChanged
-        );
-      },
-
-      indexChanged(): void {
-        if (this.state.stackhelper) {
-          this.el.setObject3D("mesh", this.state.stackhelper);
-        }
+      bindMethods(): void {
+        this.loadPath = this.loadPath.bind(this);
       },
 
       init(): void {
@@ -64,21 +39,20 @@ export class AlVolumetricSlices implements AframeRegistry {
         */
 
         this.state = {} as AlVolumetricSlicesState;
-        this.bindListeners();
-        this.addListeners();
+        this.bindMethods();
       },
 
-      loadSrc(): void {
+      loadPath(): void {
         const state = this.state as AlVolumetricSlicesState;
         const el = this.el;
-        const src = this.data.src;
+        const path = this.data.path;
 
-        this.loader.load(src, el).then(stack => {
+        this.loader.load(path, el).then(stack => {
           state.stack = stack;
           state.stackhelper = new AMI.StackHelper(state.stack);
           state.stackhelper.bbox.visible = false;
           state.stackhelper.border.color = Constants.colorValues.blue;
-          this.indexChanged();
+          this.el.setObject3D("mesh", this.state.stackhelper);
           el.sceneEl.emit(
             AlVolumetricSlicesEvents.LOADED,
             {
@@ -91,23 +65,28 @@ export class AlVolumetricSlices implements AframeRegistry {
       },
 
       update(oldData): void {
-        if (!this.data.src) {
+        const data = this.data;
+        const state = this.state as AlVolumetricSlicesState;
+
+        if (!data.path) {
           return;
-        } else if (oldData && oldData.src !== this.data.src) {
-          this.remove();
-          this.loadSrc();
+        } else if (oldData && oldData.path !== data.path) {
+          this.loadPath();
         }
 
-        if (oldData && oldData.index !== this.data.index) {
-          if (this.state.stackhelper) {
-            console.log("new index: ", this.data.index);
-            this.state.stackhelper.index = this.data.index;
+        if (oldData && oldData.index !== data.index) {
+          if (state.stackhelper) {
+            state.stackhelper.index = data.index;
           }
+        }
+
+        if (state.stackhelper) {
+          console.log("al-slices-update: mesh set!");
+          this.el.setObject3D("mesh", state.stackhelper);
         }
       },
 
       remove(): void {
-        this.removeListeners();
         if (!this.model) {
           return;
         }
@@ -124,5 +103,4 @@ export class AlVolumetricSlices implements AframeRegistry {
 export class AlVolumetricSlicesEvents {
   static LOADED: string = "al-slices-loaded";
   static ERROR: string = "al-slices-error";
-  static INDEX_CHANGED: string = "al-slices-index-changed";
 }
