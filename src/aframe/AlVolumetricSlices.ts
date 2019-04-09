@@ -9,6 +9,8 @@ interface AlVolumetricSlicesState {
 
 interface AlVolumetricSlicesObject extends AframeComponent {
   update(oldData): void;
+  tickFunction(): void;
+  tick(): void;
   remove(): void;
   loadSrc(): void;
   bindListeners(): void;
@@ -21,8 +23,12 @@ export class AlVolumetricSlices implements AframeRegistry {
   public static get Object(): AlVolumetricSlicesObject {
     return {
       schema: {
+        srcLoaded: { type: "boolean" },
         src: { type: "string" },
-        index: { type: "number" }
+        index: { type: "number" },
+        orientation: { type: "string" },
+        slicesWindowWidth: { type: "number" },
+        slicesWindowCenter: { type: "number" }
       },
 
       bindListeners(): void {
@@ -52,17 +58,12 @@ export class AlVolumetricSlices implements AframeRegistry {
       },
 
       init(): void {
+        this.tickFunction = AFRAME.utils.throttle(
+          this.tickFunction,
+          Constants.minFrameMS,
+          this
+        );
         this.loader = new VolumetricLoader();
-
-        // todo: create lutcanvases container
-        /*
-        <div id="lut-container">
-          <div id="lut-min">0.0</div>
-          <div id="lut-canvases"></div>
-          <div id="lut-max">1.0</div>
-        </div>
-        */
-
         this.state = {} as AlVolumetricSlicesState;
         this.bindListeners();
         this.addListeners();
@@ -94,16 +95,18 @@ export class AlVolumetricSlices implements AframeRegistry {
         if (!this.data.src) {
           return;
         } else if (oldData && oldData.src !== this.data.src) {
-          this.remove();
           this.loadSrc();
         }
+      },
 
-        if (oldData && oldData.index !== this.data.index) {
-          if (this.state.stackhelper) {
-            console.log("new index: ", this.data.index);
-            this.state.stackhelper.index = this.data.index;
-          }
+      tickFunction(): void {
+        if (this.state.stackhelper) {
+          this.el.setObject3D("mesh", this.state.stackhelper);
         }
+      },
+
+      tick() {
+        this.tickFunction();
       },
 
       remove(): void {

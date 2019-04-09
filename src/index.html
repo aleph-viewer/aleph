@@ -288,6 +288,18 @@
           alControlPanel.addEventListener("onSlicesIndexChanged", function(e) {
             aleph.setSlicesIndex(e.detail);
           }, false);
+
+          alControlPanel.addEventListener("onOrientationChanged", function(e) {
+            aleph.setOrientation(e.detail);
+          }, false);
+
+          alControlPanel.addEventListener("onSlicesWindowCenterChanged", function(e) {
+            aleph.setSlicesWindowCenter(e.detail);
+          }, false);
+
+          alControlPanel.addEventListener("onSlicesWindowWidthChanged", function(e) {
+            aleph.setSlicesWindowWidth(e.detail);
+          }, false);
         });
 
         mobx.autorun(() => {

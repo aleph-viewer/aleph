@@ -269,6 +269,22 @@ export class Aleph {
   async setSlicesIndex(index: number): Promise<void> {
     this._setSlicesIndex(index);
   }
+
+  @Method()
+  async setOrientation(orientation: Orientation): Promise<void> {
+    this._setOrientation(orientation);
+  }
+
+  @Method()
+  async setSlicesWindowCenter(center: number): Promise<void> {
+    this._setSlicesWindowCenter(center);
+  }
+
+  @Method()
+  async setSlicesWindowWidth(width: number): Promise<void> {
+    this._setSlicesWindowWidth(width);
+  }
+
   //#endregion
 
   @Event() onChanged: EventEmitter;
@@ -430,7 +446,7 @@ export class Aleph {
 
     switch (this.displayMode) {
       case DisplayMode.MESH: {
-        return [
+        const gltfModel: JSX.Element = (
           <a-entity
             al-node-spawner={`
               graphEnabled: ${this.graphEnabled};
@@ -444,28 +460,32 @@ export class Aleph {
             position="0 0 0"
             scale="1 1 1"
             ref={(el: Entity) => (this._targetEntity = el)}
-          />,
-          backboard
-        ];
+          />
+        );
+        return [gltfModel, backboard];
       }
       case DisplayMode.SLICES: {
-        let ent = (
+        const volumetricSlices: JSX.Element = (
           <a-entity
             al-node-spawner={`
-            graphEnabled: ${this.graphEnabled};
-          `}
+              graphEnabled: ${this.graphEnabled};
+            `}
             class="collidable"
             id="target-entity"
             al-volumetric-slices={`
+            srcLoaded: ${this.srcLoaded};
             src: ${this.src};
             index: ${this.slicesIndex};
+            orientation: ${this.orientation};
+            slicesWindowWidth: ${this.slicesWindowWidth};
+            slicesWindowCenter: ${this.slicesWindowCenter};
           `}
             position="0 0 0"
             scale="1 1 1"
             ref={(el: Entity) => (this._targetEntity = el)}
           />
         );
-        return [ent, backboard];
+        return [volumetricSlices, backboard];
       }
     }
   }
@@ -935,6 +955,21 @@ export class Aleph {
     this.onChanged.emit(this._getAppState());
   }
 
+  private _setOrientation(orientation: Orientation): void {
+    this.appSetOrientation(orientation);
+    this.onChanged.emit(this._getAppState());
+  }
+
+  private _setSlicesWindowCenter(center: number): void {
+    this.appSetSlicesWindowCenter(center);
+    this.onChanged.emit(this._getAppState());
+  }
+
+  private _setSlicesWindowWidth(width: number): void {
+    this.appSetSlicesWindowWidth(width);
+    this.onChanged.emit(this._getAppState());
+  }
+
   private _setSrc(src: string): void {
     this.appSetSrc(src);
     this.onChanged.emit(this._getAppState());
@@ -951,7 +986,8 @@ export class Aleph {
         break;
       }
       case DisplayMode.SLICES: {
-        mesh = aframeMesh.children[1].children[0] as THREE.Mesh;
+        mesh = ev.detail.stackhelper._bBox._mesh;
+        //mesh = aframeMesh.children[1].children[0] as THREE.Mesh;
         break;
       }
       case DisplayMode.VOLUME: {

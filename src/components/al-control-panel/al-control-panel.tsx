@@ -55,11 +55,6 @@ export class AlControlPanel {
     this.optionsVisible = visible;
   }
 
-  private _orientation(orientation: Orientation) {
-    this.orientation = orientation;
-    this.onOrientationChanged.emit(orientation);
-  }
-
   private _graphEnabled(enabled: boolean) {
     this.graphEnabled = enabled;
     this.onGraphEnabledChanged.emit(enabled);
@@ -67,6 +62,11 @@ export class AlControlPanel {
 
   private _graphVisible(visible: boolean) {
     this.graphVisible = visible;
+  }
+
+  private _orientation(orientation: Orientation) {
+    this.orientation = orientation;
+    this.onOrientationChanged.emit(orientation);
   }
 
   private _slicesIndex(index: number) {
@@ -195,86 +195,85 @@ export class AlControlPanel {
   }
 
   renderOptions(): JSX.Element {
-    if (this.optionsVisible && this.optionsEnabled) {
-      switch (this.displayMode) {
-        case DisplayMode.SLICES: {
-          if (!this.stack) {
-            break;
-          }
+    switch (this.displayMode) {
+      case DisplayMode.SLICES: {
+        if (!this.stack) {
+          break;
+        }
 
-          const orientationIndex: number = Object.keys(Orientation).indexOf(
-            this.orientation.toUpperCase()
-          );
+        const orientationIndex: number = Object.keys(Orientation).indexOf(
+          this.orientation.toUpperCase()
+        );
 
-          // based off zCosine, x:1 = saggital, y:1 = coronal, z:1 = axial
-          const zCosine: THREE.Vector3 = this.stack.zCosine as THREE.Vector3;
+        // based off zCosine, x:1 = saggital, y:1 = coronal, z:1 = axial
+        const zCosine: THREE.Vector3 = this.stack.zCosine as THREE.Vector3;
 
-          let orientationOffset;
-          // If DICOM's up axis is X, offset the viewer's orientation by 1
-          if (Math.round(zCosine.x) === 1) {
-            orientationOffset = 1;
-          }
-          // If the DICOM's up is Y, offset the viewer's orientation by 2
-          else if (Math.round(zCosine.y) === 1) {
-            orientationOffset = 2;
-          }
-          // Else Orientation matches viewer orientation, no offset
-          else {
-            orientationOffset = 0;
-          }
+        let orientationOffset;
+        // If DICOM's up axis is X, offset the viewer's orientation by 1
+        if (Math.round(zCosine.x) === 1) {
+          orientationOffset = 1;
+        }
+        // If the DICOM's up is Y, offset the viewer's orientation by 2
+        else if (Math.round(zCosine.y) === 1) {
+          orientationOffset = 2;
+        }
+        // Else Orientation matches viewer orientation, no offset
+        else {
+          orientationOffset = 0;
+        }
 
-          // Wrap the orientationIndex so that it may never exceed 2
-          const displayOrientationIndex = Math.round(
-            (orientationIndex + orientationOffset) % 3
-          );
-          const stackOrientationIndex = Math.round(
-            (orientationIndex + orientationOffset + 2) % 3
-          );
+        // Wrap the orientationIndex so that it may never exceed 2
+        const displayOrientationIndex = Math.round(
+          (orientationIndex + orientationOffset) % 3
+        );
+        const stackOrientationIndex = Math.round(
+          (orientationIndex + orientationOffset + 2) % 3
+        );
 
-          const indexMax: number =
-            this.stack.dimensionsIJK[
-              Object.keys(this.stack.dimensionsIJK)[stackOrientationIndex]
-            ] - 1;
-          let index: number;
+        const indexMax: number =
+          this.stack.dimensionsIJK[
+            Object.keys(this.stack.dimensionsIJK)[stackOrientationIndex]
+          ] - 1;
+        let index: number;
 
-          if (this.slicesIndex === undefined) {
-            // set default
-            index = Math.floor(indexMax / 2);
-          } else {
-            index = this.slicesIndex;
-          }
+        if (this.slicesIndex === undefined) {
+          // set default
+          index = Math.floor(indexMax / 2);
+        } else {
+          index = this.slicesIndex;
+        }
 
-          const windowWidthMin: number = 1;
-          const windowWidthMax: number =
-            this.stack.minMax[1] - this.stack.minMax[0];
-          let windowWidth: number;
+        const windowWidthMin: number = 1;
+        const windowWidthMax: number =
+          this.stack.minMax[1] - this.stack.minMax[0];
+        let windowWidth: number;
 
-          if (this.slicesWindowWidth === undefined) {
-            // set default
-            windowWidth = windowWidthMax / 2;
-          } else {
-            windowWidth = this.slicesWindowWidth;
-          }
+        if (this.slicesWindowWidth === undefined) {
+          // set default
+          windowWidth = windowWidthMax / 2;
+        } else {
+          windowWidth = this.slicesWindowWidth;
+        }
 
-          const windowCenterMin: number = this.stack.minMax[0];
-          const windowCenterMax: number = this.stack.minMax[1];
-          let windowCenter: number;
+        const windowCenterMin: number = this.stack.minMax[0];
+        const windowCenterMax: number = this.stack.minMax[1];
+        let windowCenter: number;
 
-          if (this.slicesWindowCenter === undefined) {
-            // set default
-            windowCenter = windowCenterMax / 2;
-          } else {
-            windowCenter = this.slicesWindowCenter;
-          }
+        if (this.slicesWindowCenter === undefined) {
+          // set default
+          windowCenter = windowCenterMax / 2;
+        } else {
+          windowCenter = this.slicesWindowCenter;
+        }
 
-          // update the stackhelper
-          (this
-            .stackhelper as AMI.StackHelper).orientation = displayOrientationIndex;
-          (this.stackhelper as AMI.StackHelper).index = index;
-          (this.stackhelper as AMI.StackHelper).slice.windowWidth = windowWidth;
-          (this
-            .stackhelper as AMI.StackHelper).slice.windowCenter = windowCenter;
+        // update the stackhelper
+        (this
+          .stackhelper as AMI.StackHelper).orientation = displayOrientationIndex;
+        (this.stackhelper as AMI.StackHelper).index = index;
+        (this.stackhelper as AMI.StackHelper).slice.windowWidth = windowWidth;
+        (this.stackhelper as AMI.StackHelper).slice.windowCenter = windowCenter;
 
+        if (this.optionsVisible && this.optionsEnabled) {
           return (
             <div>
               {this.renderBoundingBoxEnabled()}
@@ -338,9 +337,12 @@ export class AlControlPanel {
               </ion-item>
             </div>
           );
+        } else {
+          return null;
         }
+      }
 
-        /*
+      /*
         case DisplayMode.VOLUME : {
 
           const stepsMin: number = 1;
@@ -425,11 +427,11 @@ export class AlControlPanel {
             )
           }
         }*/
-        case DisplayMode.MESH: {
-          return this.renderBoundingBoxEnabled();
-        }
+      case DisplayMode.MESH: {
+        return this.renderBoundingBoxEnabled();
       }
     }
+    //}
 
     return null;
   }
