@@ -473,7 +473,6 @@ export class Aleph {
             class="collidable"
             id="target-entity"
             al-volumetric-slices={`
-<<<<<<< HEAD
             srcLoaded: ${this.srcLoaded};
             src: ${this.src};
             index: ${this.slicesIndex};
@@ -481,11 +480,6 @@ export class Aleph {
             slicesWindowWidth: ${this.slicesWindowWidth};
             slicesWindowCenter: ${this.slicesWindowCenter};
           `}
-=======
-              path: ${this.src};
-              index: ${this.slicesIndex};
-            `}
->>>>>>> aframe
             position="0 0 0"
             scale="1 1 1"
             ref={(el: Entity) => (this._targetEntity = el)}

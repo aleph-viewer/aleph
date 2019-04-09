@@ -80,11 +80,6 @@ export class AlVolumetricSlices implements AframeRegistry {
         if (this.state.stackhelper) {
           this.el.setObject3D("mesh", this.state.stackhelper);
         }
-
-        if (state.stackhelper) {
-          console.log("al-slices-update: mesh set!");
-          this.el.setObject3D("mesh", state.stackhelper);
-        }
       },
 
       tick() {
