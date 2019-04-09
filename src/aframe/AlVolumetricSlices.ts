@@ -20,23 +20,19 @@ export class AlVolumetricSlices implements AframeRegistry {
   public static get Object(): AlVolumetricSlicesObject {
     return {
       schema: {
-        src: { type: "model", default: "" }
+        src: { type: "string", default: "" },
+        index: { type: "number", default: 0 }
       },
 
       bindListeners(): void {
         this.loadSrc = this.loadSrc.bind(this);
       },
 
-      addListeners(): void {
+      addListeners(): void {},
 
-      },
-
-      removeListeners(): void {
-
-      },
+      removeListeners(): void {},
 
       init(): void {
-        this.model = null;
         this.loader = new VolumetricLoader();
 
         // todo: create lutcanvases container
@@ -51,7 +47,6 @@ export class AlVolumetricSlices implements AframeRegistry {
         this.state = {} as AlVolumetricSlicesState;
         this.bindListeners();
         this.addListeners();
-        this.loadSrc();
       },
 
       loadSrc(): void {
@@ -79,10 +74,16 @@ export class AlVolumetricSlices implements AframeRegistry {
       update(oldData): void {
         if (!this.data.src) {
           return;
-        }
-        else if (oldData.src !== this.data.src) {
+        } else if (oldData && oldData.src !== this.data.src) {
           this.remove();
           this.loadSrc();
+        }
+
+        if (oldData.index !== this.data.index) {
+          if (this.state.stackhelper) {
+            console.log("new index: ", this.data.index);
+            this.state.stackhelper.index = this.data.index;
+          }
         }
       },
 
@@ -97,7 +98,7 @@ export class AlVolumetricSlices implements AframeRegistry {
   }
 
   public static get Tag(): string {
-    return "al-volumetric-model";
+    return "al-volumetric-slices";
   }
 }
 

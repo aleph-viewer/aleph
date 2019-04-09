@@ -246,26 +246,6 @@ export class Aleph {
   async setEdge(edge: [string, AlEdgeSerial]): Promise<void> {
     this._setEdge(edge);
   }
-
-  // @Method()
-  // async setEdges(edges: Map<string, AlEdgeSerial>): Promise<void> {
-  //   this._setEdges(edges);
-  // }
-
-  // @Method()
-  // async deleteEdge(edgeId: string): Promise<void> {
-  //   this._deleteEdge(edgeId);
-  // }
-
-  // @Method()
-  // async clearEdges(): Promise<void> {
-  //   this._clearEdges();
-  // }
-
-  // @Method()
-  // async selectEdge(edgeId: string): Promise<void> {
-  //   this._selectEdge(edgeId, true);
-  // }
   //#endregion
 
   //#region control panel methods
@@ -283,6 +263,11 @@ export class Aleph {
   @Method()
   async setBoundingBoxVisible(visible: boolean): Promise<void> {
     this._setBoundingBoxVisible(visible);
+  }
+
+  @Method()
+  async setSlicesIndex(index: number): Promise<void> {
+    this._setSlicesIndex(index);
   }
   //#endregion
 
@@ -415,17 +400,17 @@ export class Aleph {
       return null;
     }
 
-    let backScale: number = 0;
-    let backBoard: JSX.Element | null = null;
+    let backscale: number = 0;
+    let backboard: JSX.Element | null = null;
 
     if (this._boundingSphereRadius) {
-      backScale = this._boundingSphereRadius * Constants.splashBackSize;
+      backscale = this._boundingSphereRadius * Constants.splashBackSize;
 
-      backBoard = (
+      backboard = (
         <a-entity
           class="collidable"
           id="back-board"
-          geometry={`primitive: plane; height: ${backScale}; width: ${backScale}`}
+          geometry={`primitive: plane; height: ${backscale}; width: ${backscale}`}
           al-fixed-to-orbit-camera={`
           distanceFromTarget: ${this._boundingSphereRadius};
           target: ${
@@ -460,10 +445,10 @@ export class Aleph {
             scale="1 1 1"
             ref={(el: Entity) => (this._targetEntity = el)}
           />,
-          backBoard
+          backboard
         ];
       }
-      default: {
+      case DisplayMode.SLICES: {
         return [
           <a-entity
             al-node-spawner={`
@@ -471,14 +456,15 @@ export class Aleph {
             `}
             class="collidable"
             id="target-entity"
-            al-volumetric-model={`
-              src: url(${this.src});
+            al-volumetric-slices={`
+              src: ${this.src};
+              index: ${this.slicesIndex};
             `}
             position="0 0 0"
             scale="1 1 1"
             ref={(el: Entity) => (this._targetEntity = el)}
           />,
-          backBoard
+          backboard
         ];
       }
     }
@@ -941,6 +927,11 @@ export class Aleph {
 
   private _setBoundingBoxVisible(visible: boolean): void {
     this.appSetBoundingBoxVisible(visible);
+    this.onChanged.emit(this._getAppState());
+  }
+
+  private _setSlicesIndex(index: number): void {
+    this.appSetSlicesIndex(index);
     this.onChanged.emit(this._getAppState());
   }
 

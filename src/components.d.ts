@@ -67,17 +67,17 @@ export namespace Components {
     'displayMode'?: DisplayMode;
     'graphEnabled'?: boolean;
     'graphVisible'?: boolean;
-    'onOnSetBoundingBoxVisible'?: (event: CustomEvent) => void;
-    'onOnSetDisplayMode'?: (event: CustomEvent) => void;
-    'onOnSetGraphEnabled'?: (event: CustomEvent) => void;
-    'onOnSetOptionsEnabled'?: (event: CustomEvent) => void;
-    'onOnSetOrientation'?: (event: CustomEvent) => void;
-    'onOnSetSlicesIndex'?: (event: CustomEvent) => void;
-    'onOnSetSlicesWindowCenter'?: (event: CustomEvent) => void;
-    'onOnSetSlicesWindowWidth'?: (event: CustomEvent) => void;
-    'onOnSetVolumeSteps'?: (event: CustomEvent) => void;
-    'onOnSetVolumeWindowCenter'?: (event: CustomEvent) => void;
-    'onOnSetVolumeWindowWidth'?: (event: CustomEvent) => void;
+    'onOnBoundingBoxVisibleChanged'?: (event: CustomEvent) => void;
+    'onOnDisplayModeChanged'?: (event: CustomEvent) => void;
+    'onOnGraphEnabledChanged'?: (event: CustomEvent) => void;
+    'onOnOptionsEnabledChanged'?: (event: CustomEvent) => void;
+    'onOnOrientationChanged'?: (event: CustomEvent) => void;
+    'onOnSlicesIndexChanged'?: (event: CustomEvent) => void;
+    'onOnSlicesWindowCenterChanged'?: (event: CustomEvent) => void;
+    'onOnSlicesWindowWidthChanged'?: (event: CustomEvent) => void;
+    'onOnVolumeStepsChanged'?: (event: CustomEvent) => void;
+    'onOnVolumeWindowCenterChanged'?: (event: CustomEvent) => void;
+    'onOnVolumeWindowWidthChanged'?: (event: CustomEvent) => void;
     'optionsEnabled'?: boolean;
     'optionsVisible'?: boolean;
     'orientation'?: Orientation;
@@ -170,6 +170,7 @@ export namespace Components {
     'setGraph': (graph: AlGraph) => Promise<void>;
     'setGraphEnabled': (enabled: boolean) => Promise<void>;
     'setNode': (node: [string, AlNodeSerial]) => Promise<void>;
+    'setSlicesIndex': (index: number) => Promise<void>;
     'spinnerColor': string;
     'width': string;
   }
