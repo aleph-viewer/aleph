@@ -10,7 +10,6 @@ interface AlNodeSpawnerState {
 }
 
 interface AlNodeSpawnerObject extends AframeComponent {
-  dependencies: string[];
   bindListeners(): void;
   addListeners(): void;
   removeListeners(): void;
@@ -27,8 +26,6 @@ interface AlNodeSpawnerObject extends AframeComponent {
 export class AlNodeSpawner implements AframeRegistry {
   public static get Object(): AlNodeSpawnerObject {
     return {
-      dependencies: ["raycaster"],
-
       schema: {
         graphEnabled: { type: "boolean" }
       },
