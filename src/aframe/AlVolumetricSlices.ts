@@ -8,8 +8,12 @@ interface AlVolumetricSlicesState {
 }
 
 interface AlVolumetricSlicesObject extends AframeComponent {
-  update(): void;
+  update(oldData): void;
   remove(): void;
+  loadSrc(): void;
+  bindListeners(): void;
+  addListeners(): void;
+  removeListeners(): void;
 }
 
 export class AlVolumetricSlices implements AframeRegistry {
@@ -17,6 +21,18 @@ export class AlVolumetricSlices implements AframeRegistry {
     return {
       schema: {
         src: { type: "model", default: "" }
+      },
+
+      bindListeners(): void {
+        this.loadSrc = this.loadSrc.bind(this);
+      },
+
+      addListeners(): void {
+
+      },
+
+      removeListeners(): void {
+
       },
 
       init(): void {
@@ -33,19 +49,15 @@ export class AlVolumetricSlices implements AframeRegistry {
         */
 
         this.state = {} as AlVolumetricSlicesState;
+        this.bindListeners();
+        this.addListeners();
+        this.loadSrc();
       },
 
-      update(): void {
+      loadSrc(): void {
         const state = this.state as AlVolumetricSlicesState;
-        //const  self = this;
         const el = this.el;
         const src = this.data.src;
-
-        if (!src) {
-          return;
-        }
-
-        this.remove();
 
         this.loader.load(src, el).then(stack => {
           state.stack = stack;
@@ -64,7 +76,18 @@ export class AlVolumetricSlices implements AframeRegistry {
         });
       },
 
+      update(oldData): void {
+        if (!this.data.src) {
+          return;
+        }
+        else if (oldData.src !== this.data.src) {
+          this.remove();
+          this.loadSrc();
+        }
+      },
+
       remove(): void {
+        this.removeListeners();
         if (!this.model) {
           return;
         }
