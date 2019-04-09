@@ -14,6 +14,7 @@ interface AlVolumetricSlicesObject extends AframeComponent {
   bindListeners(): void;
   addListeners(): void;
   removeListeners(): void;
+  indexChanged(): void;
 }
 
 export class AlVolumetricSlices implements AframeRegistry {
@@ -25,14 +26,21 @@ export class AlVolumetricSlices implements AframeRegistry {
 
       bindListeners(): void {
         this.loadSrc = this.loadSrc.bind(this);
+        this.indexChanged = this.indexChanged.bind(this);
       },
 
       addListeners(): void {
-
+        this.el.sceneEl.addEventListener(AlVolumetricSlicesEvents.INDEX_CHANGED, this.indexChanged(), false);
       },
 
       removeListeners(): void {
+        this.el.sceneEl.removeEventListener(AlVolumetricSlicesEvents.INDEX_CHANGED);
+      },
 
+      indexChanged(): void {
+        if (this.state.stackhelper) {
+          this.el.setObject3D("mesh", this.state.stackhelper);
+        }
       },
 
       init(): void {
@@ -64,7 +72,7 @@ export class AlVolumetricSlices implements AframeRegistry {
           state.stackhelper = new AMI.StackHelper(state.stack);
           state.stackhelper.bbox.visible = false;
           state.stackhelper.border.color = Constants.colorValues.blue;
-          el.setObject3D("mesh", state.stackhelper);
+          this.indexChanged();
           el.sceneEl.emit(
             AlVolumetricSlicesEvents.LOADED,
             {
@@ -104,4 +112,5 @@ export class AlVolumetricSlices implements AframeRegistry {
 export class AlVolumetricSlicesEvents {
   static LOADED: string = "al-slices-loaded";
   static ERROR: string = "al-slices-error";
+  static INDEX_CHANGED: string = "al-slices-index-changed";
 }
