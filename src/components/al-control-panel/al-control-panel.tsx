@@ -123,9 +123,7 @@ export class AlControlPanel {
     if (this.displayMode !== DisplayMode.MESH) {
       return (
         <ion-item id="mode">
-          <ion-label>
-            <ion-icon name="eye" />
-          </ion-label>
+          <ion-icon name="eye" slot="start" />
           <select
             onChange={e =>
               this._displayMode((e.srcElement as HTMLSelectElement)
