@@ -2,12 +2,13 @@ import { AframeRegistry, AframeComponent } from "../interfaces";
 import { VolumetricLoader } from "../utils/VolumetricLoader";
 import { Constants } from "../Constants";
 
-interface AlVolumetricSlicesState {
+interface AlVolumeState {
   stack: any;
-  stackhelper: AMI.StackHelper;
+  stackhelper: AMI.VolumeRenderingHelper;
+  lutHelper: AMI.LutHelper;
 }
 
-interface AlVolumetricSlicesObject extends AframeComponent {
+interface AlVolumeObject extends AframeComponent {
   update(oldData): void;
   tickFunction(): void;
   tick(): void;
@@ -16,16 +17,15 @@ interface AlVolumetricSlicesObject extends AframeComponent {
   bindMethods(): void;
 }
 
-export class AlVolumetricSlices implements AframeRegistry {
-  public static get Object(): AlVolumetricSlicesObject {
+export class AlVolume implements AframeRegistry {
+  public static get Object(): AlVolumeObject {
     return {
       schema: {
         srcLoaded: { type: "boolean" },
         src: { type: "string" },
-        index: { type: "number" },
-        orientation: { type: "string" },
-        slicesWindowWidth: { type: "number" },
-        slicesWindowCenter: { type: "number" }
+        steps: { type: "number" },
+        volumeWindowWidth: { type: "number" },
+        volumeWindowCenter: { type: "number" }
       },
 
       bindMethods(): void {
@@ -39,23 +39,34 @@ export class AlVolumetricSlices implements AframeRegistry {
           this
         );
         this.loader = new VolumetricLoader();
-        this.state = {} as AlVolumetricSlicesState;
+        this.state = {} as AlVolumeState;
         this.bindMethods();
       },
 
       loadSrc(): void {
-        const state = this.state as AlVolumetricSlicesState;
+        const state = this.state as AlVolumeState;
         const el = this.el;
         const src = this.data.src;
 
         this.loader.load(src, el).then(stack => {
+          // Get LUT Canvas
+          const lutCanvases: HTMLElement = el.sceneEl.parentEl.querySelector(
+            "#lut-canvases"
+          );
+
+          // Create the LUT Helper
+          state.lutHelper = new AMI.LutHelper(lutCanvases);
+          state.lutHelper.luts = AMI.LutHelper.presetLuts();
+          state.lutHelper.lutsO = AMI.LutHelper.presetLutsO();
+
           state.stack = stack;
-          state.stackhelper = new AMI.StackHelper(state.stack);
-          state.stackhelper.bbox.visible = false;
-          state.stackhelper.border.color = Constants.colorValues.blue;
-          this.el.setObject3D("mesh", this.state.stackhelper);
+          state.stackhelper = new AMI.VolumeRenderingHelper(state.stack);
+          state.stackhelper.uniforms.uTextureLUT.value =
+            state.lutHelper.texture;
+          state.stackhelper.uniforms.uLut.value = 1;
+          //this.el.setObject3D("mesh", this.state.stackhelper);
           el.sceneEl.emit(
-            AlVolumetricSlicesEvents.LOADED,
+            AlVolumeEvents.LOADED,
             {
               stack: state.stack,
               stackhelper: state.stackhelper
@@ -73,31 +84,24 @@ export class AlVolumetricSlices implements AframeRegistry {
         }
       },
 
-      tickFunction(): void {
-        if (this.state.stackhelper) {
-          this.el.setObject3D("mesh", this.state.stackhelper);
-        }
-      },
+      tickFunction(): void {},
 
       tick() {
         this.tickFunction();
       },
 
       remove(): void {
-        if (!this.model) {
-          return;
-        }
-        this.el.removeObject3D("mesh");
+        //this.el.removeObject3D("mesh");
       }
-    } as AlVolumetricSlicesObject;
+    } as AlVolumeObject;
   }
 
   public static get Tag(): string {
-    return "al-volumetric-slices";
+    return "al-volume";
   }
 }
 
-export class AlVolumetricSlicesEvents {
-  static LOADED: string = "al-slices-loaded";
-  static ERROR: string = "al-slices-error";
+export class AlVolumeEvents {
+  static LOADED: string = "al-volume-loaded";
+  static ERROR: string = "al-volume-error";
 }

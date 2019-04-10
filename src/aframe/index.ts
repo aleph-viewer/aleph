@@ -1,5 +1,6 @@
 import { AlGltfModel, AlGltfModelEvents } from "./AlGltfModel";
-import { AlVolumetricSlices } from "./AlVolumetricSlices";
+import { AlSlices } from "./AlSlices";
+import { AlVolume } from "./AlVolume";
 import { AlNode, AlNodeEvents } from "./AlNode";
 import { AlNodeSpawner, AlNodeSpawnerEvents } from "./AlNodeSpawner";
 import { AlOrbitControl, AlOrbitControlEvents } from "./AlOrbitControl";
@@ -31,5 +32,6 @@ export {
   AlRenderOverlaidLine,
   AlRenderOverlaidText,
   AlSpinner,
-  AlVolumetricSlices
+  AlSlices,
+  AlVolume
 };
