@@ -62,6 +62,7 @@ import {
 import { AlGraphEntryType } from "../../enums";
 import { AlGraph } from "../../interfaces/AlGraph";
 import { AlSlicesEvents } from "../../aframe/AlSlices";
+import { AlVolumeEvents } from "../../aframe/AlVolume";
 type Entity = import("aframe").Entity;
 type Scene = import("aframe").Scene;
 //#endregion
@@ -259,6 +260,21 @@ export class Aleph {
   @Method()
   async setSlicesWindowWidth(width: number): Promise<void> {
     this._setSlicesWindowWidth(width);
+  }
+
+  @Method()
+  async setVolumeSteps(steps: number): Promise<void> {
+    this._setVolumeSteps(steps);
+  }
+
+  @Method()
+  async setVolumeWindowCenter(center: number): Promise<void> {
+    this._setVolumeWindowCenter(center);
+  }
+
+  @Method()
+  async setVolumeWindowWidth(width: number): Promise<void> {
+    this._setVolumeWindowWidth(width);
   }
 
   //#endregion
@@ -1010,6 +1026,21 @@ export class Aleph {
     this.onChanged.emit(this._getAppState());
   }
 
+  private _setVolumeSteps(steps: number): void {
+    this.appSetVolumeSteps(steps);
+    this.onChanged.emit(this._getAppState());
+  }
+
+  private _setVolumeWindowCenter(center: number): void {
+    this.appSetVolumeWindowCenter(center);
+    this.onChanged.emit(this._getAppState());
+  }
+
+  private _setVolumeWindowWidth(width: number): void {
+    this.appSetVolumeWindowWidth(width);
+    this.onChanged.emit(this._getAppState());
+  }
+
   private _setDisplayMode(displayMode: DisplayMode): void {
     this.appSetDisplayMode(displayMode);
     this.onChanged.emit(this._getAppState());
@@ -1036,6 +1067,7 @@ export class Aleph {
         break;
       }
       case DisplayMode.VOLUME: {
+        mesh = ev.detail.stackhelper._mesh;
         break;
       }
     }
@@ -1275,6 +1307,8 @@ export class Aleph {
     );
 
     this._scene.addEventListener(AlSlicesEvents.LOADED, this._srcLoaded, false);
+
+    this._scene.addEventListener(AlVolumeEvents.LOADED, this._srcLoaded, false);
 
     this._scene.addEventListener(
       AlGraphEvents.POINTER_OVER,

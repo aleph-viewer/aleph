@@ -177,6 +177,9 @@ export namespace Components {
     'setSlicesIndex': (index: number) => Promise<void>;
     'setSlicesWindowCenter': (center: number) => Promise<void>;
     'setSlicesWindowWidth': (width: number) => Promise<void>;
+    'setVolumeSteps': (steps: number) => Promise<void>;
+    'setVolumeWindowCenter': (center: number) => Promise<void>;
+    'setVolumeWindowWidth': (width: number) => Promise<void>;
     'spinnerColor': string;
     'width': string;
   }

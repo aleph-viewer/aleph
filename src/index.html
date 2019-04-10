@@ -197,7 +197,7 @@
           aleph.addEventListener(
             "onLoad",
             function(ev) {
-              if (state.displayMode === "slices") {
+              if (state.displayMode !== "mesh") {
                 alControlPanel.stack = ev.detail.stack;
                 alControlPanel.stackhelper = ev.detail.stackhelper;
               }
@@ -305,6 +305,18 @@
 
           alControlPanel.addEventListener("onSlicesWindowWidthChanged", function(e) {
             aleph.setSlicesWindowWidth(e.detail);
+          }, false);
+
+          alControlPanel.addEventListener("onVolumeStepsChanged", function(e) {
+            aleph.setVolumeSteps(e.detail);
+          }, false);
+
+          alControlPanel.addEventListener("onVolumeWindowCenterChanged", function(e) {
+            aleph.setVolumeWindowCenter(e.detail);
+          }, false);
+
+          alControlPanel.addEventListener("onVolumeWindowWidthChanged", function(e) {
+            aleph.setVolumeWindowWidth(e.detail);
           }, false);
         });
 

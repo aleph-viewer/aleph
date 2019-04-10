@@ -405,22 +405,21 @@ export class AlControlPanel {
         (this
           .stackhelper as AMI.VolumeRenderingHelper).windowCenter = windowCenter;
 
-        if (this.optionsVisible && this.optionsEnabled) {
-          return (
-            <div>
-              {this.renderBoundingBoxEnabled()}
-              <ion-item>
-                <ion-icon name="swap" slot="start" />
-                <ion-range
-                  slot="end"
-                  min={stepsMin}
-                  max={stepsMax}
-                  value={steps}
-                  pin="true"
-                  onMouseUp={e => this._volumeSteps(e.detail.value)}
-                />
-              </ion-item>
-              {/* <ion-item>
+        //if (this.optionsVisible && this.optionsEnabled) {
+        return (
+          <div>
+            {this.renderBoundingBoxEnabled()}
+            <ion-item>
+              <ion-icon name="swap" slot="start" />
+              <ion-range
+                slot="end"
+                min={stepsMin}
+                max={stepsMax}
+                value={steps}
+                onMouseUp={e => this._volumeSteps((e.srcElement as any).value)}
+              />
+            </ion-item>
+            {/* <ion-item>
                 <ion-label>LUT</ion-label>
                 <select onChange={ (e) => this.onVolumeLutChanged.emit(e.detail.value) }>
                 {
@@ -430,31 +429,33 @@ export class AlControlPanel {
                 }
                 </ion-select>
               </ion-item> */}
-              <ion-item>
-                <ion-icon name="sunny" slot="start" />
-                <ion-range
-                  slot="end"
-                  min={windowCenterMin}
-                  max={windowCenterMax}
-                  value={windowCenter}
-                  pin="true"
-                  onMouseUp={e => this._volumeWindowCenter(e.detail.value)}
-                />
-              </ion-item>
-              <ion-item>
-                <ion-icon name="contrast" slot="start" />
-                <ion-range
-                  slot="end"
-                  min={windowWidthMin}
-                  max={windowWidthMax}
-                  value={windowWidth}
-                  pin="true"
-                  onMouseUp={e => this._volumeWindowWidth(e.detail.value)}
-                />
-              </ion-item>
-            </div>
-          );
-        }
+            <ion-item>
+              <ion-icon name="sunny" slot="start" />
+              <ion-range
+                slot="end"
+                min={windowCenterMin}
+                max={windowCenterMax}
+                value={windowCenter}
+                onMouseUp={e =>
+                  this._volumeWindowCenter((e.srcElement as any).value)
+                }
+              />
+            </ion-item>
+            <ion-item>
+              <ion-icon name="contrast" slot="start" />
+              <ion-range
+                slot="end"
+                min={windowWidthMin}
+                max={windowWidthMax}
+                value={windowWidth}
+                onMouseUp={e =>
+                  this._volumeWindowWidth((e.srcElement as any).value)
+                }
+              />
+            </ion-item>
+          </div>
+        );
+        //}
       }
       case DisplayMode.MESH: {
         return this.renderBoundingBoxEnabled();

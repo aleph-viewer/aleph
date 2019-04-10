@@ -64,7 +64,7 @@ export class AlVolume implements AframeRegistry {
           state.stackhelper.uniforms.uTextureLUT.value =
             state.lutHelper.texture;
           state.stackhelper.uniforms.uLut.value = 1;
-          //this.el.setObject3D("mesh", this.state.stackhelper);
+          this.el.setObject3D("mesh", this.state.stackhelper);
           el.sceneEl.emit(
             AlVolumeEvents.LOADED,
             {
@@ -91,7 +91,7 @@ export class AlVolume implements AframeRegistry {
       },
 
       remove(): void {
-        //this.el.removeObject3D("mesh");
+        this.el.removeObject3D("mesh");
       }
     } as AlVolumeObject;
   }
