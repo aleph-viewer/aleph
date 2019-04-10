@@ -23,14 +23,14 @@ export const getInitialState = () => {
     graphEnabled: false,
     orientation: Orientation.CORONAL,
     selected: null,
-    slicesIndex: undefined,
-    slicesWindowCenter: undefined,
-    slicesWindowWidth: undefined,
+    slicesIndex: 0,
+    slicesWindowCenter: 0,
+    slicesWindowWidth: 0,
     src: null,
     srcLoaded: false,
-    volumeSteps: undefined,
-    volumeWindowCenter: undefined,
-    volumeWindowWidth: undefined
+    volumeSteps: 0,
+    volumeWindowCenter: 0,
+    volumeWindowWidth: 0
   };
 };
 

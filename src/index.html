@@ -14,6 +14,7 @@
     <script src="https://unpkg.com/aframe-fps-counter-component@1.0.1/dist/aframe-fps-counter-component.min.js"></script>
     <script src="https://unpkg.com/aframe-look-at-component@0.8.0/dist/aframe-look-at-component.min.js"></script>
     <script src="https://unpkg.com/ami.js@next/build/ami.min.js"></script>
+    <!-- <script src="/assets/ami.js"></script> -->
     <script src="https://unpkg.com/@ionic/core@4.1.1/dist/ionic.js"></script>
     <script src="/build/aleph.js"></script>
     <link rel="stylesheet" href="/build/aleph.css" />
@@ -44,7 +45,7 @@
 
       #debug {
         flex: 20%;
-        min-width: 350px;
+        min-width: 300px;
         padding: 1rem;
         overflow-y: auto;
         max-height: 100%;
@@ -178,7 +179,7 @@
 
         aleph.componentOnReady().then(function() {
           //component.setDisplayMode("slices");
-          state.src = Array.from(urls)[3][0]; // load src when component ready
+          state.src = Array.from(urls)[1][0]; // load src when component ready
 
           aleph.addEventListener(
             "onChanged",
@@ -277,6 +278,11 @@
         });
 
         alControlPanel.componentOnReady().then(function() {
+
+          alControlPanel.addEventListener("onDisplayModeChanged", function(e) {
+            aleph.setDisplayMode(e.detail);
+          }, false);
+
           alControlPanel.addEventListener("onGraphEnabledChanged", function(e) {
             aleph.setGraphEnabled(e.detail);
           }, false);
@@ -287,6 +293,18 @@
 
           alControlPanel.addEventListener("onSlicesIndexChanged", function(e) {
             aleph.setSlicesIndex(e.detail);
+          }, false);
+
+          alControlPanel.addEventListener("onOrientationChanged", function(e) {
+            aleph.setOrientation(e.detail);
+          }, false);
+
+          alControlPanel.addEventListener("onSlicesWindowCenterChanged", function(e) {
+            aleph.setSlicesWindowCenter(e.detail);
+          }, false);
+
+          alControlPanel.addEventListener("onSlicesWindowWidthChanged", function(e) {
+            aleph.setSlicesWindowWidth(e.detail);
           }, false);
         });
 

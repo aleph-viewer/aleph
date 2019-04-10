@@ -24,6 +24,7 @@ import {
 } from './interfaces/AlGraph';
 import {
   DisplayMode as DisplayMode2,
+  Orientation as Orientation2,
 } from './enums';
 
 
@@ -57,7 +58,8 @@ export namespace Components {
     'slicesWindowCenter': number;
     'slicesWindowWidth': number;
     'stack': any;
-    'stackhelper': AMI.StackHelper;
+    'stackhelper': AMI.StackHelper
+    | AMI.VolumeRenderingHelper;
     'volumeSteps': number;
     'volumeWindowCenter': number;
     'volumeWindowWidth': number;
@@ -85,7 +87,8 @@ export namespace Components {
     'slicesWindowCenter'?: number;
     'slicesWindowWidth'?: number;
     'stack'?: any;
-    'stackhelper'?: AMI.StackHelper;
+    'stackhelper'?: AMI.StackHelper
+    | AMI.VolumeRenderingHelper;
     'volumeSteps'?: number;
     'volumeWindowCenter'?: number;
     'volumeWindowWidth'?: number;
@@ -170,7 +173,10 @@ export namespace Components {
     'setGraph': (graph: AlGraph) => Promise<void>;
     'setGraphEnabled': (enabled: boolean) => Promise<void>;
     'setNode': (node: [string, AlNodeSerial]) => Promise<void>;
+    'setOrientation': (orientation: Orientation) => Promise<void>;
     'setSlicesIndex': (index: number) => Promise<void>;
+    'setSlicesWindowCenter': (center: number) => Promise<void>;
+    'setSlicesWindowWidth': (width: number) => Promise<void>;
     'spinnerColor': string;
     'width': string;
   }
