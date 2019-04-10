@@ -13,8 +13,8 @@
     <script src=https://unpkg.com/three@0.102.1/examples/js/controls/OrbitControls.js></script>
     <script src="https://unpkg.com/aframe-fps-counter-component@1.0.1/dist/aframe-fps-counter-component.min.js"></script>
     <script src="https://unpkg.com/aframe-look-at-component@0.8.0/dist/aframe-look-at-component.min.js"></script>
-    <!-- <script src="https://unpkg.com/ami.js@next/build/ami.min.js"></script> -->
-    <script src="/assets/ami.js"></script>
+    <script src="https://unpkg.com/ami.js@next/build/ami.min.js"></script>
+    <!-- <script src="/assets/ami.js"></script> -->
     <script src="https://unpkg.com/@ionic/core@4.1.1/dist/ionic.js"></script>
     <script src="/build/aleph.js"></script>
     <link rel="stylesheet" href="/build/aleph.css" />
@@ -179,7 +179,7 @@
 
         aleph.componentOnReady().then(function() {
           //component.setDisplayMode("slices");
-          state.src = Array.from(urls)[3][0]; // load src when component ready
+          state.src = Array.from(urls)[1][0]; // load src when component ready
 
           aleph.addEventListener(
             "onChanged",

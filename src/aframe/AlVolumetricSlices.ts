@@ -12,7 +12,7 @@ interface AlVolumetricSlicesObject extends AframeComponent {
   tickFunction(): void;
   tick(): void;
   remove(): void;
-  loadPath(): void;
+  loadSrc(): void;
   bindMethods(): void;
 }
 
@@ -29,7 +29,7 @@ export class AlVolumetricSlices implements AframeRegistry {
       },
 
       bindMethods(): void {
-        this.loadPath = this.loadPath.bind(this);
+        this.loadSrc = this.loadSrc.bind(this);
       },
 
       init(): void {
@@ -43,12 +43,12 @@ export class AlVolumetricSlices implements AframeRegistry {
         this.bindMethods();
       },
 
-      loadPath(): void {
+      loadSrc(): void {
         const state = this.state as AlVolumetricSlicesState;
         const el = this.el;
-        const path = this.data.path;
+        const src = this.data.src;
 
-        this.loader.load(path, el).then(stack => {
+        this.loader.load(src, el).then(stack => {
           state.stack = stack;
           state.stackhelper = new AMI.StackHelper(state.stack);
           state.stackhelper.bbox.visible = false;
@@ -66,10 +66,7 @@ export class AlVolumetricSlices implements AframeRegistry {
       },
 
       update(oldData): void {
-        const data = this.data;
-        const state = this.state as AlVolumetricSlicesState;
-
-        if (!data.path) {
+        if (!this.data.src) {
           return;
         } else if (oldData && oldData.src !== this.data.src) {
           this.loadSrc();
@@ -79,11 +76,6 @@ export class AlVolumetricSlices implements AframeRegistry {
       tickFunction(): void {
         if (this.state.stackhelper) {
           this.el.setObject3D("mesh", this.state.stackhelper);
-        }
-
-        if (state.stackhelper) {
-          console.log("al-slices-update: mesh set!");
-          this.el.setObject3D("mesh", state.stackhelper);
         }
       },
 
