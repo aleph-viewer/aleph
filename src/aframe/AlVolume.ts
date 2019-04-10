@@ -6,7 +6,6 @@ interface AlVolumeState {
   stack: any;
   stackhelper: AMI.VolumeRenderingHelper;
   lutHelper: AMI.LutHelper;
-  lutCanvases: HTMLElement;
 }
 
 interface AlVolumeObject extends AframeComponent {
@@ -50,18 +49,20 @@ export class AlVolume implements AframeRegistry {
         const src = this.data.src;
 
         this.loader.load(src, el).then(stack => {
-
           // Get LUT Canvas
-          state.lutCanvases = el.sceneEl.parent.querySelector("#lut-canvases");
+          const lutCanvases: HTMLElement = el.sceneEl.parentEl.querySelector(
+            "#lut-canvases"
+          );
 
           // Create the LUT Helper
-          state.lutHelper = new AMI.LutHelper(state.lutCanvases);
+          state.lutHelper = new AMI.LutHelper(lutCanvases);
           state.lutHelper.luts = AMI.LutHelper.presetLuts();
           state.lutHelper.lutsO = AMI.LutHelper.presetLutsO();
 
           state.stack = stack;
           state.stackhelper = new AMI.VolumeRenderingHelper(state.stack);
-          state.stackhelper.uniforms.uTextureLUT.value = state.lutHelper.texture;
+          state.stackhelper.uniforms.uTextureLUT.value =
+            state.lutHelper.texture;
           state.stackhelper.uniforms.uLut.value = 1;
           //this.el.setObject3D("mesh", this.state.stackhelper);
           el.sceneEl.emit(

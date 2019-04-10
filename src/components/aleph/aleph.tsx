@@ -767,7 +767,7 @@ export class Aleph {
       >
         <div id="lut-container">
           <div id="lut-min">0.0</div>
-          <div id="lut-canvases"></div>
+          <div id="lut-canvases" />
           <div id="lut-max">1.0</div>
         </div>
         {this._renderScene()}

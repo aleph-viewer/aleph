@@ -183,7 +183,7 @@ export class AlControlPanel {
   renderOptions(): JSX.Element {
     switch (this.displayMode) {
       case DisplayMode.SLICES: {
-        if (!this.stack) {
+        if (!this.stackhelper) {
           break;
         }
 
@@ -353,6 +353,14 @@ export class AlControlPanel {
         }
       }
       case DisplayMode.VOLUME: {
+        if (
+          !this.stackhelper ||
+          (this.stackhelper &&
+            !(this.stackhelper as AMI.VolumeRenderingHelper).uniforms)
+        ) {
+          break;
+        }
+
         const stepsMin: number = 1;
         const stepsMax: number = 128;
         let steps: number;
