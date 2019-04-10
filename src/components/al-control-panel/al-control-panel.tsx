@@ -183,7 +183,10 @@ export class AlControlPanel {
   renderOptions(): JSX.Element {
     switch (this.displayMode) {
       case DisplayMode.SLICES: {
-        if (!this.stackhelper) {
+        if (
+          !this.stackhelper ||
+          (this.stackhelper && !(this.stackhelper as AMI.StackHelper).slice)
+        ) {
           break;
         }
 
