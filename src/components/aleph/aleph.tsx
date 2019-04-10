@@ -61,7 +61,7 @@ import {
 } from "../../aframe";
 import { AlGraphEntryType } from "../../enums";
 import { AlGraph } from "../../interfaces/AlGraph";
-import { AlVolumetricSlicesEvents } from "../../aframe/AlVolumetricSlices";
+import { AlSlicesEvents } from "../../aframe/AlSlices";
 type Entity = import("aframe").Entity;
 type Scene = import("aframe").Scene;
 //#endregion
@@ -73,19 +73,16 @@ type Scene = import("aframe").Scene;
 })
 export class Aleph {
   //#region Private variables
-  private _stack: any;
-  private _stackHelper: AMI.StackHelper;
-
-  private _container: HTMLElement;
-  private _targetEntity: Entity;
   private _backboard: Entity;
   private _backboardVisible: boolean = false;
-  private _scene: Scene;
   private _boundingSphereRadius: number;
-  private _validTarget: boolean;
   private _camera: Entity;
+  private _container: HTMLElement;
   private _graphIntersection: string | null = null;
   private _isShiftDown: boolean = false;
+  private _scene: Scene;
+  private _targetEntity: Entity;
+  private _validTarget: boolean;
 
   @Prop({ context: "store" }) store: Store;
   @Prop() dracoDecoderPath: string | null;
@@ -190,28 +187,7 @@ export class Aleph {
 
   @Method()
   async setGraph(graph: AlGraph): Promise<void> {
-    if (graph.nodes) {
-      const nodes: Map<string, AlNodeSerial> = new Map(graph.nodes);
-      nodes.forEach((value: AlNodeSerial, key: string) => {
-        this.appSetNode([key, value]);
-      });
-    }
-
-    if (graph.edges) {
-      const edges: Map<string, AlEdgeSerial> = new Map(graph.edges);
-      edges.forEach((value: AlEdgeSerial, key: string) => {
-        this.appSetEdge([key, value]);
-      });
-    }
-
-    if (graph.angles) {
-      const angles: Map<string, AlAngleSerial> = new Map(graph.angles);
-      angles.forEach((value: AlAngleSerial, key: string) => {
-        this.appSetAngle([key, value]);
-      });
-    }
-
-    this.onChanged.emit(this._getAppState());
+    this._setGraph(graph);
   }
 
   @Method()
@@ -252,7 +228,7 @@ export class Aleph {
 
   @Method()
   async setDisplayMode(displayMode: DisplayMode): Promise<void> {
-    this.appSetDisplayMode(displayMode);
+    this._setDisplayMode(displayMode);
   }
 
   @Method()
@@ -465,27 +441,49 @@ export class Aleph {
         return [gltfModel, backboard];
       }
       case DisplayMode.SLICES: {
-        const volumetricSlices: JSX.Element = (
+        const slices: JSX.Element = (
           <a-entity
             al-node-spawner={`
               graphEnabled: ${this.graphEnabled};
             `}
             class="collidable"
             id="target-entity"
-            al-volumetric-slices={`
-            srcLoaded: ${this.srcLoaded};
-            src: ${this.src};
-            index: ${this.slicesIndex};
-            orientation: ${this.orientation};
-            slicesWindowWidth: ${this.slicesWindowWidth};
-            slicesWindowCenter: ${this.slicesWindowCenter};
-          `}
+            al-slices={`
+              srcLoaded: ${this.srcLoaded};
+              src: ${this.src};
+              index: ${this.slicesIndex};
+              orientation: ${this.orientation};
+              slicesWindowWidth: ${this.slicesWindowWidth};
+              slicesWindowCenter: ${this.slicesWindowCenter};
+            `}
             position="0 0 0"
             scale="1 1 1"
             ref={(el: Entity) => (this._targetEntity = el)}
           />
         );
-        return [volumetricSlices, backboard];
+        return [slices, backboard];
+      }
+      case DisplayMode.VOLUME: {
+        const volume: JSX.Element = (
+          <a-entity
+            al-node-spawner={`
+              graphEnabled: ${this.graphEnabled};
+            `}
+            class="collidable"
+            id="target-entity"
+            al-volume={`
+              srcLoaded: ${this.srcLoaded};
+              src: ${this.src};
+              steps: ${this.volumeSteps};
+              volumeWindowCenter: ${this.volumeWindowCenter};
+              volumeWindowWidth: ${this.volumeWindowWidth};
+            `}
+            position="0 0 0"
+            scale="1 1 1"
+            ref={(el: Entity) => (this._targetEntity = el)}
+          />
+        );
+        return [volume, backboard];
       }
     }
   }
@@ -767,6 +765,11 @@ export class Aleph {
         }}
         ref={el => (this._container = el)}
       >
+        <div id="lut-container">
+          <div id="lut-min">0.0</div>
+          <div id="lut-canvases"></div>
+          <div id="lut-max">1.0</div>
+        </div>
         {this._renderScene()}
       </div>
     );
@@ -842,6 +845,31 @@ export class Aleph {
   private _getAppState(): AlAppState {
     // todo: can we watch the store object?
     return this.store.getState().app;
+  }
+
+  private _setGraph(graph: AlGraph): void {
+    if (graph.nodes) {
+      const nodes: Map<string, AlNodeSerial> = new Map(graph.nodes);
+      nodes.forEach((value: AlNodeSerial, key: string) => {
+        this.appSetNode([key, value]);
+      });
+    }
+
+    if (graph.edges) {
+      const edges: Map<string, AlEdgeSerial> = new Map(graph.edges);
+      edges.forEach((value: AlEdgeSerial, key: string) => {
+        this.appSetEdge([key, value]);
+      });
+    }
+
+    if (graph.angles) {
+      const angles: Map<string, AlAngleSerial> = new Map(graph.angles);
+      angles.forEach((value: AlAngleSerial, key: string) => {
+        this.appSetAngle([key, value]);
+      });
+    }
+
+    this.onChanged.emit(this._getAppState());
   }
 
   private _clearGraph(): void {
@@ -979,6 +1007,11 @@ export class Aleph {
 
   private _setSlicesWindowWidth(width: number): void {
     this.appSetSlicesWindowWidth(width);
+    this.onChanged.emit(this._getAppState());
+  }
+
+  private _setDisplayMode(displayMode: DisplayMode): void {
+    this.appSetDisplayMode(displayMode);
     this.onChanged.emit(this._getAppState());
   }
 
@@ -1241,11 +1274,7 @@ export class Aleph {
       false
     );
 
-    this._scene.addEventListener(
-      AlVolumetricSlicesEvents.LOADED,
-      this._srcLoaded,
-      false
-    );
+    this._scene.addEventListener(AlSlicesEvents.LOADED, this._srcLoaded, false);
 
     this._scene.addEventListener(
       AlGraphEvents.POINTER_OVER,

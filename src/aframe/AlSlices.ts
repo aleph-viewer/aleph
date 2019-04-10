@@ -2,12 +2,12 @@ import { AframeRegistry, AframeComponent } from "../interfaces";
 import { VolumetricLoader } from "../utils/VolumetricLoader";
 import { Constants } from "../Constants";
 
-interface AlVolumetricSlicesState {
+interface AlSlicesState {
   stack: any;
   stackhelper: AMI.StackHelper;
 }
 
-interface AlVolumetricSlicesObject extends AframeComponent {
+interface AlSlicesObject extends AframeComponent {
   update(oldData): void;
   tickFunction(): void;
   tick(): void;
@@ -16,8 +16,8 @@ interface AlVolumetricSlicesObject extends AframeComponent {
   bindMethods(): void;
 }
 
-export class AlVolumetricSlices implements AframeRegistry {
-  public static get Object(): AlVolumetricSlicesObject {
+export class AlSlices implements AframeRegistry {
+  public static get Object(): AlSlicesObject {
     return {
       schema: {
         srcLoaded: { type: "boolean" },
@@ -39,12 +39,12 @@ export class AlVolumetricSlices implements AframeRegistry {
           this
         );
         this.loader = new VolumetricLoader();
-        this.state = {} as AlVolumetricSlicesState;
+        this.state = {} as AlSlicesState;
         this.bindMethods();
       },
 
       loadSrc(): void {
-        const state = this.state as AlVolumetricSlicesState;
+        const state = this.state as AlSlicesState;
         const el = this.el;
         const src = this.data.src;
 
@@ -55,7 +55,7 @@ export class AlVolumetricSlices implements AframeRegistry {
           state.stackhelper.border.color = Constants.colorValues.blue;
           this.el.setObject3D("mesh", this.state.stackhelper);
           el.sceneEl.emit(
-            AlVolumetricSlicesEvents.LOADED,
+            AlSlicesEvents.LOADED,
             {
               stack: state.stack,
               stackhelper: state.stackhelper
@@ -84,20 +84,17 @@ export class AlVolumetricSlices implements AframeRegistry {
       },
 
       remove(): void {
-        if (!this.model) {
-          return;
-        }
         this.el.removeObject3D("mesh");
       }
-    } as AlVolumetricSlicesObject;
+    } as AlSlicesObject;
   }
 
   public static get Tag(): string {
-    return "al-volumetric-slices";
+    return "al-slices";
   }
 }
 
-export class AlVolumetricSlicesEvents {
+export class AlSlicesEvents {
   static LOADED: string = "al-slices-loaded";
   static ERROR: string = "al-slices-error";
 }

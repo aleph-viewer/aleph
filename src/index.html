@@ -278,6 +278,11 @@
         });
 
         alControlPanel.componentOnReady().then(function() {
+
+          alControlPanel.addEventListener("onDisplayModeChanged", function(e) {
+            aleph.setDisplayMode(e.detail);
+          }, false);
+
           alControlPanel.addEventListener("onGraphEnabledChanged", function(e) {
             aleph.setGraphEnabled(e.detail);
           }, false);

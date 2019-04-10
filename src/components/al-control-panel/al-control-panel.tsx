@@ -29,7 +29,9 @@ export class AlControlPanel {
   @Prop({ mutable: true }) slicesWindowCenter: number;
   @Prop({ mutable: true }) slicesWindowWidth: number;
   @Prop({ mutable: true }) stack: any;
-  @Prop({ mutable: true }) stackhelper: AMI.StackHelper;
+  @Prop({ mutable: true }) stackhelper:
+    | AMI.StackHelper
+    | AMI.VolumeRenderingHelper;
   @Prop({ mutable: true }) graphEnabled: boolean = false;
   @Prop({ mutable: true }) graphVisible: boolean = true;
   @Prop({ mutable: true }) volumeSteps: number;
@@ -46,22 +48,18 @@ export class AlControlPanel {
     this.onDisplayModeChanged.emit(displayMode);
   }
 
-  private _optionsEnabled(enabled: boolean) {
-    this.optionsEnabled = enabled;
-    this.onOptionsEnabledChanged.emit(enabled);
-  }
+  // private _optionsEnabled(enabled: boolean) {
+  //   this.optionsEnabled = enabled;
+  //   this.onOptionsEnabledChanged.emit(enabled);
+  // }
 
-  private _optionsVisible(visible: boolean) {
-    this.optionsVisible = visible;
-  }
+  // private _optionsVisible(visible: boolean) {
+  //   this.optionsVisible = visible;
+  // }
 
   private _graphEnabled(enabled: boolean) {
     this.graphEnabled = enabled;
     this.onGraphEnabledChanged.emit(enabled);
-  }
-
-  private _graphVisible(visible: boolean) {
-    this.graphVisible = visible;
   }
 
   private _orientation(orientation: Orientation) {
@@ -98,26 +96,6 @@ export class AlControlPanel {
     this.volumeWindowWidth = width;
     this.onVolumeWindowWidthChanged.emit(width);
   }
-
-  // private _slicesWindowCenterChanged(event: MouseEvent) {
-  //   this.setSlicesWindowCenter((event.srcElement as any).value);
-  // }
-
-  // private _slicesWindowWidthChanged(event: MouseEvent) {
-  //   this.setSlicesWindowWidth((event.srcElement as any).value);
-  // }
-
-  // private _volumeStepsChanged(event: MouseEvent) {
-  //   this.setVolumeSteps((event.srcElement as any).value);
-  // }
-
-  // private _volumeWindowCenterChanged(event: MouseEvent) {
-  //   this.setVolumeWindowCenter((event.srcElement as any).value);
-  // }
-
-  // private _volumeWindowWidthChanged(event: MouseEvent) {
-  //   this.setVolumeWindowWidth((event.srcElement as any).value);
-  // }
 
   renderDisplayModeToggle(): JSX.Element {
     if (this.displayMode !== DisplayMode.MESH) {
@@ -374,97 +352,106 @@ export class AlControlPanel {
           return null;
         }
       }
+      case DisplayMode.VOLUME: {
+        const stepsMin: number = 1;
+        const stepsMax: number = 128;
+        let steps: number;
 
-      /*
-        case DisplayMode.VOLUME : {
+        if (this.volumeSteps === undefined) {
+          // set default
+          steps = 16;
+        } else {
+          steps = this.volumeSteps;
+        }
 
-          const stepsMin: number = 1;
-          const stepsMax: number = 128;
-          let steps: number;
+        const windowWidthMin: number = 1;
+        const windowWidthMax: number =
+          this.stack.minMax[1] - this.stack.minMax[0];
+        let windowWidth: number;
 
-          if (this.volumeSteps === undefined) {
-            // set default
-            steps = 16;
-          } else {
-            steps = this.volumeSteps;
-          }
+        if (this.volumeWindowWidth === undefined) {
+          // set default
+          windowWidth = windowWidthMax / 2;
+        } else {
+          windowWidth = this.volumeWindowWidth;
+        }
 
-          const windowWidthMin: number = 1;
-          const windowWidthMax: number = this.stack.minMax[1] - this.stack.minMax[0];
-          let windowWidth: number;
+        const windowCenterMin: number = this.stack.minMax[0];
+        const windowCenterMax: number = this.stack.minMax[1];
+        let windowCenter: number;
 
-          if (this.volumeWindowWidth === undefined) {
-            // set default
-            windowWidth = windowWidthMax / 2;
-          } else {
-            windowWidth = this.volumeWindowWidth;
-          }
+        if (this.volumeWindowCenter === undefined) {
+          // set default
+          windowCenter = windowCenterMax / 2;
+        } else {
+          windowCenter = this.volumeWindowCenter;
+        }
 
-          const windowCenterMin: number = this.stack.minMax[0];
-          const windowCenterMax: number = this.stack.minMax[1];
-          let windowCenter: number;
+        //const volumeLuts: string = this._lut.lutsAvailable().join(',');
 
-          if (this.volumeWindowCenter === undefined) {
-            // set default
-            windowCenter = windowCenterMax / 2;
-          } else {
-            windowCenter = this.volumeWindowCenter;
-          }
+        // update the stackhelper
+        (this
+          .stackhelper as AMI.VolumeRenderingHelper).uniforms.uSteps.value = steps;
+        (this
+          .stackhelper as AMI.VolumeRenderingHelper).windowWidth = windowWidth;
+        (this
+          .stackhelper as AMI.VolumeRenderingHelper).windowCenter = windowCenter;
 
-          //const volumeLuts: string = this._lut.lutsAvailable().join(',');
-
-          // update the stackhelper
-          (this.stackHelper as AMI.VolumeRenderingHelper).uniforms.uSteps.value = steps;
-          (this.stackHelper as AMI.VolumeRenderingHelper).windowWidth = windowWidth;
-          (this.stackHelper as AMI.VolumeRenderingHelper).windowCenter = windowCenter;
-
-          if (this.optionsVisible && this.optionsEnabled) {
-            return (
-              <div>
-                { this.renderBoundingBoxEnabled() }
-                <ion-item>
-                  <ion-label>Steps</ion-label>
-                  <ion-range min={stepsMin}
-                    max={stepsMax}
-                    value={steps}
-                    pin="true"
-                    onMouseUp={ this._volumeStepsChanged.bind(this) }></ion-range>
-                </ion-item>
-                <ion-item>
-                  <ion-label>LUT</ion-label>
-                  <select onChange={ (e) => this.onVolumeLutChanged.emit(e.detail.value) }>
-                  {
-                    this.luts.split(',').forEach((lut: string) => {
-                      return <option value={lut}>{lut}</option>;
-                    })
-                  }
-                  </ion-select>
-                </ion-item>
-                <ion-item>
-                  <ion-icon name="sunny"></ion-icon>
-                  <ion-range min={windowCenterMin}
-                    max={windowCenterMax}
-                    value={windowCenter}
-                    pin="true"
-                    onMouseUp={ this._volumeWindowCenterChanged.bind(this) }></ion-range>
-                </ion-item>
-                <ion-item>
-                  <ion-icon name="contrast"></ion-icon>
-                  <ion-range min={windowWidthMin}
-                    max={windowWidthMax}
-                    value={windowWidth}
-                    pin="true"
-                    onMouseUp={ this._volumeWindowWidthChanged.bind(this) }></ion-range>
-                </ion-item>
-              </div>
-            )
-          }
-        }*/
+        if (this.optionsVisible && this.optionsEnabled) {
+          return (
+            <div>
+              {this.renderBoundingBoxEnabled()}
+              <ion-item>
+                <ion-icon name="swap" slot="start" />
+                <ion-range
+                  slot="end"
+                  min={stepsMin}
+                  max={stepsMax}
+                  value={steps}
+                  pin="true"
+                  onMouseUp={e => this._volumeSteps(e.detail.value)}
+                />
+              </ion-item>
+              {/* <ion-item>
+                <ion-label>LUT</ion-label>
+                <select onChange={ (e) => this.onVolumeLutChanged.emit(e.detail.value) }>
+                {
+                  this.luts.split(',').forEach((lut: string) => {
+                    return <option value={lut}>{lut}</option>;
+                  })
+                }
+                </ion-select>
+              </ion-item> */}
+              <ion-item>
+                <ion-icon name="sunny" slot="start" />
+                <ion-range
+                  slot="end"
+                  min={windowCenterMin}
+                  max={windowCenterMax}
+                  value={windowCenter}
+                  pin="true"
+                  onMouseUp={e => this._volumeWindowCenter(e.detail.value)}
+                />
+              </ion-item>
+              <ion-item>
+                <ion-icon name="contrast" slot="start" />
+                <ion-range
+                  slot="end"
+                  min={windowWidthMin}
+                  max={windowWidthMax}
+                  value={windowWidth}
+                  pin="true"
+                  onMouseUp={e => this._volumeWindowWidth(e.detail.value)}
+                />
+              </ion-item>
+            </div>
+          );
+        }
+      }
       case DisplayMode.MESH: {
         return this.renderBoundingBoxEnabled();
       }
     }
-    //}
 
     return null;
   }
