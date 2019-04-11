@@ -15,6 +15,7 @@ interface AlVolumeObject extends AframeComponent {
   remove(): void;
   loadSrc(): void;
   bindMethods(): void;
+  parseStack(stack: any): void;
 }
 
 export class AlVolume implements AframeRegistry {
@@ -45,35 +46,45 @@ export class AlVolume implements AframeRegistry {
 
       loadSrc(): void {
         const state = this.state as AlVolumeState;
+
+        // if there is already a stack, fire a loaded event immediately with the stackhelper
+        // (this happens when switching between volume/slices display modes)
+        if (state.stack) {
+          this.parseStack(state.stack);
+        } else {
+          this.loader.load(this.data.src).then(stack => {
+            this.parseStack(stack);
+          });
+        }
+      },
+
+      parseStack(stack: any): void {
+        const state = this.state as AlVolumeState;
         const el = this.el;
-        const src = this.data.src;
 
-        this.loader.load(src, el).then(stack => {
-          // Get LUT Canvas
-          const lutCanvases: HTMLElement = el.sceneEl.parentEl.querySelector(
-            "#lut-canvases"
-          );
+        // Get LUT Canvas
+        const lutCanvases: HTMLElement = el.sceneEl.parentEl.querySelector(
+          "#lut-canvases"
+        );
 
-          // Create the LUT Helper
-          state.lutHelper = new AMI.LutHelper(lutCanvases);
-          state.lutHelper.luts = AMI.LutHelper.presetLuts();
-          state.lutHelper.lutsO = AMI.LutHelper.presetLutsO();
+        // Create the LUT Helper
+        state.lutHelper = new AMI.LutHelper(lutCanvases);
+        state.lutHelper.luts = AMI.LutHelper.presetLuts();
+        state.lutHelper.lutsO = AMI.LutHelper.presetLutsO();
 
-          state.stack = stack;
-          state.stackhelper = new AMI.VolumeRenderingHelper(state.stack);
-          state.stackhelper.uniforms.uTextureLUT.value =
-            state.lutHelper.texture;
-          state.stackhelper.uniforms.uLut.value = 1;
-          this.el.setObject3D("mesh", this.state.stackhelper);
-          el.sceneEl.emit(
-            AlVolumeEvents.LOADED,
-            {
-              stack: state.stack,
-              stackhelper: state.stackhelper
-            },
-            false
-          );
-        });
+        state.stack = stack;
+        state.stackhelper = new AMI.VolumeRenderingHelper(state.stack);
+        state.stackhelper.uniforms.uTextureLUT.value = state.lutHelper.texture;
+        state.stackhelper.uniforms.uLut.value = 1;
+        el.setObject3D("mesh", state.stackhelper);
+        el.sceneEl.emit(
+          AlVolumeEvents.LOADED,
+          {
+            stack: state.stack,
+            stackhelper: state.stackhelper
+          },
+          false
+        );
       },
 
       update(oldData): void {

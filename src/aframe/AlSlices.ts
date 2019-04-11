@@ -45,24 +45,35 @@ export class AlSlices implements AframeRegistry {
 
       loadSrc(): void {
         const state = this.state as AlSlicesState;
-        const el = this.el;
-        const src = this.data.src;
 
-        this.loader.load(src, el).then(stack => {
-          state.stack = stack;
-          state.stackhelper = new AMI.StackHelper(state.stack);
-          state.stackhelper.bbox.visible = false;
-          state.stackhelper.border.color = Constants.colorValues.blue;
-          this.el.setObject3D("mesh", this.state.stackhelper);
-          el.sceneEl.emit(
-            AlSlicesEvents.LOADED,
-            {
-              stack: state.stack,
-              stackhelper: state.stackhelper
-            },
-            false
-          );
-        });
+        // if there is already a stack, fire a loaded event immediately with the stackhelper
+        // (this happens when switching between volume/slices display modes)
+        if (state.stack) {
+          this.parseStack(state.stack);
+        } else {
+          this.loader.load(this.data.src).then(stack => {
+            this.parseStack(stack);
+          });
+        }
+      },
+
+      parseStack(stack: any): void {
+        const state = this.state as AlSlicesState;
+        const el = this.el;
+
+        state.stack = stack;
+        state.stackhelper = new AMI.StackHelper(state.stack);
+        state.stackhelper.bbox.visible = false;
+        state.stackhelper.border.color = Constants.colorValues.blue;
+        el.setObject3D("mesh", state.stackhelper);
+        el.sceneEl.emit(
+          AlSlicesEvents.LOADED,
+          {
+            stack: state.stack,
+            stackhelper: state.stackhelper
+          },
+          false
+        );
       },
 
       update(oldData): void {
