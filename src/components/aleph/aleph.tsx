@@ -61,7 +61,6 @@ import {
 } from "../../aframe";
 import { AlGraphEntryType } from "../../enums";
 import { AlGraph } from "../../interfaces/AlGraph";
-import { AlSlicesEvents } from "../../aframe/AlSlices";
 import { AlVolumeEvents } from "../../aframe/AlVolume";
 type Entity = import("aframe").Entity;
 type Scene = import("aframe").Scene;
@@ -456,29 +455,7 @@ export class Aleph {
         );
         return [gltfModel, backboard];
       }
-      case DisplayMode.SLICES: {
-        const slices: JSX.Element = (
-          <a-entity
-            al-node-spawner={`
-              graphEnabled: ${this.graphEnabled};
-            `}
-            class="collidable"
-            id="target-entity"
-            al-slices={`
-              srcLoaded: ${this.srcLoaded};
-              src: ${this.src};
-              index: ${this.slicesIndex};
-              orientation: ${this.orientation};
-              slicesWindowWidth: ${this.slicesWindowWidth};
-              slicesWindowCenter: ${this.slicesWindowCenter};
-            `}
-            position="0 0 0"
-            scale="1 1 1"
-            ref={(el: Entity) => (this._targetEntity = el)}
-          />
-        );
-        return [slices, backboard];
-      }
+      case DisplayMode.SLICES:
       case DisplayMode.VOLUME: {
         const volume: JSX.Element = (
           <a-entity
@@ -490,7 +467,12 @@ export class Aleph {
             al-volume={`
               srcLoaded: ${this.srcLoaded};
               src: ${this.src};
-              steps: ${this.volumeSteps};
+              displayMode: ${this.displayMode};
+              slicesIndex: ${this.slicesIndex};
+              slicesOrientation: ${this.orientation};
+              slicesWindowWidth: ${this.slicesWindowWidth};
+              slicesWindowCenter: ${this.slicesWindowCenter};
+              volumeSteps: ${this.volumeSteps};
               volumeWindowCenter: ${this.volumeWindowCenter};
               volumeWindowWidth: ${this.volumeWindowWidth};
             `}
@@ -503,6 +485,7 @@ export class Aleph {
       }
     }
   }
+
   private _renderNodes(): JSX.Element {
     return [...this.nodes].map((n: [string, AlNodeSerial]) => {
       const [nodeId, node] = n;
@@ -1063,7 +1046,6 @@ export class Aleph {
       }
       case DisplayMode.SLICES: {
         mesh = ev.detail.stackhelper._bBox._mesh;
-        //mesh = aframeMesh.children[1].children[0] as THREE.Mesh;
         break;
       }
       case DisplayMode.VOLUME: {
@@ -1305,8 +1287,6 @@ export class Aleph {
       this._srcLoaded,
       false
     );
-
-    this._scene.addEventListener(AlSlicesEvents.LOADED, this._srcLoaded, false);
 
     this._scene.addEventListener(AlVolumeEvents.LOADED, this._srcLoaded, false);
 

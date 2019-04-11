@@ -370,7 +370,7 @@ export class AlControlPanel {
 
         if (this.volumeSteps === undefined) {
           // set default
-          steps = 16;
+          steps = 8;
         } else {
           steps = this.volumeSteps;
         }
