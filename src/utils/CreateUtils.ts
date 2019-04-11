@@ -12,7 +12,6 @@ import {
   AlRenderOverlaidLine,
   AlRenderOverlaidText,
   AlSpinner,
-  AlSlices,
   AlVolume
 } from "../aframe";
 
@@ -20,7 +19,6 @@ export class CreateUtils {
   static createAframeComponents(): void {
     AFRAME.registerGeometry(AlSpinner.Tag, AlSpinner.Object);
     AFRAME.registerComponent(AlGltfModel.Tag, AlGltfModel.Object);
-    AFRAME.registerComponent(AlSlices.Tag, AlSlices.Object);
     AFRAME.registerComponent(AlVolume.Tag, AlVolume.Object);
     AFRAME.registerComponent(AlNode.Tag, AlNode.Object);
     AFRAME.registerComponent(AlNodeSpawner.Tag, AlNodeSpawner.Object);

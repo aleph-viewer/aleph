@@ -28,7 +28,7 @@ export const getInitialState = () => {
     slicesWindowWidth: 0,
     src: null,
     srcLoaded: false,
-    volumeSteps: 16,
+    volumeSteps: 8,
     volumeWindowCenter: 0,
     volumeWindowWidth: 0
   };
@@ -46,7 +46,7 @@ export const app = (
       if (action.payload) {
         const fileExtension: string = GetUtils.getFileExtension(action.payload);
         if (!Object.values(MeshFileType).includes(fileExtension)) {
-          displayMode = DisplayMode.VOLUME; // if not a mesh, default to volume
+          displayMode = DisplayMode.SLICES; // if not a mesh, default to slices
         }
       }
 
