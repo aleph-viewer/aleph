@@ -28,7 +28,7 @@ export class AlControlPanel {
   @Prop({ mutable: true }) slicesIndex: number;
   @Prop({ mutable: true }) slicesWindowCenter: number;
   @Prop({ mutable: true }) slicesWindowWidth: number;
-  @Prop({ mutable: true }) stack: any;
+  //@Prop({ mutable: true }) stack: any;
   @Prop({ mutable: true }) stackhelper:
     | AMI.StackHelper
     | AMI.VolumeRenderingHelper;
@@ -195,7 +195,8 @@ export class AlControlPanel {
         );
 
         // based off zCosine, x:1 = saggital, y:1 = coronal, z:1 = axial
-        const zCosine: THREE.Vector3 = this.stack.zCosine as THREE.Vector3;
+        const zCosine: THREE.Vector3 = this.stackhelper.stack
+          .zCosine as THREE.Vector3;
 
         let orientationOffset;
         // If DICOM's up axis is X, offset the viewer's orientation by 1
@@ -220,8 +221,10 @@ export class AlControlPanel {
         );
 
         const indexMax: number =
-          this.stack.dimensionsIJK[
-            Object.keys(this.stack.dimensionsIJK)[stackOrientationIndex]
+          this.stackhelper.stack.dimensionsIJK[
+            Object.keys(this.stackhelper.stack.dimensionsIJK)[
+              stackOrientationIndex
+            ]
           ] - 1;
         let index: number;
 
@@ -234,7 +237,7 @@ export class AlControlPanel {
 
         const windowWidthMin: number = 1;
         const windowWidthMax: number =
-          this.stack.minMax[1] - this.stack.minMax[0];
+          this.stackhelper.stack.minMax[1] - this.stackhelper.stack.minMax[0];
         let windowWidth: number;
 
         if (this.slicesWindowWidth === undefined) {
@@ -244,8 +247,8 @@ export class AlControlPanel {
           windowWidth = this.slicesWindowWidth;
         }
 
-        const windowCenterMin: number = this.stack.minMax[0];
-        const windowCenterMax: number = this.stack.minMax[1];
+        const windowCenterMin: number = this.stackhelper.stack.minMax[0];
+        const windowCenterMax: number = this.stackhelper.stack.minMax[1];
         let windowCenter: number;
 
         if (this.slicesWindowCenter === undefined) {
@@ -377,7 +380,7 @@ export class AlControlPanel {
 
         const windowWidthMin: number = 1;
         const windowWidthMax: number =
-          this.stack.minMax[1] - this.stack.minMax[0];
+          this.stackhelper.stack.minMax[1] - this.stackhelper.stack.minMax[0];
         let windowWidth: number;
 
         if (this.volumeWindowWidth === undefined) {
@@ -387,8 +390,8 @@ export class AlControlPanel {
           windowWidth = this.volumeWindowWidth;
         }
 
-        const windowCenterMin: number = this.stack.minMax[0];
-        const windowCenterMax: number = this.stack.minMax[1];
+        const windowCenterMin: number = this.stackhelper.stack.minMax[0];
+        const windowCenterMax: number = this.stackhelper.stack.minMax[1];
         let windowCenter: number;
 
         if (this.volumeWindowCenter === undefined) {

@@ -1045,11 +1045,11 @@ export class Aleph {
         break;
       }
       case DisplayMode.SLICES: {
-        mesh = ev.detail.stackhelper._bBox._mesh;
+        mesh = ev.detail._bBox._mesh;
         break;
       }
       case DisplayMode.VOLUME: {
-        mesh = ev.detail.stackhelper._mesh;
+        mesh = ev.detail._mesh;
         break;
       }
     }

@@ -79,14 +79,7 @@ export class AlVolume implements AframeRegistry {
           }
         }
 
-        el.sceneEl.emit(
-          AlVolumeEvents.LOADED,
-          {
-            stack: state.stack,
-            stackhelper: state.stackhelper
-          },
-          false
-        );
+        el.sceneEl.emit(AlVolumeEvents.LOADED, state.stackhelper, false);
       },
 
       update(oldData): void {

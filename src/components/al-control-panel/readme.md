@@ -11,16 +11,16 @@
 | -------------------- | ---------------------- | ----------- | ------------------------------------------------------------------ | --------------------- |
 | `boundingBoxVisible` | `bounding-box-visible` |             | `boolean`                                                          | `false`               |
 | `displayMode`        | `display-mode`         |             | `DisplayMode.MESH \| DisplayMode.SLICES \| DisplayMode.VOLUME`     | `DisplayMode.MESH`    |
-| `graphEnabled`       | `nodes-enabled`        |             | `boolean`                                                          | `false`               |
-| `nodesVisible`       | `nodes-visible`        |             | `boolean`                                                          | `true`                |
-| `optionsEnabled`     | `options-enabled`      |             | `boolean`                                                          | `false`               |
+| `graphEnabled`       | `graph-enabled`        |             | `boolean`                                                          | `false`               |
+| `graphVisible`       | `graph-visible`        |             | `boolean`                                                          | `true`                |
+| `optionsEnabled`     | `options-enabled`      |             | `boolean`                                                          | `true`                |
 | `optionsVisible`     | `options-visible`      |             | `boolean`                                                          | `true`                |
 | `orientation`        | `orientation`          |             | `Orientation.AXIAL \| Orientation.CORONAL \| Orientation.SAGGITAL` | `Orientation.CORONAL` |
 | `slicesIndex`        | `slices-index`         |             | `number`                                                           | `undefined`           |
 | `slicesWindowCenter` | `slices-window-center` |             | `number`                                                           | `undefined`           |
 | `slicesWindowWidth`  | `slices-window-width`  |             | `number`                                                           | `undefined`           |
 | `stack`              | `stack`                |             | `any`                                                              | `undefined`           |
-| `stackHelper`        | --                     |             | `StackHelper`                                                      | `undefined`           |
+| `stackhelper`        | --                     |             | `StackHelper \| VolumeRenderingHelper`                             | `undefined`           |
 | `volumeSteps`        | `volume-steps`         |             | `number`                                                           | `undefined`           |
 | `volumeWindowCenter` | `volume-window-center` |             | `number`                                                           | `undefined`           |
 | `volumeWindowWidth`  | `volume-window-width`  |             | `number`                                                           | `undefined`           |
@@ -28,19 +28,19 @@
 
 ## Events
 
-| Event                     | Description | Type                |
-| ------------------------- | ----------- | ------------------- |
-| `onSetBoundingBoxVisible` |             | `CustomEvent<void>` |
-| `onSetDisplayMode`        |             | `CustomEvent<void>` |
-| `onSetGraphEnabled`       |             | `CustomEvent<void>` |
-| `onSetOptionsEnabled`     |             | `CustomEvent<void>` |
-| `onSetOrientation`        |             | `CustomEvent<void>` |
-| `onSetSlicesIndex`        |             | `CustomEvent<void>` |
-| `onSetSlicesWindowCenter` |             | `CustomEvent<void>` |
-| `onSetSlicesWindowWidth`  |             | `CustomEvent<void>` |
-| `onSetVolumeSteps`        |             | `CustomEvent<void>` |
-| `onSetVolumeWindowCenter` |             | `CustomEvent<void>` |
-| `onSetVolumeWindowWidth`  |             | `CustomEvent<void>` |
+| Event                         | Description | Type                |
+| ----------------------------- | ----------- | ------------------- |
+| `onBoundingBoxVisibleChanged` |             | `CustomEvent<void>` |
+| `onDisplayModeChanged`        |             | `CustomEvent<void>` |
+| `onGraphEnabledChanged`       |             | `CustomEvent<void>` |
+| `onOptionsEnabledChanged`     |             | `CustomEvent<void>` |
+| `onOrientationChanged`        |             | `CustomEvent<void>` |
+| `onSlicesIndexChanged`        |             | `CustomEvent<void>` |
+| `onSlicesWindowCenterChanged` |             | `CustomEvent<void>` |
+| `onSlicesWindowWidthChanged`  |             | `CustomEvent<void>` |
+| `onVolumeStepsChanged`        |             | `CustomEvent<void>` |
+| `onVolumeWindowCenterChanged` |             | `CustomEvent<void>` |
+| `onVolumeWindowWidthChanged`  |             | `CustomEvent<void>` |
 
 
 ----------------------------------------------

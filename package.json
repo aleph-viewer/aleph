@@ -1,6 +1,6 @@
 {
   "name": "@universalviewer/aleph",
-  "version": "0.0.1-pre.2",
+  "version": "0.0.1-pre.3",
   "description": "Aleph",
   "module": "dist/esm/index.js",
   "main": "dist/index.js",
