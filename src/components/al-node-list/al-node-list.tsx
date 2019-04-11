@@ -7,7 +7,7 @@ import { AlNodeSerial } from "../../interfaces";
   shadow: true
 })
 export class AlNodeList {
-  @Event() onSelectedChanged: EventEmitter;
+  @Event() selectedChanged: EventEmitter;
 
   @Prop({ mutable: true }) nodes: Map<string, AlNodeSerial> | null = null;
   @Prop({ mutable: true }) selected: string | null = null;
@@ -20,7 +20,7 @@ export class AlNodeList {
             return (
               <ion-item
                 class={this.selected === nodeId ? "selected" : null}
-                onClick={() => this.onSelectedChanged.emit(nodeId)}
+                onClick={() => this.selectedChanged.emit(nodeId)}
               >
                 {node.text}
               </ion-item>
@@ -43,7 +43,7 @@ export class AlNodeList {
   //                 <ion-label>{node.text}</ion-label>
   //                 <ion-radio
   //                   value={nodeId}
-  //                   onClick={() => this.onSelectedChanged.emit(nodeId)}
+  //                   onClick={() => this.selectedChanged.emit(nodeId)}
   //                 />
   //               </ion-item>
   //             );
@@ -69,7 +69,7 @@ export class AlNodeList {
   //                 name="node"
   //                 value={node.id}
   //                 onChange={e =>
-  //                   this.onSelectedChanged.emit(e.srcElement.id)
+  //                   this.selectedChanged.emit(e.srcElement.id)
   //                 }
   //               />
   //               {node.id}

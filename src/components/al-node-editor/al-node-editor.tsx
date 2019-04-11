@@ -7,8 +7,8 @@ import { AlNodeSerial } from "../../interfaces";
   shadow: true
 })
 export class AlNodeEditor {
-  @Event() onDelete: EventEmitter;
-  @Event() onSave: EventEmitter;
+  @Event() delete: EventEmitter;
+  @Event() save: EventEmitter;
 
   @Prop({ mutable: true }) node: [string, AlNodeSerial];
 
@@ -29,7 +29,7 @@ export class AlNodeEditor {
           <ion-button
             size="small"
             onClick={() => {
-              this.onDelete.emit(nodeId);
+              this.delete.emit(nodeId);
               this.node = null;
             }}
           >
@@ -40,7 +40,7 @@ export class AlNodeEditor {
             type="submit"
             onClick={() => {
               if (node.text) {
-                this.onSave.emit([nodeId, node]);
+                this.save.emit([nodeId, node]);
               }
             }}
           >

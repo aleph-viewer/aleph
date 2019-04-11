@@ -7,7 +7,7 @@ import { AlEdgeSerial } from "../../interfaces";
   shadow: true
 })
 export class AlEdgeEditor {
-  @Event() onDelete: EventEmitter;
+  @Event() delete: EventEmitter;
 
   @Prop({ mutable: true }) edge: [string, AlEdgeSerial];
 
@@ -20,7 +20,7 @@ export class AlEdgeEditor {
           <ion-button
             size="small"
             onClick={() => {
-              this.onDelete.emit(edgeId);
+              this.delete.emit(edgeId);
               this.edge = null;
             }}
           >

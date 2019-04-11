@@ -278,8 +278,8 @@ export class Aleph {
 
   //#endregion
 
-  @Event() onChanged: EventEmitter;
-  @Event() onLoad: EventEmitter;
+  @Event() changed: EventEmitter;
+  @Event() loaded: EventEmitter;
 
   componentWillLoad() {
     CreateUtils.createAframeComponents();
@@ -868,25 +868,25 @@ export class Aleph {
       });
     }
 
-    this.onChanged.emit(this._getAppState());
+    this.changed.emit(this._getAppState());
   }
 
   private _clearGraph(): void {
     this.appClearNodes();
     this.appClearEdges();
     this.appClearAngles();
-    this.onChanged.emit(this._getAppState());
+    this.changed.emit(this._getAppState());
   }
 
   private _deleteNode(nodeId: string): void {
     this.appDeleteNode(nodeId);
-    this.onChanged.emit(this._getAppState());
+    this.changed.emit(this._getAppState());
   }
 
   private _setNode(node: [string, AlNodeSerial]): void {
     //ThreeUtils.waitOneFrame(() => {
     this.appSetNode(node);
-    this.onChanged.emit(this._getAppState());
+    this.changed.emit(this._getAppState());
     //});
   }
 
@@ -939,99 +939,99 @@ export class Aleph {
             animating: true
           });
           this.appSelectNode(nodeId);
-          this.onChanged.emit(this._getAppState());
+          this.changed.emit(this._getAppState());
           //});
         }
       }
     } else {
       this.appSelectNode(nodeId);
-      this.onChanged.emit(this._getAppState());
+      this.changed.emit(this._getAppState());
     }
   }
 
   private _setEdge(edge: [string, AlEdgeSerial]): void {
     this.appSetEdge(edge);
-    this.onChanged.emit(this._getAppState());
+    this.changed.emit(this._getAppState());
   }
 
   private _deleteEdge(edgeId: string): void {
     this.appDeleteEdge(edgeId);
-    this.onChanged.emit(this._getAppState());
+    this.changed.emit(this._getAppState());
   }
 
   private _selectEdge(edgeId: string): void {
     this.appSelectEdge(edgeId);
-    this.onChanged.emit(this._getAppState());
+    this.changed.emit(this._getAppState());
   }
 
   private _setAngle(angle: [string, AlAngleSerial]): void {
     this.appSetAngle(angle);
-    this.onChanged.emit(this._getAppState());
+    this.changed.emit(this._getAppState());
   }
 
   private _selectAngle(angleId: string): void {
     this.appSelectAngle(angleId);
-    this.onChanged.emit(this._getAppState());
+    this.changed.emit(this._getAppState());
   }
 
   private _deleteAngle(angleId: string): void {
     this.appDeleteAngle(angleId);
-    this.onChanged.emit(this._getAppState());
+    this.changed.emit(this._getAppState());
   }
 
   private _setGraphEnabled(enabled: boolean): void {
     this.appSetGraphEnabled(enabled);
-    this.onChanged.emit(this._getAppState());
+    this.changed.emit(this._getAppState());
   }
 
   private _setBoundingBoxVisible(visible: boolean): void {
     this.appSetBoundingBoxVisible(visible);
-    this.onChanged.emit(this._getAppState());
+    this.changed.emit(this._getAppState());
   }
 
   private _setSlicesIndex(index: number): void {
     this.appSetSlicesIndex(index);
-    this.onChanged.emit(this._getAppState());
+    this.changed.emit(this._getAppState());
   }
 
   private _setOrientation(orientation: Orientation): void {
     this.appSetOrientation(orientation);
-    this.onChanged.emit(this._getAppState());
+    this.changed.emit(this._getAppState());
   }
 
   private _setSlicesWindowCenter(center: number): void {
     this.appSetSlicesWindowCenter(center);
-    this.onChanged.emit(this._getAppState());
+    this.changed.emit(this._getAppState());
   }
 
   private _setSlicesWindowWidth(width: number): void {
     this.appSetSlicesWindowWidth(width);
-    this.onChanged.emit(this._getAppState());
+    this.changed.emit(this._getAppState());
   }
 
   private _setVolumeSteps(steps: number): void {
     this.appSetVolumeSteps(steps);
-    this.onChanged.emit(this._getAppState());
+    this.changed.emit(this._getAppState());
   }
 
   private _setVolumeWindowCenter(center: number): void {
     this.appSetVolumeWindowCenter(center);
-    this.onChanged.emit(this._getAppState());
+    this.changed.emit(this._getAppState());
   }
 
   private _setVolumeWindowWidth(width: number): void {
     this.appSetVolumeWindowWidth(width);
-    this.onChanged.emit(this._getAppState());
+    this.changed.emit(this._getAppState());
   }
 
   private _setDisplayMode(displayMode: DisplayMode): void {
     this.appSetDisplayMode(displayMode);
-    this.onChanged.emit(this._getAppState());
+    this.changed.emit(this._getAppState());
   }
 
   private _setSrc(src: string): void {
     this.appSetSrc(src);
-    this.onChanged.emit(this._getAppState());
+    this.changed.emit(this._getAppState());
   }
 
   private _srcLoaded(ev: any): void {
@@ -1062,8 +1062,8 @@ export class Aleph {
     }
 
     this.appSetSrcLoaded(true);
-    this.onChanged.emit(this._getAppState());
-    this.onLoad.emit(ev.detail);
+    this.changed.emit(this._getAppState());
+    this.loaded.emit(ev.detail);
   }
   //#endregion
 

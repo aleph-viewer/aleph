@@ -8,17 +8,17 @@ import { Orientation } from "../../enums/Orientation";
   shadow: true
 })
 export class AlControlPanel {
-  @Event() onBoundingBoxVisibleChanged: EventEmitter;
-  @Event() onDisplayModeChanged: EventEmitter;
-  @Event() onOptionsEnabledChanged: EventEmitter;
-  @Event() onOrientationChanged: EventEmitter;
-  @Event() onSlicesIndexChanged: EventEmitter;
-  @Event() onSlicesWindowCenterChanged: EventEmitter;
-  @Event() onSlicesWindowWidthChanged: EventEmitter;
-  @Event() onGraphEnabledChanged: EventEmitter;
-  @Event() onVolumeStepsChanged: EventEmitter;
-  @Event() onVolumeWindowCenterChanged: EventEmitter;
-  @Event() onVolumeWindowWidthChanged: EventEmitter;
+  @Event() boundingBoxVisibleChanged: EventEmitter;
+  @Event() displayModeChanged: EventEmitter;
+  @Event() optionsEnabledChanged: EventEmitter;
+  @Event() orientationChanged: EventEmitter;
+  @Event() slicesIndexChanged: EventEmitter;
+  @Event() slicesWindowCenterChanged: EventEmitter;
+  @Event() slicesWindowWidthChanged: EventEmitter;
+  @Event() graphEnabledChanged: EventEmitter;
+  @Event() volumeStepsChanged: EventEmitter;
+  @Event() volumeWindowCenterChanged: EventEmitter;
+  @Event() volumeWindowWidthChanged: EventEmitter;
 
   @Prop({ mutable: true }) boundingBoxVisible: boolean = false;
   @Prop({ mutable: true }) displayMode: DisplayMode = DisplayMode.MESH;
@@ -40,17 +40,17 @@ export class AlControlPanel {
 
   private _boundingBoxVisible(visible: boolean) {
     this.boundingBoxVisible = visible;
-    this.onBoundingBoxVisibleChanged.emit(visible);
+    this.boundingBoxVisibleChanged.emit(visible);
   }
 
   private _displayMode(displayMode: DisplayMode) {
     this.displayMode = displayMode;
-    this.onDisplayModeChanged.emit(displayMode);
+    this.displayModeChanged.emit(displayMode);
   }
 
   // private _optionsEnabled(enabled: boolean) {
   //   this.optionsEnabled = enabled;
-  //   this.onOptionsEnabledChanged.emit(enabled);
+  //   this.optionsEnabledChanged.emit(enabled);
   // }
 
   // private _optionsVisible(visible: boolean) {
@@ -59,42 +59,42 @@ export class AlControlPanel {
 
   private _graphEnabled(enabled: boolean) {
     this.graphEnabled = enabled;
-    this.onGraphEnabledChanged.emit(enabled);
+    this.graphEnabledChanged.emit(enabled);
   }
 
   private _orientation(orientation: Orientation) {
     this.orientation = orientation;
-    this.onOrientationChanged.emit(orientation);
+    this.orientationChanged.emit(orientation);
   }
 
   private _slicesIndex(index: number) {
     this.slicesIndex = index;
-    this.onSlicesIndexChanged.emit(index);
+    this.slicesIndexChanged.emit(index);
   }
 
   private _slicesWindowCenter(center: number) {
     this.slicesWindowCenter = center;
-    this.onSlicesWindowCenterChanged.emit(center);
+    this.slicesWindowCenterChanged.emit(center);
   }
 
   private _slicesWindowWidth(width: number) {
     this.slicesWindowWidth = width;
-    this.onSlicesWindowWidthChanged.emit(width);
+    this.slicesWindowWidthChanged.emit(width);
   }
 
   private _volumeSteps(steps: number) {
     this.volumeSteps = steps;
-    this.onVolumeStepsChanged.emit(steps);
+    this.volumeStepsChanged.emit(steps);
   }
 
   private _volumeWindowCenter(center: number) {
     this.volumeWindowCenter = center;
-    this.onVolumeWindowCenterChanged.emit(center);
+    this.volumeWindowCenterChanged.emit(center);
   }
 
   private _volumeWindowWidth(width: number) {
     this.volumeWindowWidth = width;
-    this.onVolumeWindowWidthChanged.emit(width);
+    this.volumeWindowWidthChanged.emit(width);
   }
 
   renderDisplayModeToggle(): JSX.Element {

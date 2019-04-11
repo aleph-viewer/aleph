@@ -8,7 +8,7 @@ import { Component, Prop, Event, EventEmitter } from "@stencil/core";
 export class AlConsole {
   private _cmd: HTMLTextAreaElement;
 
-  @Event() onCmd: EventEmitter;
+  @Event() command: EventEmitter;
 
   @Prop({ mutable: true }) cmd: string;
 
@@ -29,7 +29,7 @@ export class AlConsole {
           type="submit"
           onClick={() => {
             if (this.cmd) {
-              this.onCmd.emit(this._cmd.value);
+              this.command.emit(this._cmd.value);
             }
           }}
         >
