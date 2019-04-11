@@ -1,7 +1,7 @@
 import { AframeRegistry, AframeComponent } from "../interfaces";
 import { Constants } from "../Constants";
 
-interface AlLookToCameraObject {
+interface AlLookToCameraObject extends AframeComponent {
   tickFunction(): void;
   tick(): void;
 }

@@ -244,7 +244,7 @@ export class AlOrbitControl implements AframeRegistry {
       },
 
       remove() {
-        this.removeEventListener();
+        this.removeListeners();
         let state = this.state as AlOrbitControlState;
         state.controls.dispose();
         state = null;

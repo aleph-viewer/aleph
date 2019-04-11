@@ -19,7 +19,6 @@
 | `slicesIndex`        | `slices-index`         |             | `number`                                                           | `undefined`           |
 | `slicesWindowCenter` | `slices-window-center` |             | `number`                                                           | `undefined`           |
 | `slicesWindowWidth`  | `slices-window-width`  |             | `number`                                                           | `undefined`           |
-| `stack`              | `stack`                |             | `any`                                                              | `undefined`           |
 | `stackhelper`        | --                     |             | `StackHelper \| VolumeRenderingHelper`                             | `undefined`           |
 | `volumeSteps`        | `volume-steps`         |             | `number`                                                           | `undefined`           |
 | `volumeWindowCenter` | `volume-window-center` |             | `number`                                                           | `undefined`           |

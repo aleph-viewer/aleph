@@ -1,8 +1,7 @@
 import { AframeRegistry, AframeComponent } from "../interfaces";
 import { Constants } from "../Constants";
-import { update } from "@tweenjs/tween.js";
 
-interface AlRenderOrderObject {
+interface AlRenderOrderObject extends AframeComponent {
   update(): void;
 }
 
