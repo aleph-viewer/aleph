@@ -14,10 +14,10 @@
 
 ## Events
 
-| Event      | Description | Type                |
-| ---------- | ----------- | ------------------- |
-| `onDelete` |             | `CustomEvent<void>` |
-| `onSave`   |             | `CustomEvent<void>` |
+| Event    | Description | Type                |
+| -------- | ----------- | ------------------- |
+| `delete` |             | `CustomEvent<void>` |
+| `save`   |             | `CustomEvent<void>` |
 
 
 ----------------------------------------------

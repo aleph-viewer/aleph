@@ -27,19 +27,19 @@
 
 ## Events
 
-| Event                         | Description | Type                |
-| ----------------------------- | ----------- | ------------------- |
-| `onBoundingBoxVisibleChanged` |             | `CustomEvent<void>` |
-| `onDisplayModeChanged`        |             | `CustomEvent<void>` |
-| `onGraphEnabledChanged`       |             | `CustomEvent<void>` |
-| `onOptionsEnabledChanged`     |             | `CustomEvent<void>` |
-| `onOrientationChanged`        |             | `CustomEvent<void>` |
-| `onSlicesIndexChanged`        |             | `CustomEvent<void>` |
-| `onSlicesWindowCenterChanged` |             | `CustomEvent<void>` |
-| `onSlicesWindowWidthChanged`  |             | `CustomEvent<void>` |
-| `onVolumeStepsChanged`        |             | `CustomEvent<void>` |
-| `onVolumeWindowCenterChanged` |             | `CustomEvent<void>` |
-| `onVolumeWindowWidthChanged`  |             | `CustomEvent<void>` |
+| Event                       | Description | Type                |
+| --------------------------- | ----------- | ------------------- |
+| `boundingBoxVisibleChanged` |             | `CustomEvent<void>` |
+| `displayModeChanged`        |             | `CustomEvent<void>` |
+| `graphEnabledChanged`       |             | `CustomEvent<void>` |
+| `optionsEnabledChanged`     |             | `CustomEvent<void>` |
+| `orientationChanged`        |             | `CustomEvent<void>` |
+| `slicesIndexChanged`        |             | `CustomEvent<void>` |
+| `slicesWindowCenterChanged` |             | `CustomEvent<void>` |
+| `slicesWindowWidthChanged`  |             | `CustomEvent<void>` |
+| `volumeStepsChanged`        |             | `CustomEvent<void>` |
+| `volumeWindowCenterChanged` |             | `CustomEvent<void>` |
+| `volumeWindowWidthChanged`  |             | `CustomEvent<void>` |
 
 
 ----------------------------------------------

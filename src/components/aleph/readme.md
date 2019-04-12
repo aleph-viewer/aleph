@@ -18,10 +18,10 @@
 
 ## Events
 
-| Event       | Description | Type                |
-| ----------- | ----------- | ------------------- |
-| `onChanged` |             | `CustomEvent<void>` |
-| `onLoad`    |             | `CustomEvent<void>` |
+| Event     | Description | Type                |
+| --------- | ----------- | ------------------- |
+| `changed` |             | `CustomEvent<void>` |
+| `loaded`  |             | `CustomEvent<void>` |
 
 
 ## Methods

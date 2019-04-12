@@ -409,6 +409,10 @@
 
       function resize() {
         container.style.height = window.innerHeight + "px";
+        if (aleph.resize) {
+          // scene will resize internally as it listens to window.onresize. however, it's useful to be able to force a resize if the window.onresize event isn't fired
+          aleph.resize();
+        }
       }
 
       window.addEventListener("resize", function() {

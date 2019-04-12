@@ -162,17 +162,8 @@ export class Aleph {
 
   @Method()
   public resize(): void {
-    if (this.srcLoaded) {
-      const camera: THREE.PerspectiveCamera = this._scene.sceneEl
-        .camera as THREE.PerspectiveCamera;
-      const renderer: THREE.Renderer = this._scene.sceneEl.renderer;
-      camera.aspect =
-        this._container.offsetWidth / this._container.offsetHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(
-        this._container.offsetWidth,
-        this._container.offsetHeight
-      );
+    if (this._scene) {
+      (this._scene as any).resize();
     }
   }
 
