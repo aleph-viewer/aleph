@@ -6,12 +6,12 @@ import { AlAngleSerial } from "../../interfaces";
   styleUrl: "al-angle-editor.css",
   shadow: true
 })
-export class AlangleEditor {
+export class AlAngleEditor {
   @Event() delete: EventEmitter;
 
   @Prop({ mutable: true }) angle: [string, AlAngleSerial];
 
-  render(): JSX.Element {
+  render() {
     if (this.angle) {
       const [angleId] = this.angle;
 

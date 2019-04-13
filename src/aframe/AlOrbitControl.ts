@@ -4,7 +4,7 @@ import { ThreeUtils } from "../utils";
 import { AlNodeSpawnerEvents, AlNodeEvents } from ".";
 
 interface AlOrbitControlState {
-  controls: THREE.OrbitControls;
+  controls: any; //THREE.OrbitControls;
   animationCache: AlCameraSerial[];
 }
 
@@ -149,7 +149,7 @@ export class AlOrbitControl implements AframeRegistry {
           this
         );
 
-        let controls = new THREE.OrbitControls(
+        let controls = new (THREE as any).OrbitControls(
           el.getObject3D("camera"),
           el.sceneEl.renderer.domElement
         );

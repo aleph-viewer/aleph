@@ -15,7 +15,7 @@ export class GraphUtils {
     if (entries.size) {
       return Math.max.apply(
         Math,
-        [...entries].map(([id]) => {
+        Array.from(entries).map(([id]) => {
           return Number(id.split("-")[1]);
         })
       );

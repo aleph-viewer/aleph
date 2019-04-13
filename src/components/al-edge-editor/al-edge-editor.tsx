@@ -11,7 +11,7 @@ export class AlEdgeEditor {
 
   @Prop({ mutable: true }) edge: [string, AlEdgeSerial];
 
-  render(): JSX.Element {
+  render() {
     if (this.edge) {
       const [edgeId] = this.edge;
 

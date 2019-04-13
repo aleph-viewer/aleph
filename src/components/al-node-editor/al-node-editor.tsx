@@ -12,7 +12,7 @@ export class AlNodeEditor {
 
   @Prop({ mutable: true }) node: [string, AlNodeSerial];
 
-  render(): JSX.Element {
+  render() {
     if (this.node) {
       const [nodeId, node] = this.node;
 

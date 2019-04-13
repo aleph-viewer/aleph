@@ -97,7 +97,7 @@ export class AlControlPanel {
     this.volumeWindowWidthChanged.emit(width);
   }
 
-  renderDisplayModeToggle(): JSX.Element {
+  renderDisplayModeToggle() {
     if (this.displayMode !== DisplayMode.MESH) {
       return (
         <ion-item id="mode">
@@ -129,7 +129,7 @@ export class AlControlPanel {
     return null;
   }
 
-  renderNodesToggle(): JSX.Element {
+  renderNodesToggle() {
     if (this.graphVisible) {
       return (
         <ion-item>
@@ -147,7 +147,7 @@ export class AlControlPanel {
   }
 
   /*
-  renderOptionsToggle(): JSX.Element {
+  renderOptionsToggle() {
     if (this.optionsVisible) {
       return (
         <ion-item>
@@ -163,7 +163,7 @@ export class AlControlPanel {
   }
   */
 
-  renderBoundingBoxEnabled(): JSX.Element {
+  renderBoundingBoxEnabled() {
     return (
       <ion-item>
         <ion-icon name="cube" slot="start" />
@@ -180,7 +180,7 @@ export class AlControlPanel {
     return max + min - num;
   }
 
-  renderOptions(): JSX.Element {
+  renderOptions() {
     switch (this.displayMode) {
       case DisplayMode.SLICES: {
         if (
@@ -471,7 +471,7 @@ export class AlControlPanel {
     return null;
   }
 
-  render(): JSX.Element {
+  render() {
     return [
       this.renderDisplayModeToggle(),
       this.renderNodesToggle(),

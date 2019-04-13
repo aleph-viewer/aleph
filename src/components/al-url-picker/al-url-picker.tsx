@@ -13,7 +13,7 @@ export class AlUrlPicker {
 
   private _input: HTMLInputElement;
 
-  render(): JSX.Element {
+  render() {
     if (this.urls) {
       return (
         <form onSubmit={e => e.preventDefault()}>
@@ -23,7 +23,7 @@ export class AlUrlPicker {
             placeholder=""
             onIonChange={e => this.urlChanged.emit(e.detail.value)}
           >
-            {[...this.urls].map(([url, title]) => {
+            {Array.from(this.urls).map(([url, title]) => {
               return <ion-select-option value={url}>{title}</ion-select-option>;
             })}
           </ion-select>

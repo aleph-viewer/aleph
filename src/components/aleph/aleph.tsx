@@ -53,7 +53,7 @@ import {
   AlGraphEvents
 } from "../../utils";
 import { Constants } from "../../Constants";
-import { MeshFileType, Orientation, DisplayMode } from "../../enums";
+import { Orientation, DisplayMode } from "../../enums";
 import {
   AlGltfModelEvents,
   AlNodeSpawnerEvents,
@@ -161,7 +161,7 @@ export class Aleph {
   }
 
   @Method()
-  public resize(): void {
+  async resize(): Promise<void> {
     if (this._scene) {
       (this._scene as any).resize();
     }
@@ -371,7 +371,7 @@ export class Aleph {
   }
 
   //#region Render Methods
-  private _renderSpinner(): JSX.Element {
+  private _renderSpinner() {
     if (!this.srcLoaded) {
       return (
         <a-entity
@@ -393,13 +393,13 @@ export class Aleph {
 
     return null;
   }
-  private _renderSrc(): JSX.Element {
+  private _renderSrc() {
     if (!this.src) {
       return null;
     }
 
     let backscale: number = 0;
-    let backboard: JSX.Element | null = null;
+    let backboard: any = null;
 
     if (this._boundingSphereRadius) {
       backscale = this._boundingSphereRadius * Constants.splashBackSize;
@@ -428,7 +428,7 @@ export class Aleph {
 
     switch (this.displayMode) {
       case DisplayMode.MESH: {
-        const gltfModel: JSX.Element = (
+        const gltfModel = (
           <a-entity
             al-node-spawner={`
               graphEnabled: ${this.graphEnabled};
@@ -448,7 +448,7 @@ export class Aleph {
       }
       case DisplayMode.SLICES:
       case DisplayMode.VOLUME: {
-        const volume: JSX.Element = (
+        const volume = (
           <a-entity
             al-node-spawner={`
               graphEnabled: ${this.graphEnabled};
@@ -477,8 +477,8 @@ export class Aleph {
     }
   }
 
-  private _renderNodes(): JSX.Element {
-    return [...this.nodes].map((n: [string, AlNodeSerial]) => {
+  private _renderNodes() {
+    return Array.from(this.nodes).map((n: [string, AlNodeSerial]) => {
       const [nodeId, node] = n;
 
       let textOffset: THREE.Vector3 = new THREE.Vector3(0, 2.5, 0);
@@ -516,8 +516,8 @@ export class Aleph {
     });
   }
 
-  private _renderEdges(): JSX.Element {
-    return [...this.edges].map((n: [string, AlEdgeSerial]) => {
+  private _renderEdges() {
+    return Array.from(this.edges).map((n: [string, AlEdgeSerial]) => {
       const [edgeId, edge] = n;
       const node1 = this.nodes.get(edge.node1Id);
       const node2 = this.nodes.get(edge.node2Id);
@@ -571,8 +571,8 @@ export class Aleph {
     });
   }
 
-  private _renderAngles(): JSX.Element {
-    return [...this.angles].map((n: [string, AlAngleSerial]) => {
+  private _renderAngles() {
+    return Array.from(this.angles).map((n: [string, AlAngleSerial]) => {
       const [angleId, angle] = n;
       const edge1 = this.edges.get(angle.edge1Id);
       const edge2 = this.edges.get(angle.edge2Id);
@@ -673,7 +673,7 @@ export class Aleph {
     });
   }
 
-  private _renderLights(): JSX.Element {
+  private _renderLights() {
     return [
       <a-entity
         id="light-1"
@@ -692,7 +692,7 @@ export class Aleph {
     ];
   }
 
-  private _renderCamera(): JSX.Element {
+  private _renderCamera() {
     return (
       <a-camera
         fov={Constants.cameraValues.fov}
@@ -728,7 +728,7 @@ export class Aleph {
     );
   }
 
-  private _renderScene(): JSX.Element {
+  private _renderScene() {
     return (
       <a-scene
         embedded
@@ -745,7 +745,7 @@ export class Aleph {
       </a-scene>
     );
   }
-  render(): JSX.Element {
+  render() {
     return (
       <div
         id="al-container"
@@ -769,14 +769,14 @@ export class Aleph {
   //#region Private Methods
   private _createEdge(node1Id: string, node2Id: string): void {
     // check if there is already an edge connecting these two nodes
-    const match: [string, AlEdgeSerial] | undefined = [...this.edges].find(
-      ([_id, edge]) => {
-        return (
-          (edge.node1Id === node1Id && edge.node2Id === node2Id) ||
-          (edge.node1Id === node2Id && edge.node2Id === node1Id)
-        );
-      }
-    );
+    const match: [string, AlEdgeSerial] | undefined = Array.from(
+      this.edges
+    ).find(([_id, edge]) => {
+      return (
+        (edge.node1Id === node1Id && edge.node2Id === node2Id) ||
+        (edge.node1Id === node2Id && edge.node2Id === node1Id)
+      );
+    });
 
     if (!match) {
       const newEdge: AlEdgeSerial = {
@@ -796,14 +796,14 @@ export class Aleph {
 
   private _createAngle(edge1Id: string, edge2Id: string): void {
     // check if there is already an angle connecting these two edges
-    const match: [string, AlAngleSerial] | undefined = [...this.angles].find(
-      ([_id, angle]) => {
-        return (
-          (angle.edge1Id === edge1Id && angle.edge2Id === edge2Id) ||
-          (angle.edge1Id === edge2Id && angle.edge2Id === edge1Id)
-        );
-      }
-    );
+    const match: [string, AlAngleSerial] | undefined = Array.from(
+      this.angles
+    ).find(([_id, angle]) => {
+      return (
+        (angle.edge1Id === edge1Id && angle.edge2Id === edge2Id) ||
+        (angle.edge1Id === edge2Id && angle.edge2Id === edge1Id)
+      );
+    });
     if (!match) {
       let edge1 = this.edges.get(edge1Id);
       let edge2 = this.edges.get(edge2Id);

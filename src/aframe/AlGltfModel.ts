@@ -16,7 +16,7 @@ export class AlGltfModel implements AframeRegistry {
 
       init(): void {
         this.model = null;
-        this.loader = new THREE.GLTFLoader();
+        this.loader = new (THREE as any).GLTFLoader();
         (THREE as any).DRACOLoader.setDecoderPath(this.data.dracoDecoderPath);
         this.loader.setDRACOLoader(new (THREE as any).DRACOLoader());
       },

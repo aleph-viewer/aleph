@@ -12,7 +12,7 @@ export class AlConsole {
 
   @Prop({ mutable: true }) cmd: string;
 
-  render(): JSX.Element {
+  render() {
     return (
       <form onSubmit={e => e.preventDefault()}>
         <ion-item>

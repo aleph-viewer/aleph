@@ -12,11 +12,11 @@ export class AlNodeList {
   @Prop({ mutable: true }) nodes: Map<string, AlNodeSerial> | null = null;
   @Prop({ mutable: true }) selected: string | null = null;
 
-  render(): JSX.Element {
+  render() {
     if (this.nodes && this.nodes.size) {
       return (
         <ion-list>
-          {[...this.nodes].map(([nodeId, node]) => {
+          {Array.from(this.nodes).map(([nodeId, node]) => {
             return (
               <ion-item
                 class={this.selected === nodeId ? "selected" : null}
@@ -32,7 +32,7 @@ export class AlNodeList {
     return <p>No nodes exist</p>;
   }
 
-  // render(): JSX.Element {
+  // render(): JSX.ElementInterfaces {
   //   if (this.nodes) {
   //     return (
   //       <ion-list>

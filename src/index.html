@@ -128,7 +128,7 @@
 
     <script>
 
-      let state, lastState, urls, container, debug, aleph, alUrlPicker, alNodeList, alConsole, alNodeEditor, alEdgeEditor, alAngleEditor, alControlPanel;
+      let state, lastState, urls, container, debug, alAleph, alUrlPicker, alNodeList, alConsole, alNodeEditor, alEdgeEditor, alAngleEditor, alControlPanel;
 
       class AlephInspectorState {
         constructor() {
@@ -161,7 +161,7 @@
       function init() {
         container = document.getElementById("container");
         debug = document.getElementById("debug");
-        aleph = document.querySelector("uv-aleph");
+        alAleph = document.querySelector("uv-aleph");
         alUrlPicker = document.querySelector("al-url-picker");
         alConsole = document.querySelector("al-console");
         alNodeList = document.querySelector("al-node-list");
@@ -173,11 +173,11 @@
         nodesTextArea = document.getElementById("nodes-textarea");
         loadNodesButton = document.getElementById("load-nodes-button");
 
-        aleph.componentOnReady().then(function() {
+        alAleph.componentOnReady().then(function() {
           //component.setDisplayMode("slices");
           state.src = Array.from(urls)[1][0]; // load src when component ready
 
-          aleph.addEventListener(
+          alAleph.addEventListener(
             "changed",
             function(e) {
               state.displayMode = e.detail.displayMode;
@@ -190,7 +190,7 @@
             false
           );
 
-          aleph.addEventListener(
+          alAleph.addEventListener(
             "loaded",
             function(ev) {
               if (state.displayMode !== "mesh") {
@@ -214,7 +214,7 @@
           alNodeList.addEventListener(
             "selectedChanged",
             function(e) {
-              aleph.selectNode(e.detail);
+              alAleph.selectNode(e.detail);
             },
             false
           );
@@ -224,7 +224,7 @@
           alNodeEditor.addEventListener(
             "delete",
             function(e) {
-              aleph.deleteNode(e.detail);
+              alAleph.deleteNode(e.detail);
             },
             false
           );
@@ -232,7 +232,7 @@
           alNodeEditor.addEventListener(
             "save",
             function(e) {
-              aleph.setNode(e.detail);
+              alAleph.setNode(e.detail);
             },
             false
           );
@@ -242,7 +242,7 @@
           alEdgeEditor.addEventListener(
             "delete",
             function(e) {
-              aleph.deleteEdge(e.detail);
+              alAleph.deleteEdge(e.detail);
             },
             false
           );
@@ -252,7 +252,7 @@
           alAngleEditor.addEventListener(
             "delete",
             function(e) {
-              aleph.deleteAngle(e.detail);
+              alAleph.deleteAngle(e.detail);
             },
             false
           );
@@ -264,8 +264,8 @@
             function(e) {
               const graph = JSON.parse(alConsole.cmd);
               if (graph) {
-                aleph.clearGraph();
-                aleph.setGraph(graph);
+                alAleph.clearGraph();
+                alAleph.setGraph(graph);
               }
             },
             false
@@ -275,43 +275,43 @@
         alControlPanel.componentOnReady().then(function() {
 
           alControlPanel.addEventListener("displayModeChanged", function(e) {
-            aleph.setDisplayMode(e.detail);
+            alAleph.setDisplayMode(e.detail);
           }, false);
 
           alControlPanel.addEventListener("graphEnabledChanged", function(e) {
-            aleph.setGraphEnabled(e.detail);
+            alAleph.setGraphEnabled(e.detail);
           }, false);
 
           alControlPanel.addEventListener("boundingBoxVisibleChanged", function(e) {
-            aleph.setBoundingBoxVisible(e.detail);
+            alAleph.setBoundingBoxVisible(e.detail);
           }, false);
 
           alControlPanel.addEventListener("slicesIndexChanged", function(e) {
-            aleph.setSlicesIndex(e.detail);
+            alAleph.setSlicesIndex(e.detail);
           }, false);
 
           alControlPanel.addEventListener("orientationChanged", function(e) {
-            aleph.setOrientation(e.detail);
+            alAleph.setOrientation(e.detail);
           }, false);
 
           alControlPanel.addEventListener("slicesWindowCenterChanged", function(e) {
-            aleph.setSlicesWindowCenter(e.detail);
+            alAleph.setSlicesWindowCenter(e.detail);
           }, false);
 
           alControlPanel.addEventListener("slicesWindowWidthChanged", function(e) {
-            aleph.setSlicesWindowWidth(e.detail);
+            alAleph.setSlicesWindowWidth(e.detail);
           }, false);
 
           alControlPanel.addEventListener("volumeStepsChanged", function(e) {
-            aleph.setVolumeSteps(e.detail);
+            alAleph.setVolumeSteps(e.detail);
           }, false);
 
           alControlPanel.addEventListener("volumeWindowCenterChanged", function(e) {
-            aleph.setVolumeWindowCenter(e.detail);
+            alAleph.setVolumeWindowCenter(e.detail);
           }, false);
 
           alControlPanel.addEventListener("volumeWindowWidthChanged", function(e) {
-            aleph.setVolumeWindowWidth(e.detail);
+            alAleph.setVolumeWindowWidth(e.detail);
           }, false);
         });
 
@@ -323,7 +323,7 @@
       function render() {
 
         if (state.src && state.src !== lastState.src) {
-          aleph.load(state.src);
+          alAleph.load(state.src);
         }
 
         if (state.src) {
@@ -361,9 +361,9 @@
 
         if (state.nodes && state.edges && state.angles) {
           var graph = {
-            nodes: [...state.nodes],
-            edges: [...state.edges],
-            angles: [...state.angles]
+            nodes: Array.from(state.nodes),
+            edges: Array.from(state.edges),
+            angles: Array.from(state.angles)
           }
 
           return JSON.stringify(graph);
@@ -409,9 +409,9 @@
 
       function resize() {
         container.style.height = window.innerHeight + "px";
-        if (aleph.resize) {
+        if (alAleph.resize) {
           // scene will resize internally as it listens to window.onresize. however, it's useful to be able to force a resize if the window.onresize event isn't fired
-          aleph.resize();
+          alAleph.resize();
         }
       }
 

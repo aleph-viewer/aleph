@@ -100,13 +100,13 @@ Type: `Promise<void>`
 
 
 
-### `resize() => void`
+### `resize() => Promise<void>`
 
 
 
 #### Returns
 
-Type: `void`
+Type: `Promise<void>`
 
 
 
