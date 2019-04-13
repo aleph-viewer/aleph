@@ -1,7 +1,11 @@
-import { AframeRegistry, AframeComponent } from "../interfaces";
+import {
+  AframeRegistryEntry,
+  AframeComponent,
+  AframeShader
+} from "../interfaces";
 
-export class AlSpinner implements AframeRegistry {
-  public static get Object(): AframeComponent {
+export class AlSpinner implements AframeRegistryEntry {
+  public static get Object(): AframeComponent | AframeShader {
     return {
       schema: {
         detail: { default: 0, min: 0, max: 5, type: "int" },

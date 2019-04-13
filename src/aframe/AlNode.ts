@@ -1,4 +1,4 @@
-import { AframeRegistry, AframeComponent } from "../interfaces";
+import { AframeRegistryEntry, AframeComponent } from "../interfaces";
 import { Constants } from "../Constants";
 import { ThreeUtils, ShaderUtils } from "../utils";
 import { AlGraphEvents } from "../utils";
@@ -33,7 +33,7 @@ interface AlNodeObject extends AframeComponent {
   pointerOut(_event: CustomEvent): void;
 }
 
-export class AlNode implements AframeRegistry {
+export class AlNode implements AframeRegistryEntry {
   public static get Object(): AlNodeObject {
     return {
       schema: {

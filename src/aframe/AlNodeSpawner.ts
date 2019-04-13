@@ -1,6 +1,4 @@
-import { AframeRegistry, AframeComponent } from "../interfaces";
-import { AlNodeEvents } from ".";
-import { Constants } from "../Constants";
+import { AframeRegistryEntry, AframeComponent } from "../interfaces";
 import { ThreeUtils } from "../utils";
 import { AlGraphEvents } from "../utils/GraphUtils";
 
@@ -23,7 +21,7 @@ interface AlNodeSpawnerObject extends AframeComponent {
   pointerUp(event: CustomEvent): void;
 }
 
-export class AlNodeSpawner implements AframeRegistry {
+export class AlNodeSpawner implements AframeRegistryEntry {
   public static get Object(): AlNodeSpawnerObject {
     return {
       schema: {

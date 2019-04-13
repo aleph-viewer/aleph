@@ -1,4 +1,8 @@
-import { AframeRegistry, AframeComponent, AlCameraSerial } from "../interfaces";
+import {
+  AframeRegistryEntry,
+  AframeComponent,
+  AlCameraSerial
+} from "../interfaces";
 import { Constants } from "../Constants";
 import { ThreeUtils } from "../utils";
 import { AlNodeSpawnerEvents, AlNodeEvents } from ".";
@@ -24,7 +28,7 @@ interface AlOrbitControlObject extends AframeComponent {
   catchAnimationCache(event: CustomEvent): void;
 }
 
-export class AlOrbitControl implements AframeRegistry {
+export class AlOrbitControl implements AframeRegistryEntry {
   public static get Object(): AlOrbitControlObject {
     return {
       dependencies: ["camera"],

@@ -430,11 +430,15 @@ export class Aleph {
       case DisplayMode.MESH: {
         const gltfModel = (
           <a-entity
+            id="target-entity"
+            class="collidable"
+            al-bounding-box={`
+              srcLoaded: ${this.srcLoaded};
+              visible: ${this.boundingBoxVisible};
+            `}
             al-node-spawner={`
               graphEnabled: ${this.graphEnabled};
             `}
-            class="collidable"
-            id="target-entity"
             al-gltf-model={`
               src: url(${this.src});
               dracoDecoderPath: ${this.dracoDecoderPath};
@@ -450,11 +454,15 @@ export class Aleph {
       case DisplayMode.VOLUME: {
         const volume = (
           <a-entity
+            id="target-entity"
+            class="collidable"
+            al-bounding-box={`
+              srcLoaded: ${this.srcLoaded};
+              visible: ${this.boundingBoxVisible};
+            `}
             al-node-spawner={`
               graphEnabled: ${this.graphEnabled};
             `}
-            class="collidable"
-            id="target-entity"
             al-volume={`
               srcLoaded: ${this.srcLoaded};
               src: ${this.src};

@@ -1,5 +1,6 @@
 import {
   AlAngle,
+  AlBoundingBox,
   AlEdge,
   AlFixedToOrbitCamera,
   AlGltfModel,
@@ -39,6 +40,7 @@ export class CreateUtils {
 
   static createAframeComponents(): void {
     this.registerGeometry(AlSpinner.Tag, AlSpinner.Object);
+    this.registerComponent(AlBoundingBox.Tag, AlBoundingBox.Object);
     this.registerComponent(AlGltfModel.Tag, AlGltfModel.Object);
     this.registerComponent(AlVolume.Tag, AlVolume.Object);
     this.registerComponent(AlNode.Tag, AlNode.Object);

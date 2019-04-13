@@ -1,4 +1,4 @@
-import { AframeRegistry, AframeComponent } from "../interfaces";
+import { AframeRegistryEntry, AframeComponent } from "../interfaces";
 import { GLTFUtils } from "../utils";
 
 interface AlGltfModelObject extends AframeComponent {
@@ -6,7 +6,7 @@ interface AlGltfModelObject extends AframeComponent {
   remove(): void;
 }
 
-export class AlGltfModel implements AframeRegistry {
+export class AlGltfModel implements AframeRegistryEntry {
   public static get Object(): AlGltfModelObject {
     return {
       schema: {

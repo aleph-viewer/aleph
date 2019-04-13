@@ -1,4 +1,4 @@
-import { AframeRegistry, AframeComponent } from "../interfaces";
+import { AframeRegistryEntry, AframeComponent } from "../interfaces";
 import { VolumetricLoader } from "../utils/VolumetricLoader";
 import { Constants } from "../Constants";
 import { DisplayMode } from "../enums";
@@ -18,7 +18,7 @@ interface AlVolumeObject extends AframeComponent {
   bindMethods(): void;
 }
 
-export class AlVolume implements AframeRegistry {
+export class AlVolume implements AframeRegistryEntry {
   public static get Object(): AlVolumeObject {
     return {
       schema: {
