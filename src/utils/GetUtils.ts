@@ -37,7 +37,7 @@ export class GetUtils {
       if (!geom.boundingSphere) {
         geom.computeBoundingSphere();
       }
-      sceneCenter = entityMesh.position;
+      sceneCenter = this.getGeometryCenter(geom);
       sceneDistance =
         (Constants.zoomFactor * geom.boundingSphere.radius) /
         Math.tan((Constants.cameraValues.fov * Math.PI) / 180);
