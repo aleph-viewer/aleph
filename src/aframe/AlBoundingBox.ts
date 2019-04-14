@@ -1,70 +1,67 @@
 import { AframeRegistryEntry, AframeComponent } from "../interfaces";
-import { Constants } from "../Constants";
 import { DisplayMode } from "../enums";
-
-interface AlBoundingBoxState {
-  boundingBoxHelper: THREE.BoxHelper | null;
-}
 
 export class AlBoundingBox implements AframeRegistryEntry {
   public static get Object(): AframeComponent {
     return {
       schema: {
         srcLoaded: { type: "boolean" },
-        visible: { type: "boolean" }
+        displayMode: { type: "string", default: DisplayMode.MESH },
+        visible: { type: "boolean" },
+        color: { type: "string", default: "#f50057" }
       },
 
-      init(_data): void {
-        this.state = {
-          boundingBoxHelper: null
-        } as AlBoundingBoxState;
-      },
+      init(_data): void {},
 
-      update(oldData): void {
-        const state = this.state as AlBoundingBoxState;
+      update(): void {
         const el = this.el;
 
-        // on src load, set up boundingbox helper
-        if (oldData && !oldData.srcLoaded && this.data.srcLoaded) {
+        this.el.removeObject3D("bbox");
+
+        if (this.data.srcLoaded) {
           let mesh: THREE.Object3D;
 
+          const gltf = el.components["al-gltf-model"];
           const volume = el.components["al-volume"];
 
-          if (volume) {
-            const displayMode: DisplayMode = volume.data.displayMode;
-            const stackhelper = el.components["al-volume"].state.stackhelper;
-
-            switch (displayMode) {
-              case DisplayMode.VOLUME: {
-                mesh = stackhelper._mesh;
-                break;
+          switch (this.data.displayMode) {
+            case DisplayMode.MESH: {
+              if (gltf) {
+                mesh = gltf.model;
               }
-              case DisplayMode.SLICES: {
-                mesh = stackhelper._bBox;
-                break;
-              }
+              break;
             }
-          } else {
-            mesh = el.object3DMap.mesh;
+            case DisplayMode.VOLUME: {
+              if (volume) {
+                mesh = volume.state.stackhelper._mesh;
+              }
+              break;
+            }
+            case DisplayMode.SLICES: {
+              if (volume) {
+                mesh = volume.state.stackhelper._bBox;
+              }
+              break;
+            }
           }
 
-          const boundingBoxHelper = new THREE.BoxHelper(
-            mesh,
-            new THREE.Color(Constants.colorValues.red)
-          );
+          if (mesh) {
+            this.boundingBoxHelper = new THREE.BoxHelper(
+              mesh,
+              new THREE.Color(this.data.color)
+            );
 
-          this.el.setObject3D("mesh", boundingBoxHelper);
-
-          state.boundingBoxHelper = boundingBoxHelper;
+            this.el.setObject3D("bbox", this.boundingBoxHelper);
+          }
         }
 
-        if (state.boundingBoxHelper) {
-          state.boundingBoxHelper.visible = this.data.visible;
+        if (this.boundingBoxHelper) {
+          this.boundingBoxHelper.visible = this.data.visible;
         }
       },
 
       remove(): void {
-        this.el.removeObject3D("mesh");
+        this.el.removeObject3D("bbox");
       }
     } as AframeComponent;
   }

@@ -220,7 +220,6 @@ export const app = (
     case TypeKeys.APP_SET_DISPLAY_MODE: {
       return {
         ...state,
-        boundingBoxVisible: action.payload === DisplayMode.SLICES, // default to bounding box visible in slices mode
         displayMode: action.payload
       };
     }

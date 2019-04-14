@@ -432,16 +432,17 @@ export class Aleph {
           <a-entity
             id="target-entity"
             class="collidable"
-            al-bounding-box={`
-              srcLoaded: ${this.srcLoaded};
-              visible: ${this.boundingBoxVisible};
-            `}
             al-node-spawner={`
               graphEnabled: ${this.graphEnabled};
             `}
             al-gltf-model={`
               src: url(${this.src});
               dracoDecoderPath: ${this.dracoDecoderPath};
+            `}
+            al-bounding-box={`
+              srcLoaded: ${this.srcLoaded};
+              visible: ${this.boundingBoxVisible};
+              color: ${Constants.colorValues.red};
             `}
             position="0 0 0"
             scale="1 1 1"
@@ -456,10 +457,6 @@ export class Aleph {
           <a-entity
             id="target-entity"
             class="collidable"
-            al-bounding-box={`
-              srcLoaded: ${this.srcLoaded};
-              visible: ${this.boundingBoxVisible};
-            `}
             al-node-spawner={`
               graphEnabled: ${this.graphEnabled};
             `}
@@ -474,6 +471,12 @@ export class Aleph {
               volumeSteps: ${this.volumeSteps};
               volumeWindowCenter: ${this.volumeWindowCenter};
               volumeWindowWidth: ${this.volumeWindowWidth};
+            `}
+            al-bounding-box={`
+              displayMode: ${this.displayMode};
+              srcLoaded: ${this.srcLoaded};
+              visible: ${this.boundingBoxVisible};
+              color: ${Constants.colorValues.red};
             `}
             position="0 0 0"
             scale="1 1 1"
