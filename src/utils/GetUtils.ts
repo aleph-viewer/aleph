@@ -1,11 +1,5 @@
-import {
-  AlNodeSerial,
-  AlCameraSerial,
-  AlEdgeSerial,
-  AlAngleSerial
-} from "../interfaces";
+import { AlNodeSerial, AlCameraSerial } from "../interfaces";
 import { Constants } from "../Constants";
-import { Entity } from "aframe";
 import { ThreeUtils } from ".";
 import { Mesh } from "three";
 
@@ -27,16 +21,13 @@ export class GetUtils {
     return geom.boundingSphere.center;
   }
 
-  static getCameraStateFromMesh(entityMesh: Mesh): AlCameraSerial {
+  static getCameraStateFromMesh(mesh: Mesh): AlCameraSerial {
     let sceneCenter: THREE.Vector3;
     let initialPosition: THREE.Vector3;
     let sceneDistance: number;
 
-    if (entityMesh) {
-      const geom = entityMesh.geometry;
-      if (!geom.boundingSphere) {
-        geom.computeBoundingSphere();
-      }
+    if (mesh) {
+      const geom = mesh.geometry;
       sceneCenter = this.getGeometryCenter(geom);
       sceneDistance =
         (Constants.zoomFactor * geom.boundingSphere.radius) /
@@ -85,4 +76,22 @@ export class GetUtils {
       position: camPos
     } as AlCameraSerial;
   }
+
+  static getBoundingBox(obj: THREE.Object3D): THREE.Box3 {
+    return new THREE.Box3().setFromObject(obj);
+  }
+
+  /*
+  static getArea(points: THREE.Vector3[]) {
+    let area = 0;
+    let j = points.length - 1; // the last vertex is the 'previous' one to the first
+
+    for (let i = 0; i < points.length; i++) {
+      area += (points[j].x + points[i].x) * (points[j].y - points[i].y);
+      j = i; // j is the previous vertex to i
+    }
+
+    return Math.abs(area / 2);
+  }
+  */
 }

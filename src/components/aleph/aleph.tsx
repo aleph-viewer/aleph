@@ -75,12 +75,13 @@ export class Aleph {
   //#region Private variables
   private _backboard: Entity;
   private _backboardVisible: boolean = false;
+  private _boundingBox: THREE.Box3;
   private _boundingSphereRadius: number;
   private _camera: Entity;
-  private _container: HTMLElement;
   private _graphIntersection: string | null = null;
   private _isShiftDown: boolean = false;
   private _scene: Scene;
+  private _sceneCenter: THREE.Vector3;
   private _targetEntity: Entity;
   private _validTarget: boolean;
 
@@ -393,18 +394,18 @@ export class Aleph {
 
     return null;
   }
-  private _renderSrc() {
+
+  private _renderBackboard() {
     if (!this.src) {
       return null;
     }
 
     let backscale: number = 0;
-    let backboard: any = null;
 
     if (this._boundingSphereRadius) {
       backscale = this._boundingSphereRadius * Constants.splashBackSize;
 
-      backboard = (
+      return (
         <a-entity
           class="collidable"
           id="back-board"
@@ -426,9 +427,17 @@ export class Aleph {
       );
     }
 
+    return null;
+  }
+
+  private _renderSrc() {
+    if (!this.src) {
+      return null;
+    }
+
     switch (this.displayMode) {
       case DisplayMode.MESH: {
-        const gltfModel = (
+        return (
           <a-entity
             id="target-entity"
             class="collidable"
@@ -439,21 +448,15 @@ export class Aleph {
               src: url(${this.src});
               dracoDecoderPath: ${this.dracoDecoderPath};
             `}
-            al-bounding-box={`
-              srcLoaded: ${this.srcLoaded};
-              visible: ${this.boundingBoxVisible};
-              color: ${Constants.colorValues.red};
-            `}
             position="0 0 0"
             scale="1 1 1"
             ref={(el: Entity) => (this._targetEntity = el)}
           />
         );
-        return [gltfModel, backboard];
       }
       case DisplayMode.SLICES:
       case DisplayMode.VOLUME: {
-        const volume = (
+        return (
           <a-entity
             id="target-entity"
             class="collidable"
@@ -472,20 +475,32 @@ export class Aleph {
               volumeWindowCenter: ${this.volumeWindowCenter};
               volumeWindowWidth: ${this.volumeWindowWidth};
             `}
-            al-bounding-box={`
-              displayMode: ${this.displayMode};
-              srcLoaded: ${this.srcLoaded};
-              visible: ${this.boundingBoxVisible};
-              color: ${Constants.colorValues.red};
-            `}
             position="0 0 0"
             scale="1 1 1"
             ref={(el: Entity) => (this._targetEntity = el)}
           />
         );
-        return [volume, backboard];
       }
     }
+  }
+
+  private _renderBoundingBox() {
+    if (this.srcLoaded && this.boundingBoxVisible) {
+      let size: THREE.Vector3 = new THREE.Vector3();
+      this._boundingBox.getSize(size);
+
+      return (
+        <a-entity
+          position={ThreeUtils.vector3ToString(this._sceneCenter)}
+          al-bounding-box={`
+            scale: ${ThreeUtils.vector3ToString(size)};
+            color: ${Constants.colorValues.red};
+        `}
+        />
+      );
+    }
+
+    return null;
   }
 
   private _renderNodes() {
@@ -747,7 +762,9 @@ export class Aleph {
         vr-mode-ui="enabled: false"
         ref={el => (this._scene = el)}
       >
+        {this._renderBackboard()}
         {this._renderSrc()}
+        {this._renderBoundingBox()}
         {this._renderNodes()}
         {this._renderEdges()}
         {this._renderAngles()}
@@ -764,7 +781,6 @@ export class Aleph {
           width: this.width,
           height: this.height
         }}
-        ref={el => (this._container = el)}
       >
         <div id="lut-container">
           <div id="lut-min">0.0</div>
@@ -1056,11 +1072,15 @@ export class Aleph {
       }
     }
 
-    let result: AlCameraSerial = GetUtils.getCameraStateFromMesh(mesh);
+    mesh.geometry.computeBoundingSphere();
+    this._sceneCenter = GetUtils.getGeometryCenter(mesh.geometry);
     this._boundingSphereRadius = mesh.geometry.boundingSphere.radius;
+    this._boundingBox = GetUtils.getBoundingBox(mesh);
 
-    if (result) {
-      this.appSetCamera(result);
+    let cameraState: AlCameraSerial = GetUtils.getCameraStateFromMesh(mesh); //
+
+    if (cameraState) {
+      this.appSetCamera(cameraState);
     }
 
     this.appSetSrcLoaded(true);
