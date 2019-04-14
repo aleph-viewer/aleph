@@ -430,14 +430,19 @@ export class Aleph {
       case DisplayMode.MESH: {
         const gltfModel = (
           <a-entity
+            id="target-entity"
+            class="collidable"
             al-node-spawner={`
               graphEnabled: ${this.graphEnabled};
             `}
-            class="collidable"
-            id="target-entity"
             al-gltf-model={`
               src: url(${this.src});
               dracoDecoderPath: ${this.dracoDecoderPath};
+            `}
+            al-bounding-box={`
+              srcLoaded: ${this.srcLoaded};
+              visible: ${this.boundingBoxVisible};
+              color: ${Constants.colorValues.red};
             `}
             position="0 0 0"
             scale="1 1 1"
@@ -450,11 +455,11 @@ export class Aleph {
       case DisplayMode.VOLUME: {
         const volume = (
           <a-entity
+            id="target-entity"
+            class="collidable"
             al-node-spawner={`
               graphEnabled: ${this.graphEnabled};
             `}
-            class="collidable"
-            id="target-entity"
             al-volume={`
               srcLoaded: ${this.srcLoaded};
               src: ${this.src};
@@ -466,6 +471,12 @@ export class Aleph {
               volumeSteps: ${this.volumeSteps};
               volumeWindowCenter: ${this.volumeWindowCenter};
               volumeWindowWidth: ${this.volumeWindowWidth};
+            `}
+            al-bounding-box={`
+              displayMode: ${this.displayMode};
+              srcLoaded: ${this.srcLoaded};
+              visible: ${this.boundingBoxVisible};
+              color: ${Constants.colorValues.red};
             `}
             position="0 0 0"
             scale="1 1 1"

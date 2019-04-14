@@ -1,5 +1,5 @@
 import { AframeComponent } from "./AframeComponent";
-import { AframeRegistry } from "./AframeRegistry";
+import { AframeRegistryEntry } from "./AframeRegistryEntry";
 import { AframeShader } from "./AframeShader";
 import { AlAngleSerial } from "./AlAngleSerial";
 import { AlAppState } from "./AlAppState";
@@ -10,7 +10,7 @@ import { AlNodeSerial } from "./AlNodeSerial";
 
 export {
   AframeComponent,
-  AframeRegistry,
+  AframeRegistryEntry,
   AframeShader,
   AlAngleSerial,
   AlAppState,

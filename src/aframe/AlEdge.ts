@@ -1,4 +1,4 @@
-import { AframeRegistry, AframeComponent } from "../interfaces";
+import { AframeRegistryEntry, AframeComponent } from "../interfaces";
 import { Constants } from "../Constants";
 import { ThreeUtils, AlGraphEvents, ShaderUtils } from "../utils";
 import { AlGraphEntryType } from "../enums";
@@ -27,7 +27,7 @@ interface AlEdgeObject extends AframeComponent {
   pointerOut(_event: CustomEvent): void;
 }
 
-export class AlEdge implements AframeRegistry {
+export class AlEdge implements AframeRegistryEntry {
   public static get Object(): AlEdgeObject {
     return {
       schema: {
