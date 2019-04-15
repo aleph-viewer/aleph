@@ -372,27 +372,37 @@ export class Aleph {
   }
 
   //#region Render Methods
+  // private _renderSpinner() {
+  //   if (!this.srcLoaded) {
+  //     return (
+  //       <a-entity
+  //         al-fixed-to-orbit-camera={`
+  //         distanceFromTarget: 20;
+  //         target: ${
+  //           this.camera ? this.camera.position : new THREE.Vector3(0, 0, 0)
+  //         };
+  //       `}
+  //       >
+  //         <a-entity
+  //           animation="property: rotation; to: 0 120 0; loop: true; dur: 1000; easing: easeInOutQuad"
+  //           geometry="primitive: al-spinner;"
+  //           material={`color: ${this.spinnerColor};`}
+  //         />
+  //       </a-entity>
+  //     );
+  //   }
+
+  //   return null;
+  // }
+
   private _renderSpinner() {
-    if (!this.srcLoaded) {
+    if (this.src && !this.srcLoaded) {
       return (
-        <a-entity
-          al-fixed-to-orbit-camera={`
-          distanceFromTarget: 20;
-          target: ${
-            this.camera ? this.camera.position : new THREE.Vector3(0, 0, 0)
-          };
-        `}
-        >
-          <a-entity
-            animation="property: rotation; to: 0 120 0; loop: true; dur: 1000; easing: easeInOutQuad"
-            geometry="primitive: al-spinner;"
-            material={`color: ${this.spinnerColor};`}
-          />
-        </a-entity>
+        <div id="spinner">
+          <div class="square" />
+        </div>
       );
     }
-
-    return null;
   }
 
   private _renderBackboard() {
@@ -403,15 +413,15 @@ export class Aleph {
     let backscale: number = 0;
 
     if (this._boundingSphereRadius) {
-      backscale = this._boundingSphereRadius * Constants.splashBackSize;
+      backscale = this._boundingSphereRadius * Constants.backboardSize;
 
       return (
         <a-entity
           class="collidable"
-          id="back-board"
+          id="backboard"
           geometry={`primitive: plane; height: ${backscale}; width: ${backscale}`}
           al-fixed-to-orbit-camera={`
-          distanceFromTarget: ${this._boundingSphereRadius};
+          distanceFromTarget: ${this._boundingSphereRadius * 2};
           target: ${
             this.camera ? this.camera.target : new THREE.Vector3(0, 0, 0)
           };
@@ -749,7 +759,7 @@ export class Aleph {
         `}
         ref={el => (this._camera = el)}
       >
-        {this._renderSpinner()}
+        {/* {this._renderSpinner()} */}
       </a-camera>
     );
   }
@@ -773,6 +783,7 @@ export class Aleph {
       </a-scene>
     );
   }
+
   render() {
     return (
       <div
@@ -788,6 +799,7 @@ export class Aleph {
           <div id="lut-max">1.0</div>
         </div>
         {this._renderScene()}
+        {this._renderSpinner()}
       </div>
     );
   }
@@ -859,9 +871,8 @@ export class Aleph {
     }
   }
 
-  private _getAppState(): AlAppState {
-    // todo: can we watch the store object?
-    return this.store.getState().app;
+  private _stateChanged(): void {
+    this.changed.emit(this.store.getState().app);
   }
 
   private _setGraph(graph: AlGraph): void {
@@ -886,25 +897,25 @@ export class Aleph {
       });
     }
 
-    this.changed.emit(this._getAppState());
+    this._stateChanged();
   }
 
   private _clearGraph(): void {
     this.appClearNodes();
     this.appClearEdges();
     this.appClearAngles();
-    this.changed.emit(this._getAppState());
+    this._stateChanged();
   }
 
   private _deleteNode(nodeId: string): void {
     this.appDeleteNode(nodeId);
-    this.changed.emit(this._getAppState());
+    this._stateChanged();
   }
 
   private _setNode(node: [string, AlNodeSerial]): void {
     //ThreeUtils.waitOneFrame(() => {
     this.appSetNode(node);
-    this.changed.emit(this._getAppState());
+    this._stateChanged();
     //});
   }
 
@@ -957,99 +968,99 @@ export class Aleph {
             animating: true
           });
           this.appSelectNode(nodeId);
-          this.changed.emit(this._getAppState());
+          this._stateChanged();
           //});
         }
       }
     } else {
       this.appSelectNode(nodeId);
-      this.changed.emit(this._getAppState());
+      this._stateChanged();
     }
   }
 
   private _setEdge(edge: [string, AlEdgeSerial]): void {
     this.appSetEdge(edge);
-    this.changed.emit(this._getAppState());
+    this._stateChanged();
   }
 
   private _deleteEdge(edgeId: string): void {
     this.appDeleteEdge(edgeId);
-    this.changed.emit(this._getAppState());
+    this._stateChanged();
   }
 
   private _selectEdge(edgeId: string): void {
     this.appSelectEdge(edgeId);
-    this.changed.emit(this._getAppState());
+    this._stateChanged();
   }
 
   private _setAngle(angle: [string, AlAngleSerial]): void {
     this.appSetAngle(angle);
-    this.changed.emit(this._getAppState());
+    this._stateChanged();
   }
 
   private _selectAngle(angleId: string): void {
     this.appSelectAngle(angleId);
-    this.changed.emit(this._getAppState());
+    this._stateChanged();
   }
 
   private _deleteAngle(angleId: string): void {
     this.appDeleteAngle(angleId);
-    this.changed.emit(this._getAppState());
+    this._stateChanged();
   }
 
   private _setGraphEnabled(enabled: boolean): void {
     this.appSetGraphEnabled(enabled);
-    this.changed.emit(this._getAppState());
+    this._stateChanged();
   }
 
   private _setBoundingBoxVisible(visible: boolean): void {
     this.appSetBoundingBoxVisible(visible);
-    this.changed.emit(this._getAppState());
+    this._stateChanged();
   }
 
   private _setSlicesIndex(index: number): void {
     this.appSetSlicesIndex(index);
-    this.changed.emit(this._getAppState());
+    this._stateChanged();
   }
 
   private _setOrientation(orientation: Orientation): void {
     this.appSetOrientation(orientation);
-    this.changed.emit(this._getAppState());
+    this._stateChanged();
   }
 
   private _setSlicesWindowCenter(center: number): void {
     this.appSetSlicesWindowCenter(center);
-    this.changed.emit(this._getAppState());
+    this._stateChanged();
   }
 
   private _setSlicesWindowWidth(width: number): void {
     this.appSetSlicesWindowWidth(width);
-    this.changed.emit(this._getAppState());
+    this._stateChanged();
   }
 
   private _setVolumeSteps(steps: number): void {
     this.appSetVolumeSteps(steps);
-    this.changed.emit(this._getAppState());
+    this._stateChanged();
   }
 
   private _setVolumeWindowCenter(center: number): void {
     this.appSetVolumeWindowCenter(center);
-    this.changed.emit(this._getAppState());
+    this._stateChanged();
   }
 
   private _setVolumeWindowWidth(width: number): void {
     this.appSetVolumeWindowWidth(width);
-    this.changed.emit(this._getAppState());
+    this._stateChanged();
   }
 
   private _setDisplayMode(displayMode: DisplayMode): void {
     this.appSetDisplayMode(displayMode);
-    this.changed.emit(this._getAppState());
+    this._stateChanged();
   }
 
   private _setSrc(src: string): void {
     this.appSetSrc(src);
-    this.changed.emit(this._getAppState());
+    this._stateChanged();
   }
 
   private _srcLoaded(ev: any): void {
@@ -1084,7 +1095,7 @@ export class Aleph {
     }
 
     this.appSetSrcLoaded(true);
-    this.changed.emit(this._getAppState());
+    this._stateChanged();
     this.loaded.emit(ev.detail);
   }
   //#endregion
