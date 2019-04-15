@@ -6,14 +6,14 @@ import { Component, Prop, Event, EventEmitter } from "@stencil/core";
   shadow: true
 })
 export class AlUrlPicker {
-  @Event() onUrlChanged: EventEmitter;
+  @Event() urlChanged: EventEmitter;
 
   @Prop({ mutable: true }) urls: Map<string, string> | null = null;
   @Prop({ mutable: true }) url: string | null = null;
 
   private _input: HTMLInputElement;
 
-  render(): JSX.Element {
+  render() {
     if (this.urls) {
       return (
         <form onSubmit={e => e.preventDefault()}>
@@ -21,9 +21,9 @@ export class AlUrlPicker {
             value={this.url}
             interface="popover"
             placeholder=""
-            onIonChange={e => this.onUrlChanged.emit(e.detail.value)}
+            onIonChange={e => this.urlChanged.emit(e.detail.value)}
           >
-            {[...this.urls].map(([url, title]) => {
+            {Array.from(this.urls).map(([url, title]) => {
               return <ion-select-option value={url}>{title}</ion-select-option>;
             })}
           </ion-select>
@@ -37,7 +37,7 @@ export class AlUrlPicker {
           <ion-button
             size="small"
             type="submit"
-            onClick={() => this.onUrlChanged.emit(this._input.value)}
+            onClick={() => this.urlChanged.emit(this._input.value)}
           >
             <ion-icon name="refresh" />
           </ion-button>

@@ -1,10 +1,14 @@
-import { AframeRegistry, AframeComponent, AlCameraSerial } from "../interfaces";
+import {
+  AframeRegistryEntry,
+  AframeComponent,
+  AlCameraSerial
+} from "../interfaces";
 import { Constants } from "../Constants";
 import { ThreeUtils } from "../utils";
 import { AlNodeSpawnerEvents, AlNodeEvents } from ".";
 
 interface AlOrbitControlState {
-  controls: THREE.OrbitControls;
+  controls: any; //THREE.OrbitControls;
   animationCache: AlCameraSerial[];
 }
 
@@ -24,7 +28,7 @@ interface AlOrbitControlObject extends AframeComponent {
   catchAnimationCache(event: CustomEvent): void;
 }
 
-export class AlOrbitControl implements AframeRegistry {
+export class AlOrbitControl implements AframeRegistryEntry {
   public static get Object(): AlOrbitControlObject {
     return {
       dependencies: ["camera"],
@@ -149,7 +153,7 @@ export class AlOrbitControl implements AframeRegistry {
           this
         );
 
-        let controls = new THREE.OrbitControls(
+        let controls = new (THREE as any).OrbitControls(
           el.getObject3D("camera"),
           el.sceneEl.renderer.domElement
         );
@@ -244,7 +248,7 @@ export class AlOrbitControl implements AframeRegistry {
       },
 
       remove() {
-        this.removeEventListener();
+        this.removeListeners();
         let state = this.state as AlOrbitControlState;
         state.controls.dispose();
         state = null;

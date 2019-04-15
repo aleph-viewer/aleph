@@ -1,4 +1,4 @@
-# al-node-editor
+# al-angle-editor
 
 
 
@@ -7,9 +7,9 @@
 
 ## Properties
 
-| Property | Attribute | Description | Type                     | Default     |
-| -------- | --------- | ----------- | ------------------------ | ----------- |
-| `node`   | --        |             | `[string, AlNodeSerial]` | `undefined` |
+| Property | Attribute | Description | Type                      | Default     |
+| -------- | --------- | ----------- | ------------------------- | ----------- |
+| `angle`  | --        |             | `[string, AlAngleSerial]` | `undefined` |
 
 
 ## Events
@@ -17,7 +17,6 @@
 | Event    | Description | Type                |
 | -------- | ----------- | ------------------- |
 | `delete` |             | `CustomEvent<void>` |
-| `save`   |             | `CustomEvent<void>` |
 
 
 ----------------------------------------------

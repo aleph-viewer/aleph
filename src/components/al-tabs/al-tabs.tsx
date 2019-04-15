@@ -26,7 +26,7 @@ export class Tabs {
   private transitioning = false;
   private leavingTab?: HTMLIonTabElement;
 
-  @Element() el!: HTMLStencilElement;
+  @Element() el!: Element;
 
   @State() tabs: HTMLIonTabElement[] = [];
   @State() selectedTab?: HTMLIonTabElement;

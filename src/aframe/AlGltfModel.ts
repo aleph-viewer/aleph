@@ -1,12 +1,9 @@
-import { AframeRegistry, AframeComponent } from "../interfaces";
+import { AframeRegistryEntry, AframeComponent } from "../interfaces";
 import { GLTFUtils } from "../utils";
 
-interface AlGltfModelObject extends AframeComponent {
-  update(): void;
-  remove(): void;
-}
+interface AlGltfModelObject extends AframeComponent {}
 
-export class AlGltfModel implements AframeRegistry {
+export class AlGltfModel implements AframeRegistryEntry {
   public static get Object(): AlGltfModelObject {
     return {
       schema: {
@@ -16,54 +13,52 @@ export class AlGltfModel implements AframeRegistry {
 
       init(): void {
         this.model = null;
-        this.loader = new THREE.GLTFLoader();
+        this.loader = new (THREE as any).GLTFLoader();
         (THREE as any).DRACOLoader.setDecoderPath(this.data.dracoDecoderPath);
         this.loader.setDRACOLoader(new (THREE as any).DRACOLoader());
       },
 
-      update(): void {
+      update(oldData): void {
         let self = this;
         let el = this.el;
         let src = this.data.src;
 
-        if (!src) {
-          return;
+        if (oldData && oldData.src !== src) {
+          this.remove();
+
+          this.loader.load(
+            src,
+            function gltfLoaded(gltfModel) {
+              let res = GLTFUtils.setup(gltfModel);
+              self.model = res.mesh;
+              el.setObject3D("mesh", self.model);
+              el.sceneEl.emit(
+                AlGltfModelEvents.LOADED,
+                {
+                  format: "gltf",
+                  model: self.model
+                },
+                false
+              );
+            },
+            undefined /* onProgress */,
+            function gltfFailed(error) {
+              let message =
+                error && error.message
+                  ? error.message
+                  : "Failed to load glTF model";
+              console.warn(message);
+              el.sceneEl.emit(
+                AlGltfModelEvents.ERROR,
+                {
+                  format: "gltf",
+                  src: src
+                },
+                false
+              );
+            }
+          );
         }
-
-        this.remove();
-
-        this.loader.load(
-          src,
-          function gltfLoaded(gltfModel) {
-            let res = GLTFUtils.setup(gltfModel);
-            self.model = res.mesh;
-            el.setObject3D("mesh", self.model);
-            el.sceneEl.emit(
-              AlGltfModelEvents.LOADED,
-              {
-                format: "gltf",
-                model: self.model
-              },
-              false
-            );
-          },
-          undefined /* onProgress */,
-          function gltfFailed(error) {
-            let message =
-              error && error.message
-                ? error.message
-                : "Failed to load glTF model";
-            console.warn(message);
-            el.sceneEl.emit(
-              AlGltfModelEvents.ERROR,
-              {
-                format: "gltf",
-                src: src
-              },
-              false
-            );
-          }
-        );
       },
 
       remove(): void {

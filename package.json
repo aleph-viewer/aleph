@@ -1,6 +1,6 @@
 {
   "name": "@universalviewer/aleph",
-  "version": "0.0.1-pre.2",
+  "version": "0.0.1-pre.7",
   "description": "Aleph",
   "module": "dist/esm/index.js",
   "main": "dist/index.js",
@@ -26,7 +26,7 @@
     "redux-thunk": "2.3.0"
   },
   "devDependencies": {
-    "@stencil/core": "0.18.1",
+    "@stencil/core": "0.18.0",
     "@types/aframe": "^0.8.2",
     "@types/jest": "24.0.11",
     "@types/puppeteer": "1.12.3",

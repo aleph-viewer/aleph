@@ -35,7 +35,7 @@ export namespace Components {
   }
   interface AlAngleEditorAttributes extends StencilHTMLAttributes {
     'angle'?: [string, AlAngleSerial];
-    'onOnDelete'?: (event: CustomEvent) => void;
+    'onDelete'?: (event: CustomEvent) => void;
   }
 
   interface AlConsole {
@@ -43,7 +43,7 @@ export namespace Components {
   }
   interface AlConsoleAttributes extends StencilHTMLAttributes {
     'cmd'?: string;
-    'onOnCmd'?: (event: CustomEvent) => void;
+    'onCommand'?: (event: CustomEvent) => void;
   }
 
   interface AlControlPanel {
@@ -57,7 +57,6 @@ export namespace Components {
     'slicesIndex': number;
     'slicesWindowCenter': number;
     'slicesWindowWidth': number;
-    'stack': any;
     'stackhelper': AMI.StackHelper
     | AMI.VolumeRenderingHelper;
     'volumeSteps': number;
@@ -69,24 +68,23 @@ export namespace Components {
     'displayMode'?: DisplayMode;
     'graphEnabled'?: boolean;
     'graphVisible'?: boolean;
-    'onOnBoundingBoxVisibleChanged'?: (event: CustomEvent) => void;
-    'onOnDisplayModeChanged'?: (event: CustomEvent) => void;
-    'onOnGraphEnabledChanged'?: (event: CustomEvent) => void;
-    'onOnOptionsEnabledChanged'?: (event: CustomEvent) => void;
-    'onOnOrientationChanged'?: (event: CustomEvent) => void;
-    'onOnSlicesIndexChanged'?: (event: CustomEvent) => void;
-    'onOnSlicesWindowCenterChanged'?: (event: CustomEvent) => void;
-    'onOnSlicesWindowWidthChanged'?: (event: CustomEvent) => void;
-    'onOnVolumeStepsChanged'?: (event: CustomEvent) => void;
-    'onOnVolumeWindowCenterChanged'?: (event: CustomEvent) => void;
-    'onOnVolumeWindowWidthChanged'?: (event: CustomEvent) => void;
+    'onBoundingBoxVisibleChanged'?: (event: CustomEvent) => void;
+    'onDisplayModeChanged'?: (event: CustomEvent) => void;
+    'onGraphEnabledChanged'?: (event: CustomEvent) => void;
+    'onOptionsEnabledChanged'?: (event: CustomEvent) => void;
+    'onOrientationChanged'?: (event: CustomEvent) => void;
+    'onSlicesIndexChanged'?: (event: CustomEvent) => void;
+    'onSlicesWindowCenterChanged'?: (event: CustomEvent) => void;
+    'onSlicesWindowWidthChanged'?: (event: CustomEvent) => void;
+    'onVolumeStepsChanged'?: (event: CustomEvent) => void;
+    'onVolumeWindowCenterChanged'?: (event: CustomEvent) => void;
+    'onVolumeWindowWidthChanged'?: (event: CustomEvent) => void;
     'optionsEnabled'?: boolean;
     'optionsVisible'?: boolean;
     'orientation'?: Orientation;
     'slicesIndex'?: number;
     'slicesWindowCenter'?: number;
     'slicesWindowWidth'?: number;
-    'stack'?: any;
     'stackhelper'?: AMI.StackHelper
     | AMI.VolumeRenderingHelper;
     'volumeSteps'?: number;
@@ -99,7 +97,7 @@ export namespace Components {
   }
   interface AlEdgeEditorAttributes extends StencilHTMLAttributes {
     'edge'?: [string, AlEdgeSerial];
-    'onOnDelete'?: (event: CustomEvent) => void;
+    'onDelete'?: (event: CustomEvent) => void;
   }
 
   interface AlNodeEditor {
@@ -107,8 +105,8 @@ export namespace Components {
   }
   interface AlNodeEditorAttributes extends StencilHTMLAttributes {
     'node'?: [string, AlNodeSerial];
-    'onOnDelete'?: (event: CustomEvent) => void;
-    'onOnSave'?: (event: CustomEvent) => void;
+    'onDelete'?: (event: CustomEvent) => void;
+    'onSave'?: (event: CustomEvent) => void;
   }
 
   interface AlNodeList {
@@ -117,7 +115,7 @@ export namespace Components {
   }
   interface AlNodeListAttributes extends StencilHTMLAttributes {
     'nodes'?: Map<string, AlNodeSerial> | null;
-    'onOnSelectedChanged'?: (event: CustomEvent) => void;
+    'onSelectedChanged'?: (event: CustomEvent) => void;
     'selected'?: string | null;
   }
 
@@ -151,7 +149,7 @@ export namespace Components {
     'urls': Map<string, string> | null;
   }
   interface AlUrlPickerAttributes extends StencilHTMLAttributes {
-    'onOnUrlChanged'?: (event: CustomEvent) => void;
+    'onUrlChanged'?: (event: CustomEvent) => void;
     'url'?: string | null;
     'urls'?: Map<string, string> | null;
   }
@@ -165,7 +163,7 @@ export namespace Components {
     'dracoDecoderPath': string | null;
     'height': string;
     'load': (src: string) => Promise<void>;
-    'resize': () => void;
+    'resize': () => Promise<void>;
     'selectNode': (nodeId: string) => Promise<void>;
     'setBoundingBoxVisible': (visible: boolean) => Promise<void>;
     'setDisplayMode': (displayMode: DisplayMode) => Promise<void>;
@@ -177,6 +175,9 @@ export namespace Components {
     'setSlicesIndex': (index: number) => Promise<void>;
     'setSlicesWindowCenter': (center: number) => Promise<void>;
     'setSlicesWindowWidth': (width: number) => Promise<void>;
+    'setVolumeSteps': (steps: number) => Promise<void>;
+    'setVolumeWindowCenter': (center: number) => Promise<void>;
+    'setVolumeWindowWidth': (width: number) => Promise<void>;
     'spinnerColor': string;
     'width': string;
   }
@@ -184,8 +185,8 @@ export namespace Components {
     'debug'?: boolean;
     'dracoDecoderPath'?: string | null;
     'height'?: string;
-    'onOnChanged'?: (event: CustomEvent) => void;
-    'onOnLoad'?: (event: CustomEvent) => void;
+    'onChanged'?: (event: CustomEvent) => void;
+    'onLoaded'?: (event: CustomEvent) => void;
     'spinnerColor'?: string;
     'width'?: string;
   }

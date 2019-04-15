@@ -1,12 +1,11 @@
-import { AframeRegistry, AframeComponent } from "../interfaces";
+import { AframeRegistryEntry, AframeComponent } from "../interfaces";
 import { Constants } from "../Constants";
-import { update } from "@tweenjs/tween.js";
 
-interface AlRenderOrderObject {
+interface AlRenderOrderObject extends AframeComponent {
   update(): void;
 }
 
-export class AlRenderOrder implements AframeRegistry {
+export class AlRenderOrder implements AframeRegistryEntry {
   public static get Object(): AlRenderOrderObject {
     return {
       schema: {

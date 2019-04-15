@@ -8,17 +8,17 @@ import { Orientation } from "../../enums/Orientation";
   shadow: true
 })
 export class AlControlPanel {
-  @Event() onBoundingBoxVisibleChanged: EventEmitter;
-  @Event() onDisplayModeChanged: EventEmitter;
-  @Event() onOptionsEnabledChanged: EventEmitter;
-  @Event() onOrientationChanged: EventEmitter;
-  @Event() onSlicesIndexChanged: EventEmitter;
-  @Event() onSlicesWindowCenterChanged: EventEmitter;
-  @Event() onSlicesWindowWidthChanged: EventEmitter;
-  @Event() onGraphEnabledChanged: EventEmitter;
-  @Event() onVolumeStepsChanged: EventEmitter;
-  @Event() onVolumeWindowCenterChanged: EventEmitter;
-  @Event() onVolumeWindowWidthChanged: EventEmitter;
+  @Event() boundingBoxVisibleChanged: EventEmitter;
+  @Event() displayModeChanged: EventEmitter;
+  @Event() optionsEnabledChanged: EventEmitter;
+  @Event() orientationChanged: EventEmitter;
+  @Event() slicesIndexChanged: EventEmitter;
+  @Event() slicesWindowCenterChanged: EventEmitter;
+  @Event() slicesWindowWidthChanged: EventEmitter;
+  @Event() graphEnabledChanged: EventEmitter;
+  @Event() volumeStepsChanged: EventEmitter;
+  @Event() volumeWindowCenterChanged: EventEmitter;
+  @Event() volumeWindowWidthChanged: EventEmitter;
 
   @Prop({ mutable: true }) boundingBoxVisible: boolean = false;
   @Prop({ mutable: true }) displayMode: DisplayMode = DisplayMode.MESH;
@@ -28,7 +28,7 @@ export class AlControlPanel {
   @Prop({ mutable: true }) slicesIndex: number;
   @Prop({ mutable: true }) slicesWindowCenter: number;
   @Prop({ mutable: true }) slicesWindowWidth: number;
-  @Prop({ mutable: true }) stack: any;
+  //@Prop({ mutable: true }) stack: any;
   @Prop({ mutable: true }) stackhelper:
     | AMI.StackHelper
     | AMI.VolumeRenderingHelper;
@@ -40,17 +40,17 @@ export class AlControlPanel {
 
   private _boundingBoxVisible(visible: boolean) {
     this.boundingBoxVisible = visible;
-    this.onBoundingBoxVisibleChanged.emit(visible);
+    this.boundingBoxVisibleChanged.emit(visible);
   }
 
   private _displayMode(displayMode: DisplayMode) {
     this.displayMode = displayMode;
-    this.onDisplayModeChanged.emit(displayMode);
+    this.displayModeChanged.emit(displayMode);
   }
 
   // private _optionsEnabled(enabled: boolean) {
   //   this.optionsEnabled = enabled;
-  //   this.onOptionsEnabledChanged.emit(enabled);
+  //   this.optionsEnabledChanged.emit(enabled);
   // }
 
   // private _optionsVisible(visible: boolean) {
@@ -59,45 +59,45 @@ export class AlControlPanel {
 
   private _graphEnabled(enabled: boolean) {
     this.graphEnabled = enabled;
-    this.onGraphEnabledChanged.emit(enabled);
+    this.graphEnabledChanged.emit(enabled);
   }
 
   private _orientation(orientation: Orientation) {
     this.orientation = orientation;
-    this.onOrientationChanged.emit(orientation);
+    this.orientationChanged.emit(orientation);
   }
 
   private _slicesIndex(index: number) {
     this.slicesIndex = index;
-    this.onSlicesIndexChanged.emit(index);
+    this.slicesIndexChanged.emit(index);
   }
 
   private _slicesWindowCenter(center: number) {
     this.slicesWindowCenter = center;
-    this.onSlicesWindowCenterChanged.emit(center);
+    this.slicesWindowCenterChanged.emit(center);
   }
 
   private _slicesWindowWidth(width: number) {
     this.slicesWindowWidth = width;
-    this.onSlicesWindowWidthChanged.emit(width);
+    this.slicesWindowWidthChanged.emit(width);
   }
 
   private _volumeSteps(steps: number) {
     this.volumeSteps = steps;
-    this.onVolumeStepsChanged.emit(steps);
+    this.volumeStepsChanged.emit(steps);
   }
 
   private _volumeWindowCenter(center: number) {
     this.volumeWindowCenter = center;
-    this.onVolumeWindowCenterChanged.emit(center);
+    this.volumeWindowCenterChanged.emit(center);
   }
 
   private _volumeWindowWidth(width: number) {
     this.volumeWindowWidth = width;
-    this.onVolumeWindowWidthChanged.emit(width);
+    this.volumeWindowWidthChanged.emit(width);
   }
 
-  renderDisplayModeToggle(): JSX.Element {
+  renderDisplayModeToggle() {
     if (this.displayMode !== DisplayMode.MESH) {
       return (
         <ion-item id="mode">
@@ -129,7 +129,7 @@ export class AlControlPanel {
     return null;
   }
 
-  renderNodesToggle(): JSX.Element {
+  renderNodesToggle() {
     if (this.graphVisible) {
       return (
         <ion-item>
@@ -147,7 +147,7 @@ export class AlControlPanel {
   }
 
   /*
-  renderOptionsToggle(): JSX.Element {
+  renderOptionsToggle() {
     if (this.optionsVisible) {
       return (
         <ion-item>
@@ -163,7 +163,7 @@ export class AlControlPanel {
   }
   */
 
-  renderBoundingBoxEnabled(): JSX.Element {
+  renderBoundingBoxEnabled() {
     return (
       <ion-item>
         <ion-icon name="cube" slot="start" />
@@ -180,10 +180,13 @@ export class AlControlPanel {
     return max + min - num;
   }
 
-  renderOptions(): JSX.Element {
+  renderOptions() {
     switch (this.displayMode) {
       case DisplayMode.SLICES: {
-        if (!this.stackhelper) {
+        if (
+          !this.stackhelper ||
+          (this.stackhelper && !(this.stackhelper as AMI.StackHelper).slice)
+        ) {
           break;
         }
 
@@ -192,7 +195,8 @@ export class AlControlPanel {
         );
 
         // based off zCosine, x:1 = saggital, y:1 = coronal, z:1 = axial
-        const zCosine: THREE.Vector3 = this.stack.zCosine as THREE.Vector3;
+        const zCosine: THREE.Vector3 = this.stackhelper.stack
+          .zCosine as THREE.Vector3;
 
         let orientationOffset;
         // If DICOM's up axis is X, offset the viewer's orientation by 1
@@ -217,8 +221,10 @@ export class AlControlPanel {
         );
 
         const indexMax: number =
-          this.stack.dimensionsIJK[
-            Object.keys(this.stack.dimensionsIJK)[stackOrientationIndex]
+          this.stackhelper.stack.dimensionsIJK[
+            Object.keys(this.stackhelper.stack.dimensionsIJK)[
+              stackOrientationIndex
+            ]
           ] - 1;
         let index: number;
 
@@ -231,7 +237,7 @@ export class AlControlPanel {
 
         const windowWidthMin: number = 1;
         const windowWidthMax: number =
-          this.stack.minMax[1] - this.stack.minMax[0];
+          this.stackhelper.stack.minMax[1] - this.stackhelper.stack.minMax[0];
         let windowWidth: number;
 
         if (this.slicesWindowWidth === undefined) {
@@ -241,8 +247,8 @@ export class AlControlPanel {
           windowWidth = this.slicesWindowWidth;
         }
 
-        const windowCenterMin: number = this.stack.minMax[0];
-        const windowCenterMax: number = this.stack.minMax[1];
+        const windowCenterMin: number = this.stackhelper.stack.minMax[0];
+        const windowCenterMax: number = this.stackhelper.stack.minMax[1];
         let windowCenter: number;
 
         if (this.slicesWindowCenter === undefined) {
@@ -367,14 +373,14 @@ export class AlControlPanel {
 
         if (this.volumeSteps === undefined) {
           // set default
-          steps = 16;
+          steps = 8;
         } else {
           steps = this.volumeSteps;
         }
 
         const windowWidthMin: number = 1;
         const windowWidthMax: number =
-          this.stack.minMax[1] - this.stack.minMax[0];
+          this.stackhelper.stack.minMax[1] - this.stackhelper.stack.minMax[0];
         let windowWidth: number;
 
         if (this.volumeWindowWidth === undefined) {
@@ -384,8 +390,8 @@ export class AlControlPanel {
           windowWidth = this.volumeWindowWidth;
         }
 
-        const windowCenterMin: number = this.stack.minMax[0];
-        const windowCenterMax: number = this.stack.minMax[1];
+        const windowCenterMin: number = this.stackhelper.stack.minMax[0];
+        const windowCenterMax: number = this.stackhelper.stack.minMax[1];
         let windowCenter: number;
 
         if (this.volumeWindowCenter === undefined) {
@@ -405,22 +411,21 @@ export class AlControlPanel {
         (this
           .stackhelper as AMI.VolumeRenderingHelper).windowCenter = windowCenter;
 
-        if (this.optionsVisible && this.optionsEnabled) {
-          return (
-            <div>
-              {this.renderBoundingBoxEnabled()}
-              <ion-item>
-                <ion-icon name="swap" slot="start" />
-                <ion-range
-                  slot="end"
-                  min={stepsMin}
-                  max={stepsMax}
-                  value={steps}
-                  pin="true"
-                  onMouseUp={e => this._volumeSteps(e.detail.value)}
-                />
-              </ion-item>
-              {/* <ion-item>
+        //if (this.optionsVisible && this.optionsEnabled) {
+        return (
+          <div>
+            {this.renderBoundingBoxEnabled()}
+            <ion-item>
+              <ion-icon name="swap" slot="start" />
+              <ion-range
+                slot="end"
+                min={stepsMin}
+                max={stepsMax}
+                value={steps}
+                onMouseUp={e => this._volumeSteps((e.srcElement as any).value)}
+              />
+            </ion-item>
+            {/* <ion-item>
                 <ion-label>LUT</ion-label>
                 <select onChange={ (e) => this.onVolumeLutChanged.emit(e.detail.value) }>
                 {
@@ -430,31 +435,33 @@ export class AlControlPanel {
                 }
                 </ion-select>
               </ion-item> */}
-              <ion-item>
-                <ion-icon name="sunny" slot="start" />
-                <ion-range
-                  slot="end"
-                  min={windowCenterMin}
-                  max={windowCenterMax}
-                  value={windowCenter}
-                  pin="true"
-                  onMouseUp={e => this._volumeWindowCenter(e.detail.value)}
-                />
-              </ion-item>
-              <ion-item>
-                <ion-icon name="contrast" slot="start" />
-                <ion-range
-                  slot="end"
-                  min={windowWidthMin}
-                  max={windowWidthMax}
-                  value={windowWidth}
-                  pin="true"
-                  onMouseUp={e => this._volumeWindowWidth(e.detail.value)}
-                />
-              </ion-item>
-            </div>
-          );
-        }
+            <ion-item>
+              <ion-icon name="sunny" slot="start" />
+              <ion-range
+                slot="end"
+                min={windowCenterMin}
+                max={windowCenterMax}
+                value={windowCenter}
+                onMouseUp={e =>
+                  this._volumeWindowCenter((e.srcElement as any).value)
+                }
+              />
+            </ion-item>
+            <ion-item>
+              <ion-icon name="contrast" slot="start" />
+              <ion-range
+                slot="end"
+                min={windowWidthMin}
+                max={windowWidthMax}
+                value={windowWidth}
+                onMouseUp={e =>
+                  this._volumeWindowWidth((e.srcElement as any).value)
+                }
+              />
+            </ion-item>
+          </div>
+        );
+        //}
       }
       case DisplayMode.MESH: {
         return this.renderBoundingBoxEnabled();
@@ -464,7 +471,7 @@ export class AlControlPanel {
     return null;
   }
 
-  render(): JSX.Element {
+  render() {
     return [
       this.renderDisplayModeToggle(),
       this.renderNodesToggle(),

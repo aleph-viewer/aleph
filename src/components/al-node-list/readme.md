@@ -15,9 +15,9 @@
 
 ## Events
 
-| Event               | Description | Type                |
-| ------------------- | ----------- | ------------------- |
-| `onSelectedChanged` |             | `CustomEvent<void>` |
+| Event             | Description | Type                |
+| ----------------- | ----------- | ------------------- |
+| `selectedChanged` |             | `CustomEvent<void>` |
 
 
 ----------------------------------------------

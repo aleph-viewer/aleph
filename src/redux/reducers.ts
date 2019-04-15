@@ -28,7 +28,7 @@ export const getInitialState = () => {
     slicesWindowWidth: 0,
     src: null,
     srcLoaded: false,
-    volumeSteps: 0,
+    volumeSteps: 8,
     volumeWindowCenter: 0,
     volumeWindowWidth: 0
   };
@@ -46,7 +46,7 @@ export const app = (
       if (action.payload) {
         const fileExtension: string = GetUtils.getFileExtension(action.payload);
         if (!Object.values(MeshFileType).includes(fileExtension)) {
-          displayMode = DisplayMode.SLICES;
+          displayMode = DisplayMode.SLICES; // if not a mesh, default to slices
         }
       }
 
@@ -54,6 +54,7 @@ export const app = (
         ...state,
         src: action.payload,
         srcLoaded: false,
+        controlsEnabled: false,
         displayMode: displayMode,
         selected: null,
         nodes: new Map<string, AlNodeSerial>(),
@@ -64,6 +65,7 @@ export const app = (
     case TypeKeys.APP_SET_SRC_LOADED: {
       return {
         ...state,
+        controlsEnabled: action.payload,
         srcLoaded: action.payload
       };
     }
@@ -220,7 +222,6 @@ export const app = (
     case TypeKeys.APP_SET_DISPLAY_MODE: {
       return {
         ...state,
-        boundingBoxVisible: action.payload === DisplayMode.SLICES, // default to bounding box visible in slices mode
         displayMode: action.payload
       };
     }

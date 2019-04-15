@@ -53,7 +53,7 @@ import {
   AlGraphEvents
 } from "../../utils";
 import { Constants } from "../../Constants";
-import { MeshFileType, Orientation, DisplayMode } from "../../enums";
+import { Orientation, DisplayMode } from "../../enums";
 import {
   AlGltfModelEvents,
   AlNodeSpawnerEvents,
@@ -61,7 +61,7 @@ import {
 } from "../../aframe";
 import { AlGraphEntryType } from "../../enums";
 import { AlGraph } from "../../interfaces/AlGraph";
-import { AlSlicesEvents } from "../../aframe/AlSlices";
+import { AlVolumeEvents } from "../../aframe/AlVolume";
 type Entity = import("aframe").Entity;
 type Scene = import("aframe").Scene;
 //#endregion
@@ -75,12 +75,13 @@ export class Aleph {
   //#region Private variables
   private _backboard: Entity;
   private _backboardVisible: boolean = false;
+  private _boundingBox: THREE.Box3;
   private _boundingSphereRadius: number;
   private _camera: Entity;
-  private _container: HTMLElement;
   private _graphIntersection: string | null = null;
   private _isShiftDown: boolean = false;
   private _scene: Scene;
+  private _sceneCenter: THREE.Vector3;
   private _targetEntity: Entity;
   private _validTarget: boolean;
 
@@ -161,18 +162,9 @@ export class Aleph {
   }
 
   @Method()
-  public resize(): void {
-    if (this.srcLoaded) {
-      const camera: THREE.PerspectiveCamera = this._scene.sceneEl
-        .camera as THREE.PerspectiveCamera;
-      const renderer: THREE.Renderer = this._scene.sceneEl.renderer;
-      camera.aspect =
-        this._container.offsetWidth / this._container.offsetHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(
-        this._container.offsetWidth,
-        this._container.offsetHeight
-      );
+  async resize(): Promise<void> {
+    if (this._scene) {
+      (this._scene as any).resize();
     }
   }
 
@@ -261,10 +253,25 @@ export class Aleph {
     this._setSlicesWindowWidth(width);
   }
 
+  @Method()
+  async setVolumeSteps(steps: number): Promise<void> {
+    this._setVolumeSteps(steps);
+  }
+
+  @Method()
+  async setVolumeWindowCenter(center: number): Promise<void> {
+    this._setVolumeWindowCenter(center);
+  }
+
+  @Method()
+  async setVolumeWindowWidth(width: number): Promise<void> {
+    this._setVolumeWindowWidth(width);
+  }
+
   //#endregion
 
-  @Event() onChanged: EventEmitter;
-  @Event() onLoad: EventEmitter;
+  @Event() changed: EventEmitter;
+  @Event() loaded: EventEmitter;
 
   componentWillLoad() {
     CreateUtils.createAframeComponents();
@@ -365,7 +372,7 @@ export class Aleph {
   }
 
   //#region Render Methods
-  private _renderSpinner(): JSX.Element {
+  private _renderSpinner() {
     if (!this.srcLoaded) {
       return (
         <a-entity
@@ -387,18 +394,18 @@ export class Aleph {
 
     return null;
   }
-  private _renderSrc(): JSX.Element {
+
+  private _renderBackboard() {
     if (!this.src) {
       return null;
     }
 
     let backscale: number = 0;
-    let backboard: JSX.Element | null = null;
 
     if (this._boundingSphereRadius) {
       backscale = this._boundingSphereRadius * Constants.splashBackSize;
 
-      backboard = (
+      return (
         <a-entity
           class="collidable"
           id="back-board"
@@ -420,15 +427,23 @@ export class Aleph {
       );
     }
 
+    return null;
+  }
+
+  private _renderSrc() {
+    if (!this.src) {
+      return null;
+    }
+
     switch (this.displayMode) {
       case DisplayMode.MESH: {
-        const gltfModel: JSX.Element = (
+        return (
           <a-entity
+            id="target-entity"
+            class="collidable"
             al-node-spawner={`
               graphEnabled: ${this.graphEnabled};
             `}
-            class="collidable"
-            id="target-entity"
             al-gltf-model={`
               src: url(${this.src});
               dracoDecoderPath: ${this.dracoDecoderPath};
@@ -438,43 +453,25 @@ export class Aleph {
             ref={(el: Entity) => (this._targetEntity = el)}
           />
         );
-        return [gltfModel, backboard];
       }
-      case DisplayMode.SLICES: {
-        const slices: JSX.Element = (
-          <a-entity
-            al-node-spawner={`
-              graphEnabled: ${this.graphEnabled};
-            `}
-            class="collidable"
-            id="target-entity"
-            al-slices={`
-              srcLoaded: ${this.srcLoaded};
-              src: ${this.src};
-              index: ${this.slicesIndex};
-              orientation: ${this.orientation};
-              slicesWindowWidth: ${this.slicesWindowWidth};
-              slicesWindowCenter: ${this.slicesWindowCenter};
-            `}
-            position="0 0 0"
-            scale="1 1 1"
-            ref={(el: Entity) => (this._targetEntity = el)}
-          />
-        );
-        return [slices, backboard];
-      }
+      case DisplayMode.SLICES:
       case DisplayMode.VOLUME: {
-        const volume: JSX.Element = (
+        return (
           <a-entity
+            id="target-entity"
+            class="collidable"
             al-node-spawner={`
               graphEnabled: ${this.graphEnabled};
             `}
-            class="collidable"
-            id="target-entity"
             al-volume={`
               srcLoaded: ${this.srcLoaded};
               src: ${this.src};
-              steps: ${this.volumeSteps};
+              displayMode: ${this.displayMode};
+              slicesIndex: ${this.slicesIndex};
+              slicesOrientation: ${this.orientation};
+              slicesWindowWidth: ${this.slicesWindowWidth};
+              slicesWindowCenter: ${this.slicesWindowCenter};
+              volumeSteps: ${this.volumeSteps};
               volumeWindowCenter: ${this.volumeWindowCenter};
               volumeWindowWidth: ${this.volumeWindowWidth};
             `}
@@ -483,12 +480,31 @@ export class Aleph {
             ref={(el: Entity) => (this._targetEntity = el)}
           />
         );
-        return [volume, backboard];
       }
     }
   }
-  private _renderNodes(): JSX.Element {
-    return [...this.nodes].map((n: [string, AlNodeSerial]) => {
+
+  private _renderBoundingBox() {
+    if (this.srcLoaded && this.boundingBoxVisible) {
+      let size: THREE.Vector3 = new THREE.Vector3();
+      this._boundingBox.getSize(size);
+
+      return (
+        <a-entity
+          position={ThreeUtils.vector3ToString(this._sceneCenter)}
+          al-bounding-box={`
+            scale: ${ThreeUtils.vector3ToString(size)};
+            color: ${Constants.colorValues.red};
+        `}
+        />
+      );
+    }
+
+    return null;
+  }
+
+  private _renderNodes() {
+    return Array.from(this.nodes).map((n: [string, AlNodeSerial]) => {
       const [nodeId, node] = n;
 
       let textOffset: THREE.Vector3 = new THREE.Vector3(0, 2.5, 0);
@@ -526,8 +542,8 @@ export class Aleph {
     });
   }
 
-  private _renderEdges(): JSX.Element {
-    return [...this.edges].map((n: [string, AlEdgeSerial]) => {
+  private _renderEdges() {
+    return Array.from(this.edges).map((n: [string, AlEdgeSerial]) => {
       const [edgeId, edge] = n;
       const node1 = this.nodes.get(edge.node1Id);
       const node2 = this.nodes.get(edge.node2Id);
@@ -581,8 +597,8 @@ export class Aleph {
     });
   }
 
-  private _renderAngles(): JSX.Element {
-    return [...this.angles].map((n: [string, AlAngleSerial]) => {
+  private _renderAngles() {
+    return Array.from(this.angles).map((n: [string, AlAngleSerial]) => {
       const [angleId, angle] = n;
       const edge1 = this.edges.get(angle.edge1Id);
       const edge2 = this.edges.get(angle.edge2Id);
@@ -683,7 +699,7 @@ export class Aleph {
     });
   }
 
-  private _renderLights(): JSX.Element {
+  private _renderLights() {
     return [
       <a-entity
         id="light-1"
@@ -702,7 +718,7 @@ export class Aleph {
     ];
   }
 
-  private _renderCamera(): JSX.Element {
+  private _renderCamera() {
     return (
       <a-camera
         fov={Constants.cameraValues.fov}
@@ -738,7 +754,7 @@ export class Aleph {
     );
   }
 
-  private _renderScene(): JSX.Element {
+  private _renderScene() {
     return (
       <a-scene
         embedded
@@ -746,7 +762,9 @@ export class Aleph {
         vr-mode-ui="enabled: false"
         ref={el => (this._scene = el)}
       >
+        {this._renderBackboard()}
         {this._renderSrc()}
+        {this._renderBoundingBox()}
         {this._renderNodes()}
         {this._renderEdges()}
         {this._renderAngles()}
@@ -755,7 +773,7 @@ export class Aleph {
       </a-scene>
     );
   }
-  render(): JSX.Element {
+  render() {
     return (
       <div
         id="al-container"
@@ -763,7 +781,6 @@ export class Aleph {
           width: this.width,
           height: this.height
         }}
-        ref={el => (this._container = el)}
       >
         <div id="lut-container">
           <div id="lut-min">0.0</div>
@@ -779,14 +796,14 @@ export class Aleph {
   //#region Private Methods
   private _createEdge(node1Id: string, node2Id: string): void {
     // check if there is already an edge connecting these two nodes
-    const match: [string, AlEdgeSerial] | undefined = [...this.edges].find(
-      ([_id, edge]) => {
-        return (
-          (edge.node1Id === node1Id && edge.node2Id === node2Id) ||
-          (edge.node1Id === node2Id && edge.node2Id === node1Id)
-        );
-      }
-    );
+    const match: [string, AlEdgeSerial] | undefined = Array.from(
+      this.edges
+    ).find(([_id, edge]) => {
+      return (
+        (edge.node1Id === node1Id && edge.node2Id === node2Id) ||
+        (edge.node1Id === node2Id && edge.node2Id === node1Id)
+      );
+    });
 
     if (!match) {
       const newEdge: AlEdgeSerial = {
@@ -806,14 +823,14 @@ export class Aleph {
 
   private _createAngle(edge1Id: string, edge2Id: string): void {
     // check if there is already an angle connecting these two edges
-    const match: [string, AlAngleSerial] | undefined = [...this.angles].find(
-      ([_id, angle]) => {
-        return (
-          (angle.edge1Id === edge1Id && angle.edge2Id === edge2Id) ||
-          (angle.edge1Id === edge2Id && angle.edge2Id === edge1Id)
-        );
-      }
-    );
+    const match: [string, AlAngleSerial] | undefined = Array.from(
+      this.angles
+    ).find(([_id, angle]) => {
+      return (
+        (angle.edge1Id === edge1Id && angle.edge2Id === edge2Id) ||
+        (angle.edge1Id === edge2Id && angle.edge2Id === edge1Id)
+      );
+    });
     if (!match) {
       let edge1 = this.edges.get(edge1Id);
       let edge2 = this.edges.get(edge2Id);
@@ -869,25 +886,25 @@ export class Aleph {
       });
     }
 
-    this.onChanged.emit(this._getAppState());
+    this.changed.emit(this._getAppState());
   }
 
   private _clearGraph(): void {
     this.appClearNodes();
     this.appClearEdges();
     this.appClearAngles();
-    this.onChanged.emit(this._getAppState());
+    this.changed.emit(this._getAppState());
   }
 
   private _deleteNode(nodeId: string): void {
     this.appDeleteNode(nodeId);
-    this.onChanged.emit(this._getAppState());
+    this.changed.emit(this._getAppState());
   }
 
   private _setNode(node: [string, AlNodeSerial]): void {
     //ThreeUtils.waitOneFrame(() => {
     this.appSetNode(node);
-    this.onChanged.emit(this._getAppState());
+    this.changed.emit(this._getAppState());
     //});
   }
 
@@ -940,84 +957,99 @@ export class Aleph {
             animating: true
           });
           this.appSelectNode(nodeId);
-          this.onChanged.emit(this._getAppState());
+          this.changed.emit(this._getAppState());
           //});
         }
       }
     } else {
       this.appSelectNode(nodeId);
-      this.onChanged.emit(this._getAppState());
+      this.changed.emit(this._getAppState());
     }
   }
 
   private _setEdge(edge: [string, AlEdgeSerial]): void {
     this.appSetEdge(edge);
-    this.onChanged.emit(this._getAppState());
+    this.changed.emit(this._getAppState());
   }
 
   private _deleteEdge(edgeId: string): void {
     this.appDeleteEdge(edgeId);
-    this.onChanged.emit(this._getAppState());
+    this.changed.emit(this._getAppState());
   }
 
   private _selectEdge(edgeId: string): void {
     this.appSelectEdge(edgeId);
-    this.onChanged.emit(this._getAppState());
+    this.changed.emit(this._getAppState());
   }
 
   private _setAngle(angle: [string, AlAngleSerial]): void {
     this.appSetAngle(angle);
-    this.onChanged.emit(this._getAppState());
+    this.changed.emit(this._getAppState());
   }
 
   private _selectAngle(angleId: string): void {
     this.appSelectAngle(angleId);
-    this.onChanged.emit(this._getAppState());
+    this.changed.emit(this._getAppState());
   }
 
   private _deleteAngle(angleId: string): void {
     this.appDeleteAngle(angleId);
-    this.onChanged.emit(this._getAppState());
+    this.changed.emit(this._getAppState());
   }
 
   private _setGraphEnabled(enabled: boolean): void {
     this.appSetGraphEnabled(enabled);
-    this.onChanged.emit(this._getAppState());
+    this.changed.emit(this._getAppState());
   }
 
   private _setBoundingBoxVisible(visible: boolean): void {
     this.appSetBoundingBoxVisible(visible);
-    this.onChanged.emit(this._getAppState());
+    this.changed.emit(this._getAppState());
   }
 
   private _setSlicesIndex(index: number): void {
     this.appSetSlicesIndex(index);
-    this.onChanged.emit(this._getAppState());
+    this.changed.emit(this._getAppState());
   }
 
   private _setOrientation(orientation: Orientation): void {
     this.appSetOrientation(orientation);
-    this.onChanged.emit(this._getAppState());
+    this.changed.emit(this._getAppState());
   }
 
   private _setSlicesWindowCenter(center: number): void {
     this.appSetSlicesWindowCenter(center);
-    this.onChanged.emit(this._getAppState());
+    this.changed.emit(this._getAppState());
   }
 
   private _setSlicesWindowWidth(width: number): void {
     this.appSetSlicesWindowWidth(width);
-    this.onChanged.emit(this._getAppState());
+    this.changed.emit(this._getAppState());
+  }
+
+  private _setVolumeSteps(steps: number): void {
+    this.appSetVolumeSteps(steps);
+    this.changed.emit(this._getAppState());
+  }
+
+  private _setVolumeWindowCenter(center: number): void {
+    this.appSetVolumeWindowCenter(center);
+    this.changed.emit(this._getAppState());
+  }
+
+  private _setVolumeWindowWidth(width: number): void {
+    this.appSetVolumeWindowWidth(width);
+    this.changed.emit(this._getAppState());
   }
 
   private _setDisplayMode(displayMode: DisplayMode): void {
     this.appSetDisplayMode(displayMode);
-    this.onChanged.emit(this._getAppState());
+    this.changed.emit(this._getAppState());
   }
 
   private _setSrc(src: string): void {
     this.appSetSrc(src);
-    this.onChanged.emit(this._getAppState());
+    this.changed.emit(this._getAppState());
   }
 
   private _srcLoaded(ev: any): void {
@@ -1031,25 +1063,29 @@ export class Aleph {
         break;
       }
       case DisplayMode.SLICES: {
-        mesh = ev.detail.stackhelper._bBox._mesh;
-        //mesh = aframeMesh.children[1].children[0] as THREE.Mesh;
+        mesh = ev.detail._bBox._mesh;
         break;
       }
       case DisplayMode.VOLUME: {
+        mesh = ev.detail._mesh;
         break;
       }
     }
 
-    let result: AlCameraSerial = GetUtils.getCameraStateFromMesh(mesh);
+    mesh.geometry.computeBoundingSphere();
+    this._sceneCenter = GetUtils.getGeometryCenter(mesh.geometry);
     this._boundingSphereRadius = mesh.geometry.boundingSphere.radius;
+    this._boundingBox = GetUtils.getBoundingBox(mesh);
 
-    if (result) {
-      this.appSetCamera(result);
+    let cameraState: AlCameraSerial = GetUtils.getCameraStateFromMesh(mesh); //
+
+    if (cameraState) {
+      this.appSetCamera(cameraState);
     }
 
     this.appSetSrcLoaded(true);
-    this.onChanged.emit(this._getAppState());
-    this.onLoad.emit(ev.detail);
+    this.changed.emit(this._getAppState());
+    this.loaded.emit(ev.detail);
   }
   //#endregion
 
@@ -1274,7 +1310,7 @@ export class Aleph {
       false
     );
 
-    this._scene.addEventListener(AlSlicesEvents.LOADED, this._srcLoaded, false);
+    this._scene.addEventListener(AlVolumeEvents.LOADED, this._srcLoaded, false);
 
     this._scene.addEventListener(
       AlGraphEvents.POINTER_OVER,

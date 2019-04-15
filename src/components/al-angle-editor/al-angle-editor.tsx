@@ -6,12 +6,12 @@ import { AlAngleSerial } from "../../interfaces";
   styleUrl: "al-angle-editor.css",
   shadow: true
 })
-export class AlangleEditor {
-  @Event() onDelete: EventEmitter;
+export class AlAngleEditor {
+  @Event() delete: EventEmitter;
 
   @Prop({ mutable: true }) angle: [string, AlAngleSerial];
 
-  render(): JSX.Element {
+  render() {
     if (this.angle) {
       const [angleId] = this.angle;
 
@@ -20,7 +20,7 @@ export class AlangleEditor {
           <ion-button
             size="small"
             onClick={() => {
-              this.onDelete.emit(angleId);
+              this.delete.emit(angleId);
               this.angle = null;
             }}
           >

@@ -1,4 +1,4 @@
-# al-node-editor
+# al-edge-editor
 
 
 
@@ -9,7 +9,7 @@
 
 | Property | Attribute | Description | Type                     | Default     |
 | -------- | --------- | ----------- | ------------------------ | ----------- |
-| `node`   | --        |             | `[string, AlNodeSerial]` | `undefined` |
+| `edge`   | --        |             | `[string, AlEdgeSerial]` | `undefined` |
 
 
 ## Events
@@ -17,7 +17,6 @@
 | Event    | Description | Type                |
 | -------- | ----------- | ------------------- |
 | `delete` |             | `CustomEvent<void>` |
-| `save`   |             | `CustomEvent<void>` |
 
 
 ----------------------------------------------

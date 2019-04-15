@@ -1,10 +1,11 @@
-import { AframeRegistry, AframeComponent } from "../interfaces";
+import { AframeRegistryEntry, AframeComponent } from "../interfaces";
 import { VolumetricLoader } from "../utils/VolumetricLoader";
 import { Constants } from "../Constants";
+import { DisplayMode } from "../enums";
 
 interface AlVolumeState {
   stack: any;
-  stackhelper: AMI.VolumeRenderingHelper;
+  stackhelper: AMI.VolumeRenderingHelper | AMI.StackHelper;
   lutHelper: AMI.LutHelper;
 }
 
@@ -13,23 +14,28 @@ interface AlVolumeObject extends AframeComponent {
   tickFunction(): void;
   tick(): void;
   remove(): void;
-  loadSrc(): void;
+  handleStack(stack: any): void;
   bindMethods(): void;
 }
 
-export class AlVolume implements AframeRegistry {
+export class AlVolume implements AframeRegistryEntry {
   public static get Object(): AlVolumeObject {
     return {
       schema: {
         srcLoaded: { type: "boolean" },
         src: { type: "string" },
-        steps: { type: "number" },
+        displayMode: { type: "string" },
+        slicesIndex: { type: "number" },
+        slicesOrientation: { type: "string" },
+        slicesWindowWidth: { type: "number" },
+        slicesWindowCenter: { type: "number" },
+        volumeSteps: { type: "number" },
         volumeWindowWidth: { type: "number" },
         volumeWindowCenter: { type: "number" }
       },
 
       bindMethods(): void {
-        this.loadSrc = this.loadSrc.bind(this);
+        this.handleStack = this.handleStack.bind(this);
       },
 
       init(): void {
@@ -43,55 +49,70 @@ export class AlVolume implements AframeRegistry {
         this.bindMethods();
       },
 
-      loadSrc(): void {
+      handleStack(stack: any): void {
         const state = this.state as AlVolumeState;
         const el = this.el;
-        const src = this.data.src;
 
-        this.loader.load(src, el).then(stack => {
-          // Get LUT Canvas
-          const lutCanvases: HTMLElement = el.sceneEl.parentEl.querySelector(
-            "#lut-canvases"
-          );
+        state.stack = stack;
 
-          // Create the LUT Helper
-          state.lutHelper = new AMI.LutHelper(lutCanvases);
-          state.lutHelper.luts = AMI.LutHelper.presetLuts();
-          state.lutHelper.lutsO = AMI.LutHelper.presetLutsO();
+        switch (this.data.displayMode) {
+          case DisplayMode.SLICES: {
+            state.stackhelper = new AMI.StackHelper(state.stack);
+            state.stackhelper.bbox.visible = false;
+            state.stackhelper.border.color = Constants.colorValues.blue;
+            break;
+          }
+          case DisplayMode.VOLUME: {
+            // Get LUT Canvas
+            const lutCanvases: HTMLElement = el.sceneEl.parentEl.querySelector(
+              "#lut-canvases"
+            );
+            // Create the LUT Helper
+            state.lutHelper = new AMI.LutHelper(lutCanvases);
+            state.lutHelper.luts = AMI.LutHelper.presetLuts();
+            state.lutHelper.lutsO = AMI.LutHelper.presetLutsO();
+            state.stackhelper = new AMI.VolumeRenderingHelper(state.stack);
+            state.stackhelper.uniforms.uTextureLUT.value =
+              state.lutHelper.texture;
+            state.stackhelper.uniforms.uLut.value = 1;
+            break;
+          }
+        }
 
-          state.stack = stack;
-          state.stackhelper = new AMI.VolumeRenderingHelper(state.stack);
-          state.stackhelper.uniforms.uTextureLUT.value =
-            state.lutHelper.texture;
-          state.stackhelper.uniforms.uLut.value = 1;
-          //this.el.setObject3D("mesh", this.state.stackhelper);
-          el.sceneEl.emit(
-            AlVolumeEvents.LOADED,
-            {
-              stack: state.stack,
-              stackhelper: state.stackhelper
-            },
-            false
-          );
-        });
+        el.sceneEl.emit(AlVolumeEvents.LOADED, state.stackhelper, false);
       },
 
       update(oldData): void {
+        const state = this.state;
+        const el = this.el;
+
         if (!this.data.src) {
           return;
         } else if (oldData && oldData.src !== this.data.src) {
-          this.loadSrc();
+          this.loader.load(this.data.src, el).then(stack => {
+            this.handleStack(stack);
+          });
+        } else if (
+          oldData &&
+          oldData.displayMode !== this.data.displayMode &&
+          state.stack
+        ) {
+          this.handleStack(state.stack);
         }
       },
 
-      tickFunction(): void {},
+      tickFunction(): void {
+        if (this.state.stackhelper) {
+          this.el.setObject3D("mesh", this.state.stackhelper);
+        }
+      },
 
       tick() {
         this.tickFunction();
       },
 
       remove(): void {
-        //this.el.removeObject3D("mesh");
+        this.el.removeObject3D("mesh");
       }
     } as AlVolumeObject;
   }
