@@ -29,6 +29,7 @@ export class AlUrlPicker {
           </ion-select>
           <ion-input
             type="url"
+            size="100"
             placeholder="src"
             required
             value={this.url}
