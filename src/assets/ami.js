@@ -7785,461 +7785,22 @@ function n(e,t){if(e===t)return 0;for(var r=e.length,n=t.length,i=0,a=Math.min(r
 
 /***/ }),
 
-/***/ "./node_modules/events/events.js":
-/*!***************************************!*\
-  !*** ./node_modules/events/events.js ***!
-  \***************************************/
+/***/ "./node_modules/glslify/browser.js":
+/*!*****************************************!*\
+  !*** ./node_modules/glslify/browser.js ***!
+  \*****************************************/
 /*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-"use strict";
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-
-
-var R = typeof Reflect === 'object' ? Reflect : null
-var ReflectApply = R && typeof R.apply === 'function'
-  ? R.apply
-  : function ReflectApply(target, receiver, args) {
-    return Function.prototype.apply.call(target, receiver, args);
+module.exports = function(strings) {
+  if (typeof strings === 'string') strings = [strings]
+  var exprs = [].slice.call(arguments,1)
+  var parts = []
+  for (var i = 0; i < strings.length-1; i++) {
+    parts.push(strings[i], exprs[i] || '')
   }
-
-var ReflectOwnKeys
-if (R && typeof R.ownKeys === 'function') {
-  ReflectOwnKeys = R.ownKeys
-} else if (Object.getOwnPropertySymbols) {
-  ReflectOwnKeys = function ReflectOwnKeys(target) {
-    return Object.getOwnPropertyNames(target)
-      .concat(Object.getOwnPropertySymbols(target));
-  };
-} else {
-  ReflectOwnKeys = function ReflectOwnKeys(target) {
-    return Object.getOwnPropertyNames(target);
-  };
-}
-
-function ProcessEmitWarning(warning) {
-  if (console && console.warn) console.warn(warning);
-}
-
-var NumberIsNaN = Number.isNaN || function NumberIsNaN(value) {
-  return value !== value;
-}
-
-function EventEmitter() {
-  EventEmitter.init.call(this);
-}
-module.exports = EventEmitter;
-
-// Backwards-compat with node 0.10.x
-EventEmitter.EventEmitter = EventEmitter;
-
-EventEmitter.prototype._events = undefined;
-EventEmitter.prototype._eventsCount = 0;
-EventEmitter.prototype._maxListeners = undefined;
-
-// By default EventEmitters will print a warning if more than 10 listeners are
-// added to it. This is a useful default which helps finding memory leaks.
-var defaultMaxListeners = 10;
-
-Object.defineProperty(EventEmitter, 'defaultMaxListeners', {
-  enumerable: true,
-  get: function() {
-    return defaultMaxListeners;
-  },
-  set: function(arg) {
-    if (typeof arg !== 'number' || arg < 0 || NumberIsNaN(arg)) {
-      throw new RangeError('The value of "defaultMaxListeners" is out of range. It must be a non-negative number. Received ' + arg + '.');
-    }
-    defaultMaxListeners = arg;
-  }
-});
-
-EventEmitter.init = function() {
-
-  if (this._events === undefined ||
-      this._events === Object.getPrototypeOf(this)._events) {
-    this._events = Object.create(null);
-    this._eventsCount = 0;
-  }
-
-  this._maxListeners = this._maxListeners || undefined;
-};
-
-// Obviously not all Emitters should be limited to 10. This function allows
-// that to be increased. Set to zero for unlimited.
-EventEmitter.prototype.setMaxListeners = function setMaxListeners(n) {
-  if (typeof n !== 'number' || n < 0 || NumberIsNaN(n)) {
-    throw new RangeError('The value of "n" is out of range. It must be a non-negative number. Received ' + n + '.');
-  }
-  this._maxListeners = n;
-  return this;
-};
-
-function $getMaxListeners(that) {
-  if (that._maxListeners === undefined)
-    return EventEmitter.defaultMaxListeners;
-  return that._maxListeners;
-}
-
-EventEmitter.prototype.getMaxListeners = function getMaxListeners() {
-  return $getMaxListeners(this);
-};
-
-EventEmitter.prototype.emit = function emit(type) {
-  var args = [];
-  for (var i = 1; i < arguments.length; i++) args.push(arguments[i]);
-  var doError = (type === 'error');
-
-  var events = this._events;
-  if (events !== undefined)
-    doError = (doError && events.error === undefined);
-  else if (!doError)
-    return false;
-
-  // If there is no 'error' event listener then throw.
-  if (doError) {
-    var er;
-    if (args.length > 0)
-      er = args[0];
-    if (er instanceof Error) {
-      // Note: The comments on the `throw` lines are intentional, they show
-      // up in Node's output if this results in an unhandled exception.
-      throw er; // Unhandled 'error' event
-    }
-    // At least give some kind of context to the user
-    var err = new Error('Unhandled error.' + (er ? ' (' + er.message + ')' : ''));
-    err.context = er;
-    throw err; // Unhandled 'error' event
-  }
-
-  var handler = events[type];
-
-  if (handler === undefined)
-    return false;
-
-  if (typeof handler === 'function') {
-    ReflectApply(handler, this, args);
-  } else {
-    var len = handler.length;
-    var listeners = arrayClone(handler, len);
-    for (var i = 0; i < len; ++i)
-      ReflectApply(listeners[i], this, args);
-  }
-
-  return true;
-};
-
-function _addListener(target, type, listener, prepend) {
-  var m;
-  var events;
-  var existing;
-
-  if (typeof listener !== 'function') {
-    throw new TypeError('The "listener" argument must be of type Function. Received type ' + typeof listener);
-  }
-
-  events = target._events;
-  if (events === undefined) {
-    events = target._events = Object.create(null);
-    target._eventsCount = 0;
-  } else {
-    // To avoid recursion in the case that type === "newListener"! Before
-    // adding it to the listeners, first emit "newListener".
-    if (events.newListener !== undefined) {
-      target.emit('newListener', type,
-                  listener.listener ? listener.listener : listener);
-
-      // Re-assign `events` because a newListener handler could have caused the
-      // this._events to be assigned to a new object
-      events = target._events;
-    }
-    existing = events[type];
-  }
-
-  if (existing === undefined) {
-    // Optimize the case of one listener. Don't need the extra array object.
-    existing = events[type] = listener;
-    ++target._eventsCount;
-  } else {
-    if (typeof existing === 'function') {
-      // Adding the second element, need to change to array.
-      existing = events[type] =
-        prepend ? [listener, existing] : [existing, listener];
-      // If we've already got an array, just append.
-    } else if (prepend) {
-      existing.unshift(listener);
-    } else {
-      existing.push(listener);
-    }
-
-    // Check for listener leak
-    m = $getMaxListeners(target);
-    if (m > 0 && existing.length > m && !existing.warned) {
-      existing.warned = true;
-      // No error code for this since it is a Warning
-      // eslint-disable-next-line no-restricted-syntax
-      var w = new Error('Possible EventEmitter memory leak detected. ' +
-                          existing.length + ' ' + String(type) + ' listeners ' +
-                          'added. Use emitter.setMaxListeners() to ' +
-                          'increase limit');
-      w.name = 'MaxListenersExceededWarning';
-      w.emitter = target;
-      w.type = type;
-      w.count = existing.length;
-      ProcessEmitWarning(w);
-    }
-  }
-
-  return target;
-}
-
-EventEmitter.prototype.addListener = function addListener(type, listener) {
-  return _addListener(this, type, listener, false);
-};
-
-EventEmitter.prototype.on = EventEmitter.prototype.addListener;
-
-EventEmitter.prototype.prependListener =
-    function prependListener(type, listener) {
-      return _addListener(this, type, listener, true);
-    };
-
-function onceWrapper() {
-  var args = [];
-  for (var i = 0; i < arguments.length; i++) args.push(arguments[i]);
-  if (!this.fired) {
-    this.target.removeListener(this.type, this.wrapFn);
-    this.fired = true;
-    ReflectApply(this.listener, this.target, args);
-  }
-}
-
-function _onceWrap(target, type, listener) {
-  var state = { fired: false, wrapFn: undefined, target: target, type: type, listener: listener };
-  var wrapped = onceWrapper.bind(state);
-  wrapped.listener = listener;
-  state.wrapFn = wrapped;
-  return wrapped;
-}
-
-EventEmitter.prototype.once = function once(type, listener) {
-  if (typeof listener !== 'function') {
-    throw new TypeError('The "listener" argument must be of type Function. Received type ' + typeof listener);
-  }
-  this.on(type, _onceWrap(this, type, listener));
-  return this;
-};
-
-EventEmitter.prototype.prependOnceListener =
-    function prependOnceListener(type, listener) {
-      if (typeof listener !== 'function') {
-        throw new TypeError('The "listener" argument must be of type Function. Received type ' + typeof listener);
-      }
-      this.prependListener(type, _onceWrap(this, type, listener));
-      return this;
-    };
-
-// Emits a 'removeListener' event if and only if the listener was removed.
-EventEmitter.prototype.removeListener =
-    function removeListener(type, listener) {
-      var list, events, position, i, originalListener;
-
-      if (typeof listener !== 'function') {
-        throw new TypeError('The "listener" argument must be of type Function. Received type ' + typeof listener);
-      }
-
-      events = this._events;
-      if (events === undefined)
-        return this;
-
-      list = events[type];
-      if (list === undefined)
-        return this;
-
-      if (list === listener || list.listener === listener) {
-        if (--this._eventsCount === 0)
-          this._events = Object.create(null);
-        else {
-          delete events[type];
-          if (events.removeListener)
-            this.emit('removeListener', type, list.listener || listener);
-        }
-      } else if (typeof list !== 'function') {
-        position = -1;
-
-        for (i = list.length - 1; i >= 0; i--) {
-          if (list[i] === listener || list[i].listener === listener) {
-            originalListener = list[i].listener;
-            position = i;
-            break;
-          }
-        }
-
-        if (position < 0)
-          return this;
-
-        if (position === 0)
-          list.shift();
-        else {
-          spliceOne(list, position);
-        }
-
-        if (list.length === 1)
-          events[type] = list[0];
-
-        if (events.removeListener !== undefined)
-          this.emit('removeListener', type, originalListener || listener);
-      }
-
-      return this;
-    };
-
-EventEmitter.prototype.off = EventEmitter.prototype.removeListener;
-
-EventEmitter.prototype.removeAllListeners =
-    function removeAllListeners(type) {
-      var listeners, events, i;
-
-      events = this._events;
-      if (events === undefined)
-        return this;
-
-      // not listening for removeListener, no need to emit
-      if (events.removeListener === undefined) {
-        if (arguments.length === 0) {
-          this._events = Object.create(null);
-          this._eventsCount = 0;
-        } else if (events[type] !== undefined) {
-          if (--this._eventsCount === 0)
-            this._events = Object.create(null);
-          else
-            delete events[type];
-        }
-        return this;
-      }
-
-      // emit removeListener for all listeners on all events
-      if (arguments.length === 0) {
-        var keys = Object.keys(events);
-        var key;
-        for (i = 0; i < keys.length; ++i) {
-          key = keys[i];
-          if (key === 'removeListener') continue;
-          this.removeAllListeners(key);
-        }
-        this.removeAllListeners('removeListener');
-        this._events = Object.create(null);
-        this._eventsCount = 0;
-        return this;
-      }
-
-      listeners = events[type];
-
-      if (typeof listeners === 'function') {
-        this.removeListener(type, listeners);
-      } else if (listeners !== undefined) {
-        // LIFO order
-        for (i = listeners.length - 1; i >= 0; i--) {
-          this.removeListener(type, listeners[i]);
-        }
-      }
-
-      return this;
-    };
-
-function _listeners(target, type, unwrap) {
-  var events = target._events;
-
-  if (events === undefined)
-    return [];
-
-  var evlistener = events[type];
-  if (evlistener === undefined)
-    return [];
-
-  if (typeof evlistener === 'function')
-    return unwrap ? [evlistener.listener || evlistener] : [evlistener];
-
-  return unwrap ?
-    unwrapListeners(evlistener) : arrayClone(evlistener, evlistener.length);
-}
-
-EventEmitter.prototype.listeners = function listeners(type) {
-  return _listeners(this, type, true);
-};
-
-EventEmitter.prototype.rawListeners = function rawListeners(type) {
-  return _listeners(this, type, false);
-};
-
-EventEmitter.listenerCount = function(emitter, type) {
-  if (typeof emitter.listenerCount === 'function') {
-    return emitter.listenerCount(type);
-  } else {
-    return listenerCount.call(emitter, type);
-  }
-};
-
-EventEmitter.prototype.listenerCount = listenerCount;
-function listenerCount(type) {
-  var events = this._events;
-
-  if (events !== undefined) {
-    var evlistener = events[type];
-
-    if (typeof evlistener === 'function') {
-      return 1;
-    } else if (evlistener !== undefined) {
-      return evlistener.length;
-    }
-  }
-
-  return 0;
-}
-
-EventEmitter.prototype.eventNames = function eventNames() {
-  return this._eventsCount > 0 ? ReflectOwnKeys(this._events) : [];
-};
-
-function arrayClone(arr, n) {
-  var copy = new Array(n);
-  for (var i = 0; i < n; ++i)
-    copy[i] = arr[i];
-  return copy;
-}
-
-function spliceOne(list, index) {
-  for (; index + 1 < list.length; index++)
-    list[index] = list[index + 1];
-  list.pop();
-}
-
-function unwrapListeners(arr) {
-  var ret = new Array(arr.length);
-  for (var i = 0; i < ret.length; ++i) {
-    ret[i] = arr[i].listener || arr[i];
-  }
-  return ret;
+  parts.push(strings[i])
+  return parts.join('')
 }
 
 
@@ -12259,6 +11820,466 @@ if ((moduleType !== 'undefined') && module.exports) {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
+
+
+/***/ }),
+
+/***/ "./node_modules/node-libs-browser/node_modules/events/events.js":
+/*!**********************************************************************!*\
+  !*** ./node_modules/node-libs-browser/node_modules/events/events.js ***!
+  \**********************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+
+var R = typeof Reflect === 'object' ? Reflect : null
+var ReflectApply = R && typeof R.apply === 'function'
+  ? R.apply
+  : function ReflectApply(target, receiver, args) {
+    return Function.prototype.apply.call(target, receiver, args);
+  }
+
+var ReflectOwnKeys
+if (R && typeof R.ownKeys === 'function') {
+  ReflectOwnKeys = R.ownKeys
+} else if (Object.getOwnPropertySymbols) {
+  ReflectOwnKeys = function ReflectOwnKeys(target) {
+    return Object.getOwnPropertyNames(target)
+      .concat(Object.getOwnPropertySymbols(target));
+  };
+} else {
+  ReflectOwnKeys = function ReflectOwnKeys(target) {
+    return Object.getOwnPropertyNames(target);
+  };
+}
+
+function ProcessEmitWarning(warning) {
+  if (console && console.warn) console.warn(warning);
+}
+
+var NumberIsNaN = Number.isNaN || function NumberIsNaN(value) {
+  return value !== value;
+}
+
+function EventEmitter() {
+  EventEmitter.init.call(this);
+}
+module.exports = EventEmitter;
+
+// Backwards-compat with node 0.10.x
+EventEmitter.EventEmitter = EventEmitter;
+
+EventEmitter.prototype._events = undefined;
+EventEmitter.prototype._eventsCount = 0;
+EventEmitter.prototype._maxListeners = undefined;
+
+// By default EventEmitters will print a warning if more than 10 listeners are
+// added to it. This is a useful default which helps finding memory leaks.
+var defaultMaxListeners = 10;
+
+Object.defineProperty(EventEmitter, 'defaultMaxListeners', {
+  enumerable: true,
+  get: function() {
+    return defaultMaxListeners;
+  },
+  set: function(arg) {
+    if (typeof arg !== 'number' || arg < 0 || NumberIsNaN(arg)) {
+      throw new RangeError('The value of "defaultMaxListeners" is out of range. It must be a non-negative number. Received ' + arg + '.');
+    }
+    defaultMaxListeners = arg;
+  }
+});
+
+EventEmitter.init = function() {
+
+  if (this._events === undefined ||
+      this._events === Object.getPrototypeOf(this)._events) {
+    this._events = Object.create(null);
+    this._eventsCount = 0;
+  }
+
+  this._maxListeners = this._maxListeners || undefined;
+};
+
+// Obviously not all Emitters should be limited to 10. This function allows
+// that to be increased. Set to zero for unlimited.
+EventEmitter.prototype.setMaxListeners = function setMaxListeners(n) {
+  if (typeof n !== 'number' || n < 0 || NumberIsNaN(n)) {
+    throw new RangeError('The value of "n" is out of range. It must be a non-negative number. Received ' + n + '.');
+  }
+  this._maxListeners = n;
+  return this;
+};
+
+function $getMaxListeners(that) {
+  if (that._maxListeners === undefined)
+    return EventEmitter.defaultMaxListeners;
+  return that._maxListeners;
+}
+
+EventEmitter.prototype.getMaxListeners = function getMaxListeners() {
+  return $getMaxListeners(this);
+};
+
+EventEmitter.prototype.emit = function emit(type) {
+  var args = [];
+  for (var i = 1; i < arguments.length; i++) args.push(arguments[i]);
+  var doError = (type === 'error');
+
+  var events = this._events;
+  if (events !== undefined)
+    doError = (doError && events.error === undefined);
+  else if (!doError)
+    return false;
+
+  // If there is no 'error' event listener then throw.
+  if (doError) {
+    var er;
+    if (args.length > 0)
+      er = args[0];
+    if (er instanceof Error) {
+      // Note: The comments on the `throw` lines are intentional, they show
+      // up in Node's output if this results in an unhandled exception.
+      throw er; // Unhandled 'error' event
+    }
+    // At least give some kind of context to the user
+    var err = new Error('Unhandled error.' + (er ? ' (' + er.message + ')' : ''));
+    err.context = er;
+    throw err; // Unhandled 'error' event
+  }
+
+  var handler = events[type];
+
+  if (handler === undefined)
+    return false;
+
+  if (typeof handler === 'function') {
+    ReflectApply(handler, this, args);
+  } else {
+    var len = handler.length;
+    var listeners = arrayClone(handler, len);
+    for (var i = 0; i < len; ++i)
+      ReflectApply(listeners[i], this, args);
+  }
+
+  return true;
+};
+
+function _addListener(target, type, listener, prepend) {
+  var m;
+  var events;
+  var existing;
+
+  if (typeof listener !== 'function') {
+    throw new TypeError('The "listener" argument must be of type Function. Received type ' + typeof listener);
+  }
+
+  events = target._events;
+  if (events === undefined) {
+    events = target._events = Object.create(null);
+    target._eventsCount = 0;
+  } else {
+    // To avoid recursion in the case that type === "newListener"! Before
+    // adding it to the listeners, first emit "newListener".
+    if (events.newListener !== undefined) {
+      target.emit('newListener', type,
+                  listener.listener ? listener.listener : listener);
+
+      // Re-assign `events` because a newListener handler could have caused the
+      // this._events to be assigned to a new object
+      events = target._events;
+    }
+    existing = events[type];
+  }
+
+  if (existing === undefined) {
+    // Optimize the case of one listener. Don't need the extra array object.
+    existing = events[type] = listener;
+    ++target._eventsCount;
+  } else {
+    if (typeof existing === 'function') {
+      // Adding the second element, need to change to array.
+      existing = events[type] =
+        prepend ? [listener, existing] : [existing, listener];
+      // If we've already got an array, just append.
+    } else if (prepend) {
+      existing.unshift(listener);
+    } else {
+      existing.push(listener);
+    }
+
+    // Check for listener leak
+    m = $getMaxListeners(target);
+    if (m > 0 && existing.length > m && !existing.warned) {
+      existing.warned = true;
+      // No error code for this since it is a Warning
+      // eslint-disable-next-line no-restricted-syntax
+      var w = new Error('Possible EventEmitter memory leak detected. ' +
+                          existing.length + ' ' + String(type) + ' listeners ' +
+                          'added. Use emitter.setMaxListeners() to ' +
+                          'increase limit');
+      w.name = 'MaxListenersExceededWarning';
+      w.emitter = target;
+      w.type = type;
+      w.count = existing.length;
+      ProcessEmitWarning(w);
+    }
+  }
+
+  return target;
+}
+
+EventEmitter.prototype.addListener = function addListener(type, listener) {
+  return _addListener(this, type, listener, false);
+};
+
+EventEmitter.prototype.on = EventEmitter.prototype.addListener;
+
+EventEmitter.prototype.prependListener =
+    function prependListener(type, listener) {
+      return _addListener(this, type, listener, true);
+    };
+
+function onceWrapper() {
+  var args = [];
+  for (var i = 0; i < arguments.length; i++) args.push(arguments[i]);
+  if (!this.fired) {
+    this.target.removeListener(this.type, this.wrapFn);
+    this.fired = true;
+    ReflectApply(this.listener, this.target, args);
+  }
+}
+
+function _onceWrap(target, type, listener) {
+  var state = { fired: false, wrapFn: undefined, target: target, type: type, listener: listener };
+  var wrapped = onceWrapper.bind(state);
+  wrapped.listener = listener;
+  state.wrapFn = wrapped;
+  return wrapped;
+}
+
+EventEmitter.prototype.once = function once(type, listener) {
+  if (typeof listener !== 'function') {
+    throw new TypeError('The "listener" argument must be of type Function. Received type ' + typeof listener);
+  }
+  this.on(type, _onceWrap(this, type, listener));
+  return this;
+};
+
+EventEmitter.prototype.prependOnceListener =
+    function prependOnceListener(type, listener) {
+      if (typeof listener !== 'function') {
+        throw new TypeError('The "listener" argument must be of type Function. Received type ' + typeof listener);
+      }
+      this.prependListener(type, _onceWrap(this, type, listener));
+      return this;
+    };
+
+// Emits a 'removeListener' event if and only if the listener was removed.
+EventEmitter.prototype.removeListener =
+    function removeListener(type, listener) {
+      var list, events, position, i, originalListener;
+
+      if (typeof listener !== 'function') {
+        throw new TypeError('The "listener" argument must be of type Function. Received type ' + typeof listener);
+      }
+
+      events = this._events;
+      if (events === undefined)
+        return this;
+
+      list = events[type];
+      if (list === undefined)
+        return this;
+
+      if (list === listener || list.listener === listener) {
+        if (--this._eventsCount === 0)
+          this._events = Object.create(null);
+        else {
+          delete events[type];
+          if (events.removeListener)
+            this.emit('removeListener', type, list.listener || listener);
+        }
+      } else if (typeof list !== 'function') {
+        position = -1;
+
+        for (i = list.length - 1; i >= 0; i--) {
+          if (list[i] === listener || list[i].listener === listener) {
+            originalListener = list[i].listener;
+            position = i;
+            break;
+          }
+        }
+
+        if (position < 0)
+          return this;
+
+        if (position === 0)
+          list.shift();
+        else {
+          spliceOne(list, position);
+        }
+
+        if (list.length === 1)
+          events[type] = list[0];
+
+        if (events.removeListener !== undefined)
+          this.emit('removeListener', type, originalListener || listener);
+      }
+
+      return this;
+    };
+
+EventEmitter.prototype.off = EventEmitter.prototype.removeListener;
+
+EventEmitter.prototype.removeAllListeners =
+    function removeAllListeners(type) {
+      var listeners, events, i;
+
+      events = this._events;
+      if (events === undefined)
+        return this;
+
+      // not listening for removeListener, no need to emit
+      if (events.removeListener === undefined) {
+        if (arguments.length === 0) {
+          this._events = Object.create(null);
+          this._eventsCount = 0;
+        } else if (events[type] !== undefined) {
+          if (--this._eventsCount === 0)
+            this._events = Object.create(null);
+          else
+            delete events[type];
+        }
+        return this;
+      }
+
+      // emit removeListener for all listeners on all events
+      if (arguments.length === 0) {
+        var keys = Object.keys(events);
+        var key;
+        for (i = 0; i < keys.length; ++i) {
+          key = keys[i];
+          if (key === 'removeListener') continue;
+          this.removeAllListeners(key);
+        }
+        this.removeAllListeners('removeListener');
+        this._events = Object.create(null);
+        this._eventsCount = 0;
+        return this;
+      }
+
+      listeners = events[type];
+
+      if (typeof listeners === 'function') {
+        this.removeListener(type, listeners);
+      } else if (listeners !== undefined) {
+        // LIFO order
+        for (i = listeners.length - 1; i >= 0; i--) {
+          this.removeListener(type, listeners[i]);
+        }
+      }
+
+      return this;
+    };
+
+function _listeners(target, type, unwrap) {
+  var events = target._events;
+
+  if (events === undefined)
+    return [];
+
+  var evlistener = events[type];
+  if (evlistener === undefined)
+    return [];
+
+  if (typeof evlistener === 'function')
+    return unwrap ? [evlistener.listener || evlistener] : [evlistener];
+
+  return unwrap ?
+    unwrapListeners(evlistener) : arrayClone(evlistener, evlistener.length);
+}
+
+EventEmitter.prototype.listeners = function listeners(type) {
+  return _listeners(this, type, true);
+};
+
+EventEmitter.prototype.rawListeners = function rawListeners(type) {
+  return _listeners(this, type, false);
+};
+
+EventEmitter.listenerCount = function(emitter, type) {
+  if (typeof emitter.listenerCount === 'function') {
+    return emitter.listenerCount(type);
+  } else {
+    return listenerCount.call(emitter, type);
+  }
+};
+
+EventEmitter.prototype.listenerCount = listenerCount;
+function listenerCount(type) {
+  var events = this._events;
+
+  if (events !== undefined) {
+    var evlistener = events[type];
+
+    if (typeof evlistener === 'function') {
+      return 1;
+    } else if (evlistener !== undefined) {
+      return evlistener.length;
+    }
+  }
+
+  return 0;
+}
+
+EventEmitter.prototype.eventNames = function eventNames() {
+  return this._eventsCount > 0 ? ReflectOwnKeys(this._events) : [];
+};
+
+function arrayClone(arr, n) {
+  var copy = new Array(n);
+  for (var i = 0; i < n; ++i)
+    copy[i] = arr[i];
+  return copy;
+}
+
+function spliceOne(list, index) {
+  for (; index + 1 < list.length; index++)
+    list[index] = list[index + 1];
+  list.pop();
+}
+
+function unwrapListeners(arr) {
+  var ret = new Array(arr.length);
+  for (var i = 0; i < ret.length; ++i) {
+    ret[i] = arr[i].listener || arr[i];
+  }
+  return ret;
+}
 
 
 /***/ }),
@@ -20937,7 +20958,7 @@ process.umask = function() { return 0; };
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony default export */ __webpack_exports__["default"] = ("#define GLSLIFY 1\nexport default \"#define GLSLIFY 1\\nfloat luma (vec3 rgb) {\\n  return (rgb.r + rgb.g + rgb.b)/3.0;\\n}\\n\\nconst float T = 0.04;\\nconst float M = 1.0;\\nconst float L = 0.002;\\n\\nuniform float uCanvasWidth;\\nuniform float uCanvasHeight;\\nuniform float uWidth;\\nuniform float uOpacity;\\nuniform sampler2D uTextureFilled;\\n\\nvoid main(void) {\\n\\n  vec2 texCoord = vec2(((vProjectedCoords.x / vProjectedCoords.w) + 1.0 ) / 2.0,\\n                ((vProjectedCoords.y / vProjectedCoords.w) + 1.0 ) / 2.0 );\\n\\n  float borderWidth = uWidth; // in px\\n  float step_u = borderWidth * 1.0 / uCanvasWidth;\\n  float step_v = borderWidth * 1.0 / uCanvasHeight;\\n  vec4 centerPixel = texture2D(uTextureFilled, texCoord);\\n\\n  vec4 rightPixel  = texture2D(uTextureFilled, texCoord + vec2(step_u, 0.0));\\n  vec4 bottomPixel = texture2D(uTextureFilled, texCoord + vec2(0.0, step_v));\\n\\n  // now manually compute the derivatives\\n  float _dFdX = length(rightPixel - centerPixel) / step_u;\\n  float _dFdY = length(bottomPixel - centerPixel) / step_v;\\n\\n  gl_FragColor.r = max(max(centerPixel.r, rightPixel.r), bottomPixel.r);\\n  gl_FragColor.g = max(max(centerPixel.g, rightPixel.g), bottomPixel.g);\\n  gl_FragColor.b = max(max(centerPixel.b, rightPixel.b), bottomPixel.b);\\n  float maxDerivative = max(_dFdX, _dFdY);\\n  float clampedDerivative = clamp(maxDerivative, 0., 1.);\\n  gl_FragColor.a = uOpacity * clampedDerivative;\\n\\n  return;\\n}\"");
+/* harmony default export */ __webpack_exports__["default"] = ("#define GLSLIFY 1\nexport default \"#define GLSLIFY 1\\nfloat luma (vec3 rgb) {\\n  return (rgb.r + rgb.g + rgb.b)/3.0;\\n}\\n\\nconst float T = 0.04;\\nconst float M = 1.0;\\nconst float L = 0.002;\\n\\nuniform float uCanvasWidth;\\nuniform float uCanvasHeight;\\nuniform float uWidth;\\nuniform float uOpacity;\\nuniform sampler2D uTextureFilled;\\n\\nvarying vec4 vPos;\\nvarying mat4 vProjectionViewMatrix;\\nvarying vec4 vProjectedCoords;\\n\\nvoid main(void) {\\n\\n  vec2 texCoord = vec2(((vProjectedCoords.x / vProjectedCoords.w) + 1.0 ) / 2.0,\\n                ((vProjectedCoords.y / vProjectedCoords.w) + 1.0 ) / 2.0 );\\n\\n  float borderWidth = uWidth; // in px\\n  float step_u = borderWidth * 1.0 / uCanvasWidth;\\n  float step_v = borderWidth * 1.0 / uCanvasHeight;\\n  vec4 centerPixel = texture2D(uTextureFilled, texCoord);\\n\\n  vec4 rightPixel  = texture2D(uTextureFilled, texCoord + vec2(step_u, 0.0));\\n  vec4 bottomPixel = texture2D(uTextureFilled, texCoord + vec2(0.0, step_v));\\n\\n  // now manually compute the derivatives\\n  float _dFdX = length(rightPixel - centerPixel) / step_u;\\n  float _dFdY = length(bottomPixel - centerPixel) / step_v;\\n\\n  gl_FragColor.r = max(max(centerPixel.r, rightPixel.r), bottomPixel.r);\\n  gl_FragColor.g = max(max(centerPixel.g, rightPixel.g), bottomPixel.g);\\n  gl_FragColor.b = max(max(centerPixel.b, rightPixel.b), bottomPixel.b);\\n  float maxDerivative = max(_dFdX, _dFdY);\\n  float clampedDerivative = clamp(maxDerivative, 0., 1.);\\n  gl_FragColor.a = uOpacity * clampedDerivative;\\n\\n  return;\\n}\"");
 
 /***/ }),
 
@@ -20950,7 +20971,7 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony default export */ __webpack_exports__["default"] = ("#define GLSLIFY 1\nexport default \"#define GLSLIFY 1\\n void AMItexture3D(\\n    in ivec3 dataCoordinates, \\n    in int uTextureSize,\\n    int ivec3 uDataDimensions,\\n    int int uDataDimensions,\\n    int sampler2D[] uTextureContainer_1,\\n    out vec4 dataValue, \\n    out int offset_0\\n){\\n    float textureSizeF = float(uTextureSize);\\n    int voxelsPerTexture = uTextureSize*uTextureSize;\\n\\n    int index = dataCoordinates.x\\n                + dataCoordinates.y * uDataDimensions.x\\n                + dataCoordinates.z * uDataDimensions.y * uDataDimensions.x;\\n\\n    // dividing an integer by an integer will give you an integer result, rounded down\\n    // can not get float numbers to work :(\\n    int packedIndex = index/uPackedPerPixel;\\n    offset_0 = index - uPackedPerPixel*packedIndex;\\n\\n    // Map data index to right sampler2D texture\\n    int textureIndex = packedIndex/voxelsPerTexture;\\n    int inTextureIndex = packedIndex - voxelsPerTexture*textureIndex;\\n\\n    // Get row and column in the texture\\n    int rowIndex = inTextureIndex/uTextureSize;\\n    float rowIndexF = float(rowIndex);\\n    float colIndex = float(inTextureIndex - uTextureSize * rowIndex);\\n\\n    // Map row and column to uv\\n    vec2 uv = vec2(0,0);\\n    uv.x = (0.5 + colIndex) / textureSizeF;\\n    uv.y = 1. - (0.5 + rowIndexF) / textureSizeF;\\n\\n    float textureIndexF = float(textureIndex);\\n    float addition = vec4(0.);\\n\\n    for (float stepC = 0.0; stepC < uTextureContainer_1.length; stepC+=1 ) {\\n        addition += step( abs( textureIndexF - stepC ), 0.0 ) * texture2D(uTextureContainer_1[int(stepC)], uv)\\n    }\\n    dataValue = addition;\\n}\\n\\nvoid toUInt8(\\n    in float r, \\n    out float value\\n){\\n    value = r * 255.;\\n}\\n\\n  \\n\\nvoid unpack8(\\n    in vec4 packedData, \\n    in int offset, \\n    out vec4 unpackedData\\n){\\n    float floatedOffset = float(offset);\\n    float floatedOffsetSquared = floatedOffset * floatedOffset;\\n\\n    toUInt8(\\n        step( floatedOffsetSquared , 0.0 ) * packedData.r +\\n        step( floatedOffsetSquared - 2. * floatedOffset + 1., 0.0 ) * packedData.g +\\n        step( floatedOffsetSquared - 2. * 2. *  floatedOffset + 4., 0.0 ) * packedData.b +\\n        step( floatedOffsetSquared - 2. * 3. *  floatedOffset + 9., 0.0 ) * packedData.a,\\n        unpackedData.x\\n    );\\n}\\n\\nvoid toUInt16(\\n    in float r, \\n    in float a, \\n    out float value\\n) {\\nvoid uInt16(){\\n    value = r * 255. + a * 255. * 256.;\\n}\\n\\nvoid unpack16(\\n    in vec4 packedData, \\n    in int offset, \\n    out vec4 unpackedData\\n){\\n    unpackedData = packedData;\\n    float floatedOffset = float(offset);\\n\\n    toUInt16(\\n        packedData.r * (1. - floatedOffset) + packedData.b * floatedOffset,\\n        packedData.g * (1. - floatedOffset) + packedData.a * floatedOffset,\\n        unpackedData.x\\n    );\\n    \\n}\\n\\nvoid toUInt32(\\n    in float r, \\n    in float g, \\n    in float b, \\n    in float a, \\n    out float value\\n){\\n    value = r * 255. + g * 255. * 256. + b * 255. * 256. * 256. + a * 255. * 256. * 256. * 256.;\\n}\\n\\nvoid toUFloat32(in float r, in float g, in float b, in float a, out float value){\\n\\n    // create arrays containing bits for rgba values\\n    // value between 0 and 255\\n    value = r * 255.;\\n    int bytemeR[8];\\n    bytemeR[0] = int(floor(value / 128.));\\n    value -= float(bytemeR[0] * 128);\\n    bytemeR[1] = int(floor(value / 64.));\\n    value -= float(bytemeR[1] * 64);\\n    bytemeR[2] = int(floor(value / 32.));\\n    value -= float(bytemeR[2] * 32);\\n    bytemeR[3] = int(floor(value / 16.));\\n    value -= float(bytemeR[3] * 16);\\n    bytemeR[4] = int(floor(value / 8.));\\n    value -= float(bytemeR[4] * 8);\\n    bytemeR[5] = int(floor(value / 4.));\\n    value -= float(bytemeR[5] * 4);\\n    bytemeR[6] = int(floor(value / 2.));\\n    value -= float(bytemeR[6] * 2);\\n    bytemeR[7] = int(floor(value));\\n\\n    value = g * 255.;\\n    int bytemeG[8];\\n    bytemeG[0] = int(floor(value / 128.));\\n    value -= float(bytemeG[0] * 128);\\n    bytemeG[1] = int(floor(value / 64.));\\n    value -= float(bytemeG[1] * 64);\\n    bytemeG[2] = int(floor(value / 32.));\\n    value -= float(bytemeG[2] * 32);\\n    bytemeG[3] = int(floor(value / 16.));\\n    value -= float(bytemeG[3] * 16);\\n    bytemeG[4] = int(floor(value / 8.));\\n    value -= float(bytemeG[4] * 8);\\n    bytemeG[5] = int(floor(value / 4.));\\n    value -= float(bytemeG[5] * 4);\\n    bytemeG[6] = int(floor(value / 2.));\\n    value -= float(bytemeG[6] * 2);\\n    bytemeG[7] = int(floor(value));\\n\\n    value = b * 255.;\\n    int bytemeB[8];\\n    bytemeB[0] = int(floor(value / 128.));\\n    value -= float(bytemeB[0] * 128);\\n    bytemeB[1] = int(floor(value / 64.));\\n    value -= float(bytemeB[1] * 64);\\n    bytemeB[2] = int(floor(value / 32.));\\n    value -= float(bytemeB[2] * 32);\\n    bytemeB[3] = int(floor(value / 16.));\\n    value -= float(bytemeB[3] * 16);\\n    bytemeB[4] = int(floor(value / 8.));\\n    value -= float(bytemeB[4] * 8);\\n    bytemeB[5] = int(floor(value / 4.));\\n    value -= float(bytemeB[5] * 4);\\n    bytemeB[6] = int(floor(value / 2.));\\n    value -= float(bytemeB[6] * 2);\\n    bytemeB[7] = int(floor(value));\\n\\n    value = a * 255.;\\n    int bytemeA[8];\\n    bytemeA[0] = int(floor(value / 128.));\\n    value -= float(bytemeA[0] * 128);\\n    bytemeA[1] = int(floor(value / 64.));\\n    value -= float(bytemeA[1] * 64);\\n    bytemeA[2] = int(floor(value / 32.));\\n    value -= float(bytemeA[2] * 32);\\n    bytemeA[3] = int(floor(value / 16.));\\n    value -= float(bytemeA[3] * 16);\\n    bytemeA[4] = int(floor(value / 8.));\\n    value -= float(bytemeA[4] * 8);\\n    bytemeA[5] = int(floor(value / 4.));\\n    value -= float(bytemeA[5] * 4);\\n    bytemeA[6] = int(floor(value / 2.));\\n    value -= float(bytemeA[6] * 2);\\n    bytemeA[7] = int(floor(value));\\n\\n    // compute float32 value from bit arrays\\n\\n    // sign\\n    int issigned = 1 - 2 * bytemeR[0];\\n    //   issigned = int(pow(-1., float(bytemeR[0])));\\n\\n    // exponent\\n    int exponent = 0;\\n\\n    exponent += bytemeR[1] * int(pow(2., 7.));\\n    exponent += bytemeR[2] * int(pow(2., 6.));\\n    exponent += bytemeR[3] * int(pow(2., 5.));\\n    exponent += bytemeR[4] * int(pow(2., 4.));\\n    exponent += bytemeR[5] * int(pow(2., 3.));\\n    exponent += bytemeR[6] * int(pow(2., 2.));\\n    exponent += bytemeR[7] * int(pow(2., 1.));\\n\\n    exponent += bytemeG[0];\\n\\n    // fraction\\n    float fraction = 0.;\\n\\n    fraction = float(bytemeG[1]) * pow(2., -1.);\\n    fraction += float(bytemeG[2]) * pow(2., -2.);\\n    fraction += float(bytemeG[3]) * pow(2., -3.);\\n    fraction += float(bytemeG[4]) * pow(2., -4.);\\n    fraction += float(bytemeG[5]) * pow(2., -5.);\\n    fraction += float(bytemeG[6]) * pow(2., -6.);\\n    fraction += float(bytemeG[7]) * pow(2., -7.);\\n\\n    fraction += float(bytemeB[0]) * pow(2., -8.);\\n    fraction += float(bytemeB[1]) * pow(2., -9.);\\n    fraction += float(bytemeB[2]) * pow(2., -10.);\\n    fraction += float(bytemeB[3]) * pow(2., -11.);\\n    fraction += float(bytemeB[4]) * pow(2., -12.);\\n    fraction += float(bytemeB[5]) * pow(2., -13.);\\n    fraction += float(bytemeB[6]) * pow(2., -14.);\\n    fraction += float(bytemeB[7]) * pow(2., -15.);\\n\\n    fraction += float(bytemeA[0]) * pow(2., -16.);\\n    fraction += float(bytemeA[1]) * pow(2., -17.);\\n    fraction += float(bytemeA[2]) * pow(2., -18.);\\n    fraction += float(bytemeA[3]) * pow(2., -19.);\\n    fraction += float(bytemeA[4]) * pow(2., -20.);\\n    fraction += float(bytemeA[5]) * pow(2., -21.);\\n    fraction += float(bytemeA[6]) * pow(2., -22.);\\n    fraction += float(bytemeA[7]) * pow(2., -23.);\\n\\n    value = float(issigned) * pow( 2., float(exponent - 127)) * (1. + fraction);\\n}\\n\\nvoid unpack32(\\n    in vec4 packedData, \\n    in int offset, \\n    in int uPixelType,\\n    out vec4 unpackedData\\n){\\n\\n    if (uPixelType == 1) {\\n        toUInt32(\\n            packedData.r,\\n            packedData.g,\\n            packedData.b,\\n            packedData.a,\\n            unpackedData.x\\n        );\\n    }\\n    else {\\n        toUFloat32(\\n            packedData.r,\\n            packedData.g,\\n            packedData.b,\\n            packedData.a,\\n            unpackedData.x\\n        );\\n    }\\n}\\n\\nvoid unpackIdentity(\\n    in vec4 packedData, \\n    in int offset, \\n    out vec4 unpackedData\\n){\\n    unpackedData = packedData;\\n}\\n\\nvoid unpack(\\n    in int uBitsAllocated,\\n    in int uNumberOfChannels,\\n    in vec4 packedData,\\n    in int offset,\\n    out vec4 unpackedData\\n) {\\n    if (base.uniforms.uNumberOfChannels.value === 1) {\\n        switch (uBitsAllocated) {\\n            case 8:\\n                upack8(    \\n                    packedData, \\n                    offset, \\n                    unpackedData\\n                );\\n                break;\\n\\n            case 16:\\n                upack16(\\n                    packedData, \\n                    offset, \\n                    unpackedData\\n                );\\n                break;\\n\\n            case 32:\\n                upack32(\\n                    packedData, \\n                    offset, \\n                    unpackedData\\n                );\\n                break;\\n\\n            default:\\n                upackIdentity(\\n                    packedData, \\n                    offset, \\n                    unpackedData\\n                );\\n                break;\\n        }\\n    } else {\\n        upackIdentity(\\n            packedData, \\n            offset, \\n            unpackedData\\n        );\\n    }\\n}\\n\\nvoid interpolationIdentity(\\n    in vec3 currentVoxel, \\n    in int uTextureSize,\\n    in ivec3 uDataDimensions,\\n    in int uDataDimensions,\\n    in sampler2D[] uTextureContainer_0,\\n    in int uBitsAllocated,\\n    in int uNumberOfChannels_0,\\n    out vec4 dataValue_0\\n){\\n    // lower bound\\n    vec3 rcurrentVoxel = vec3(floor(currentVoxel.x + 0.5 ), floor(currentVoxel.y + 0.5 ), floor(currentVoxel.z + 0.5 ));\\n    ivec3 flooredVoxel = ivec3(int(rcurrentVoxel.x), int(rcurrentVoxel.y), int(rcurrentVoxel.z));\\n\\n    vec4 temporaryDataValue = vec4(0., 0., 0., 0.);\\n    int dataOffset = 0;\\n\\n    AMItexture3D(\\n        flooredVoxel, \\n        uTextureSize,\\n        uDataDimensions,\\n        uDataDimensions,\\n        uTextureContainer_0,\\n        temporaryDataValue, \\n        dataOffset\\n    );\\n\\n    unpack(\\n        uBitsAllocated,\\n        uNumberOfChannels_0,\\n        temporaryDataValue,\\n        dataOffset,\\n        dataValue_0\\n    );\\n}\\n\\nvoid trilinearInterpolation(\\n    in vec3 normalizedPosition,\\n    out vec4 interpolatedValue,\\n    in vec4 v000, in vec4 v100,\\n    in vec4 v001, in vec4 v101,\\n    in vec4 v010, in vec4 v110,\\n    in vec4 v011, in vec4 v111\\n) {\\n    // https://en.wikipedia.org/wiki/Trilinear_interpolation\\n    vec4 c00 = v000 * ( 1.0 - normalizedPosition.x ) + v100 * normalizedPosition.x;\\n    vec4 c01 = v001 * ( 1.0 - normalizedPosition.x ) + v101 * normalizedPosition.x;\\n    vec4 c10 = v010 * ( 1.0 - normalizedPosition.x ) + v110 * normalizedPosition.x;\\n    vec4 c11 = v011 * ( 1.0 - normalizedPosition.x ) + v111 * normalizedPosition.x;\\n\\n    // c0 and c1\\n    vec4 c0 = c00 * ( 1.0 - normalizedPosition.y) + c10 * normalizedPosition.y;\\n    vec4 c1 = c01 * ( 1.0 - normalizedPosition.y) + c11 * normalizedPosition.y;\\n\\n    // c\\n    vec4 c = c0 * ( 1.0 - normalizedPosition.z) + c1 * normalizedPosition.z;\\n    interpolatedValue = c;\\n}\\n\\nvoid interpolationTrilinear(\\n    in vec3 currentVoxel, \\n    in int uTextureSize,\\n    in ivec3 uDataDimensions,\\n    in int uDataDimensions,\\n    in sampler2D[] uTextureContainer_2,\\n    in int uBitsAllocated,\\n    in int uNumberOfChannels_1,\\n    in int uInterpolation_0,\\n    out vec4 dataValue_1, \\n    out vec3 gradient_0\\n){\\n\\n    vec3 lower_bound_2976544439 = floor(currentVoxel);\\n    lower_bound_2976544439 = max(vec3(0.), lower_bound_2976544439);\\n\\n    vec3 higher_bound = lower_bound_2976544439 + vec3(1.);\\n\\n    vec3 normalizedPosition = (currentVoxel - lower_bound_2976544439);\\n    normalizedPosition =  max(vec3(0.), normalizedPosition);\\n\\n    vec4 interpolatedValue = vec4(0.);\\n\\n    //\\n    // fetch values required for interpolation\\n    //\\n    vec4 v000 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c000 = vec3(lower_bound_2976544439.x, lower_bound_2976544439.y, lower_bound_2976544439.z);\\n    interpolationIdentity(\\n        c000,\\n        uTextureSize,\\n        uDataDimensions,\\n        uDataDimensions,\\n        uTextureContainer_2,\\n        uBitsAllocated,\\n        uNumberOfChannels_1,\\n        v000\\n    );\\n\\n    //\\n    vec4 v100 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c100 = vec3(higher_bound.x, lower_bound_2976544439.y, lower_bound_2976544439.z);\\n    interpolationIdentity(\\n        c100,\\n        uTextureSize,\\n        uDataDimensions,\\n        uDataDimensions,\\n        uTextureContainer_2,\\n        uBitsAllocated,\\n        uNumberOfChannels_1,\\n        v100\\n    );\\n\\n    //\\n    vec4 v001 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c001 = vec3(lower_bound_2976544439.x, lower_bound_2976544439.y, higher_bound.z);\\n    interpolationIdentity(\\n        c001,\\n        uTextureSize,\\n        uDataDimensions,\\n        uDataDimensions,\\n        uTextureContainer_2,\\n        uBitsAllocated,\\n        uNumberOfChannels_1,\\n        v001\\n    );\\n\\n    //\\n    vec4 v101 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c101 = vec3(higher_bound.x, lower_bound_2976544439.y, higher_bound.z);\\n    interpolationIdentity(\\n        c101,\\n        uTextureSize,\\n        uDataDimensions,\\n        uDataDimensions,\\n        uTextureContainer_2,\\n        uBitsAllocated,\\n        uNumberOfChannels_1,\\n        v101\\n    );\\n\\n    //\\n    vec4 v010 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c010 = vec3(lower_bound_2976544439.x, higher_bound.y, lower_bound_2976544439.z);\\n    interpolationIdentity(\\n        c010,\\n        uTextureSize,\\n        uDataDimensions,\\n        uDataDimensions,\\n        uTextureContainer_2,\\n        uBitsAllocated,\\n        uNumberOfChannels_1,\\n        v010\\n    );\\n\\n    vec4 v110 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c110 = vec3(higher_bound.x, higher_bound.y, lower_bound_2976544439.z);\\n    interpolationIdentity(\\n        c110,\\n        uTextureSize,\\n        uDataDimensions,\\n        uDataDimensions,\\n        uTextureContainer_2,\\n        uBitsAllocated,\\n        uNumberOfChannels_1,\\n        v110\\n    );\\n\\n    //\\n    vec4 v011 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c011 = vec3(lower_bound_2976544439.x, higher_bound.y, higher_bound.z);\\n    interpolationIdentity(\\n        c011,\\n        uTextureSize,\\n        uDataDimensions,\\n        uDataDimensions,\\n        uTextureContainer_2,\\n        uBitsAllocated,\\n        uNumberOfChannels_1,\\n        v011\\n    );\\n\\n    vec4 v111 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c111 = vec3(higher_bound.x, higher_bound.y, higher_bound.z);\\n    interpolationIdentity(\\n        c111,\\n        uTextureSize,\\n        uDataDimensions,\\n        uDataDimensions,\\n        uTextureContainer_2,\\n        uBitsAllocated,\\n        uNumberOfChannels_1,\\n        v111\\n    );\\n\\n    // _compute interpolation at position\\n    trilinearInterpolation(normalizedPosition, interpolatedValue ,v000, v100, v001, v101, v010,v110, v011,v111);\\n    dataValue_1 = interpolatedValue;\\n\\n    // That breaks shading in volume rendering\\n    // if (gradient.x == 1.) { // skip gradient calculation for slice helper\\n    //  return;\\n    // }\\n\\n    // _compute gradient\\n    float gradientStep = 0.005;\\n\\n    // x axis\\n    vec3 g100 = vec3(1., 0., 0.);\\n    vec3 ng100 = normalizedPosition + g100 * gradientStep;\\n    ng100.x = min(1., ng100.x);\\n\\n    vec4 vg100 = vec4(0.);\\n    trilinearInterpolation(ng100, vg100 ,v000, v100, v001, v101, v010,v110, v011,v111);\\n\\n    vec3 go100 = -g100;\\n    vec3 ngo100 = normalizedPosition + go100 * gradientStep;\\n    ngo100.x = max(0., ngo100.x);\\n\\n    vec4 vgo100 = vec4(0.);\\n    trilinearInterpolation(ngo100, vgo100 ,v000, v100, v001, v101, v010,v110, v011,v111);\\n\\n    gradient_0.x = (g100.x * vg100.x + go100.x * vgo100.x);\\n\\n    // y axis\\n    vec3 g010 = vec3(0., 1., 0.);\\n    vec3 ng010 = normalizedPosition + g010 * gradientStep;\\n    ng010.y = min(1., ng010.y);\\n\\n    vec4 vg010 = vec4(0.);\\n    trilinearInterpolation(ng010, vg010 ,v000, v100, v001, v101, v010,v110, v011,v111);\\n\\n    vec3 go010 = -g010;\\n    vec3 ngo010 = normalizedPosition + go010 * gradientStep;\\n    ngo010.y = max(0., ngo010.y);\\n\\n    vec4 vgo010 = vec4(0.);\\n    trilinearInterpolation(ngo010, vgo010 ,v000, v100, v001, v101, v010,v110, v011,v111);\\n\\n    gradient_0.y = (g010.y * vg010.x + go010.y * vgo010.x);\\n\\n    // z axis\\n    vec3 g001 = vec3(0., 0., 1.);\\n    vec3 ng001 = normalizedPosition + g001 * gradientStep;\\n    ng001.z = min(1., ng001.z);\\n\\n    vec4 vg001 = vec4(0.);\\n    trilinearInterpolation(ng001, vg001 ,v000, v100, v001, v101, v010,v110, v011,v111);\\n\\n    vec3 go001 = -g001;\\n    vec3 ngo001 = normalizedPosition + go001 * gradientStep;\\n    ngo001.z = max(0., ngo001.z);\\n\\n    vec4 vgo001 = vec4(0.);\\n    trilinearInterpolation(ngo001, vgo001 ,v000, v100, v001, v101, v010,v110, v011,v111);\\n\\n    gradient_0.z = (g001.z * vg001.x + go001.z * vgo001.x);\\n\\n    // normalize gradient\\n    // +0.0001  instead of if?\\n    float gradientMagnitude = length(gradient_0);\\n    if (gradientMagnitude > 0.0) {\\n        gradient_0 = -(1. / gradientMagnitude) * gradient_0;\\n    }\\n}\\n\\nvoid interpolation(\\n    in vec3 currentVoxel,\\n    in int uTextureSize,\\n    in ivec3 uDataDimensions,\\n    in int uDataDimensions,\\n    in sampler2D[] uTextureContainer_3,\\n    in int uBitsAllocated,\\n    in int uNumberOfChannels_2,\\n    in int uInterpolation_1,\\n    out vec4 dataValueAcc_0,\\n    out vec3 gradient_1\\n) {\\n    if (uInterpolation_1 == 0) {\\n        interpolationIdentity(\\n            currentVoxel,\\n            uTextureSize,\\n            uDataDimensions,\\n            uDataDimensions,\\n            uTextureContainer_3,\\n            uBitsAllocated,\\n            uNumberOfChannels_2,\\n            dataValueAcc_0\\n        );\\n    }\\n    else {\\n        interpolationTrilinear(\\n            currentVoxel,\\n            uTextureSize,\\n            uDataDimensions,\\n            uDataDimensions,\\n            uTextureContainer_3,\\n            uBitsAllocated,\\n            uNumberOfChannels_2,\\n            dataValueAcc_0,\\n            gradient_1\\n        );\\n    }\\n}\\n\\nuniform int uTextureSize;\\nuniform sampler2D[] uTextureContainer;      // Length 7\\nuniform ivec3 uDataDimensions;\\nuniform mat4 uWorldToData;\\nuniform float[] uWindowCenterWidth;         // Length 2\\nuniform float[] uLowerUpperThreshold;       // Length 2\\nuniform float[] uRescaleSlopeIntercept;     // Length 2\\nuniform int uNumberOfChannels;\\nuniform int uBitsAllocated;\\nuniform int uInvert;\\nuniform int uLut;\\nuniform sampler2D uTextureLUT;\\nuniform int uLutSegmentation;\\nuniform sampler2D uTextureLUTSegmentation;\\nuniform int uPixelType;\\nuniform int uInterpolation;                 // 0 == non, 1 == trilinear\\nuniform float uCanvasWidth;\\nuniform float uCanvasHeight;\\nuniform vec3 uBorderColor;\\nuniform float uBorderWidth;\\nuniform float uBorderMargin;\\nuniform float uBorderDashLength;\\nuniform float uOpacity;\\nuniform float uSpacing;\\nuniform float uThickness;\\nuniform int uThicknessMethod;\\n\\nvoid main(void) {\\n    if ( \\n        uCanvasWidth > 0. &&\\n        ((\\n            gl_FragCoord.x > uBorderMargin && \\n            (gl_FragCoord.x - uBorderMargin) < uBorderWidth\\n        ) || (\\n            gl_FragCoord.x < (uCanvasWidth - uBorderMargin) && \\n            (gl_FragCoord.x + uBorderMargin) > (uCanvasWidth - uBorderWidth)\\n        )) \\n    ) {\\n\\n        float valueY = mod(gl_FragCoord.y, 2. * uBorderDashLength);\\n\\n        if (\\n            valueY < uBorderDashLength && \\n            gl_FragCoord.y > uBorderMargin && \\n            gl_FragCoord.y < (uCanvasHeight - uBorderMargin) \\n        ) {\\n            gl_FragColor = vec4(uBorderColor, 1.);\\n            return;\\n        }\\n    }\\n\\n    if ( \\n        uCanvasHeight > 0. &&\\n        ((\\n            gl_FragCoord.y > uBorderMargin && \\n            (gl_FragCoord.y - uBorderMargin) < uBorderWidth\\n        ) || (\\n            gl_FragCoord.y < (uCanvasHeight - uBorderMargin) && \\n            (gl_FragCoord.y + uBorderMargin) > (uCanvasHeight - uBorderWidth) \\n        )) \\n    ){\\n        float valueX = mod(gl_FragCoord.x, 2. * uBorderDashLength);\\n\\n        if( \\n            valueX < uBorderDashLength && \\n            gl_FragCoord.x > uBorderMargin && \\n            gl_FragCoord.x < (uCanvasWidth - uBorderMargin)\\n        ){\\n            gl_FragColor = vec4(uBorderColor, 1.);\\n            return;\\n        }\\n    }\\n\\n    // get texture coordinates of current pixel\\n    vec4 dataValue = vec4(0.);\\n    vec3 gradient = vec3(1.); // gradient calculations will be skipped if it is equal to vec3(1.) \\n    float steps = floor(uThickness / uSpacing + 0.5);\\n\\n    if (steps > 1.) {\\n        vec3 origin = vPos - uThickness * 0.5 * vNormal;\\n        vec4 dataValueAcc = vec4(0.);\\n        for (float step = 0.; step < 128.; step++) {\\n            if (step >= steps) {\\n                break;\\n            }\\n\\n            vec4 dataCoordinates = uWorldToData * vec4(origin + step * uSpacing * vNormal, 1.);\\n            vec3 currentVoxel = dataCoordinates.xyz;\\n\\n            interpolation(\\n                currentVoxel,\\n                uTextureSize,\\n                uDataDimensions,\\n                uDataDimensions,\\n                uTextureContainer,\\n                uBitsAllocated,\\n                uNumberOfChannels,\\n                dataValueAcc,\\n                gradient\\n            );\\n\\n            if (step == 0.) {\\n                dataValue.r = dataValueAcc.r;\\n                continue;\\n            }\\n\\n            if (uThicknessMethod == 0) {\\n                dataValue.r = max(dataValueAcc.r, dataValue.r);\\n            }\\n            if (uThicknessMethod == 1) {\\n                dataValue.r += dataValueAcc.r;\\n            }\\n            if (uThicknessMethod == 2) {\\n                dataValue.r = min(dataValueAcc.r, dataValue.r);\\n            }\\n        }\\n\\n        if (uThicknessMethod == 1) {\\n            dataValue.r /= steps;\\n        }\\n    } \\n    else {\\n        vec4 dataCoordinates = uWorldToData * vec4(vPos, 1.);\\n        vec3 currentVoxel = dataCoordinates.xyz;\\n        interpolation(\\n            currentVoxel,\\n            uTextureSize,\\n            uDataDimensions,\\n            uDataDimensions,\\n            uTextureContainer,\\n            uBitsAllocated,\\n            uNumberOfChannels,\\n            dataValue,\\n            gradient\\n        );\\n    }\\n\\n    if (uNumberOfChannels == 1) {\\n        // rescale/slope\\n        float realIntensity = dataValue.r * uRescaleSlopeIntercept[0] + uRescaleSlopeIntercept[1];\\n        \\n        // threshold\\n        if (realIntensity < uLowerUpperThreshold[0] || realIntensity > uLowerUpperThreshold[1]) {\\n            discard;\\n        }\\n    \\n        // normalize\\n        float windowMin = uWindowCenterWidth[0] - uWindowCenterWidth[1] * 0.5;\\n        float normalizedIntensity =\\n            ( realIntensity - windowMin ) / uWindowCenterWidth[1];\\n        dataValue.r = dataValue.g = dataValue.b = normalizedIntensity;\\n        dataValue.a = 1.;\\n\\n        // apply LUT\\n        if(uLut == 1){\\n            // should opacity be grabbed there?\\n            dataValue = texture2D( uTextureLUT, vec2( normalizedIntensity , 1.0) );\\n        }\\n    \\n        // apply segmentation\\n        if(uLutSegmentation == 1){\\n            // should opacity be grabbed there?\\n            //\\n            float textureWidth = 256.;\\n            float textureHeight = 128.;\\n            float min = 0.;\\n            // start at 0!\\n            int adjustedIntensity = int(floor(realIntensity + 0.5));\\n        \\n            // Get row and column in the texture\\n            int colIndex = int(mod(float(adjustedIntensity), textureWidth));\\n            int rowIndex = int(floor(float(adjustedIntensity)/textureWidth));\\n        \\n            float texWidth = 1./textureWidth;\\n            float texHeight = 1./textureHeight;\\n        \\n            // Map row and column to uv\\n            vec2 uv = vec2(0,0);\\n            uv.x = 0.5 * texWidth + (texWidth * float(colIndex));\\n            uv.y = 1. - (0.5 * texHeight + float(rowIndex) * texHeight);\\n        \\n            dataValue = texture2D( uTextureLUTSegmentation, uv );\\n        }\\n    }\\n\\n    if(uInvert == 1){\\n        dataValue.xyz = vec3(1.) - dataValue.xyz;\\n    }\\n\\n    dataValue.a = dataValue.a*uOpacity;\\n\\n    gl_FragColor = dataValue;\\n}\"");
+/* harmony default export */ __webpack_exports__["default"] = ("#define GLSLIFY 1\nexport default \"#define GLSLIFY 1\\nvoid AMItexture3D(\\n    in ivec3 dataCoordinates, \\n    in int uTextureSize,\\n    in ivec3 uDataDimensions,\\n    in sampler2D uTextureContainer[7],\\n    in int uPackedPerPixel,\\n    out vec4 dataValue, \\n    out int offset\\n){\\n    float textureSizeF = float(uTextureSize);\\n    int voxelsPerTexture = uTextureSize*uTextureSize;\\n\\n    int index = dataCoordinates.x\\n                + dataCoordinates.y * uDataDimensions.x\\n                + dataCoordinates.z * uDataDimensions.y * uDataDimensions.x;\\n\\n    // dividing an integer by an integer will give you an integer result, rounded down\\n    // can not get float numbers to work :(\\n    int packedIndex = index/uPackedPerPixel;\\n    offset = index - uPackedPerPixel*packedIndex;\\n\\n    // Map data index to right sampler2D texture\\n    int textureIndex = packedIndex/voxelsPerTexture;\\n    int inTextureIndex = packedIndex - voxelsPerTexture*textureIndex;\\n\\n    // Get row and column in the texture\\n    int rowIndex = inTextureIndex/uTextureSize;\\n    float rowIndexF = float(rowIndex);\\n    float colIndex = float(inTextureIndex - uTextureSize * rowIndex);\\n\\n    // Map row and column to uv\\n    vec2 uv = vec2(0,0);\\n    uv.x = (0.5 + colIndex) / textureSizeF;\\n    uv.y = 1. - (0.5 + rowIndexF) / textureSizeF;\\n\\n    float textureIndexF = float(textureIndex);\\n    vec4 addition = vec4(0.);\\n\\n    for (float stepC = 0.0; stepC < 7.0; stepC++ ) {\\n        addition += step( abs( textureIndexF - stepC ), 0.0 ) * texture2D(uTextureContainer[int(stepC)], uv);\\n    }\\n    dataValue = addition;\\n}\\n\\nvoid toUInt8(\\n    in float r, \\n    out float value\\n){\\n    value = r * 255.;\\n}\\n\\n  \\n\\nvoid unpack8(\\n    in vec4 packedData, \\n    in int offset, \\n    out vec4 unpackedData\\n){\\n    float floatedOffset = float(offset);\\n    float floatedOffsetSquared = floatedOffset * floatedOffset;\\n\\n    toUInt8(\\n        step( floatedOffsetSquared , 0.0 ) * packedData.r +\\n        step( floatedOffsetSquared - 2. * floatedOffset + 1., 0.0 ) * packedData.g +\\n        step( floatedOffsetSquared - 2. * 2. *  floatedOffset + 4., 0.0 ) * packedData.b +\\n        step( floatedOffsetSquared - 2. * 3. *  floatedOffset + 9., 0.0 ) * packedData.a,\\n        unpackedData.x\\n    );\\n}\\n\\nvoid toUInt16(\\n    in float r, \\n    in float a, \\n    out float value\\n) {\\n    value = r * 255. + a * 255. * 256.;\\n}\\n\\nvoid unpack16(\\n    in vec4 packedData, \\n    in int offset, \\n    out vec4 unpackedData\\n){\\n    unpackedData = packedData;\\n    float floatedOffset = float(offset);\\n\\n    toUInt16(\\n        packedData.r * (1. - floatedOffset) + packedData.b * floatedOffset,\\n        packedData.g * (1. - floatedOffset) + packedData.a * floatedOffset,\\n        unpackedData.x\\n    );\\n    \\n}\\n\\nvoid toUInt32(\\n    in float r, \\n    in float g, \\n    in float b, \\n    in float a, \\n    out float value\\n){\\n    value = r * 255. + g * 255. * 256. + b * 255. * 256. * 256. + a * 255. * 256. * 256. * 256.;\\n}\\n\\nvoid toUFloat32(in float r, in float g, in float b, in float a, out float value){\\n\\n    // create arrays containing bits for rgba values\\n    // value between 0 and 255\\n    value = r * 255.;\\n    int bytemeR[8];\\n    bytemeR[0] = int(floor(value / 128.));\\n    value -= float(bytemeR[0] * 128);\\n    bytemeR[1] = int(floor(value / 64.));\\n    value -= float(bytemeR[1] * 64);\\n    bytemeR[2] = int(floor(value / 32.));\\n    value -= float(bytemeR[2] * 32);\\n    bytemeR[3] = int(floor(value / 16.));\\n    value -= float(bytemeR[3] * 16);\\n    bytemeR[4] = int(floor(value / 8.));\\n    value -= float(bytemeR[4] * 8);\\n    bytemeR[5] = int(floor(value / 4.));\\n    value -= float(bytemeR[5] * 4);\\n    bytemeR[6] = int(floor(value / 2.));\\n    value -= float(bytemeR[6] * 2);\\n    bytemeR[7] = int(floor(value));\\n\\n    value = g * 255.;\\n    int bytemeG[8];\\n    bytemeG[0] = int(floor(value / 128.));\\n    value -= float(bytemeG[0] * 128);\\n    bytemeG[1] = int(floor(value / 64.));\\n    value -= float(bytemeG[1] * 64);\\n    bytemeG[2] = int(floor(value / 32.));\\n    value -= float(bytemeG[2] * 32);\\n    bytemeG[3] = int(floor(value / 16.));\\n    value -= float(bytemeG[3] * 16);\\n    bytemeG[4] = int(floor(value / 8.));\\n    value -= float(bytemeG[4] * 8);\\n    bytemeG[5] = int(floor(value / 4.));\\n    value -= float(bytemeG[5] * 4);\\n    bytemeG[6] = int(floor(value / 2.));\\n    value -= float(bytemeG[6] * 2);\\n    bytemeG[7] = int(floor(value));\\n\\n    value = b * 255.;\\n    int bytemeB[8];\\n    bytemeB[0] = int(floor(value / 128.));\\n    value -= float(bytemeB[0] * 128);\\n    bytemeB[1] = int(floor(value / 64.));\\n    value -= float(bytemeB[1] * 64);\\n    bytemeB[2] = int(floor(value / 32.));\\n    value -= float(bytemeB[2] * 32);\\n    bytemeB[3] = int(floor(value / 16.));\\n    value -= float(bytemeB[3] * 16);\\n    bytemeB[4] = int(floor(value / 8.));\\n    value -= float(bytemeB[4] * 8);\\n    bytemeB[5] = int(floor(value / 4.));\\n    value -= float(bytemeB[5] * 4);\\n    bytemeB[6] = int(floor(value / 2.));\\n    value -= float(bytemeB[6] * 2);\\n    bytemeB[7] = int(floor(value));\\n\\n    value = a * 255.;\\n    int bytemeA[8];\\n    bytemeA[0] = int(floor(value / 128.));\\n    value -= float(bytemeA[0] * 128);\\n    bytemeA[1] = int(floor(value / 64.));\\n    value -= float(bytemeA[1] * 64);\\n    bytemeA[2] = int(floor(value / 32.));\\n    value -= float(bytemeA[2] * 32);\\n    bytemeA[3] = int(floor(value / 16.));\\n    value -= float(bytemeA[3] * 16);\\n    bytemeA[4] = int(floor(value / 8.));\\n    value -= float(bytemeA[4] * 8);\\n    bytemeA[5] = int(floor(value / 4.));\\n    value -= float(bytemeA[5] * 4);\\n    bytemeA[6] = int(floor(value / 2.));\\n    value -= float(bytemeA[6] * 2);\\n    bytemeA[7] = int(floor(value));\\n\\n    // compute float32 value from bit arrays\\n\\n    // sign\\n    int issigned = 1 - 2 * bytemeR[0];\\n    //   issigned = int(pow(-1., float(bytemeR[0])));\\n\\n    // exponent\\n    int exponent = 0;\\n\\n    exponent += bytemeR[1] * int(pow(2., 7.));\\n    exponent += bytemeR[2] * int(pow(2., 6.));\\n    exponent += bytemeR[3] * int(pow(2., 5.));\\n    exponent += bytemeR[4] * int(pow(2., 4.));\\n    exponent += bytemeR[5] * int(pow(2., 3.));\\n    exponent += bytemeR[6] * int(pow(2., 2.));\\n    exponent += bytemeR[7] * int(pow(2., 1.));\\n\\n    exponent += bytemeG[0];\\n\\n    // fraction\\n    float fraction = 0.;\\n\\n    fraction = float(bytemeG[1]) * pow(2., -1.);\\n    fraction += float(bytemeG[2]) * pow(2., -2.);\\n    fraction += float(bytemeG[3]) * pow(2., -3.);\\n    fraction += float(bytemeG[4]) * pow(2., -4.);\\n    fraction += float(bytemeG[5]) * pow(2., -5.);\\n    fraction += float(bytemeG[6]) * pow(2., -6.);\\n    fraction += float(bytemeG[7]) * pow(2., -7.);\\n\\n    fraction += float(bytemeB[0]) * pow(2., -8.);\\n    fraction += float(bytemeB[1]) * pow(2., -9.);\\n    fraction += float(bytemeB[2]) * pow(2., -10.);\\n    fraction += float(bytemeB[3]) * pow(2., -11.);\\n    fraction += float(bytemeB[4]) * pow(2., -12.);\\n    fraction += float(bytemeB[5]) * pow(2., -13.);\\n    fraction += float(bytemeB[6]) * pow(2., -14.);\\n    fraction += float(bytemeB[7]) * pow(2., -15.);\\n\\n    fraction += float(bytemeA[0]) * pow(2., -16.);\\n    fraction += float(bytemeA[1]) * pow(2., -17.);\\n    fraction += float(bytemeA[2]) * pow(2., -18.);\\n    fraction += float(bytemeA[3]) * pow(2., -19.);\\n    fraction += float(bytemeA[4]) * pow(2., -20.);\\n    fraction += float(bytemeA[5]) * pow(2., -21.);\\n    fraction += float(bytemeA[6]) * pow(2., -22.);\\n    fraction += float(bytemeA[7]) * pow(2., -23.);\\n\\n    value = float(issigned) * pow( 2., float(exponent - 127)) * (1. + fraction);\\n}\\n\\nvoid unpack32(\\n    in vec4 packedData, \\n    in int offset, \\n    in int uPixelType,\\n    out vec4 unpackedData\\n){\\n\\n    if (uPixelType == 1) {\\n        toUInt32(\\n            packedData.r,\\n            packedData.g,\\n            packedData.b,\\n            packedData.a,\\n            unpackedData.x\\n        );\\n    }\\n    else {\\n        toUFloat32(\\n            packedData.r,\\n            packedData.g,\\n            packedData.b,\\n            packedData.a,\\n            unpackedData.x\\n        );\\n    }\\n}\\n\\nvoid unpackIdentity(\\n    in vec4 packedData, \\n    in int offset, \\n    out vec4 unpackedData\\n){\\n    unpackedData = packedData;\\n}\\n\\nvoid unpack(\\n    in int uPixelType,\\n    in int uBitsAllocated,\\n    in int uNumberOfChannels,\\n    in vec4 packedData,\\n    in int offset,\\n    out vec4 unpackedData\\n) {\\n    if (uNumberOfChannels == 1) {\\n        if (uBitsAllocated == 8) {\\n            unpack8(    \\n                packedData, \\n                offset, \\n                unpackedData\\n            );\\n            return;\\n        }\\n        if (uBitsAllocated == 16) {\\n            unpack16(    \\n                packedData, \\n                offset, \\n                unpackedData\\n            );\\n            return;\\n        }\\n        if (uBitsAllocated == 32) {\\n            unpack32(    \\n                packedData, \\n                offset, \\n                uPixelType,\\n                unpackedData\\n            );\\n            return;\\n        }\\n    } \\n\\n    unpackIdentity(\\n        packedData, \\n        offset, \\n        unpackedData\\n    );\\n}\\n\\nvoid interpolationIdentity(\\n    in int uPixelType,\\n    in vec3 currentVoxel, \\n    in int uTextureSize,\\n    in ivec3 uDataDimensions,\\n    in sampler2D uTextureContainer[7],\\n    in int uBitsAllocated,\\n    in int uNumberOfChannels,\\n    in int uPackedPerPixel,\\n    out vec4 dataValue\\n){\\n    // lower bound\\n    vec3 rcurrentVoxel = vec3(floor(currentVoxel.x + 0.5 ), floor(currentVoxel.y + 0.5 ), floor(currentVoxel.z + 0.5 ));\\n    ivec3 flooredVoxel = ivec3(int(rcurrentVoxel.x), int(rcurrentVoxel.y), int(rcurrentVoxel.z));\\n\\n    vec4 temporaryDataValue = vec4(0., 0., 0., 0.);\\n    int dataOffset = 0;\\n\\n    AMItexture3D(\\n        flooredVoxel, \\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uPackedPerPixel,\\n        temporaryDataValue, \\n        dataOffset\\n    );\\n\\n    unpack(\\n        uPixelType,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        temporaryDataValue,\\n        dataOffset,\\n        dataValue\\n    );\\n}\\n\\nvoid trilinearInterpolation(\\n    in vec3 normalizedPosition,\\n    out vec4 interpolatedValue,\\n    in vec4 v000, in vec4 v100,\\n    in vec4 v001, in vec4 v101,\\n    in vec4 v010, in vec4 v110,\\n    in vec4 v011, in vec4 v111\\n) {\\n    // https://en.wikipedia.org/wiki/Trilinear_interpolation\\n    vec4 c00 = v000 * ( 1.0 - normalizedPosition.x ) + v100 * normalizedPosition.x;\\n    vec4 c01 = v001 * ( 1.0 - normalizedPosition.x ) + v101 * normalizedPosition.x;\\n    vec4 c10 = v010 * ( 1.0 - normalizedPosition.x ) + v110 * normalizedPosition.x;\\n    vec4 c11 = v011 * ( 1.0 - normalizedPosition.x ) + v111 * normalizedPosition.x;\\n\\n    // c0 and c1\\n    vec4 c0 = c00 * ( 1.0 - normalizedPosition.y) + c10 * normalizedPosition.y;\\n    vec4 c1 = c01 * ( 1.0 - normalizedPosition.y) + c11 * normalizedPosition.y;\\n\\n    // c\\n    vec4 c = c0 * ( 1.0 - normalizedPosition.z) + c1 * normalizedPosition.z;\\n    interpolatedValue = c;\\n}\\n\\nvoid interpolationTrilinear(\\n    in int uPixelType,\\n    in vec3 currentVoxel, \\n    in int uTextureSize,\\n    in ivec3 uDataDimensions,\\n    in sampler2D uTextureContainer[7],\\n    in int uBitsAllocated,\\n    in int uNumberOfChannels,\\n    in int uInterpolation,\\n    in int uPackedPerPixel,\\n    out vec4 dataValue, \\n    out vec3 gradient\\n){\\n\\n    vec3 lower_bound = floor(currentVoxel);\\n    lower_bound = max(vec3(0.), lower_bound);\\n\\n    vec3 higher_bound = lower_bound + vec3(1.);\\n\\n    vec3 normalizedPosition = (currentVoxel - lower_bound);\\n    normalizedPosition =  max(vec3(0.), normalizedPosition);\\n\\n    vec4 interpolatedValue = vec4(0.);\\n\\n    //\\n    // fetch values required for interpolation\\n    //\\n    vec4 v000 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c000 = vec3(lower_bound.x, lower_bound.y, lower_bound.z);\\n    interpolationIdentity(\\n        uPixelType,\\n        c000,\\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        uPackedPerPixel,\\n        v000\\n    );\\n\\n    //\\n    vec4 v100 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c100 = vec3(higher_bound.x, lower_bound.y, lower_bound.z);\\n    interpolationIdentity(\\n        uPixelType,\\n        c100,\\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        uPackedPerPixel,\\n        v100\\n    );\\n\\n    //\\n    vec4 v001 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c001 = vec3(lower_bound.x, lower_bound.y, higher_bound.z);\\n    interpolationIdentity(\\n        uPixelType,\\n        c001,\\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        uPackedPerPixel,\\n        v001\\n    );\\n\\n    //\\n    vec4 v101 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c101 = vec3(higher_bound.x, lower_bound.y, higher_bound.z);\\n    interpolationIdentity(\\n        uPixelType,\\n        c101,\\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        uPackedPerPixel,\\n        v101\\n    );\\n\\n    //\\n    vec4 v010 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c010 = vec3(lower_bound.x, higher_bound.y, lower_bound.z);\\n    interpolationIdentity(\\n        uPixelType,\\n        c010,\\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        uPackedPerPixel,\\n        v010\\n    );\\n\\n    vec4 v110 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c110 = vec3(higher_bound.x, higher_bound.y, lower_bound.z);\\n    interpolationIdentity(\\n        uPixelType,\\n        c110,\\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        uPackedPerPixel,\\n        v110\\n    );\\n\\n    //\\n    vec4 v011 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c011 = vec3(lower_bound.x, higher_bound.y, higher_bound.z);\\n    interpolationIdentity(\\n        uPixelType,\\n        c011,\\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        uPackedPerPixel,\\n        v011\\n    );\\n\\n    vec4 v111 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c111 = vec3(higher_bound.x, higher_bound.y, higher_bound.z);\\n    interpolationIdentity(\\n        uPixelType,\\n        c111,\\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        uPackedPerPixel,\\n        v111\\n    );\\n\\n    // _compute interpolation at position\\n    trilinearInterpolation(normalizedPosition, interpolatedValue ,v000, v100, v001, v101, v010,v110, v011,v111);\\n    dataValue = interpolatedValue;\\n\\n    // That breaks shading in volume rendering\\n    // if (gradient.x == 1.) { // skip gradient calculation for slice helper\\n    //  return;\\n    // }\\n\\n    // _compute gradient\\n    float gradientStep = 0.005;\\n\\n    // x axis\\n    vec3 g100 = vec3(1., 0., 0.);\\n    vec3 ng100 = normalizedPosition + g100 * gradientStep;\\n    ng100.x = min(1., ng100.x);\\n\\n    vec4 vg100 = vec4(0.);\\n    trilinearInterpolation(ng100, vg100 ,v000, v100, v001, v101, v010,v110, v011,v111);\\n\\n    vec3 go100 = -g100;\\n    vec3 ngo100 = normalizedPosition + go100 * gradientStep;\\n    ngo100.x = max(0., ngo100.x);\\n\\n    vec4 vgo100 = vec4(0.);\\n    trilinearInterpolation(ngo100, vgo100 ,v000, v100, v001, v101, v010,v110, v011,v111);\\n\\n    gradient.x = (g100.x * vg100.x + go100.x * vgo100.x);\\n\\n    // y axis\\n    vec3 g010 = vec3(0., 1., 0.);\\n    vec3 ng010 = normalizedPosition + g010 * gradientStep;\\n    ng010.y = min(1., ng010.y);\\n\\n    vec4 vg010 = vec4(0.);\\n    trilinearInterpolation(ng010, vg010 ,v000, v100, v001, v101, v010,v110, v011,v111);\\n\\n    vec3 go010 = -g010;\\n    vec3 ngo010 = normalizedPosition + go010 * gradientStep;\\n    ngo010.y = max(0., ngo010.y);\\n\\n    vec4 vgo010 = vec4(0.);\\n    trilinearInterpolation(ngo010, vgo010 ,v000, v100, v001, v101, v010,v110, v011,v111);\\n\\n    gradient.y = (g010.y * vg010.x + go010.y * vgo010.x);\\n\\n    // z axis\\n    vec3 g001 = vec3(0., 0., 1.);\\n    vec3 ng001 = normalizedPosition + g001 * gradientStep;\\n    ng001.z = min(1., ng001.z);\\n\\n    vec4 vg001 = vec4(0.);\\n    trilinearInterpolation(ng001, vg001 ,v000, v100, v001, v101, v010,v110, v011,v111);\\n\\n    vec3 go001 = -g001;\\n    vec3 ngo001 = normalizedPosition + go001 * gradientStep;\\n    ngo001.z = max(0., ngo001.z);\\n\\n    vec4 vgo001 = vec4(0.);\\n    trilinearInterpolation(ngo001, vgo001 ,v000, v100, v001, v101, v010,v110, v011,v111);\\n\\n    gradient.z = (g001.z * vg001.x + go001.z * vgo001.x);\\n\\n    // normalize gradient\\n    // +0.0001  instead of if?\\n    float gradientMagnitude = length(gradient);\\n    if (gradientMagnitude > 0.0) {\\n        gradient = -(1. / gradientMagnitude) * gradient;\\n    }\\n}\\n\\nvoid interpolation(\\n    in int uPixelType,\\n    in vec3 currentVoxel,\\n    in int uTextureSize,\\n    in ivec3 uDataDimensions,\\n    in sampler2D uTextureContainer[7],\\n    in int uBitsAllocated,\\n    in int uNumberOfChannels,\\n    in int uInterpolation,\\n    in int uPackedPerPixel,\\n    out vec4 dataValueAcc,\\n    out vec3 gradient\\n) {\\n    if (uInterpolation == 0) {\\n        interpolationIdentity(\\n            uPixelType,\\n            currentVoxel,\\n            uTextureSize,\\n            uDataDimensions,\\n            uTextureContainer,\\n            uBitsAllocated,\\n            uNumberOfChannels,\\n            uPackedPerPixel,\\n            dataValueAcc\\n        );\\n    }\\n    else {\\n        interpolationTrilinear(\\n            uPixelType,\\n            currentVoxel,\\n            uTextureSize,\\n            uDataDimensions,\\n            uTextureContainer,\\n            uBitsAllocated,\\n            uNumberOfChannels,\\n            uInterpolation,\\n            uPackedPerPixel,\\n            dataValueAcc,\\n            gradient\\n        );\\n    }\\n}\\n\\n// THREEJS Provided uniforms\\n// uniform mat4 viewMatrix;\\n// uniform vec3 cameraPosition;\\n\\nuniform int uTextureSize;\\nuniform sampler2D uTextureContainer[7];      // Length 7\\nuniform ivec3 uDataDimensions;\\nuniform mat4 uWorldToData;\\nuniform float uWindowCenterWidth[2];         // Length 2\\nuniform float uLowerUpperThreshold[2];       // Length 2\\nuniform float uRescaleSlopeIntercept[2];     // Length 2\\nuniform int uNumberOfChannels;\\nuniform int uBitsAllocated;\\nuniform int uInvert;\\nuniform int uLut;\\nuniform sampler2D uTextureLUT;\\nuniform int uLutSegmentation;\\nuniform sampler2D uTextureLUTSegmentation;\\nuniform int uPixelType;\\nuniform int uInterpolation;                 // 0 == non, 1 == trilinear\\nuniform float uCanvasWidth;\\nuniform float uCanvasHeight;\\nuniform vec3 uBorderColor;\\nuniform float uBorderWidth;\\nuniform float uBorderMargin;\\nuniform float uBorderDashLength;\\nuniform float uOpacity;\\nuniform float uSpacing;\\nuniform float uThickness;\\nuniform int uThicknessMethod;\\nuniform int uPackedPerPixel;\\n\\nvarying vec3 vPos;\\nvarying vec3 vNormal;\\n\\nvoid main(void) {\\n    if ( \\n        uCanvasWidth > 0. &&\\n        ((\\n            gl_FragCoord.x > uBorderMargin && \\n            (gl_FragCoord.x - uBorderMargin) < uBorderWidth\\n        ) || (\\n            gl_FragCoord.x < (uCanvasWidth - uBorderMargin) && \\n            (gl_FragCoord.x + uBorderMargin) > (uCanvasWidth - uBorderWidth)\\n        )) \\n    ) {\\n\\n        float valueY = mod(gl_FragCoord.y, 2. * uBorderDashLength);\\n\\n        if (\\n            valueY < uBorderDashLength && \\n            gl_FragCoord.y > uBorderMargin && \\n            gl_FragCoord.y < (uCanvasHeight - uBorderMargin) \\n        ) {\\n            gl_FragColor = vec4(uBorderColor, 1.);\\n            return;\\n        }\\n    }\\n\\n    if ( \\n        uCanvasHeight > 0. &&\\n        ((\\n            gl_FragCoord.y > uBorderMargin && \\n            (gl_FragCoord.y - uBorderMargin) < uBorderWidth\\n        ) || (\\n            gl_FragCoord.y < (uCanvasHeight - uBorderMargin) && \\n            (gl_FragCoord.y + uBorderMargin) > (uCanvasHeight - uBorderWidth) \\n        )) \\n    ){\\n        float valueX = mod(gl_FragCoord.x, 2. * uBorderDashLength);\\n\\n        if( \\n            valueX < uBorderDashLength && \\n            gl_FragCoord.x > uBorderMargin && \\n            gl_FragCoord.x < (uCanvasWidth - uBorderMargin)\\n        ){\\n            gl_FragColor = vec4(uBorderColor, 1.);\\n            return;\\n        }\\n    }\\n\\n    // get texture coordinates of current pixel\\n    vec4 dataValue = vec4(0.);\\n    vec3 gradient = vec3(1.); // gradient calculations will be skipped if it is equal to vec3(1.) \\n    float steps = floor(uThickness / uSpacing + 0.5);\\n\\n    if (steps > 1.) {\\n        vec3 origin = vPos - uThickness * 0.5 * vNormal;\\n        vec4 dataValueAcc = vec4(0.);\\n        for (float step = 0.; step < 128.; step++) {\\n            if (step >= steps) {\\n                break;\\n            }\\n\\n            vec4 dataCoordinates = uWorldToData * vec4(origin + step * uSpacing * vNormal, 1.);\\n            vec3 currentVoxel = dataCoordinates.xyz;\\n\\n            interpolation(\\n                uPixelType,\\n                currentVoxel,\\n                uTextureSize,\\n                uDataDimensions,\\n                uTextureContainer,\\n                uBitsAllocated,\\n                uNumberOfChannels,\\n                uInterpolation,\\n                uPackedPerPixel,\\n                dataValue,\\n                gradient\\n            );\\n\\n            if (step == 0.) {\\n                dataValue.r = dataValueAcc.r;\\n                continue;\\n            }\\n\\n            if (uThicknessMethod == 0) {\\n                dataValue.r = max(dataValueAcc.r, dataValue.r);\\n            }\\n            if (uThicknessMethod == 1) {\\n                dataValue.r += dataValueAcc.r;\\n            }\\n            if (uThicknessMethod == 2) {\\n                dataValue.r = min(dataValueAcc.r, dataValue.r);\\n            }\\n        }\\n\\n        if (uThicknessMethod == 1) {\\n            dataValue.r /= steps;\\n        }\\n    } \\n    else {\\n        vec4 dataCoordinates = uWorldToData * vec4(vPos, 1.);\\n        vec3 currentVoxel = dataCoordinates.xyz;\\n        interpolation(\\n            uPixelType,\\n            currentVoxel,\\n            uTextureSize,\\n            uDataDimensions,\\n            uTextureContainer,\\n            uBitsAllocated,\\n            uNumberOfChannels,\\n            uInterpolation,\\n            uPackedPerPixel,\\n            dataValue,\\n            gradient\\n        );\\n    }\\n\\n    if (uNumberOfChannels == 1) {\\n        // rescale/slope\\n        float realIntensity = dataValue.r * uRescaleSlopeIntercept[0] + uRescaleSlopeIntercept[1];\\n        \\n        // threshold\\n        if (realIntensity < uLowerUpperThreshold[0] || realIntensity > uLowerUpperThreshold[1]) {\\n            discard;\\n        }\\n    \\n        // normalize\\n        float windowMin = uWindowCenterWidth[0] - uWindowCenterWidth[1] * 0.5;\\n        float normalizedIntensity =\\n            ( realIntensity - windowMin ) / uWindowCenterWidth[1];\\n        dataValue.r = dataValue.g = dataValue.b = normalizedIntensity;\\n        dataValue.a = 1.;\\n\\n        // apply LUT\\n        if(uLut == 1){\\n            // should opacity be grabbed there?\\n            dataValue = texture2D( uTextureLUT, vec2( normalizedIntensity , 1.0) );\\n        }\\n    \\n        // apply segmentation\\n        if(uLutSegmentation == 1){\\n            // should opacity be grabbed there?\\n            //\\n            float textureWidth = 256.;\\n            float textureHeight = 128.;\\n            float min = 0.;\\n            // start at 0!\\n            int adjustedIntensity = int(floor(realIntensity + 0.5));\\n        \\n            // Get row and column in the texture\\n            int colIndex = int(mod(float(adjustedIntensity), textureWidth));\\n            int rowIndex = int(floor(float(adjustedIntensity)/textureWidth));\\n        \\n            float texWidth = 1./textureWidth;\\n            float texHeight = 1./textureHeight;\\n        \\n            // Map row and column to uv\\n            vec2 uv = vec2(0,0);\\n            uv.x = 0.5 * texWidth + (texWidth * float(colIndex));\\n            uv.y = 1. - (0.5 * texHeight + float(rowIndex) * texHeight);\\n        \\n            dataValue = texture2D( uTextureLUTSegmentation, uv );\\n        }\\n    }\\n\\n    if(uInvert == 1){\\n        dataValue.xyz = vec3(1.) - dataValue.xyz;\\n    }\\n\\n    dataValue.a = dataValue.a*uOpacity;\\n\\n    gl_FragColor = dataValue;\\n}\"");
 
 /***/ }),
 
@@ -20963,7 +20984,7 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony default export */ __webpack_exports__["default"] = ("#define GLSLIFY 1\nexport default \"#define GLSLIFY 1\\nvarying vec3 vPos;\\nvarying vec3 vNormal;\\n\\nvoid main() {\\n  vNormal = normal;\\n  vPos = (modelMatrix * vec4(position, 1.0 )).xyz;\\n  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0 );\\n}\"");
+/* harmony default export */ __webpack_exports__["default"] = ("#define GLSLIFY 1\nexport default \"#define GLSLIFY 1\\n// THREEJS Provided uniforms\\n// uniform mat4 modelMatrix;\\n// uniform mat4 modelViewMatrix;\\n// uniform mat4 projectionMatrix;\\n// attribute vec3 position;\\n// attribute vec3 normal;\\n\\nvarying vec3 vPos;\\nvarying vec3 vNormal;\\n\\nvoid main() {\\n  vNormal = normal;\\n  vPos = (modelMatrix * vec4(position, 1.0 )).xyz;\\n  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0 );\\n}\"");
 
 /***/ }),
 
@@ -20976,7 +20997,7 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony default export */ __webpack_exports__["default"] = ("#define GLSLIFY 1\nexport default \"#define GLSLIFY 1\\nvarying vec4 vPos;\\nvarying mat4 vProjectionViewMatrix;\\nvarying vec4 vProjectedCoords;\\n\\nvoid main() {\\n    vPos = modelMatrix * vec4(position, 1.0 );\\n    vProjectionViewMatrix = projectionMatrix * viewMatrix;\\n    vProjectedCoords =  projectionMatrix * modelViewMatrix * vec4( position, 1.0 );\\n    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0 );\\n}\"");
+/* harmony default export */ __webpack_exports__["default"] = ("#define GLSLIFY 1\nexport default \"#define GLSLIFY 1\\n// THREEJS Provided uniforms\\n// uniform mat4 modelMatrix;\\n// uniform mat4 modelViewMatrix;\\n// uniform mat4 projectionMatrix;\\n// uniform mat4 viewMatrix;\\n// attribute vec3 position;\\n\\nvarying vec4 vPos;\\nvarying mat4 vProjectionViewMatrix;\\nvarying vec4 vProjectedCoords;\\n\\nvoid main() {\\n    vPos = modelMatrix * vec4(position, 1.0 );\\n    vProjectionViewMatrix = projectionMatrix * viewMatrix;\\n    vProjectedCoords =  projectionMatrix * modelViewMatrix * vec4( position, 1.0 );\\n    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0 );\\n}\"");
 
 /***/ }),
 
@@ -20989,7 +21010,7 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony default export */ __webpack_exports__["default"] = ("#define GLSLIFY 1\nexport default \"#define GLSLIFY 1\\nuniform sampler2D uTextureBackTest0;\\nuniform sampler2D uTextureBackTest1; \\nuniform float uOpacity0;\\nuniform float uOpacity1;\\nuniform int uType0;\\nuniform int uType1;\\nuniform int uTrackMouse;\\nuniform ivec2 uMouse;\\n\\nvoid main(void) {\\n\\n  vec2 texc = vec2(((vProjectedCoords.x / vProjectedCoords.w) + 1.0 ) / 2.0,\\n                ((vProjectedCoords.y / vProjectedCoords.w) + 1.0 ) / 2.0 );\\n\\n  // just silence warning for\\n  // vec4 dummy = vPos;\\n\\n  //The back position is the world space position stored in the texture.\\n  vec4 baseColor0 = texture2D(uTextureBackTest0, texc);\\n  vec4 baseColor1 = texture2D(uTextureBackTest1, texc);\\n\\n  if( uTrackMouse == 1 ){\\n\\n      if( vProjectedCoords.x < uMouse.x ){\\n\\n        gl_FragColor = baseColor0;\\n\\n      }\\n      else{\\n\\n        gl_FragColor = mix( baseColor0, baseColor1, uOpacity1 );\\n\\n      }\\n\\n  }\\n  else{\\n\\n    if( uType1 == 0 ){\\n\\n      //merge an image into\\n      gl_FragColor = mix( baseColor0, baseColor1, uOpacity1 );\\n\\n    }\\n    else{\\n\\n      float opacity = baseColor1.a;\\n      gl_FragColor = mix( baseColor0, baseColor1, opacity * uOpacity1 );\\n\\n    }\\n\\n  }\\n\\n  return;\\n}\"");
+/* harmony default export */ __webpack_exports__["default"] = ("#define GLSLIFY 1\nexport default \"#define GLSLIFY 1\\nuniform sampler2D uTextureBackTest0;\\nuniform sampler2D uTextureBackTest1; \\nuniform float uOpacity0;\\nuniform float uOpacity1;\\nuniform int uType0;\\nuniform int uType1;\\nuniform int uTrackMouse;\\nuniform ivec2 uMouse;\\n\\nvarying vec4 vPos;\\nvarying mat4 vProjectionViewMatrix;\\nvarying vec4 vProjectedCoords;\\n\\nvoid main(void) {\\n\\n  vec2 texc = vec2(((vProjectedCoords.x / vProjectedCoords.w) + 1.0 ) / 2.0,\\n                ((vProjectedCoords.y / vProjectedCoords.w) + 1.0 ) / 2.0 );\\n\\n  // just silence warning for\\n  // vec4 dummy = vPos;\\n\\n  //The back position is the world space position stored in the texture.\\n  vec4 baseColor0 = texture2D(uTextureBackTest0, texc);\\n  vec4 baseColor1 = texture2D(uTextureBackTest1, texc);\\n\\n  if( uTrackMouse == 1 ){\\n\\n      if( vProjectedCoords.x < uMouse.x ){\\n\\n        gl_FragColor = baseColor0;\\n\\n      }\\n      else{\\n\\n        gl_FragColor = mix( baseColor0, baseColor1, uOpacity1 );\\n\\n      }\\n\\n  }\\n  else{\\n\\n    if( uType1 == 0 ){\\n\\n      //merge an image into\\n      gl_FragColor = mix( baseColor0, baseColor1, uOpacity1 );\\n\\n    }\\n    else{\\n\\n      float opacity = baseColor1.a;\\n      gl_FragColor = mix( baseColor0, baseColor1, opacity * uOpacity1 );\\n\\n    }\\n\\n  }\\n\\n  return;\\n}\"");
 
 /***/ }),
 
@@ -21002,7 +21023,7 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony default export */ __webpack_exports__["default"] = ("#define GLSLIFY 1\nexport default \"#define GLSLIFY 1\\nvoid intersectionProjection_0(\\n  in vec4 plane,\\n  in vec4 slice,\\n  out vec3 intersectionProjection){\\n\\n      vec3 intersectionDirection = normalize(cross(plane.xyz, slice.xyz));\\n      vec3 intersectionPoint = \\n        cross(intersectionDirection,slice.xyz) * plane.w +\\n        cross(plane.xyz, intersectionDirection) * slice.w;\\n\\n      intersectionProjection =\\n        intersectionPoint.xyz +\\n        (dot(vPos.xyz - intersectionPoint, intersectionDirection)\\n          * intersectionDirection);\\n\\n}\\n\\nuniform float uCanvasWidth;\\nuniform float uCanvasHeight;\\nuniform vec4 uSlice;\\nuniform vec4 uPlane1;\\nuniform vec3 uPlaneColor1;\\nuniform vec4 uPlane2;\\nuniform vec3 uPlaneColor2;\\nuniform vec4 uPlane3;\\nuniform vec3 uPlaneColor3;\\n\\nvoid main(void) {\\n      vec4 c1 = vec4(0., 0., 0., 0.);\\n      vec4 c2 = vec4(0., 0., 0., 0.);\\n      vec4 c3 = vec4(0., 0., 0., 0.);\\n\\n      // localizer #1\\n      // must be normalized!\\n      if(length(uPlane1.xyz) > 0.5) {\\n        vec3 projection1 = vec3(1.);\\n        intersectionProjection_0(\\n          uPlane1,\\n          uSlice,\\n          projection1\\n        );\\n\\n        vec4 projInter1 = (vProjectionViewMatrix * vec4(projection1, 1.));\\n        vec3 ndc1 = projInter1.xyz / projInter1.w;\\n        vec2 screenSpace1 = (ndc1.xy * .5 + .5) * vec2(uCanvasWidth, uCanvasHeight);\\n\\n        float d1 = distance(gl_FragCoord.xy, screenSpace1.xy);\\n        c1 = vec4(uPlaneColor1, 1. - smoothstep(.5, .7, d1));\\n      }\\n\\n      // localizer #2\\n      if(length(uPlane2.xyz) > 0.5) {\\n        vec3 projection2 = vec3(1.);\\n        intersectionProjection_0(\\n          uPlane2,\\n          uSlice,\\n          projection2\\n        );\\n\\n        vec4 projInter2 = (vProjectionViewMatrix * vec4(projection2, 1.));\\n        vec3 ndc2 = projInter2.xyz / projInter2.w;\\n        vec2 screenSpace2 = (ndc2.xy * .5 + .5) * vec2(uCanvasWidth, uCanvasHeight);\\n\\n        float d2 = distance(gl_FragCoord.xy, screenSpace2.xy);\\n        c2 = vec4(uPlaneColor2, 1. - smoothstep(.5, .7, d2));\\n      }\\n\\n      // localizer #3\\n      if(length(uPlane3.xyz) > 0.5) {\\n        vec3 projection3 = vec3(1.);\\n        intersectionProjection_0(\\n          uPlane3,\\n          uSlice,\\n          projection3\\n        );\\n\\n        vec4 projInter3 = (vProjectionViewMatrix * vec4(projection3, 1.));\\n        vec3 ndc3 = projInter3.xyz / projInter3.w;\\n        vec2 screenSpace3 = (ndc3.xy * .5 + .5) * vec2(uCanvasWidth, uCanvasHeight);\\n\\n        float d3 = distance(gl_FragCoord.xy, screenSpace3.xy);\\n        c3 = vec4(uPlaneColor3, 1. - smoothstep(.5, .7, d3));\\n      }\\n\\n      vec3 colorMix = c1.xyz*c1.w + c2.xyz*c2.w + c3.xyz*c3.w;\\n      gl_FragColor = vec4(colorMix, max(max(c1.w, c2.w),c3.w)*0.5);\\n      return;\\n}\"");
+/* harmony default export */ __webpack_exports__["default"] = ("#define GLSLIFY 1\nexport default \"#define GLSLIFY 1\\nvoid intersectionProjection_0(\\n  in vec4 plane,\\n  in vec4 slice,\\n  out vec3 intersectionProjection){\\n\\n      vec3 intersectionDirection = normalize(cross(plane.xyz, slice.xyz));\\n      vec3 intersectionPoint = \\n        cross(intersectionDirection,slice.xyz) * plane.w +\\n        cross(plane.xyz, intersectionDirection) * slice.w;\\n\\n      intersectionProjection =\\n        intersectionPoint.xyz +\\n        (dot(vPos_0.xyz - intersectionPoint, intersectionDirection)\\n          * intersectionDirection);\\n\\n}\\n\\nuniform float uCanvasWidth;\\nuniform float uCanvasHeight;\\nuniform vec4 uSlice;\\nuniform vec4 uPlane1;\\nuniform vec3 uPlaneColor1;\\nuniform vec4 uPlane2;\\nuniform vec3 uPlaneColor2;\\nuniform vec4 uPlane3;\\nuniform vec3 uPlaneColor3;\\n\\nvarying vec4 vPos;\\nvarying mat4 vProjectionViewMatrix;\\nvarying vec4 vProjectedCoords;\\n\\nvoid main(void) {\\n      vec4 c1 = vec4(0., 0., 0., 0.);\\n      vec4 c2 = vec4(0., 0., 0., 0.);\\n      vec4 c3 = vec4(0., 0., 0., 0.);\\n\\n      // localizer #1\\n      // must be normalized!\\n      if(length(uPlane1.xyz) > 0.5) {\\n        vec3 projection1 = vec3(1.);\\n        intersectionProjection_0(\\n          uPlane1,\\n          uSlice,\\n          projection1\\n        );\\n\\n        vec4 projInter1 = (vProjectionViewMatrix * vec4(projection1, 1.));\\n        vec3 ndc1 = projInter1.xyz / projInter1.w;\\n        vec2 screenSpace1 = (ndc1.xy * .5 + .5) * vec2(uCanvasWidth, uCanvasHeight);\\n\\n        float d1 = distance(gl_FragCoord.xy, screenSpace1.xy);\\n        c1 = vec4(uPlaneColor1, 1. - smoothstep(.5, .7, d1));\\n      }\\n\\n      // localizer #2\\n      if(length(uPlane2.xyz) > 0.5) {\\n        vec3 projection2 = vec3(1.);\\n        intersectionProjection_0(\\n          uPlane2,\\n          uSlice,\\n          projection2\\n        );\\n\\n        vec4 projInter2 = (vProjectionViewMatrix * vec4(projection2, 1.));\\n        vec3 ndc2 = projInter2.xyz / projInter2.w;\\n        vec2 screenSpace2 = (ndc2.xy * .5 + .5) * vec2(uCanvasWidth, uCanvasHeight);\\n\\n        float d2 = distance(gl_FragCoord.xy, screenSpace2.xy);\\n        c2 = vec4(uPlaneColor2, 1. - smoothstep(.5, .7, d2));\\n      }\\n\\n      // localizer #3\\n      if(length(uPlane3.xyz) > 0.5) {\\n        vec3 projection3 = vec3(1.);\\n        intersectionProjection_0(\\n          uPlane3,\\n          uSlice,\\n          projection3\\n        );\\n\\n        vec4 projInter3 = (vProjectionViewMatrix * vec4(projection3, 1.));\\n        vec3 ndc3 = projInter3.xyz / projInter3.w;\\n        vec2 screenSpace3 = (ndc3.xy * .5 + .5) * vec2(uCanvasWidth, uCanvasHeight);\\n\\n        float d3 = distance(gl_FragCoord.xy, screenSpace3.xy);\\n        c3 = vec4(uPlaneColor3, 1. - smoothstep(.5, .7, d3));\\n      }\\n\\n      vec3 colorMix = c1.xyz*c1.w + c2.xyz*c2.w + c3.xyz*c3.w;\\n      gl_FragColor = vec4(colorMix, max(max(c1.w, c2.w),c3.w)*0.5);\\n      return;\\n}\"");
 
 /***/ }),
 
@@ -21015,7 +21036,7 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony default export */ __webpack_exports__["default"] = ("#define GLSLIFY 1\nexport default \"#define GLSLIFY 1\\n void AMItexture3D(\\n    in ivec3 dataCoordinates, \\n    in int uTextureSize,\\n    int ivec3 uDataDimensions,\\n    int int uDataDimensions,\\n    int sampler2D[] uTextureContainer_0,\\n    out vec4 dataValue, \\n    out int offset_0\\n){\\n    float textureSizeF = float(uTextureSize);\\n    int voxelsPerTexture = uTextureSize*uTextureSize;\\n\\n    int index = dataCoordinates.x\\n                + dataCoordinates.y * uDataDimensions.x\\n                + dataCoordinates.z * uDataDimensions.y * uDataDimensions.x;\\n\\n    // dividing an integer by an integer will give you an integer result, rounded down\\n    // can not get float numbers to work :(\\n    int packedIndex = index/uPackedPerPixel_0;\\n    offset_0 = index - uPackedPerPixel_0*packedIndex;\\n\\n    // Map data index to right sampler2D texture\\n    int textureIndex = packedIndex/voxelsPerTexture;\\n    int inTextureIndex = packedIndex - voxelsPerTexture*textureIndex;\\n\\n    // Get row and column in the texture\\n    int rowIndex = inTextureIndex/uTextureSize;\\n    float rowIndexF = float(rowIndex);\\n    float colIndex = float(inTextureIndex - uTextureSize * rowIndex);\\n\\n    // Map row and column to uv\\n    vec2 uv = vec2(0,0);\\n    uv.x = (0.5 + colIndex) / textureSizeF;\\n    uv.y = 1. - (0.5 + rowIndexF) / textureSizeF;\\n\\n    float textureIndexF = float(textureIndex);\\n    float addition = vec4(0.);\\n\\n    for (float stepC = 0.0; stepC < uTextureContainer_0.length; stepC+=1 ) {\\n        addition += step( abs( textureIndexF - stepC ), 0.0 ) * texture2D(uTextureContainer_0[int(stepC)], uv)\\n    }\\n    dataValue = addition;\\n}\\n\\nvoid toUInt8(\\n    in float r, \\n    out float value\\n){\\n    value = r * 255.;\\n}\\n\\n  \\n\\nvoid unpack8(\\n    in vec4 packedData, \\n    in int offset, \\n    out vec4 unpackedData\\n){\\n    float floatedOffset = float(offset);\\n    float floatedOffsetSquared = floatedOffset * floatedOffset;\\n\\n    toUInt8(\\n        step( floatedOffsetSquared , 0.0 ) * packedData.r +\\n        step( floatedOffsetSquared - 2. * floatedOffset + 1., 0.0 ) * packedData.g +\\n        step( floatedOffsetSquared - 2. * 2. *  floatedOffset + 4., 0.0 ) * packedData.b +\\n        step( floatedOffsetSquared - 2. * 3. *  floatedOffset + 9., 0.0 ) * packedData.a,\\n        unpackedData.x\\n    );\\n}\\n\\nvoid toUInt16(\\n    in float r, \\n    in float a, \\n    out float value\\n) {\\nvoid uInt16(){\\n    value = r * 255. + a * 255. * 256.;\\n}\\n\\nvoid unpack16(\\n    in vec4 packedData, \\n    in int offset, \\n    out vec4 unpackedData\\n){\\n    unpackedData = packedData;\\n    float floatedOffset = float(offset);\\n\\n    toUInt16(\\n        packedData.r * (1. - floatedOffset) + packedData.b * floatedOffset,\\n        packedData.g * (1. - floatedOffset) + packedData.a * floatedOffset,\\n        unpackedData.x\\n    );\\n    \\n}\\n\\nvoid toUInt32(\\n    in float r, \\n    in float g, \\n    in float b, \\n    in float a, \\n    out float value\\n){\\n    value = r * 255. + g * 255. * 256. + b * 255. * 256. * 256. + a * 255. * 256. * 256. * 256.;\\n}\\n\\nvoid toUFloat32(in float r, in float g, in float b, in float a, out float value){\\n\\n    // create arrays containing bits for rgba values\\n    // value between 0 and 255\\n    value = r * 255.;\\n    int bytemeR[8];\\n    bytemeR[0] = int(floor(value / 128.));\\n    value -= float(bytemeR[0] * 128);\\n    bytemeR[1] = int(floor(value / 64.));\\n    value -= float(bytemeR[1] * 64);\\n    bytemeR[2] = int(floor(value / 32.));\\n    value -= float(bytemeR[2] * 32);\\n    bytemeR[3] = int(floor(value / 16.));\\n    value -= float(bytemeR[3] * 16);\\n    bytemeR[4] = int(floor(value / 8.));\\n    value -= float(bytemeR[4] * 8);\\n    bytemeR[5] = int(floor(value / 4.));\\n    value -= float(bytemeR[5] * 4);\\n    bytemeR[6] = int(floor(value / 2.));\\n    value -= float(bytemeR[6] * 2);\\n    bytemeR[7] = int(floor(value));\\n\\n    value = g * 255.;\\n    int bytemeG[8];\\n    bytemeG[0] = int(floor(value / 128.));\\n    value -= float(bytemeG[0] * 128);\\n    bytemeG[1] = int(floor(value / 64.));\\n    value -= float(bytemeG[1] * 64);\\n    bytemeG[2] = int(floor(value / 32.));\\n    value -= float(bytemeG[2] * 32);\\n    bytemeG[3] = int(floor(value / 16.));\\n    value -= float(bytemeG[3] * 16);\\n    bytemeG[4] = int(floor(value / 8.));\\n    value -= float(bytemeG[4] * 8);\\n    bytemeG[5] = int(floor(value / 4.));\\n    value -= float(bytemeG[5] * 4);\\n    bytemeG[6] = int(floor(value / 2.));\\n    value -= float(bytemeG[6] * 2);\\n    bytemeG[7] = int(floor(value));\\n\\n    value = b * 255.;\\n    int bytemeB[8];\\n    bytemeB[0] = int(floor(value / 128.));\\n    value -= float(bytemeB[0] * 128);\\n    bytemeB[1] = int(floor(value / 64.));\\n    value -= float(bytemeB[1] * 64);\\n    bytemeB[2] = int(floor(value / 32.));\\n    value -= float(bytemeB[2] * 32);\\n    bytemeB[3] = int(floor(value / 16.));\\n    value -= float(bytemeB[3] * 16);\\n    bytemeB[4] = int(floor(value / 8.));\\n    value -= float(bytemeB[4] * 8);\\n    bytemeB[5] = int(floor(value / 4.));\\n    value -= float(bytemeB[5] * 4);\\n    bytemeB[6] = int(floor(value / 2.));\\n    value -= float(bytemeB[6] * 2);\\n    bytemeB[7] = int(floor(value));\\n\\n    value = a * 255.;\\n    int bytemeA[8];\\n    bytemeA[0] = int(floor(value / 128.));\\n    value -= float(bytemeA[0] * 128);\\n    bytemeA[1] = int(floor(value / 64.));\\n    value -= float(bytemeA[1] * 64);\\n    bytemeA[2] = int(floor(value / 32.));\\n    value -= float(bytemeA[2] * 32);\\n    bytemeA[3] = int(floor(value / 16.));\\n    value -= float(bytemeA[3] * 16);\\n    bytemeA[4] = int(floor(value / 8.));\\n    value -= float(bytemeA[4] * 8);\\n    bytemeA[5] = int(floor(value / 4.));\\n    value -= float(bytemeA[5] * 4);\\n    bytemeA[6] = int(floor(value / 2.));\\n    value -= float(bytemeA[6] * 2);\\n    bytemeA[7] = int(floor(value));\\n\\n    // compute float32 value from bit arrays\\n\\n    // sign\\n    int issigned = 1 - 2 * bytemeR[0];\\n    //   issigned = int(pow(-1., float(bytemeR[0])));\\n\\n    // exponent\\n    int exponent = 0;\\n\\n    exponent += bytemeR[1] * int(pow(2., 7.));\\n    exponent += bytemeR[2] * int(pow(2., 6.));\\n    exponent += bytemeR[3] * int(pow(2., 5.));\\n    exponent += bytemeR[4] * int(pow(2., 4.));\\n    exponent += bytemeR[5] * int(pow(2., 3.));\\n    exponent += bytemeR[6] * int(pow(2., 2.));\\n    exponent += bytemeR[7] * int(pow(2., 1.));\\n\\n    exponent += bytemeG[0];\\n\\n    // fraction\\n    float fraction = 0.;\\n\\n    fraction = float(bytemeG[1]) * pow(2., -1.);\\n    fraction += float(bytemeG[2]) * pow(2., -2.);\\n    fraction += float(bytemeG[3]) * pow(2., -3.);\\n    fraction += float(bytemeG[4]) * pow(2., -4.);\\n    fraction += float(bytemeG[5]) * pow(2., -5.);\\n    fraction += float(bytemeG[6]) * pow(2., -6.);\\n    fraction += float(bytemeG[7]) * pow(2., -7.);\\n\\n    fraction += float(bytemeB[0]) * pow(2., -8.);\\n    fraction += float(bytemeB[1]) * pow(2., -9.);\\n    fraction += float(bytemeB[2]) * pow(2., -10.);\\n    fraction += float(bytemeB[3]) * pow(2., -11.);\\n    fraction += float(bytemeB[4]) * pow(2., -12.);\\n    fraction += float(bytemeB[5]) * pow(2., -13.);\\n    fraction += float(bytemeB[6]) * pow(2., -14.);\\n    fraction += float(bytemeB[7]) * pow(2., -15.);\\n\\n    fraction += float(bytemeA[0]) * pow(2., -16.);\\n    fraction += float(bytemeA[1]) * pow(2., -17.);\\n    fraction += float(bytemeA[2]) * pow(2., -18.);\\n    fraction += float(bytemeA[3]) * pow(2., -19.);\\n    fraction += float(bytemeA[4]) * pow(2., -20.);\\n    fraction += float(bytemeA[5]) * pow(2., -21.);\\n    fraction += float(bytemeA[6]) * pow(2., -22.);\\n    fraction += float(bytemeA[7]) * pow(2., -23.);\\n\\n    value = float(issigned) * pow( 2., float(exponent - 127)) * (1. + fraction);\\n}\\n\\nvoid unpack32(\\n    in vec4 packedData, \\n    in int offset, \\n    in int uPixelType,\\n    out vec4 unpackedData\\n){\\n\\n    if (uPixelType == 1) {\\n        toUInt32(\\n            packedData.r,\\n            packedData.g,\\n            packedData.b,\\n            packedData.a,\\n            unpackedData.x\\n        );\\n    }\\n    else {\\n        toUFloat32(\\n            packedData.r,\\n            packedData.g,\\n            packedData.b,\\n            packedData.a,\\n            unpackedData.x\\n        );\\n    }\\n}\\n\\nvoid unpackIdentity(\\n    in vec4 packedData, \\n    in int offset, \\n    out vec4 unpackedData\\n){\\n    unpackedData = packedData;\\n}\\n\\nvoid unpack(\\n    in int uBitsAllocated,\\n    in int uNumberOfChannels,\\n    in vec4 packedData,\\n    in int offset,\\n    out vec4 unpackedData\\n) {\\n    if (base.uniforms.uNumberOfChannels.value === 1) {\\n        switch (uBitsAllocated) {\\n            case 8:\\n                upack8(    \\n                    packedData, \\n                    offset, \\n                    unpackedData\\n                );\\n                break;\\n\\n            case 16:\\n                upack16(\\n                    packedData, \\n                    offset, \\n                    unpackedData\\n                );\\n                break;\\n\\n            case 32:\\n                upack32(\\n                    packedData, \\n                    offset, \\n                    unpackedData\\n                );\\n                break;\\n\\n            default:\\n                upackIdentity(\\n                    packedData, \\n                    offset, \\n                    unpackedData\\n                );\\n                break;\\n        }\\n    } else {\\n        upackIdentity(\\n            packedData, \\n            offset, \\n            unpackedData\\n        );\\n    }\\n}\\n\\nvoid interpolationIdentity(\\n    in vec3 currentVoxel, \\n    in int uTextureSize,\\n    in ivec3 uDataDimensions,\\n    in int uDataDimensions,\\n    in sampler2D[] uTextureContainer_1,\\n    in int uBitsAllocated,\\n    in int uNumberOfChannels_0,\\n    out vec4 dataValue_0\\n){\\n    // lower bound\\n    vec3 rcurrentVoxel = vec3(floor(currentVoxel.x + 0.5 ), floor(currentVoxel.y + 0.5 ), floor(currentVoxel.z + 0.5 ));\\n    ivec3 flooredVoxel = ivec3(int(rcurrentVoxel.x), int(rcurrentVoxel.y), int(rcurrentVoxel.z));\\n\\n    vec4 temporaryDataValue = vec4(0., 0., 0., 0.);\\n    int dataOffset = 0;\\n\\n    AMItexture3D(\\n        flooredVoxel, \\n        uTextureSize,\\n        uDataDimensions,\\n        uDataDimensions,\\n        uTextureContainer_1,\\n        temporaryDataValue, \\n        dataOffset\\n    );\\n\\n    unpack(\\n        uBitsAllocated,\\n        uNumberOfChannels_0,\\n        temporaryDataValue,\\n        dataOffset,\\n        dataValue_0\\n    );\\n}\\n\\nvoid trilinearInterpolation(\\n    in vec3 normalizedPosition,\\n    out vec4 interpolatedValue,\\n    in vec4 v000, in vec4 v100,\\n    in vec4 v001, in vec4 v101,\\n    in vec4 v010, in vec4 v110,\\n    in vec4 v011, in vec4 v111\\n) {\\n    // https://en.wikipedia.org/wiki/Trilinear_interpolation\\n    vec4 c00 = v000 * ( 1.0 - normalizedPosition.x ) + v100 * normalizedPosition.x;\\n    vec4 c01 = v001 * ( 1.0 - normalizedPosition.x ) + v101 * normalizedPosition.x;\\n    vec4 c10 = v010 * ( 1.0 - normalizedPosition.x ) + v110 * normalizedPosition.x;\\n    vec4 c11 = v011 * ( 1.0 - normalizedPosition.x ) + v111 * normalizedPosition.x;\\n\\n    // c0 and c1\\n    vec4 c0 = c00 * ( 1.0 - normalizedPosition.y) + c10 * normalizedPosition.y;\\n    vec4 c1 = c01 * ( 1.0 - normalizedPosition.y) + c11 * normalizedPosition.y;\\n\\n    // c\\n    vec4 c = c0 * ( 1.0 - normalizedPosition.z) + c1 * normalizedPosition.z;\\n    interpolatedValue = c;\\n}\\n\\nvoid interpolationTrilinear(\\n    in vec3 currentVoxel, \\n    in int uTextureSize,\\n    in ivec3 uDataDimensions,\\n    in int uDataDimensions,\\n    in sampler2D[] uTextureContainer_2,\\n    in int uBitsAllocated,\\n    in int uNumberOfChannels_1,\\n    in int uInterpolation_0,\\n    out vec4 dataValue_1, \\n    out vec3 gradient_0\\n){\\n\\n    vec3 lower_bound_3090588381 = floor(currentVoxel);\\n    lower_bound_3090588381 = max(vec3(0.), lower_bound_3090588381);\\n\\n    vec3 higher_bound = lower_bound_3090588381 + vec3(1.);\\n\\n    vec3 normalizedPosition = (currentVoxel - lower_bound_3090588381);\\n    normalizedPosition =  max(vec3(0.), normalizedPosition);\\n\\n    vec4 interpolatedValue = vec4(0.);\\n\\n    //\\n    // fetch values required for interpolation\\n    //\\n    vec4 v000 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c000 = vec3(lower_bound_3090588381.x, lower_bound_3090588381.y, lower_bound_3090588381.z);\\n    interpolationIdentity(\\n        c000,\\n        uTextureSize,\\n        uDataDimensions,\\n        uDataDimensions,\\n        uTextureContainer_2,\\n        uBitsAllocated,\\n        uNumberOfChannels_1,\\n        v000\\n    );\\n\\n    //\\n    vec4 v100 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c100 = vec3(higher_bound.x, lower_bound_3090588381.y, lower_bound_3090588381.z);\\n    interpolationIdentity(\\n        c100,\\n        uTextureSize,\\n        uDataDimensions,\\n        uDataDimensions,\\n        uTextureContainer_2,\\n        uBitsAllocated,\\n        uNumberOfChannels_1,\\n        v100\\n    );\\n\\n    //\\n    vec4 v001 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c001 = vec3(lower_bound_3090588381.x, lower_bound_3090588381.y, higher_bound.z);\\n    interpolationIdentity(\\n        c001,\\n        uTextureSize,\\n        uDataDimensions,\\n        uDataDimensions,\\n        uTextureContainer_2,\\n        uBitsAllocated,\\n        uNumberOfChannels_1,\\n        v001\\n    );\\n\\n    //\\n    vec4 v101 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c101 = vec3(higher_bound.x, lower_bound_3090588381.y, higher_bound.z);\\n    interpolationIdentity(\\n        c101,\\n        uTextureSize,\\n        uDataDimensions,\\n        uDataDimensions,\\n        uTextureContainer_2,\\n        uBitsAllocated,\\n        uNumberOfChannels_1,\\n        v101\\n    );\\n\\n    //\\n    vec4 v010 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c010 = vec3(lower_bound_3090588381.x, higher_bound.y, lower_bound_3090588381.z);\\n    interpolationIdentity(\\n        c010,\\n        uTextureSize,\\n        uDataDimensions,\\n        uDataDimensions,\\n        uTextureContainer_2,\\n        uBitsAllocated,\\n        uNumberOfChannels_1,\\n        v010\\n    );\\n\\n    vec4 v110 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c110 = vec3(higher_bound.x, higher_bound.y, lower_bound_3090588381.z);\\n    interpolationIdentity(\\n        c110,\\n        uTextureSize,\\n        uDataDimensions,\\n        uDataDimensions,\\n        uTextureContainer_2,\\n        uBitsAllocated,\\n        uNumberOfChannels_1,\\n        v110\\n    );\\n\\n    //\\n    vec4 v011 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c011 = vec3(lower_bound_3090588381.x, higher_bound.y, higher_bound.z);\\n    interpolationIdentity(\\n        c011,\\n        uTextureSize,\\n        uDataDimensions,\\n        uDataDimensions,\\n        uTextureContainer_2,\\n        uBitsAllocated,\\n        uNumberOfChannels_1,\\n        v011\\n    );\\n\\n    vec4 v111 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c111 = vec3(higher_bound.x, higher_bound.y, higher_bound.z);\\n    interpolationIdentity(\\n        c111,\\n        uTextureSize,\\n        uDataDimensions,\\n        uDataDimensions,\\n        uTextureContainer_2,\\n        uBitsAllocated,\\n        uNumberOfChannels_1,\\n        v111\\n    );\\n\\n    // _compute interpolation at position\\n    trilinearInterpolation(normalizedPosition, interpolatedValue ,v000, v100, v001, v101, v010,v110, v011,v111);\\n    dataValue_1 = interpolatedValue;\\n\\n    // That breaks shading in volume rendering\\n    // if (gradient.x == 1.) { // skip gradient calculation for slice helper\\n    //  return;\\n    // }\\n\\n    // _compute gradient\\n    float gradientStep = 0.005;\\n\\n    // x axis\\n    vec3 g100 = vec3(1., 0., 0.);\\n    vec3 ng100 = normalizedPosition + g100 * gradientStep;\\n    ng100.x = min(1., ng100.x);\\n\\n    vec4 vg100 = vec4(0.);\\n    trilinearInterpolation(ng100, vg100 ,v000, v100, v001, v101, v010,v110, v011,v111);\\n\\n    vec3 go100 = -g100;\\n    vec3 ngo100 = normalizedPosition + go100 * gradientStep;\\n    ngo100.x = max(0., ngo100.x);\\n\\n    vec4 vgo100 = vec4(0.);\\n    trilinearInterpolation(ngo100, vgo100 ,v000, v100, v001, v101, v010,v110, v011,v111);\\n\\n    gradient_0.x = (g100.x * vg100.x + go100.x * vgo100.x);\\n\\n    // y axis\\n    vec3 g010 = vec3(0., 1., 0.);\\n    vec3 ng010 = normalizedPosition + g010 * gradientStep;\\n    ng010.y = min(1., ng010.y);\\n\\n    vec4 vg010 = vec4(0.);\\n    trilinearInterpolation(ng010, vg010 ,v000, v100, v001, v101, v010,v110, v011,v111);\\n\\n    vec3 go010 = -g010;\\n    vec3 ngo010 = normalizedPosition + go010 * gradientStep;\\n    ngo010.y = max(0., ngo010.y);\\n\\n    vec4 vgo010 = vec4(0.);\\n    trilinearInterpolation(ngo010, vgo010 ,v000, v100, v001, v101, v010,v110, v011,v111);\\n\\n    gradient_0.y = (g010.y * vg010.x + go010.y * vgo010.x);\\n\\n    // z axis\\n    vec3 g001 = vec3(0., 0., 1.);\\n    vec3 ng001 = normalizedPosition + g001 * gradientStep;\\n    ng001.z = min(1., ng001.z);\\n\\n    vec4 vg001 = vec4(0.);\\n    trilinearInterpolation(ng001, vg001 ,v000, v100, v001, v101, v010,v110, v011,v111);\\n\\n    vec3 go001 = -g001;\\n    vec3 ngo001 = normalizedPosition + go001 * gradientStep;\\n    ngo001.z = max(0., ngo001.z);\\n\\n    vec4 vgo001 = vec4(0.);\\n    trilinearInterpolation(ngo001, vgo001 ,v000, v100, v001, v101, v010,v110, v011,v111);\\n\\n    gradient_0.z = (g001.z * vg001.x + go001.z * vgo001.x);\\n\\n    // normalize gradient\\n    // +0.0001  instead of if?\\n    float gradientMagnitude = length(gradient_0);\\n    if (gradientMagnitude > 0.0) {\\n        gradient_0 = -(1. / gradientMagnitude) * gradient_0;\\n    }\\n}\\n\\nvoid interpolation(\\n    in vec3 currentVoxel,\\n    in int uTextureSize,\\n    in ivec3 uDataDimensions,\\n    in int uDataDimensions,\\n    in sampler2D[] uTextureContainer_3,\\n    in int uBitsAllocated,\\n    in int uNumberOfChannels_2,\\n    in int uInterpolation_1,\\n    out vec4 dataValueAcc,\\n    out vec3 gradient_1\\n) {\\n    if (uInterpolation_1 == 0) {\\n        interpolationIdentity(\\n            currentVoxel,\\n            uTextureSize,\\n            uDataDimensions,\\n            uDataDimensions,\\n            uTextureContainer_3,\\n            uBitsAllocated,\\n            uNumberOfChannels_2,\\n            dataValueAcc\\n        );\\n    }\\n    else {\\n        interpolationTrilinear(\\n            currentVoxel,\\n            uTextureSize,\\n            uDataDimensions,\\n            uDataDimensions,\\n            uTextureContainer_3,\\n            uBitsAllocated,\\n            uNumberOfChannels_2,\\n            dataValueAcc,\\n            gradient_1\\n        );\\n    }\\n}\\n\\nvoid intersectsBox(\\n    vec3 rayOrigin, \\n    vec3 rayDirection, \\n    vec3 boxMin, \\n    vec3 boxMax, \\n    out float tNear, \\n    out float tFar, \\n    out bool intersect\\n){\\n    // compute intersection of ray with all six bbox planes\\n    vec3 invRay = vec3(1.) / rayDirection;\\n    vec3 tBot = invRay * (boxMin - rayOrigin);\\n    vec3 tTop = invRay * (boxMax - rayOrigin);\\n    // re-order intersections to find smallest and largest on each axis\\n    vec3 tMin = min(tTop, tBot);\\n    vec3 tMax = max(tTop, tBot);\\n    // find the largest tMin and the smallest tMax\\n    float largest_tMin = max(max(tMin.x, tMin.y), max(tMin.x, tMin.z));\\n    float smallest_tMax = min(min(tMax.x, tMax.y), min(tMax.x, tMax.z));\\n    tNear = largest_tMin;\\n    tFar = smallest_tMax;\\n    intersect = smallest_tMax > largest_tMin;\\n}\\n\\nconst float PI = 3.14159265358979323846264 * 00000.1; // PI\\n\\nuniform int uTextureSize;\\nuniform sampler2D[] uTextureContainer;      // Length 7\\nuniform ivec3 uDataDimensions;\\nuniform mat4 uWorldToData;\\nuniform float[] uWindowCenterWidth;         // Length 2\\nuniform float[] uRescaleSlopeIntercept;     // Length 2\\nuniform int uNumberOfChannels;\\nuniform int uBitsAllocated;\\nuniform int uInvert;\\nuniform int uLut;\\nuniform sampler2D uTextureLUT;\\nuniform int uPixelType;\\nuniform int uPackedPerPixel;\\nuniform int uInterpolation;\\nuniform float[] uWorldBBox;                 // Length 6\\nuniform int uSteps;\\nuniform float uAlphaCorrection;\\nuniform float uFrequence;\\nuniform float uAmplitude;\\nuniform int uShading;\\nuniform float uAmbient;\\nuniform vec3 uAmbientColor\\nuniform int uSampleColorToAmbient;\\nuniform float uSpecular;\\nuniform vec3 uSpecularColor;\\nuniform float uDiffuse;\\nuniform vec3 uDiffuseColor;\\nuniform int uSampleColorToDiffuse;\\nuniform float uShininess;\\nuniform vec3 uLightPosition;\\nuniform int uLightPositionInCamera;\\nuniform vec3 uIntensity;\\nuniform int uAlgorithm;\\n\\nvoid getIntensity(\\n    in vec3 dataCoordinates, \\n    out float intensity, \\n    out vec3 gradient\\n){\\n\\n  vec4 dataValue = vec4(0., 0., 0., 0.);\\n\\n  interpolation(\\n    dataCoordinates,\\n    uTextureSize,\\n    uDataDimensions,\\n    uDataDimensions,\\n    uTextureContainer,\\n    uBitsAllocated,\\n    uNumberOfChannels,\\n    dataValue,\\n    gradient,\\n  );\\n\\n  intensity = dataValue.r;\\n\\n  // rescale/slope\\n  intensity = intensity*uRescaleSlopeIntercept[0] + uRescaleSlopeIntercept[1];\\n  // window level\\n  float windowMin = uWindowCenterWidth[0] - uWindowCenterWidth[1] * 0.5;\\n  intensity = ( intensity - windowMin ) / uWindowCenterWidth[1];\\n}\\n\\nmat4 inverse(mat4 m) {\\n  float\\n    a00 = m[0][0], a01 = m[0][1], a02 = m[0][2], a03 = m[0][3],\\n    a10 = m[1][0], a11 = m[1][1], a12 = m[1][2], a13 = m[1][3],\\n    a20 = m[2][0], a21 = m[2][1], a22 = m[2][2], a23 = m[2][3],\\n    a30 = m[3][0], a31 = m[3][1], a32 = m[3][2], a33 = m[3][3],\\n\\n    b00 = a00 * a11 - a01 * a10,\\n    b01 = a00 * a12 - a02 * a10,\\n    b02 = a00 * a13 - a03 * a10,\\n    b03 = a01 * a12 - a02 * a11,\\n    b04 = a01 * a13 - a03 * a11,\\n    b05 = a02 * a13 - a03 * a12,\\n    b06 = a20 * a31 - a21 * a30,\\n    b07 = a20 * a32 - a22 * a30,\\n    b08 = a20 * a33 - a23 * a30,\\n    b09 = a21 * a32 - a22 * a31,\\n    b10 = a21 * a33 - a23 * a31,\\n    b11 = a22 * a33 - a23 * a32,\\n\\n    det = b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;\\n\\n  return mat4(\\n    a11 * b11 - a12 * b10 + a13 * b09,\\n    a02 * b10 - a01 * b11 - a03 * b09,\\n    a31 * b05 - a32 * b04 + a33 * b03,\\n    a22 * b04 - a21 * b05 - a23 * b03,\\n    a12 * b08 - a10 * b11 - a13 * b07,\\n    a00 * b11 - a02 * b08 + a03 * b07,\\n    a32 * b02 - a30 * b05 - a33 * b01,\\n    a20 * b05 - a22 * b02 + a23 * b01,\\n    a10 * b10 - a11 * b08 + a13 * b06,\\n    a01 * b08 - a00 * b10 - a03 * b06,\\n    a30 * b04 - a31 * b02 + a33 * b00,\\n    a21 * b02 - a20 * b04 - a23 * b00,\\n    a11 * b07 - a10 * b09 - a12 * b06,\\n    a00 * b09 - a01 * b07 + a02 * b06,\\n    a31 * b01 - a30 * b03 - a32 * b00,\\n    a20 * b03 - a21 * b01 + a22 * b00) / det;\\n}\\n\\n/**\\n * Adapted from original sources\\n * \\n * Original code: \\n * http://jamie-wong.com/2016/07/15/ray-marching-signed-distance-functions/\\n * https://www.shadertoy.com/view/lt33z7\\n * \\n * The vec3 returned is the RGB color of the light's contribution.\\n *\\n * k_a: Ambient color\\n * k_d: Diffuse color\\n * k_s: Specular color\\n * alpha: Shininess coefficient\\n * p: position of point being lit\\n * eye: the position of the camera\\n * lightPos: the position of the light\\n * lightIntensity: color/intensity of the light\\n *\\n * See https://en.wikipedia.org/wiki/Phong_reflection_model#Description\\n */\\nvec3 phongShading(\\n    vec3 k_a, \\n    vec3 k_d, \\n    vec3 k_s, \\n    float shininess, \\n    vec3 p, \\n    vec3 eye,\\n    vec3 lightPos, \\n    vec3 lightIntensity, \\n    vec3 normal\\n) {\\n  vec3 N = normal;\\n  vec3 L = lightPos - p;\\n  if (length(L) > 0.) {\\n    L = L / length(L);\\n  }\\n  vec3 V = eye - p;\\n  if (length(V) > 0.) {\\n    V = V / length(V);\\n  }\\n  vec3 R = reflect(-L, N);\\n  if (length(R) > 0.) {\\n    R = R / length(R);\\n  }\\n\\n  // https://en.wikipedia.org/wiki/Blinn%E2%80%93Phong_shading_model\\n  vec3 h = L + V;\\n  vec3 H = h;\\n  if (length(h) > 0.) {\\n    H = H / length(h);\\n  }\\n\\n  float dotLN = dot(L, N);\\n  float dotRV = dot(R, V);\\n\\n  if (dotLN < 0.) {\\n    // Light not visible from this point on the surface\\n    return k_a;\\n  } \\n\\n  if (dotRV < 0.) {\\n    // Light reflection in opposite direction as viewer, apply only diffuse\\n    // component\\n    return k_a + lightIntensity * (k_d * dotLN);\\n  }\\n\\n  float specAngle = max(dot(H, normal), 0.0);\\n  float specular = pow(dotRV, shininess); //pow(specAngle, shininess); // \\n  return k_a + lightIntensity * (k_d * dotLN  + k_s * specular);\\n}\\n\\n// expects values in the range of [0,1]x[0,1], returns values in the [0,1] range.\\n// do not collapse into a single function per: http://byteblacksmith.com/improvements-to-the-canonical-one-liner-glsl-rand-for-opengl-es-2-0/\\nhighp float rand( const in vec2 uv) {\\n  const highp float a = 12.9898;\\n  const highp float b = 78.233;\\n  const highp float c = 43758.5453;\\n  highp float dt = dot(uv.xy, vec2(a, b)), sn = mod(dt, PI);\\n  return fract(sin(sn) * c);\\n}\\n\\nvoid main(void) {\\n  const int maxSteps = 1024;\\n\\n  // the ray\\n  vec3 rayOrigin = cameraPosition;\\n  vec3 rayDirection = normalize(vPos.xyz - rayOrigin);\\n\\n  vec3 lightOrigin = uLightPositionInCamera == 1 ? cameraPosition : uLightPosition;\\n\\n  // the Axe-Aligned B-Box\\n  vec3 AABBMin = vec3(uWorldBBox[0], uWorldBBox[2], uWorldBBox[4]);\\n  vec3 AABBMax = vec3(uWorldBBox[1], uWorldBBox[3], uWorldBBox[5]);\\n\\n  // Intersection ray/bbox\\n  float tNear, tFar;\\n  bool intersect = false;\\n  intersectsBox(\\n    rayOrigin,\\n    rayDirection,\\n    AABBMin,\\n    AABBMax,\\n    tNear,\\n    tFar,\\n    intersect\\n  );\\n\\n  if (tNear < 0.0) tNear = 0.0;\\n\\n  // x / y should be within o-1\\n  // should\\n  float offset = rand(gl_FragCoord.xy);\\n\\n  // init the ray marching\\n  float tStep = (tFar - tNear) / float(uSteps);\\n  float tCurrent = tNear + offset * tStep;\\n  vec4 accumulatedColor = vec4(0.0);\\n  float accumulatedAlpha = 0.0;\\n\\n  // MIP volume rendering\\n  float maxIntensity = 0.0;\\n\\n  mat4 dataToWorld = inverse(uWorldToData);\\n\\n  // rayOrigin -= rayDirection * 0.1; // gold_noise(vPos.xz, vPos.y) / 100.;  \\n\\n  for(int rayStep = 0; rayStep < maxSteps; rayStep++){\\n    vec3 currentPosition = rayOrigin + rayDirection * tCurrent;\\n    // some non-linear FUN\\n    // some occlusion issue to be fixed\\n    vec3 transformedPosition = currentPosition; //transformPoint(currentPosition, uAmplitude, uFrequence);\\n    // world to data coordinates\\n    // rounding trick\\n    // first center of first voxel in data space is CENTERED on (0,0,0)\\n    vec4 dataCoordinatesRaw = uWorldToData * vec4(transformedPosition, 1.0);\\n    vec3 currentVoxel = vec3(dataCoordinatesRaw.x, dataCoordinatesRaw.y, dataCoordinatesRaw.z);\\n    float intensity = 0.0;\\n    vec3 gradient = vec3(0., 0., 0.);\\n    getIntensity(currentVoxel, intensity, gradient);\\n    // map gradient to world space and normalize before using\\n    // we avoid to call \\\"normalize\\\" as it may be undefined if vector length == 0.\\n    gradient = (vec3(dataToWorld * vec4(gradient, 0.)));\\n    if (length(gradient) > 0.0) {\\n      gradient = normalize(gradient);\\n    }\\n\\n    vec4 colorSample;\\n    float alphaSample;\\n    if(uLut == 1){\\n      vec4 colorFromLUT = texture2D( uTextureLUT, vec2( intensity, 1.0) );\\n      // 256 colors\\n      colorSample = colorFromLUT;\\n      alphaSample = colorFromLUT.a;\\n    }\\n    else{\\n      alphaSample = intensity;\\n      colorSample.r = colorSample.g = colorSample.b = intensity;\\n    }\\n\\n    // ray marching algorithm\\n    // shading on\\n    // interpolation on\\n    if (uAlgorithm == 0 && uShading == 1 && uInterpolation != 0) {\\n      //  && alphaSample > .3\\n      vec3 ambientComponent = uSampleColorToAmbient == 1 ? colorSample.xyz : uAmbientColor;\\n      ambientComponent *= uAmbient;\\n      vec3 diffuseComponent = uSampleColorToDiffuse == 1 ? colorSample.xyz : uDiffuseColor;\\n      diffuseComponent *= uDiffuse;\\n      vec3 specularComponent = uSpecular * uSpecularColor;\\n      float shininess = uShininess;\\n      vec3 vIntensity = uIntensity;\\n\\n      colorSample.xyz += phongShading(\\n        ambientComponent,\\n        diffuseComponent,\\n        specularComponent,\\n        shininess,\\n        currentPosition.xyz,\\n        rayOrigin.xyz,\\n        lightOrigin.xyz,\\n        vIntensity,\\n        gradient);\\n    }\\n\\n    alphaSample = 1.0 - pow((1.0- alphaSample),tStep*uAlphaCorrection);\\n    alphaSample *= (1.0 - accumulatedAlpha);\\n\\n    accumulatedColor += alphaSample * colorSample;\\n    accumulatedAlpha += alphaSample;\\n\\n    tCurrent += tStep;\\n\\n    if (tCurrent > tFar || (uAlgorithm == 0 && accumulatedAlpha >= 1.0)) break;\\n\\n    if (uAlgorithm == 1 && (intensity >= maxIntensity)) {\\n      maxIntensity = intensity;\\n      accumulatedColor = colorSample;\\n      accumulatedAlpha = 1.;\\n    }\\n  }\\n\\n  gl_FragColor = vec4(accumulatedColor.xyz, accumulatedAlpha);\\n}\"");
+/* harmony default export */ __webpack_exports__["default"] = ("#define GLSLIFY 1\nexport default \"#define GLSLIFY 1\\nvoid AMItexture3D(\\n    in ivec3 dataCoordinates, \\n    in int uTextureSize,\\n    in ivec3 uDataDimensions,\\n    in sampler2D uTextureContainer[7],\\n    in int uPackedPerPixel,\\n    out vec4 dataValue, \\n    out int offset\\n){\\n    float textureSizeF = float(uTextureSize);\\n    int voxelsPerTexture = uTextureSize*uTextureSize;\\n\\n    int index = dataCoordinates.x\\n                + dataCoordinates.y * uDataDimensions.x\\n                + dataCoordinates.z * uDataDimensions.y * uDataDimensions.x;\\n\\n    // dividing an integer by an integer will give you an integer result, rounded down\\n    // can not get float numbers to work :(\\n    int packedIndex = index/uPackedPerPixel;\\n    offset = index - uPackedPerPixel*packedIndex;\\n\\n    // Map data index to right sampler2D texture\\n    int textureIndex = packedIndex/voxelsPerTexture;\\n    int inTextureIndex = packedIndex - voxelsPerTexture*textureIndex;\\n\\n    // Get row and column in the texture\\n    int rowIndex = inTextureIndex/uTextureSize;\\n    float rowIndexF = float(rowIndex);\\n    float colIndex = float(inTextureIndex - uTextureSize * rowIndex);\\n\\n    // Map row and column to uv\\n    vec2 uv = vec2(0,0);\\n    uv.x = (0.5 + colIndex) / textureSizeF;\\n    uv.y = 1. - (0.5 + rowIndexF) / textureSizeF;\\n\\n    float textureIndexF = float(textureIndex);\\n    vec4 addition = vec4(0.);\\n\\n    for (float stepC = 0.0; stepC < 7.0; stepC++ ) {\\n        addition += step( abs( textureIndexF - stepC ), 0.0 ) * texture2D(uTextureContainer[int(stepC)], uv);\\n    }\\n    dataValue = addition;\\n}\\n\\nvoid toUInt8(\\n    in float r, \\n    out float value\\n){\\n    value = r * 255.;\\n}\\n\\n  \\n\\nvoid unpack8(\\n    in vec4 packedData, \\n    in int offset, \\n    out vec4 unpackedData\\n){\\n    float floatedOffset = float(offset);\\n    float floatedOffsetSquared = floatedOffset * floatedOffset;\\n\\n    toUInt8(\\n        step( floatedOffsetSquared , 0.0 ) * packedData.r +\\n        step( floatedOffsetSquared - 2. * floatedOffset + 1., 0.0 ) * packedData.g +\\n        step( floatedOffsetSquared - 2. * 2. *  floatedOffset + 4., 0.0 ) * packedData.b +\\n        step( floatedOffsetSquared - 2. * 3. *  floatedOffset + 9., 0.0 ) * packedData.a,\\n        unpackedData.x\\n    );\\n}\\n\\nvoid toUInt16(\\n    in float r, \\n    in float a, \\n    out float value\\n) {\\n    value = r * 255. + a * 255. * 256.;\\n}\\n\\nvoid unpack16(\\n    in vec4 packedData, \\n    in int offset, \\n    out vec4 unpackedData\\n){\\n    unpackedData = packedData;\\n    float floatedOffset = float(offset);\\n\\n    toUInt16(\\n        packedData.r * (1. - floatedOffset) + packedData.b * floatedOffset,\\n        packedData.g * (1. - floatedOffset) + packedData.a * floatedOffset,\\n        unpackedData.x\\n    );\\n    \\n}\\n\\nvoid toUInt32(\\n    in float r, \\n    in float g, \\n    in float b, \\n    in float a, \\n    out float value\\n){\\n    value = r * 255. + g * 255. * 256. + b * 255. * 256. * 256. + a * 255. * 256. * 256. * 256.;\\n}\\n\\nvoid toUFloat32(in float r, in float g, in float b, in float a, out float value){\\n\\n    // create arrays containing bits for rgba values\\n    // value between 0 and 255\\n    value = r * 255.;\\n    int bytemeR[8];\\n    bytemeR[0] = int(floor(value / 128.));\\n    value -= float(bytemeR[0] * 128);\\n    bytemeR[1] = int(floor(value / 64.));\\n    value -= float(bytemeR[1] * 64);\\n    bytemeR[2] = int(floor(value / 32.));\\n    value -= float(bytemeR[2] * 32);\\n    bytemeR[3] = int(floor(value / 16.));\\n    value -= float(bytemeR[3] * 16);\\n    bytemeR[4] = int(floor(value / 8.));\\n    value -= float(bytemeR[4] * 8);\\n    bytemeR[5] = int(floor(value / 4.));\\n    value -= float(bytemeR[5] * 4);\\n    bytemeR[6] = int(floor(value / 2.));\\n    value -= float(bytemeR[6] * 2);\\n    bytemeR[7] = int(floor(value));\\n\\n    value = g * 255.;\\n    int bytemeG[8];\\n    bytemeG[0] = int(floor(value / 128.));\\n    value -= float(bytemeG[0] * 128);\\n    bytemeG[1] = int(floor(value / 64.));\\n    value -= float(bytemeG[1] * 64);\\n    bytemeG[2] = int(floor(value / 32.));\\n    value -= float(bytemeG[2] * 32);\\n    bytemeG[3] = int(floor(value / 16.));\\n    value -= float(bytemeG[3] * 16);\\n    bytemeG[4] = int(floor(value / 8.));\\n    value -= float(bytemeG[4] * 8);\\n    bytemeG[5] = int(floor(value / 4.));\\n    value -= float(bytemeG[5] * 4);\\n    bytemeG[6] = int(floor(value / 2.));\\n    value -= float(bytemeG[6] * 2);\\n    bytemeG[7] = int(floor(value));\\n\\n    value = b * 255.;\\n    int bytemeB[8];\\n    bytemeB[0] = int(floor(value / 128.));\\n    value -= float(bytemeB[0] * 128);\\n    bytemeB[1] = int(floor(value / 64.));\\n    value -= float(bytemeB[1] * 64);\\n    bytemeB[2] = int(floor(value / 32.));\\n    value -= float(bytemeB[2] * 32);\\n    bytemeB[3] = int(floor(value / 16.));\\n    value -= float(bytemeB[3] * 16);\\n    bytemeB[4] = int(floor(value / 8.));\\n    value -= float(bytemeB[4] * 8);\\n    bytemeB[5] = int(floor(value / 4.));\\n    value -= float(bytemeB[5] * 4);\\n    bytemeB[6] = int(floor(value / 2.));\\n    value -= float(bytemeB[6] * 2);\\n    bytemeB[7] = int(floor(value));\\n\\n    value = a * 255.;\\n    int bytemeA[8];\\n    bytemeA[0] = int(floor(value / 128.));\\n    value -= float(bytemeA[0] * 128);\\n    bytemeA[1] = int(floor(value / 64.));\\n    value -= float(bytemeA[1] * 64);\\n    bytemeA[2] = int(floor(value / 32.));\\n    value -= float(bytemeA[2] * 32);\\n    bytemeA[3] = int(floor(value / 16.));\\n    value -= float(bytemeA[3] * 16);\\n    bytemeA[4] = int(floor(value / 8.));\\n    value -= float(bytemeA[4] * 8);\\n    bytemeA[5] = int(floor(value / 4.));\\n    value -= float(bytemeA[5] * 4);\\n    bytemeA[6] = int(floor(value / 2.));\\n    value -= float(bytemeA[6] * 2);\\n    bytemeA[7] = int(floor(value));\\n\\n    // compute float32 value from bit arrays\\n\\n    // sign\\n    int issigned = 1 - 2 * bytemeR[0];\\n    //   issigned = int(pow(-1., float(bytemeR[0])));\\n\\n    // exponent\\n    int exponent = 0;\\n\\n    exponent += bytemeR[1] * int(pow(2., 7.));\\n    exponent += bytemeR[2] * int(pow(2., 6.));\\n    exponent += bytemeR[3] * int(pow(2., 5.));\\n    exponent += bytemeR[4] * int(pow(2., 4.));\\n    exponent += bytemeR[5] * int(pow(2., 3.));\\n    exponent += bytemeR[6] * int(pow(2., 2.));\\n    exponent += bytemeR[7] * int(pow(2., 1.));\\n\\n    exponent += bytemeG[0];\\n\\n    // fraction\\n    float fraction = 0.;\\n\\n    fraction = float(bytemeG[1]) * pow(2., -1.);\\n    fraction += float(bytemeG[2]) * pow(2., -2.);\\n    fraction += float(bytemeG[3]) * pow(2., -3.);\\n    fraction += float(bytemeG[4]) * pow(2., -4.);\\n    fraction += float(bytemeG[5]) * pow(2., -5.);\\n    fraction += float(bytemeG[6]) * pow(2., -6.);\\n    fraction += float(bytemeG[7]) * pow(2., -7.);\\n\\n    fraction += float(bytemeB[0]) * pow(2., -8.);\\n    fraction += float(bytemeB[1]) * pow(2., -9.);\\n    fraction += float(bytemeB[2]) * pow(2., -10.);\\n    fraction += float(bytemeB[3]) * pow(2., -11.);\\n    fraction += float(bytemeB[4]) * pow(2., -12.);\\n    fraction += float(bytemeB[5]) * pow(2., -13.);\\n    fraction += float(bytemeB[6]) * pow(2., -14.);\\n    fraction += float(bytemeB[7]) * pow(2., -15.);\\n\\n    fraction += float(bytemeA[0]) * pow(2., -16.);\\n    fraction += float(bytemeA[1]) * pow(2., -17.);\\n    fraction += float(bytemeA[2]) * pow(2., -18.);\\n    fraction += float(bytemeA[3]) * pow(2., -19.);\\n    fraction += float(bytemeA[4]) * pow(2., -20.);\\n    fraction += float(bytemeA[5]) * pow(2., -21.);\\n    fraction += float(bytemeA[6]) * pow(2., -22.);\\n    fraction += float(bytemeA[7]) * pow(2., -23.);\\n\\n    value = float(issigned) * pow( 2., float(exponent - 127)) * (1. + fraction);\\n}\\n\\nvoid unpack32(\\n    in vec4 packedData, \\n    in int offset, \\n    in int uPixelType,\\n    out vec4 unpackedData\\n){\\n\\n    if (uPixelType == 1) {\\n        toUInt32(\\n            packedData.r,\\n            packedData.g,\\n            packedData.b,\\n            packedData.a,\\n            unpackedData.x\\n        );\\n    }\\n    else {\\n        toUFloat32(\\n            packedData.r,\\n            packedData.g,\\n            packedData.b,\\n            packedData.a,\\n            unpackedData.x\\n        );\\n    }\\n}\\n\\nvoid unpackIdentity(\\n    in vec4 packedData, \\n    in int offset, \\n    out vec4 unpackedData\\n){\\n    unpackedData = packedData;\\n}\\n\\nvoid unpack(\\n    in int uPixelType,\\n    in int uBitsAllocated,\\n    in int uNumberOfChannels,\\n    in vec4 packedData,\\n    in int offset,\\n    out vec4 unpackedData\\n) {\\n    if (uNumberOfChannels == 1) {\\n        if (uBitsAllocated == 8) {\\n            unpack8(    \\n                packedData, \\n                offset, \\n                unpackedData\\n            );\\n            return;\\n        }\\n        if (uBitsAllocated == 16) {\\n            unpack16(    \\n                packedData, \\n                offset, \\n                unpackedData\\n            );\\n            return;\\n        }\\n        if (uBitsAllocated == 32) {\\n            unpack32(    \\n                packedData, \\n                offset, \\n                uPixelType,\\n                unpackedData\\n            );\\n            return;\\n        }\\n    } \\n\\n    unpackIdentity(\\n        packedData, \\n        offset, \\n        unpackedData\\n    );\\n}\\n\\nvoid interpolationIdentity(\\n    in int uPixelType,\\n    in vec3 currentVoxel, \\n    in int uTextureSize,\\n    in ivec3 uDataDimensions,\\n    in sampler2D uTextureContainer[7],\\n    in int uBitsAllocated,\\n    in int uNumberOfChannels,\\n    in int uPackedPerPixel,\\n    out vec4 dataValue\\n){\\n    // lower bound\\n    vec3 rcurrentVoxel = vec3(floor(currentVoxel.x + 0.5 ), floor(currentVoxel.y + 0.5 ), floor(currentVoxel.z + 0.5 ));\\n    ivec3 flooredVoxel = ivec3(int(rcurrentVoxel.x), int(rcurrentVoxel.y), int(rcurrentVoxel.z));\\n\\n    vec4 temporaryDataValue = vec4(0., 0., 0., 0.);\\n    int dataOffset = 0;\\n\\n    AMItexture3D(\\n        flooredVoxel, \\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uPackedPerPixel,\\n        temporaryDataValue, \\n        dataOffset\\n    );\\n\\n    unpack(\\n        uPixelType,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        temporaryDataValue,\\n        dataOffset,\\n        dataValue\\n    );\\n}\\n\\nvoid trilinearInterpolation(\\n    in vec3 normalizedPosition,\\n    out vec4 interpolatedValue,\\n    in vec4 v000, in vec4 v100,\\n    in vec4 v001, in vec4 v101,\\n    in vec4 v010, in vec4 v110,\\n    in vec4 v011, in vec4 v111\\n) {\\n    // https://en.wikipedia.org/wiki/Trilinear_interpolation\\n    vec4 c00 = v000 * ( 1.0 - normalizedPosition.x ) + v100 * normalizedPosition.x;\\n    vec4 c01 = v001 * ( 1.0 - normalizedPosition.x ) + v101 * normalizedPosition.x;\\n    vec4 c10 = v010 * ( 1.0 - normalizedPosition.x ) + v110 * normalizedPosition.x;\\n    vec4 c11 = v011 * ( 1.0 - normalizedPosition.x ) + v111 * normalizedPosition.x;\\n\\n    // c0 and c1\\n    vec4 c0 = c00 * ( 1.0 - normalizedPosition.y) + c10 * normalizedPosition.y;\\n    vec4 c1 = c01 * ( 1.0 - normalizedPosition.y) + c11 * normalizedPosition.y;\\n\\n    // c\\n    vec4 c = c0 * ( 1.0 - normalizedPosition.z) + c1 * normalizedPosition.z;\\n    interpolatedValue = c;\\n}\\n\\nvoid interpolationTrilinear(\\n    in int uPixelType,\\n    in vec3 currentVoxel, \\n    in int uTextureSize,\\n    in ivec3 uDataDimensions,\\n    in sampler2D uTextureContainer[7],\\n    in int uBitsAllocated,\\n    in int uNumberOfChannels,\\n    in int uInterpolation,\\n    in int uPackedPerPixel,\\n    out vec4 dataValue, \\n    out vec3 gradient\\n){\\n\\n    vec3 lower_bound = floor(currentVoxel);\\n    lower_bound = max(vec3(0.), lower_bound);\\n\\n    vec3 higher_bound = lower_bound + vec3(1.);\\n\\n    vec3 normalizedPosition = (currentVoxel - lower_bound);\\n    normalizedPosition =  max(vec3(0.), normalizedPosition);\\n\\n    vec4 interpolatedValue = vec4(0.);\\n\\n    //\\n    // fetch values required for interpolation\\n    //\\n    vec4 v000 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c000 = vec3(lower_bound.x, lower_bound.y, lower_bound.z);\\n    interpolationIdentity(\\n        uPixelType,\\n        c000,\\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        uPackedPerPixel,\\n        v000\\n    );\\n\\n    //\\n    vec4 v100 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c100 = vec3(higher_bound.x, lower_bound.y, lower_bound.z);\\n    interpolationIdentity(\\n        uPixelType,\\n        c100,\\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        uPackedPerPixel,\\n        v100\\n    );\\n\\n    //\\n    vec4 v001 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c001 = vec3(lower_bound.x, lower_bound.y, higher_bound.z);\\n    interpolationIdentity(\\n        uPixelType,\\n        c001,\\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        uPackedPerPixel,\\n        v001\\n    );\\n\\n    //\\n    vec4 v101 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c101 = vec3(higher_bound.x, lower_bound.y, higher_bound.z);\\n    interpolationIdentity(\\n        uPixelType,\\n        c101,\\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        uPackedPerPixel,\\n        v101\\n    );\\n\\n    //\\n    vec4 v010 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c010 = vec3(lower_bound.x, higher_bound.y, lower_bound.z);\\n    interpolationIdentity(\\n        uPixelType,\\n        c010,\\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        uPackedPerPixel,\\n        v010\\n    );\\n\\n    vec4 v110 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c110 = vec3(higher_bound.x, higher_bound.y, lower_bound.z);\\n    interpolationIdentity(\\n        uPixelType,\\n        c110,\\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        uPackedPerPixel,\\n        v110\\n    );\\n\\n    //\\n    vec4 v011 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c011 = vec3(lower_bound.x, higher_bound.y, higher_bound.z);\\n    interpolationIdentity(\\n        uPixelType,\\n        c011,\\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        uPackedPerPixel,\\n        v011\\n    );\\n\\n    vec4 v111 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c111 = vec3(higher_bound.x, higher_bound.y, higher_bound.z);\\n    interpolationIdentity(\\n        uPixelType,\\n        c111,\\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        uPackedPerPixel,\\n        v111\\n    );\\n\\n    // _compute interpolation at position\\n    trilinearInterpolation(normalizedPosition, interpolatedValue ,v000, v100, v001, v101, v010,v110, v011,v111);\\n    dataValue = interpolatedValue;\\n\\n    // That breaks shading in volume rendering\\n    // if (gradient.x == 1.) { // skip gradient calculation for slice helper\\n    //  return;\\n    // }\\n\\n    // _compute gradient\\n    float gradientStep = 0.005;\\n\\n    // x axis\\n    vec3 g100 = vec3(1., 0., 0.);\\n    vec3 ng100 = normalizedPosition + g100 * gradientStep;\\n    ng100.x = min(1., ng100.x);\\n\\n    vec4 vg100 = vec4(0.);\\n    trilinearInterpolation(ng100, vg100 ,v000, v100, v001, v101, v010,v110, v011,v111);\\n\\n    vec3 go100 = -g100;\\n    vec3 ngo100 = normalizedPosition + go100 * gradientStep;\\n    ngo100.x = max(0., ngo100.x);\\n\\n    vec4 vgo100 = vec4(0.);\\n    trilinearInterpolation(ngo100, vgo100 ,v000, v100, v001, v101, v010,v110, v011,v111);\\n\\n    gradient.x = (g100.x * vg100.x + go100.x * vgo100.x);\\n\\n    // y axis\\n    vec3 g010 = vec3(0., 1., 0.);\\n    vec3 ng010 = normalizedPosition + g010 * gradientStep;\\n    ng010.y = min(1., ng010.y);\\n\\n    vec4 vg010 = vec4(0.);\\n    trilinearInterpolation(ng010, vg010 ,v000, v100, v001, v101, v010,v110, v011,v111);\\n\\n    vec3 go010 = -g010;\\n    vec3 ngo010 = normalizedPosition + go010 * gradientStep;\\n    ngo010.y = max(0., ngo010.y);\\n\\n    vec4 vgo010 = vec4(0.);\\n    trilinearInterpolation(ngo010, vgo010 ,v000, v100, v001, v101, v010,v110, v011,v111);\\n\\n    gradient.y = (g010.y * vg010.x + go010.y * vgo010.x);\\n\\n    // z axis\\n    vec3 g001 = vec3(0., 0., 1.);\\n    vec3 ng001 = normalizedPosition + g001 * gradientStep;\\n    ng001.z = min(1., ng001.z);\\n\\n    vec4 vg001 = vec4(0.);\\n    trilinearInterpolation(ng001, vg001 ,v000, v100, v001, v101, v010,v110, v011,v111);\\n\\n    vec3 go001 = -g001;\\n    vec3 ngo001 = normalizedPosition + go001 * gradientStep;\\n    ngo001.z = max(0., ngo001.z);\\n\\n    vec4 vgo001 = vec4(0.);\\n    trilinearInterpolation(ngo001, vgo001 ,v000, v100, v001, v101, v010,v110, v011,v111);\\n\\n    gradient.z = (g001.z * vg001.x + go001.z * vgo001.x);\\n\\n    // normalize gradient\\n    // +0.0001  instead of if?\\n    float gradientMagnitude = length(gradient);\\n    if (gradientMagnitude > 0.0) {\\n        gradient = -(1. / gradientMagnitude) * gradient;\\n    }\\n}\\n\\nvoid interpolation(\\n    in int uPixelType,\\n    in vec3 currentVoxel,\\n    in int uTextureSize,\\n    in ivec3 uDataDimensions,\\n    in sampler2D uTextureContainer[7],\\n    in int uBitsAllocated,\\n    in int uNumberOfChannels,\\n    in int uInterpolation,\\n    in int uPackedPerPixel,\\n    out vec4 dataValueAcc,\\n    out vec3 gradient\\n) {\\n    if (uInterpolation == 0) {\\n        interpolationIdentity(\\n            uPixelType,\\n            currentVoxel,\\n            uTextureSize,\\n            uDataDimensions,\\n            uTextureContainer,\\n            uBitsAllocated,\\n            uNumberOfChannels,\\n            uPackedPerPixel,\\n            dataValueAcc\\n        );\\n    }\\n    else {\\n        interpolationTrilinear(\\n            uPixelType,\\n            currentVoxel,\\n            uTextureSize,\\n            uDataDimensions,\\n            uTextureContainer,\\n            uBitsAllocated,\\n            uNumberOfChannels,\\n            uInterpolation,\\n            uPackedPerPixel,\\n            dataValueAcc,\\n            gradient\\n        );\\n    }\\n}\\n\\nvoid intersectsBox(\\n    vec3 rayOrigin, \\n    vec3 rayDirection, \\n    vec3 boxMin, \\n    vec3 boxMax, \\n    out float tNear, \\n    out float tFar, \\n    out bool intersect\\n){\\n    // compute intersection of ray with all six bbox planes\\n    vec3 invRay = vec3(1.) / rayDirection;\\n    vec3 tBot = invRay * (boxMin - rayOrigin);\\n    vec3 tTop = invRay * (boxMax - rayOrigin);\\n    // re-order intersections to find smallest and largest on each axis\\n    vec3 tMin = min(tTop, tBot);\\n    vec3 tMax = max(tTop, tBot);\\n    // find the largest tMin and the smallest tMax\\n    float largest_tMin = max(max(tMin.x, tMin.y), max(tMin.x, tMin.z));\\n    float smallest_tMax = min(min(tMax.x, tMax.y), min(tMax.x, tMax.z));\\n    tNear = largest_tMin;\\n    tFar = smallest_tMax;\\n    intersect = smallest_tMax > largest_tMin;\\n}\\n\\nconst float PI = 3.14159265358979323846264 * 00000.1; // PI\\n\\n// THREEJS Provided uniforms\\n// uniform mat4 viewMatrix;\\n// uniform vec3 cameraPosition;\\n\\nuniform int uTextureSize;\\nuniform sampler2D uTextureContainer[7];      // Length 7\\nuniform ivec3 uDataDimensions;\\nuniform mat4 uWorldToData;\\nuniform float uWindowCenterWidth;[2]         // Length 2\\nuniform float uRescaleSlopeIntercept[2];     // Length 2\\nuniform int uNumberOfChannels;\\nuniform int uBitsAllocated;\\nuniform int uInvert;\\nuniform int uLut;\\nuniform sampler2D uTextureLUT;\\nuniform int uPixelType;\\nuniform int uPackedPerPixel;\\nuniform int uInterpolation;\\nuniform float uWorldBBox[6];                 // Length 6\\nuniform int uSteps;\\nuniform float uAlphaCorrection;\\nuniform float uFrequence;\\nuniform float uAmplitude;\\nuniform int uShading;\\nuniform float uAmbient;\\nuniform vec3 uAmbientColor;\\nuniform int uSampleColorToAmbient;\\nuniform float uSpecular;\\nuniform vec3 uSpecularColor;\\nuniform float uDiffuse;\\nuniform vec3 uDiffuseColor;\\nuniform int uSampleColorToDiffuse;\\nuniform float uShininess;\\nuniform vec3 uLightPosition;\\nuniform int uLightPositionInCamera;\\nuniform vec3 uIntensity;\\nuniform int uAlgorithm;\\n\\nvarying vec4 vPos;\\nvarying mat4 vProjectionViewMatrix;\\nvarying vec4 vProjectedCoords;\\n\\nvoid getIntensity(\\n    in vec3 dataCoordinates, \\n    out float intensity, \\n    out vec3 gradient\\n){\\n\\n  vec4 dataValue = vec4(0., 0., 0., 0.);\\n\\n  interpolation(\\n    uPixelType,\\n    dataCoordinates,\\n    uTextureSize,\\n    uDataDimensions,\\n    uTextureContainer,\\n    uBitsAllocated,\\n    uNumberOfChannels,\\n    uPackedPerPixel,\\n    dataValue,\\n    gradient,\\n  );\\n\\n  intensity = dataValue.r;\\n\\n  // rescale/slope\\n  intensity = intensity*uRescaleSlopeIntercept[0] + uRescaleSlopeIntercept[1];\\n  // window level\\n  float windowMin = uWindowCenterWidth[0] - uWindowCenterWidth[1] * 0.5;\\n  intensity = ( intensity - windowMin ) / uWindowCenterWidth[1];\\n}\\n\\nmat4 inverse(mat4 m) {\\n  float\\n    a00 = m[0][0], a01 = m[0][1], a02 = m[0][2], a03 = m[0][3],\\n    a10 = m[1][0], a11 = m[1][1], a12 = m[1][2], a13 = m[1][3],\\n    a20 = m[2][0], a21 = m[2][1], a22 = m[2][2], a23 = m[2][3],\\n    a30 = m[3][0], a31 = m[3][1], a32 = m[3][2], a33 = m[3][3],\\n\\n    b00 = a00 * a11 - a01 * a10,\\n    b01 = a00 * a12 - a02 * a10,\\n    b02 = a00 * a13 - a03 * a10,\\n    b03 = a01 * a12 - a02 * a11,\\n    b04 = a01 * a13 - a03 * a11,\\n    b05 = a02 * a13 - a03 * a12,\\n    b06 = a20 * a31 - a21 * a30,\\n    b07 = a20 * a32 - a22 * a30,\\n    b08 = a20 * a33 - a23 * a30,\\n    b09 = a21 * a32 - a22 * a31,\\n    b10 = a21 * a33 - a23 * a31,\\n    b11 = a22 * a33 - a23 * a32,\\n\\n    det = b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;\\n\\n  return mat4(\\n    a11 * b11 - a12 * b10 + a13 * b09,\\n    a02 * b10 - a01 * b11 - a03 * b09,\\n    a31 * b05 - a32 * b04 + a33 * b03,\\n    a22 * b04 - a21 * b05 - a23 * b03,\\n    a12 * b08 - a10 * b11 - a13 * b07,\\n    a00 * b11 - a02 * b08 + a03 * b07,\\n    a32 * b02 - a30 * b05 - a33 * b01,\\n    a20 * b05 - a22 * b02 + a23 * b01,\\n    a10 * b10 - a11 * b08 + a13 * b06,\\n    a01 * b08 - a00 * b10 - a03 * b06,\\n    a30 * b04 - a31 * b02 + a33 * b00,\\n    a21 * b02 - a20 * b04 - a23 * b00,\\n    a11 * b07 - a10 * b09 - a12 * b06,\\n    a00 * b09 - a01 * b07 + a02 * b06,\\n    a31 * b01 - a30 * b03 - a32 * b00,\\n    a20 * b03 - a21 * b01 + a22 * b00) / det;\\n}\\n\\n/**\\n * Adapted from original sources\\n * \\n * Original code: \\n * http://jamie-wong.com/2016/07/15/ray-marching-signed-distance-functions/\\n * https://www.shadertoy.com/view/lt33z7\\n * \\n * The vec3 returned is the RGB color of the light's contribution.\\n *\\n * k_a: Ambient color\\n * k_d: Diffuse color\\n * k_s: Specular color\\n * alpha: Shininess coefficient\\n * p: position of point being lit\\n * eye: the position of the camera\\n * lightPos: the position of the light\\n * lightIntensity: color/intensity of the light\\n *\\n * See https://en.wikipedia.org/wiki/Phong_reflection_model#Description\\n */\\nvec3 phongShading(\\n    vec3 k_a, \\n    vec3 k_d, \\n    vec3 k_s, \\n    float shininess, \\n    vec3 p, \\n    vec3 eye,\\n    vec3 lightPos, \\n    vec3 lightIntensity, \\n    vec3 normal\\n) {\\n  vec3 N = normal;\\n  vec3 L = lightPos - p;\\n  if (length(L) > 0.) {\\n    L = L / length(L);\\n  }\\n  vec3 V = eye - p;\\n  if (length(V) > 0.) {\\n    V = V / length(V);\\n  }\\n  vec3 R = reflect(-L, N);\\n  if (length(R) > 0.) {\\n    R = R / length(R);\\n  }\\n\\n  // https://en.wikipedia.org/wiki/Blinn%E2%80%93Phong_shading_model\\n  vec3 h = L + V;\\n  vec3 H = h;\\n  if (length(h) > 0.) {\\n    H = H / length(h);\\n  }\\n\\n  float dotLN = dot(L, N);\\n  float dotRV = dot(R, V);\\n\\n  if (dotLN < 0.) {\\n    // Light not visible from this point on the surface\\n    return k_a;\\n  } \\n\\n  if (dotRV < 0.) {\\n    // Light reflection in opposite direction as viewer, apply only diffuse\\n    // component\\n    return k_a + lightIntensity * (k_d * dotLN);\\n  }\\n\\n  float specAngle = max(dot(H, normal), 0.0);\\n  float specular = pow(dotRV, shininess); //pow(specAngle, shininess); // \\n  return k_a + lightIntensity * (k_d * dotLN  + k_s * specular);\\n}\\n\\n// expects values in the range of [0,1]x[0,1], returns values in the [0,1] range.\\n// do not collapse into a single function per: http://byteblacksmith.com/improvements-to-the-canonical-one-liner-glsl-rand-for-opengl-es-2-0/\\nhighp float rand( const in vec2 uv) {\\n  const highp float a = 12.9898;\\n  const highp float b = 78.233;\\n  const highp float c = 43758.5453;\\n  highp float dt = dot(uv.xy, vec2(a, b)), sn = mod(dt, PI);\\n  return fract(sin(sn) * c);\\n}\\n\\nvoid main(void) {\\n  const int maxSteps = 1024;\\n\\n  // the ray\\n  vec3 rayOrigin = cameraPosition;\\n  vec3 rayDirection = normalize(vPos.xyz - rayOrigin);\\n\\n  vec3 lightOrigin = uLightPositionInCamera == 1 ? cameraPosition : uLightPosition;\\n\\n  // the Axe-Aligned B-Box\\n  vec3 AABBMin = vec3(uWorldBBox[0], uWorldBBox[2], uWorldBBox[4]);\\n  vec3 AABBMax = vec3(uWorldBBox[1], uWorldBBox[3], uWorldBBox[5]);\\n\\n  // Intersection ray/bbox\\n  float tNear, tFar;\\n  bool intersect = false;\\n  intersectsBox(\\n    rayOrigin,\\n    rayDirection,\\n    AABBMin,\\n    AABBMax,\\n    tNear,\\n    tFar,\\n    intersect\\n  );\\n\\n  if (tNear < 0.0) tNear = 0.0;\\n\\n  // x / y should be within o-1\\n  // should\\n  float offset = rand(gl_FragCoord.xy);\\n\\n  // init the ray marching\\n  float tStep = (tFar - tNear) / float(uSteps);\\n  float tCurrent = tNear + offset * tStep;\\n  vec4 accumulatedColor = vec4(0.0);\\n  float accumulatedAlpha = 0.0;\\n\\n  // MIP volume rendering\\n  float maxIntensity = 0.0;\\n\\n  mat4 dataToWorld = inverse(uWorldToData);\\n\\n  // rayOrigin -= rayDirection * 0.1; // gold_noise(vPos.xz, vPos.y) / 100.;  \\n\\n  for(int rayStep = 0; rayStep < maxSteps; rayStep++){\\n    vec3 currentPosition = rayOrigin + rayDirection * tCurrent;\\n    // some non-linear FUN\\n    // some occlusion issue to be fixed\\n    vec3 transformedPosition = currentPosition; //transformPoint(currentPosition, uAmplitude, uFrequence);\\n    // world to data coordinates\\n    // rounding trick\\n    // first center of first voxel in data space is CENTERED on (0,0,0)\\n    vec4 dataCoordinatesRaw = uWorldToData * vec4(transformedPosition, 1.0);\\n    vec3 currentVoxel = vec3(dataCoordinatesRaw.x, dataCoordinatesRaw.y, dataCoordinatesRaw.z);\\n    float intensity = 0.0;\\n    vec3 gradient = vec3(0., 0., 0.);\\n    getIntensity(currentVoxel, intensity, gradient);\\n    // map gradient to world space and normalize before using\\n    // we avoid to call \\\"normalize\\\" as it may be undefined if vector length == 0.\\n    gradient = (vec3(dataToWorld * vec4(gradient, 0.)));\\n    if (length(gradient) > 0.0) {\\n      gradient = normalize(gradient);\\n    }\\n\\n    vec4 colorSample;\\n    float alphaSample;\\n    if(uLut == 1){\\n      vec4 colorFromLUT = texture2D( uTextureLUT, vec2( intensity, 1.0) );\\n      // 256 colors\\n      colorSample = colorFromLUT;\\n      alphaSample = colorFromLUT.a;\\n    }\\n    else{\\n      alphaSample = intensity;\\n      colorSample.r = colorSample.g = colorSample.b = intensity;\\n    }\\n\\n    // ray marching algorithm\\n    // shading on\\n    // interpolation on\\n    if (uAlgorithm == 0 && uShading == 1 && uInterpolation != 0) {\\n      //  && alphaSample > .3\\n      vec3 ambientComponent = uSampleColorToAmbient == 1 ? colorSample.xyz : uAmbientColor;\\n      ambientComponent *= uAmbient;\\n      vec3 diffuseComponent = uSampleColorToDiffuse == 1 ? colorSample.xyz : uDiffuseColor;\\n      diffuseComponent *= uDiffuse;\\n      vec3 specularComponent = uSpecular * uSpecularColor;\\n      float shininess = uShininess;\\n      vec3 vIntensity = uIntensity;\\n\\n      colorSample.xyz += phongShading(\\n        ambientComponent,\\n        diffuseComponent,\\n        specularComponent,\\n        shininess,\\n        currentPosition.xyz,\\n        rayOrigin.xyz,\\n        lightOrigin.xyz,\\n        vIntensity,\\n        gradient);\\n    }\\n\\n    alphaSample = 1.0 - pow((1.0- alphaSample),tStep*uAlphaCorrection);\\n    alphaSample *= (1.0 - accumulatedAlpha);\\n\\n    accumulatedColor += alphaSample * colorSample;\\n    accumulatedAlpha += alphaSample;\\n\\n    tCurrent += tStep;\\n\\n    if (tCurrent > tFar || (uAlgorithm == 0 && accumulatedAlpha >= 1.0)) break;\\n\\n    if (uAlgorithm == 1 && (intensity >= maxIntensity)) {\\n      maxIntensity = intensity;\\n      accumulatedColor = colorSample;\\n      accumulatedAlpha = 1.;\\n    }\\n  }\\n\\n  gl_FragColor = vec4(accumulatedColor.xyz, accumulatedAlpha);\\n}\"");
 
 /***/ }),
 
@@ -21171,7 +21192,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "RGBADepthPacking", function() { return RGBADepthPacking; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TangentSpaceNormalMap", function() { return TangentSpaceNormalMap; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ObjectSpaceNormalMap", function() { return ObjectSpaceNormalMap; });
-var REVISION = '101';
+var REVISION = '103';
 var MOUSE = { LEFT: 0, MIDDLE: 1, RIGHT: 2 };
 var CullFaceNone = 0;
 var CullFaceBack = 1;
@@ -22450,14 +22471,12 @@ Object.assign( Matrix4.prototype, {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Quaternion", function() { return Quaternion; });
 /* harmony import */ var _Math_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Math.js */ "./node_modules/three/src/math/Math.js");
-/* harmony import */ var _Vector3_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Vector3.js */ "./node_modules/three/src/math/Vector3.js");
 /**
  * @author mikael emtinger / http://gomo.se/
  * @author alteredq / http://alteredqualia.com/
  * @author WestLangley / http://github.com/WestLangley
  * @author bhouston / http://clara.io
  */
-
 
 
 
@@ -22803,51 +22822,48 @@ Object.assign( Quaternion.prototype, {
 
 	},
 
-	setFromUnitVectors: function () {
+	setFromUnitVectors: function ( vFrom, vTo ) {
 
 		// assumes direction vectors vFrom and vTo are normalized
 
-		var v1 = new _Vector3_js__WEBPACK_IMPORTED_MODULE_1__["Vector3"]();
-		var r;
-
 		var EPS = 0.000001;
 
-		return function setFromUnitVectors( vFrom, vTo ) {
+		var r = vFrom.dot( vTo ) + 1;
 
-			if ( v1 === undefined ) v1 = new _Vector3_js__WEBPACK_IMPORTED_MODULE_1__["Vector3"]();
+		if ( r < EPS ) {
 
-			r = vFrom.dot( vTo ) + 1;
+			r = 0;
 
-			if ( r < EPS ) {
+			if ( Math.abs( vFrom.x ) > Math.abs( vFrom.z ) ) {
 
-				r = 0;
-
-				if ( Math.abs( vFrom.x ) > Math.abs( vFrom.z ) ) {
-
-					v1.set( - vFrom.y, vFrom.x, 0 );
-
-				} else {
-
-					v1.set( 0, - vFrom.z, vFrom.y );
-
-				}
+				this._x = - vFrom.y;
+				this._y = vFrom.x;
+				this._z = 0;
+				this._w = r;
 
 			} else {
 
-				v1.crossVectors( vFrom, vTo );
+				this._x = 0;
+				this._y = - vFrom.z;
+				this._z = vFrom.y;
+				this._w = r;
 
 			}
 
-			this._x = v1.x;
-			this._y = v1.y;
-			this._z = v1.z;
+		} else {
+
+			// crossVectors( vFrom, vTo ); // inlined to avoid cyclic dependency on Vector3
+
+			this._x = vFrom.y * vTo.z - vFrom.z * vTo.y;
+			this._y = vFrom.z * vTo.x - vFrom.x * vTo.z;
+			this._z = vFrom.x * vTo.y - vFrom.y * vTo.x;
 			this._w = r;
 
-			return this.normalize();
+		}
 
-		};
+		return this.normalize();
 
-	}(),
+	},
 
 	angleTo: function ( q ) {
 
@@ -23103,9 +23119,7 @@ Object.assign( Quaternion.prototype, {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Vector3", function() { return Vector3; });
 /* harmony import */ var _Math_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Math.js */ "./node_modules/three/src/math/Math.js");
-/* harmony import */ var _Matrix4_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Matrix4.js */ "./node_modules/three/src/math/Matrix4.js");
-/* harmony import */ var _Quaternion_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Quaternion.js */ "./node_modules/three/src/math/Quaternion.js");
-
+/* harmony import */ var _Quaternion_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Quaternion.js */ "./node_modules/three/src/math/Quaternion.js");
 
 
 
@@ -23341,7 +23355,7 @@ Object.assign( Vector3.prototype, {
 
 	applyEuler: function () {
 
-		var quaternion = new _Quaternion_js__WEBPACK_IMPORTED_MODULE_2__["Quaternion"]();
+		var quaternion = new _Quaternion_js__WEBPACK_IMPORTED_MODULE_1__["Quaternion"]();
 
 		return function applyEuler( euler ) {
 
@@ -23359,7 +23373,7 @@ Object.assign( Vector3.prototype, {
 
 	applyAxisAngle: function () {
 
-		var quaternion = new _Quaternion_js__WEBPACK_IMPORTED_MODULE_2__["Quaternion"]();
+		var quaternion = new _Quaternion_js__WEBPACK_IMPORTED_MODULE_1__["Quaternion"]();
 
 		return function applyAxisAngle( axis, angle ) {
 
@@ -23425,17 +23439,11 @@ Object.assign( Vector3.prototype, {
 
 	},
 
-	unproject: function () {
+	unproject: function ( camera ) {
 
-		var matrix = new _Matrix4_js__WEBPACK_IMPORTED_MODULE_1__["Matrix4"]();
+		return this.applyMatrix4( camera.projectionMatrixInverse ).applyMatrix4( camera.matrixWorld );
 
-		return function unproject( camera ) {
-
-			return this.applyMatrix4( matrix.getInverse( camera.projectionMatrix ) ).applyMatrix4( camera.matrixWorld );
-
-		};
-
-	}(),
+	},
 
 	transformDirection: function ( m ) {
 
@@ -26469,8 +26477,9 @@ var SliceGeometry = /** @class */ (function (_super) {
         _this.type = 'SliceBufferGeometry';
         // update real position of each vertex! (not in 2d)
         _this.addAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-        _this.attributes.position = points; // legacy code to compute normals in the SliceHelper
+        _this.computeVertexNormals();
         return _this;
+        //this.attributes.position = points; // legacy code to compute normals in the SliceHelper
     }
     return SliceGeometry;
 }(THREE.ShapeBufferGeometry));
@@ -27270,6 +27279,7 @@ var LocalizerHelper = /** @class */ (function (_super) {
         configurable: true
     });
     LocalizerHelper.prototype._init = function () {
+        this._material = shaders_1.LocalizerMaterial.shaderMaterial;
         this._prepareMaterial();
     };
     LocalizerHelper.prototype._create = function () {
@@ -27298,12 +27308,6 @@ var LocalizerHelper = /** @class */ (function (_super) {
             this._material.uniforms.uCanvasWidth.value = this._canvasWidth;
             this._material.uniforms.uCanvasHeight.value = this._canvasHeight;
             this._material = shaders_1.LocalizerMaterial.shaderMaterial;
-            // this._material = new THREE.ShaderMaterial({
-            //   side: THREE.DoubleSide,
-            //   uniforms: this._material.uniforms,
-            //   vertexShader: this._shader.computeVertShader(),
-            //   fragmentShader: this._shader.computeFragShader(),
-            // });
         }
     };
     LocalizerHelper.prototype.update = function () {
@@ -28903,6 +28907,45 @@ var SliceHelper = /** @class */ (function (_super) {
             this._center = this._stack.centerAABBox();
             this._toAABB = this._stack.lps2AABB;
         }
+        this._prepareMaterial();
+    };
+    SliceHelper.prototype._prepareMaterial = function () {
+        this._material.uniforms.uTextureSize.value = this._stack.textureSize;
+        this._material.uniforms.uDataDimensions.value = [
+            this._stack.dimensionsIJK.x,
+            this._stack.dimensionsIJK.y,
+            this._stack.dimensionsIJK.z,
+        ];
+        this._material.uniforms.uWorldToData.value = this._stack.lps2IJK;
+        this._material.uniforms.uNumberOfChannels.value = this._stack.numberOfChannels;
+        this._material.uniforms.uPixelType.value = this._stack.pixelType;
+        this._material.uniforms.uBitsAllocated.value = this._stack.bitsAllocated;
+        this._material.uniforms.uPackedPerPixel.value = this._stack.packedPerPixel;
+        this._material.uniforms.uSpacing.value = this._spacing;
+        this._material.uniforms.uThickness.value = this._thickness;
+        this._material.uniforms.uThicknessMethod.value = this._thicknessMethod;
+        // compute texture if material exist
+        this._prepareTexture();
+        this._material.uniforms.uTextureContainer.value = this._textures;
+        if (this._stack.textureUnits > 8) {
+            this._material.uniforms.uTextureContainer = { value: [
+                    new THREE.Texture(),
+                    new THREE.Texture(),
+                    new THREE.Texture(),
+                    new THREE.Texture(),
+                    new THREE.Texture(),
+                    new THREE.Texture(),
+                    new THREE.Texture(),
+                    new THREE.Texture(),
+                    new THREE.Texture(),
+                    new THREE.Texture(),
+                    new THREE.Texture(),
+                    new THREE.Texture(),
+                    new THREE.Texture(),
+                    new THREE.Texture()
+                ] };
+            this._material.needsUpdate = true;
+        }
     };
     SliceHelper.prototype._create = function () {
         if (!this._stack || !this._stack.prepared || !this._stack.packed) {
@@ -28917,46 +28960,8 @@ var SliceHelper = /** @class */ (function (_super) {
             window.console.log('invalid slice geometry - exiting...');
             return;
         }
-        if (!this._geometry.vertices) {
+        if (!this._geometry.attributes) {
             return;
-        }
-        if (!this._material) {
-            this._material.uniforms.uTextureSize.value = this._stack.textureSize;
-            this._material.uniforms.uDataDimensions.value = [
-                this._stack.dimensionsIJK.x,
-                this._stack.dimensionsIJK.y,
-                this._stack.dimensionsIJK.z,
-            ];
-            this._material.uniforms.uWorldToData.value = this._stack.lps2IJK;
-            this._material.uniforms.uNumberOfChannels.value = this._stack.numberOfChannels;
-            this._material.uniforms.uPixelType.value = this._stack.pixelType;
-            this._material.uniforms.uBitsAllocated.value = this._stack.bitsAllocated;
-            this._material.uniforms.uPackedPerPixel.value = this._stack.packedPerPixel;
-            this._material.uniforms.uSpacing.value = this._spacing;
-            this._material.uniforms.uThickness.value = this._thickness;
-            this._material.uniforms.uThicknessMethod.value = this._thicknessMethod;
-            // compute texture if material exist
-            this._prepareTexture();
-            this._material.uniforms.uTextureContainer.value = this._textures;
-            if (this._stack.textureUnits > 8) {
-                this._material.uniforms.uTextureContainer = { value: [
-                        new THREE.Texture(),
-                        new THREE.Texture(),
-                        new THREE.Texture(),
-                        new THREE.Texture(),
-                        new THREE.Texture(),
-                        new THREE.Texture(),
-                        new THREE.Texture(),
-                        new THREE.Texture(),
-                        new THREE.Texture(),
-                        new THREE.Texture(),
-                        new THREE.Texture(),
-                        new THREE.Texture(),
-                        new THREE.Texture(),
-                        new THREE.Texture()
-                    ] };
-            }
-            this._material.needsUpdate = true;
         }
         // update intensity related stuff
         this.UpdateIntensitySettings();
@@ -29161,7 +29166,6 @@ var THREE = window.THREE;
  *
  * @module helpers/stack
  */
-var winThree = (window.THREE);
 var StackHelper = /** @class */ (function (_super) {
     __extends(StackHelper, _super);
     //#endregion
@@ -29611,7 +29615,7 @@ var StackHelper = /** @class */ (function (_super) {
         this._border = null;
     };
     return StackHelper;
-}(winThree.Object3D));
+}(THREE.Object3D));
 exports.StackHelper = StackHelper;
 
 
@@ -29658,7 +29662,6 @@ var VolumeRenderHelper = /** @class */ (function (_super) {
         _this._shininess = 10.0;
         _this._steps = 32;
         _this._offset = 0;
-        _this._material = shaders_1.VolumeMaterial.shaderMaterial;
         _this._init();
         _this._create();
         return _this;
@@ -29739,6 +29742,7 @@ var VolumeRenderHelper = /** @class */ (function (_super) {
         configurable: true
     });
     VolumeRenderHelper.prototype._init = function () {
+        this._material = shaders_1.VolumeMaterial.shaderMaterial;
         this._prepareStack();
         this._prepareTexture();
         this._prepareMaterial();
@@ -29764,6 +29768,7 @@ var VolumeRenderHelper = /** @class */ (function (_super) {
     };
     VolumeRenderHelper.prototype._prepareMaterial = function () {
         // uniforms
+        this._material.uniforms.uCameraPosition.value = this._camera.position;
         this._material.uniforms.uWorldBBox.value = this._stack.worldBoundingBox();
         this._material.uniforms.uTextureSize.value = this._stack.textureSize;
         this._material.uniforms.uTextureContainer.value = this._textures;
@@ -29914,7 +29919,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 /** Imports **/
 var ProgressBarHelper_1 = __importDefault(__webpack_require__(/*! ../helpers/ProgressBarHelper */ "./src/helpers/ProgressBarHelper.ts"));
-var events_1 = __importDefault(__webpack_require__(/*! events */ "./node_modules/events/events.js"));
+var events_1 = __importDefault(__webpack_require__(/*! events */ "./node_modules/node-libs-browser/node_modules/events/events.js"));
 /**
  *
  * It is typically used to load a DICOM image. Use loading manager for
@@ -37170,11 +37175,17 @@ exports.default = segmentationFs;
 
 "use strict";
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-// import vertSource from './glsl/default.vert';
-var vertSource = __webpack_require__(/*! raw-loader!glslify-loader!../glsl/default.vert */ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/glsl/default.vert");
-// import fragmentSource from 'raw-loader!glslify-loader! ./glsl/contour.frag';
-var fragmentSource = __webpack_require__(/*! raw-loader!glslify-loader!../glsl/contour.frag */ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/glsl/contour.frag");
+var MaterialUtils_1 = __webpack_require__(/*! ./MaterialUtils */ "./src/shaders/Materials/MaterialUtils.ts");
+// TODO: Why won't webpack & typescript play nicely with these?
+// import vertSource from 'raw-loader!glslify-loader!../glsl/default.vert';
+// import fragmentSource from 'raw-loader!glslify-loader!../glsl/contour.frag';
+var vertSource = __webpack_require__(/*! raw-loader!glslify-loader!../glsl/default.vert */ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/glsl/default.vert").default;
+var fragmentSource = __webpack_require__(/*! raw-loader!glslify-loader!../glsl/contour.frag */ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/glsl/contour.frag").default;
+var glslify_1 = __importDefault(__webpack_require__(/*! glslify */ "./node_modules/glslify/browser.js"));
 var THREE = window.THREE;
 var ContourMaterial = /** @class */ (function () {
     function ContourMaterial() {
@@ -37199,8 +37210,8 @@ var ContourMaterial = /** @class */ (function () {
                 ContourMaterial._shaderMaterial = new THREE.ShaderMaterial({
                     side: THREE.DoubleSide,
                     uniforms: this.defaultUniforms,
-                    vertexShader: vertSource,
-                    fragmentShader: fragmentSource,
+                    vertexShader: glslify_1.default(MaterialUtils_1.MaterialUtils.processSource(vertSource)),
+                    fragmentShader: glslify_1.default(MaterialUtils_1.MaterialUtils.processSource(fragmentSource)),
                     transparent: true,
                 });
             }
@@ -37236,11 +37247,16 @@ exports.ContourMaterial = ContourMaterial;
 
 "use strict";
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+var MaterialUtils_1 = __webpack_require__(/*! ./MaterialUtils */ "./src/shaders/Materials/MaterialUtils.ts");
 // import vertSource from 'raw-loader!glslify-loader!../glsl/data.vert';
 // import fragmentSource from 'raw-loader!glslify-loader!../glsl/data.frag';
-var vertSource = __webpack_require__(/*! raw-loader!glslify-loader!../glsl/data.vert */ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/glsl/data.vert");
-var fragmentSource = __webpack_require__(/*! raw-loader!glslify-loader!../glsl/data.frag */ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/glsl/data.frag");
+var vertSource = __webpack_require__(/*! raw-loader!glslify-loader!../glsl/data.vert */ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/glsl/data.vert").default;
+var fragmentSource = __webpack_require__(/*! raw-loader!glslify-loader!../glsl/data.frag */ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/glsl/data.frag").default;
+var glslify_1 = __importDefault(__webpack_require__(/*! glslify */ "./node_modules/glslify/browser.js"));
 var THREE = window.THREE;
 var DataMaterial = /** @class */ (function () {
     function DataMaterial() {
@@ -37262,11 +37278,13 @@ var DataMaterial = /** @class */ (function () {
     Object.defineProperty(DataMaterial, "shaderMaterial", {
         get: function () {
             if (!DataMaterial._shaderMaterial) {
+                var formattedVert = glslify_1.default(MaterialUtils_1.MaterialUtils.processSource(vertSource));
+                console.log(formattedVert);
                 DataMaterial._shaderMaterial = new THREE.ShaderMaterial({
                     side: THREE.DoubleSide,
                     uniforms: this.defaultUniforms,
-                    vertexShader: vertSource,
-                    fragmentShader: fragmentSource,
+                    vertexShader: formattedVert,
+                    fragmentShader: glslify_1.default(MaterialUtils_1.MaterialUtils.processSource(fragmentSource)),
                     transparent: true,
                 });
             }
@@ -37290,7 +37308,7 @@ var DataMaterial = /** @class */ (function () {
                 new THREE.Texture(),
                 new THREE.Texture()
             ] },
-        uDataDimensions: { value: [0, 0, 0] },
+        uDataDimensions: { value: new THREE.Vector3(0, 0, 0) },
         uWorldToData: { value: new THREE.Matrix4() },
         uWindowCenterWidth: { value: [0.0, 0.0] },
         uLowerUpperThreshold: { value: [0.0, 0.0] },
@@ -37332,11 +37350,16 @@ exports.DataMaterial = DataMaterial;
 
 "use strict";
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+var MaterialUtils_1 = __webpack_require__(/*! ./MaterialUtils */ "./src/shaders/Materials/MaterialUtils.ts");
 // import vertSource from 'raw-loader!glslify-loader!../glsl/default.vert';
 // import fragmentSource from 'raw-loader!glslify-loader!../glsl/layer.frag';
-var vertSource = __webpack_require__(/*! raw-loader!glslify-loader!../glsl/default.vert */ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/glsl/default.vert");
-var fragmentSource = __webpack_require__(/*! raw-loader!glslify-loader!../glsl/layer.frag */ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/glsl/layer.frag");
+var vertSource = __webpack_require__(/*! raw-loader!glslify-loader!../glsl/default.vert */ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/glsl/default.vert").default;
+var fragmentSource = __webpack_require__(/*! raw-loader!glslify-loader!../glsl/layer.frag */ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/glsl/layer.frag").default;
+var glslify_1 = __importDefault(__webpack_require__(/*! glslify */ "./node_modules/glslify/browser.js"));
 var THREE = window.THREE;
 var LayerMaterial = /** @class */ (function () {
     function LayerMaterial() {
@@ -37361,8 +37384,8 @@ var LayerMaterial = /** @class */ (function () {
                 LayerMaterial._shaderMaterial = new THREE.ShaderMaterial({
                     side: THREE.DoubleSide,
                     uniforms: this.defaultUniforms,
-                    vertexShader: vertSource,
-                    fragmentShader: fragmentSource,
+                    vertexShader: glslify_1.default(MaterialUtils_1.MaterialUtils.processSource(vertSource)),
+                    fragmentShader: glslify_1.default(MaterialUtils_1.MaterialUtils.processSource(fragmentSource)),
                     transparent: true,
                 });
             }
@@ -37401,11 +37424,16 @@ exports.LayerMaterial = LayerMaterial;
 
 "use strict";
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+var MaterialUtils_1 = __webpack_require__(/*! ./MaterialUtils */ "./src/shaders/Materials/MaterialUtils.ts");
 // import vertSource from 'raw-loader!glslify-loader!../glsl/default.vert';
 // import fragmentSource from 'raw-loader!glslify-loader!../glsl/localizer.frag';
-var vertSource = __webpack_require__(/*! raw-loader!glslify-loader!../glsl/default.vert */ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/glsl/default.vert");
-var fragmentSource = __webpack_require__(/*! raw-loader!glslify-loader!../glsl/localizer.frag */ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/glsl/localizer.frag");
+var vertSource = __webpack_require__(/*! raw-loader!glslify-loader!../glsl/default.vert */ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/glsl/default.vert").default;
+var fragmentSource = __webpack_require__(/*! raw-loader!glslify-loader!../glsl/localizer.frag */ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/glsl/localizer.frag").default;
+var glslify_1 = __importDefault(__webpack_require__(/*! glslify */ "./node_modules/glslify/browser.js"));
 var THREE = window.THREE;
 var LocalizerMaterial = /** @class */ (function () {
     function LocalizerMaterial() {
@@ -37430,8 +37458,8 @@ var LocalizerMaterial = /** @class */ (function () {
                 LocalizerMaterial._shaderMaterial = new THREE.ShaderMaterial({
                     side: THREE.DoubleSide,
                     uniforms: this.defaultUniforms,
-                    vertexShader: vertSource,
-                    fragmentShader: fragmentSource,
+                    vertexShader: glslify_1.default(MaterialUtils_1.MaterialUtils.processSource(vertSource)),
+                    fragmentShader: glslify_1.default(MaterialUtils_1.MaterialUtils.processSource(fragmentSource)),
                     transparent: true,
                 });
             }
@@ -37447,17 +37475,48 @@ var LocalizerMaterial = /** @class */ (function () {
     LocalizerMaterial._defaultUniforms = {
         uCanvasWidth: { value: 0 },
         uCanvasHeight: { value: 0 },
-        uSlice: { value: [0.0, 0.0, 0.0, 0.0] },
-        uPlane1: { value: [0.0, 0.0, 0.0, 0.0] },
-        uPlaneColor1: { value: [1.0, 1.0, 0.0] },
-        uPlane2: { value: [0.0, 0.0, 0.0, 0.0] },
-        uPlaneColor2: { value: [1.0, 1.0, 0.0] },
-        uPlane3: { value: [0.0, 0.0, 0.0, 0.0] },
-        uPlaneColor3: { value: [1.0, 1.0, 0.0] },
+        uSlice: { value: new THREE.Vector4(0.0, 0.0, 0.0, 0.0) },
+        uPlane1: { value: new THREE.Vector4(0.0, 0.0, 0.0, 0.0) },
+        uPlaneColor1: { value: new THREE.Vector3(1.0, 1.0, 0.0) },
+        uPlane2: { value: new THREE.Vector4(0.0, 0.0, 0.0, 0.0) },
+        uPlaneColor2: { value: new THREE.Vector3(1.0, 1.0, 0.0) },
+        uPlane3: { value: new THREE.Vector4(0.0, 0.0, 0.0, 0.0) },
+        uPlaneColor3: { value: new THREE.Vector3(1.0, 1.0, 0.0) },
     };
     return LocalizerMaterial;
 }());
 exports.LocalizerMaterial = LocalizerMaterial;
+
+
+/***/ }),
+
+/***/ "./src/shaders/Materials/MaterialUtils.ts":
+/*!************************************************!*\
+  !*** ./src/shaders/Materials/MaterialUtils.ts ***!
+  \************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var MaterialUtils = /** @class */ (function () {
+    function MaterialUtils() {
+    }
+    MaterialUtils.processSource = function (source) {
+        //let raw: string = source.split(/"/)[1].normalize();//.replace(/(\\n)/gm, " ");
+        var output = source.split(/"/)[1].normalize().replace(/(\\r)/gm, "").replace(/(\\n)/gm, "\n ");
+        // for (let charId = 0; charId < raw.length; charId++) {
+        //     // If the charatcer is ASCII, which is [c < 127]
+        //     if (!(raw.charCodeAt(charId) > 127)) {
+        //         output += raw.charAt(charId);
+        //     }
+        // }
+        return output;
+    };
+    return MaterialUtils;
+}());
+exports.MaterialUtils = MaterialUtils;
 
 
 /***/ }),
@@ -37471,11 +37530,16 @@ exports.LocalizerMaterial = LocalizerMaterial;
 
 "use strict";
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+var MaterialUtils_1 = __webpack_require__(/*! ./MaterialUtils */ "./src/shaders/Materials/MaterialUtils.ts");
 // import vertSource from 'raw-loader!glslify-loader!../glsl/default.vert';
 // import fragmentSource from 'raw-loader!glslify-loader!../glsl/volume.frag';
-var vertSource = __webpack_require__(/*! raw-loader!glslify-loader!../glsl/default.vert */ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/glsl/default.vert");
-var fragmentSource = __webpack_require__(/*! raw-loader!glslify-loader!../glsl/volume.frag */ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/glsl/volume.frag");
+var vertSource = __webpack_require__(/*! raw-loader!glslify-loader!../glsl/default.vert */ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/glsl/default.vert").default;
+var fragmentSource = __webpack_require__(/*! raw-loader!glslify-loader!../glsl/volume.frag */ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/glsl/volume.frag").default;
+var glslify_1 = __importDefault(__webpack_require__(/*! glslify */ "./node_modules/glslify/browser.js"));
 var THREE = window.THREE;
 var VolumeMaterial = /** @class */ (function () {
     function VolumeMaterial() {
@@ -37501,8 +37565,8 @@ var VolumeMaterial = /** @class */ (function () {
                     side: THREE.BackSide,
                     transparent: true,
                     uniforms: this.defaultUniforms,
-                    vertexShader: vertSource,
-                    fragmentShader: fragmentSource,
+                    vertexShader: glslify_1.default(MaterialUtils_1.MaterialUtils.processSource(vertSource)),
+                    fragmentShader: glslify_1.default(MaterialUtils_1.MaterialUtils.processSource(fragmentSource)),
                 });
             }
             return VolumeMaterial._shaderMaterial.clone();
@@ -37570,6 +37634,9 @@ var VolumeMaterial = /** @class */ (function () {
             new THREE.Vector3(0.8, 0.8, 0.8)
         },
         uAlgorithm: { value: 0 },
+        uCameraPosition: {
+            value: new THREE.Vector3(1, 1, 1)
+        }
     };
     return VolumeMaterial;
 }());
