@@ -54,6 +54,7 @@ export const app = (
         ...state,
         src: action.payload,
         srcLoaded: false,
+        controlsEnabled: false,
         displayMode: displayMode,
         selected: null,
         nodes: new Map<string, AlNodeSerial>(),
@@ -64,6 +65,7 @@ export const app = (
     case TypeKeys.APP_SET_SRC_LOADED: {
       return {
         ...state,
+        controlsEnabled: action.payload,
         srcLoaded: action.payload
       };
     }
