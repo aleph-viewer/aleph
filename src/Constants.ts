@@ -6,7 +6,7 @@ export class Constants {
   static titleIdString = "-title";
   static controllerString = "-controller";
   static nodeSizeRatio = 50;
-  static splashBackSize = 5;
+  static backboardSize = 10;
   static zoomFactor = 2.5;
   static minLoadingMS = 500;
   static topLayerRenderOrder = 999;
