@@ -50,7 +50,8 @@ import {
   ThreeUtils,
   CreateUtils,
   GraphUtils,
-  AlGraphEvents
+  AlGraphEvents,
+  AMIUtils
 } from "../../utils";
 import { Constants } from "../../Constants";
 import { Orientation, DisplayMode } from "../../enums";
@@ -84,6 +85,7 @@ export class Aleph {
   private _sceneCenter: THREE.Vector3;
   private _targetEntity: Entity;
   private _validTarget: boolean;
+  private _volumeHelper: AMI.VolumeRenderHelper;
 
   @Prop({ context: "store" }) store: Store;
   @Prop() dracoDecoderPath: string | null;
@@ -1071,14 +1073,17 @@ export class Aleph {
     switch (this.displayMode) {
       case DisplayMode.MESH: {
         mesh = aframeMesh;
+        this._volumeHelper = null;
         break;
       }
       case DisplayMode.SLICES: {
         mesh = ev.detail._bBox._mesh;
+        this._volumeHelper = null;
         break;
       }
       case DisplayMode.VOLUME: {
         mesh = ev.detail._mesh;
+        this._volumeHelper = ev.detail;
         break;
       }
     }
@@ -1157,14 +1162,43 @@ export class Aleph {
         this.nodes
       );
 
-      const newNode: AlNodeSerial = {
-        target: ThreeUtils.vector3ToString(
-          this._targetEntity.object3D.position
-        ),
-        position: ThreeUtils.vector3ToString(intersection.point),
-        scale: this._boundingSphereRadius / Constants.nodeSizeRatio,
-        text: nodeId
-      };
+      let newNode: AlNodeSerial;
+
+      if (this.displayMode === DisplayMode.VOLUME) {
+        let direction = (this._camera.getAttribute("position") as THREE.Vector3)
+          .clone()
+          .sub(intersection.point.clone())
+          .normalize();
+
+        let hitPosition = new THREE.Vector3();
+        let hitNormal = new THREE.Vector3();
+        AMIUtils.volumeRay(
+          this._volumeHelper,
+          intersection.point,
+          direction,
+          Constants.cameraValues.far,
+          hitPosition,
+          hitNormal
+        );
+        console.log("spawn-node: ", hitPosition);
+        newNode = {
+          target: ThreeUtils.vector3ToString(
+            this._targetEntity.object3D.position
+          ),
+          position: ThreeUtils.vector3ToString(hitPosition),
+          scale: this._boundingSphereRadius / Constants.nodeSizeRatio,
+          text: nodeId
+        };
+      } else {
+        newNode = {
+          target: ThreeUtils.vector3ToString(
+            this._targetEntity.object3D.position
+          ),
+          position: ThreeUtils.vector3ToString(intersection.point),
+          scale: this._boundingSphereRadius / Constants.nodeSizeRatio,
+          text: nodeId
+        };
+      }
 
       const previousSelected = this.selected;
 
@@ -1250,8 +1284,25 @@ export class Aleph {
       ) as THREE.Intersection;
     }
 
-    // TODO: Add Edge Position event
-    if (intersection) {
+    if (intersection && this.displayMode === DisplayMode.VOLUME) {
+      let direction = (this._camera.getAttribute("position") as THREE.Vector3)
+        .clone()
+        .sub(intersection.point.clone())
+        .normalize();
+
+      let hitPosition = new THREE.Vector3();
+      let hitNormal = new THREE.Vector3();
+      AMIUtils.volumeRay(
+        this._volumeHelper,
+        intersection.point,
+        direction,
+        Constants.cameraValues.far,
+        hitPosition,
+        hitNormal
+      );
+
+      console.log("node-moved: ", hitPosition);
+    } else if (intersection && this.displayMode !== DisplayMode.VOLUME) {
       this._setNode([
         nodeId,
         {

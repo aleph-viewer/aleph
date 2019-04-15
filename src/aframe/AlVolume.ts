@@ -5,7 +5,7 @@ import { DisplayMode } from "../enums";
 
 interface AlVolumeState {
   stack: any;
-  stackhelper: AMI.VolumeRenderingHelper | AMI.StackHelper;
+  stackhelper: AMI.VolumeRenderHelper | AMI.StackHelper;
   lutHelper: AMI.LutHelper;
 }
 
@@ -71,7 +71,7 @@ export class AlVolume implements AframeRegistryEntry {
             state.lutHelper = new AMI.LutHelper(lutCanvases);
             state.lutHelper.luts = AMI.LutHelper.presetLuts();
             state.lutHelper.lutsO = AMI.LutHelper.presetLutsO();
-            state.stackhelper = new AMI.VolumeRenderingHelper(state.stack);
+            state.stackhelper = new AMI.VolumeRenderHelper(state.stack);
             state.stackhelper.uniforms.uTextureLUT.value =
               state.lutHelper.texture;
             state.stackhelper.uniforms.uLut.value = 1;

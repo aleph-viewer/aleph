@@ -5,6 +5,7 @@ import { RaycasterUtils } from "./RaycasterUtils";
 import { GLTFUtils } from "./GLTFUtils";
 import { GraphUtils, AlGraphEvents } from "./GraphUtils";
 import { ShaderUtils } from "./ShaderUtils";
+import { AMIUtils } from "./AMIUtils";
 
 export {
   GetUtils,
@@ -14,5 +15,6 @@ export {
   GLTFUtils,
   GraphUtils,
   AlGraphEvents,
-  ShaderUtils
+  ShaderUtils,
+  AMIUtils
 };
