@@ -8,6 +8,8 @@ import { Orientation } from "../../enums/Orientation";
   shadow: true
 })
 export class AlControlPanel {
+  private _lastStackOrientationIndex: number;
+
   @Event() boundingBoxVisibleChanged: EventEmitter;
   @Event() displayModeChanged: EventEmitter;
   @Event() optionsEnabledChanged: EventEmitter;
@@ -228,12 +230,17 @@ export class AlControlPanel {
           ] - 1;
         let index: number;
 
-        if (this.slicesIndex === undefined) {
+        if (
+          stackOrientationIndex !== this._lastStackOrientationIndex ||
+          this.slicesIndex === undefined
+        ) {
           // set default
           index = Math.floor(indexMax / 2);
         } else {
           index = this.slicesIndex;
         }
+
+        this._lastStackOrientationIndex = stackOrientationIndex;
 
         const windowWidthMin: number = 1;
         const windowWidthMax: number =
