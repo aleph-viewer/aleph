@@ -18,7 +18,7 @@ export class AlConsole {
         <ion-item>
           <ion-textarea
             value={this.cmd}
-            rows="5"
+            rows="10"
             required
             onIonChange={e => (this.cmd = e.detail.value)}
             ref={el => (this._cmd = el)}

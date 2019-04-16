@@ -116,10 +116,10 @@ export class ThreeUtils {
       path.push({
         position: positionChange
           ? ThreeUtils.slerp(sp.clone(), ep.clone(), percent)
-          : end.position,
+          : ep,
         target: targetChange
           ? ThreeUtils.slerp(st.clone(), et.clone(), percent)
-          : end.target
+          : et
       } as AlCamera);
     }
 
