@@ -4,8 +4,7 @@ import { ThreeUtils } from "./ThreeUtils";
 export class AMIUtils {
   private static _traceDataRay(
     stackHelper: {
-      windowCenter: number;
-      windowWidth: number;
+      uniforms: any;
       stack: { lps2IJK: any };
     },
     px: number,
@@ -51,7 +50,9 @@ export class AMIUtils {
     // FROM DATA SHADER
     // float windowMin = uWindowCenterWidth[0] - uWindowCenterWidth[1] * 0.5;
     // float normalizedIntensity = ( realIntensity - windowMin ) / uWindowCenterWidth[1];
-    let windowMin = stackHelper.windowCenter - stackHelper.windowWidth * 0.5;
+    let windowMin =
+      stackHelper.uniforms.uWindowCenterWidth.value[0] -
+      stackHelper.uniforms.uWindowCenterWidth.value[1] * 0.5;
     let steppedIndex = -1;
 
     // main loop along raycast vector

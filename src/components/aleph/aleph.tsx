@@ -75,7 +75,7 @@ type Scene = import("aframe").Scene;
 export class Aleph {
   //#region Private variables
   private _backboard: Entity;
-  private _backboardVisible: boolean = true;
+  private _backboardVisible: boolean = false;
   private _boundingBox: THREE.Box3;
   private _boundingSphereRadius: number;
   private _camera: Entity;
@@ -780,7 +780,6 @@ export class Aleph {
         vr-mode-ui="enabled: false"
         ref={el => (this._scene = el)}
       >
-        <a-sphere position=" 0 0 0 " scale="5 5 5" />
         {this._renderBackboard()}
         {this._renderSrc()}
         {this._renderBoundingBox()}
@@ -1088,7 +1087,7 @@ export class Aleph {
     this._boundingSphereRadius = this._mesh.geometry.boundingSphere.radius;
     this._boundingBox = GetUtils.getBoundingBox(this._mesh);
 
-    let cameraState: AlCameraSerial = GetUtils.getCameraStateFromMesh(mesh);
+    let cameraState: AlCamera = GetUtils.getCameraStateFromMesh(this._mesh);
 
     if (cameraState) {
       this.appSetCamera(cameraState);
@@ -1164,7 +1163,7 @@ export class Aleph {
         let hitPosition = new THREE.Vector3();
         let hitNormal = new THREE.Vector3();
 
-        AMIUtils.volumeRay(
+        let rayResult = AMIUtils.volumeRay(
           this._volumeHelper,
           this._camera.object3D.children[0].position.clone(),
           this._camera.getAttribute("raycaster").direction,
@@ -1172,39 +1171,15 @@ export class Aleph {
           hitPosition,
           hitNormal
         );
-        let p = hitPosition.sub(
-          this._camera
-            .getAttribute("raycaster")
-            .direction.clone()
-            .multiplyScalar(9000)
-        );
-        console.log("spawn-node, stack space: ", p);
-        let geom = new THREE.Geometry();
-        geom.vertices.push(this._camera.object3D.children[0].position.clone());
-        geom.vertices.push(p);
 
-        this._scene.sceneEl.object3D.add(
-          new THREE.Line(geom, new THREE.LineBasicMaterial())
-        );
-
-        if (hitPosition.lengthSq() > 0) {
+        if (rayResult) {
           newNode = {
-            target: ThreeUtils.vector3ToString(
-              this._targetEntity.object3D.position
-            ),
-            position: ThreeUtils.vector3ToString(p),
+            position: ThreeUtils.vector3ToString(hitPosition),
             scale: this._boundingSphereRadius / Constants.nodeSizeRatio,
             text: nodeId
           };
         }
       } else if (intersection) {
-        newNode = {
-          targetId: "0",
-          position: ThreeUtils.vector3ToString(hitPosition),
-          scale: this._boundingSphereRadius / Constants.nodeSizeRatio,
-          text: nodeId
-        };
-      } else {
         newNode = {
           targetId: "0",
           position: ThreeUtils.vector3ToString(intersection.point),
@@ -1213,16 +1188,17 @@ export class Aleph {
         };
       }
 
-      const previousSelected = this.selected;
+      if (newNode) {
+        const previousSelected = this.selected;
+        this._setNode([nodeId, newNode]);
 
-      this._setNode([nodeId, newNode]);
-
-      if (
-        this._isShiftDown && // Shift is down
-        this.nodes.has(previousSelected) // A Node is already selected
-      ) {
-        this._createEdge(previousSelected, nodeId);
-        this._selectNode(nodeId);
+        if (
+          this._isShiftDown && // Shift is down
+          this.nodes.has(previousSelected) // A Node is already selected
+        ) {
+          this._createEdge(previousSelected, nodeId);
+          this._selectNode(nodeId);
+        }
       }
     }
   }
@@ -1301,20 +1277,16 @@ export class Aleph {
       let hitPosition = new THREE.Vector3();
       let hitNormal = new THREE.Vector3();
 
-      AMIUtils.volumeRay(
+      let rayResult = AMIUtils.volumeRay(
         this._volumeHelper,
-        this._volumeCaster.ray.origin,
-        this._volumeCaster.ray.direction,
+        this._camera.object3D.children[0].position.clone(),
+        this._camera.getAttribute("raycaster").direction,
         Constants.cameraValues.far,
         hitPosition,
         hitNormal
       );
 
-      console.log("node-moved, stack space: ", hitPosition);
-      //hitPosition = AMIUtils.toAframeSpace(hitPosition.clone());
-      //console.log("node-moved, aframe space: ", hitPosition);
-
-      if (hitPosition.lengthSq() > 0 && intersection) {
+      if (rayResult && intersection) {
         this._setNode([
           nodeId,
           {
