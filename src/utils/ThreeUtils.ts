@@ -105,18 +105,20 @@ export class ThreeUtils {
   ): number[] {
     let path = [];
 
+    // add epsilon to avoid NaN due to divide by 0 in the atan in angleTo
+    const sp: THREE.Vector3 = start.position.clone().addScalar(Number.EPSILON);
+    const st: THREE.Vector3 = start.target.clone().addScalar(Number.EPSILON);
+    const ep: THREE.Vector3 = end.position.clone().addScalar(Number.EPSILON);
+    const et: THREE.Vector3 = end.target.clone().addScalar(Number.EPSILON);
+
     for (let frame = 1; frame <= Constants.maxAnimationSteps; frame++) {
       let percent = this.easeInOutCubic(frame / Constants.maxAnimationSteps);
       path.push({
         position: positionChange
-          ? ThreeUtils.slerp(
-              start.position.clone(),
-              end.position.clone(),
-              percent
-            )
+          ? ThreeUtils.slerp(sp.clone(), ep.clone(), percent)
           : end.position,
         target: targetChange
-          ? ThreeUtils.slerp(start.target.clone(), end.target.clone(), percent)
+          ? ThreeUtils.slerp(st.clone(), et.clone(), percent)
           : end.target
       } as AlCameraSerial);
     }

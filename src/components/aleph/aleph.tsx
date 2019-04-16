@@ -915,10 +915,8 @@ export class Aleph {
   }
 
   private _setNode(node: [string, AlNodeSerial]): void {
-    //ThreeUtils.waitOneFrame(() => {
     this.appSetNode(node);
     this._stateChanged();
-    //});
   }
 
   private _selectNode(nodeId: string, animate: boolean = false): void {
@@ -960,7 +958,6 @@ export class Aleph {
             diffPos > 0,
             diffTarg > 0
           );
-          //ThreeUtils.waitOneFrame(() => {
           this._scene.emit(
             AlOrbitControlEvents.ANIMATION_STARTED,
             { slerpPath },
@@ -971,7 +968,6 @@ export class Aleph {
           });
           this.appSelectNode(nodeId);
           this._stateChanged();
-          //});
         }
       }
     } else {
