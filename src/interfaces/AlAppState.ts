@@ -1,15 +1,15 @@
 import { DisplayMode, Orientation } from "../enums";
-import { AlNodeSerial, AlAngleSerial, AlEdgeSerial, AlCameraSerial } from ".";
+import { AlNode, AlAngle, AlEdge, AlCamera } from ".";
 
 export interface AlAppState {
-  angles: Map<string, AlAngleSerial>;
+  angles: Map<string, AlAngle>;
   boundingBoxVisible: boolean;
-  camera: AlCameraSerial;
+  camera: AlCamera;
   controlsEnabled: boolean;
   displayMode: DisplayMode;
-  edges: Map<string, AlEdgeSerial>;
+  edges: Map<string, AlEdge>;
   graphEnabled: boolean;
-  nodes: Map<string, AlNodeSerial>;
+  nodes: Map<string, AlNode>;
   orientation: Orientation;
   selected: string | null;
   slicesIndex: number;

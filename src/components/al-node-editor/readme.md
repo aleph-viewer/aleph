@@ -9,7 +9,7 @@
 
 | Property | Attribute | Description | Type                     | Default     |
 | -------- | --------- | ----------- | ------------------------ | ----------- |
-| `node`   | --        |             | `[string, AlNodeSerial]` | `undefined` |
+| `node`   | --        |             | `[string, AlNode]` | `undefined` |
 
 
 ## Events

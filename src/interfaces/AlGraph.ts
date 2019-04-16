@@ -1,7 +1,7 @@
-import { AlNodeSerial, AlEdgeSerial, AlAngleSerial } from ".";
+import { AlNode, AlEdge, AlAngle } from ".";
 
 export interface AlGraph {
-  nodes: Map<string, AlNodeSerial>;
-  edges: Map<string, AlEdgeSerial>;
-  angles: Map<string, AlAngleSerial>;
+  nodes: Map<string, AlNode>;
+  edges: Map<string, AlEdge>;
+  angles: Map<string, AlAngle>;
 }

@@ -2,24 +2,19 @@ import { combineReducers } from "redux";
 import { ActionTypes, TypeKeys } from "./actions";
 import { DisplayMode } from "../enums/DisplayMode";
 import { Orientation } from "../enums/Orientation";
-import {
-  AlAppState,
-  AlNodeSerial,
-  AlEdgeSerial,
-  AlAngleSerial
-} from "../interfaces";
+import { AlAppState, AlNode, AlEdge, AlAngle } from "../interfaces";
 import { GetUtils } from "../utils";
 import { MeshFileType } from "../enums";
 
 export const getInitialState = () => {
   return {
-    angles: new Map<string, AlAngleSerial>(),
+    angles: new Map<string, AlAngle>(),
     boundingBoxVisible: false,
     camera: null,
     controlsEnabled: true,
     displayMode: DisplayMode.MESH,
-    edges: new Map<string, AlEdgeSerial>(),
-    nodes: new Map<string, AlNodeSerial>(),
+    edges: new Map<string, AlEdge>(),
+    nodes: new Map<string, AlNode>(),
     graphEnabled: false,
     orientation: Orientation.CORONAL,
     selected: null,
@@ -28,7 +23,7 @@ export const getInitialState = () => {
     slicesWindowWidth: 0,
     src: null,
     srcLoaded: false,
-    volumeSteps: 8,
+    volumeSteps: 16,
     volumeWindowCenter: 0,
     volumeWindowWidth: 0
   };
@@ -52,14 +47,21 @@ export const app = (
 
       return {
         ...state,
-        src: action.payload,
-        srcLoaded: false,
+        angles: new Map<string, AlAngle>(),
         controlsEnabled: false,
         displayMode: displayMode,
+        edges: new Map<string, AlEdge>(),
+        nodes: new Map<string, AlNode>(),
+        orientation: Orientation.CORONAL,
         selected: null,
-        nodes: new Map<string, AlNodeSerial>(),
-        edges: new Map<string, AlEdgeSerial>(),
-        angles: new Map<string, AlAngleSerial>()
+        slicesIndex: 0,
+        slicesWindowCenter: 0,
+        slicesWindowWidth: 0,
+        src: action.payload,
+        srcLoaded: false,
+        volumeSteps: 16,
+        volumeWindowCenter: 0,
+        volumeWindowWidth: 0
       };
     }
     case TypeKeys.APP_SET_SRC_LOADED: {
@@ -79,8 +81,8 @@ export const app = (
       const sanitisedValue = JSON.parse(JSON.stringify(value));
 
       // merge with the current value (if any)
-      const currentValue: AlNodeSerial | undefined = state.nodes.get(key);
-      let nextValue: AlNodeSerial = {
+      const currentValue: AlNode | undefined = state.nodes.get(key);
+      let nextValue: AlNode = {
         ...currentValue,
         ...sanitisedValue
       };
@@ -117,7 +119,7 @@ export const app = (
     case TypeKeys.APP_CLEAR_NODES: {
       return {
         ...state,
-        nodes: new Map<string, AlNodeSerial>()
+        nodes: new Map<string, AlNode>()
       };
     }
     //#endregion
@@ -130,8 +132,8 @@ export const app = (
       const sanitisedValue = JSON.parse(JSON.stringify(value));
 
       // merge with the current value (if any)
-      const currentValue: AlEdgeSerial | undefined = state.edges.get(key);
-      let nextValue: AlEdgeSerial = {
+      const currentValue: AlEdge | undefined = state.edges.get(key);
+      let nextValue: AlEdge = {
         ...currentValue,
         ...sanitisedValue
       };
@@ -169,7 +171,7 @@ export const app = (
     case TypeKeys.APP_CLEAR_EDGES: {
       return {
         ...state,
-        edges: new Map<string, AlEdgeSerial>()
+        edges: new Map<string, AlEdge>()
       };
     }
     //#endregion
@@ -182,8 +184,8 @@ export const app = (
       const sanitisedValue = JSON.parse(JSON.stringify(value));
 
       // merge with the current value (if any)
-      const currentValue: AlAngleSerial | undefined = state.angles.get(key);
-      let nextValue: AlAngleSerial = {
+      const currentValue: AlAngle | undefined = state.angles.get(key);
+      let nextValue: AlAngle = {
         ...currentValue,
         ...sanitisedValue
       };
@@ -214,7 +216,7 @@ export const app = (
     case TypeKeys.APP_CLEAR_ANGLES: {
       return {
         ...state,
-        angles: new Map<string, AlAngleSerial>()
+        angles: new Map<string, AlAngle>()
       };
     }
     //#endregion

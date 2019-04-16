@@ -9,12 +9,12 @@
     <title>Aleph</title>
     <script src="https://unpkg.com/mobx@4.9.4/lib/mobx.umd.js"></script>
     <script src="https://unpkg.com/three@0.102.1/build/three.min.js"></script>
-    <script src="/assets/aframe-master.js"></script>
+    <script src="/assets/aframe-master.min.js"></script>
     <script src="https://unpkg.com/three@0.102.1/examples/js/controls/OrbitControls.js"></script>
     <script src="https://unpkg.com/aframe-fps-counter-component@1.0.1/dist/aframe-fps-counter-component.min.js"></script>
     <script src="https://unpkg.com/aframe-look-at-component@0.8.0/dist/aframe-look-at-component.min.js"></script>
     <!-- <script src="https://unpkg.com/ami.js@next/build/ami.min.js"></script> -->
-    <script src="/assets/ami.js"></script> 
+    <script src="/assets/ami.min.js"></script>
     <script src="https://unpkg.com/@ionic/core@4.1.1/dist/ionic.js"></script>
     <script src="/build/aleph.js"></script>
     <link rel="stylesheet" href="/build/aleph.css" />
@@ -35,7 +35,6 @@
         width: 100%;
         height: 100%;
         display: flex;
-        padding: 1rem;
       }
 
       #scene {
@@ -49,12 +48,13 @@
         padding: 1rem;
         overflow-y: auto;
         max-height: 100%;
+        background-color: #f7f7f7;
       }
 
       #debug h1 {
         margin-top: 0;
         text-align: right;
-        color: #c7c7c7;
+        color: #b7b7b7;
       }
 
       #debug section {
@@ -75,16 +75,6 @@
   </head>
   <body>
     <div id="container">
-
-      <div id="scene">
-        <uv-aleph
-          draco-decoder-path="assets/"
-          width="100%"
-          height="100%"
-          debug="false"
-          spinner-color="#3d3d3d"
-        ></uv-aleph>
-      </div>
 
       <div id="debug" class="disabled">
 
@@ -124,6 +114,17 @@
           </al-tabs>
         </ion-app>
       </div>
+
+      <div id="scene">
+        <uv-aleph
+          draco-decoder-path="assets/"
+          width="100%"
+          height="100%"
+          debug="false"
+          spinner-color="#3d3d3d"
+        ></uv-aleph>
+      </div>
+
     </div>
 
     <script>

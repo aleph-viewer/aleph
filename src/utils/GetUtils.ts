@@ -1,4 +1,4 @@
-import { AlNodeSerial, AlCameraSerial } from "../interfaces";
+import { AlNode, AlCamera } from "../interfaces";
 import { Constants } from "../Constants";
 import { ThreeUtils } from ".";
 import { Mesh } from "three";
@@ -21,41 +21,39 @@ export class GetUtils {
     return geom.boundingSphere.center;
   }
 
-  static getCameraStateFromMesh(mesh: Mesh): AlCameraSerial {
-    let sceneCenter: THREE.Vector3;
+  static getCameraStateFromMesh(mesh: Mesh): AlCamera {
+    let meshCenter: THREE.Vector3;
     let initialPosition: THREE.Vector3;
     let sceneDistance: number;
 
     if (mesh) {
       const geom = mesh.geometry;
-      sceneCenter = this.getGeometryCenter(geom);
+      meshCenter = this.getGeometryCenter(geom);
       sceneDistance =
         (Constants.zoomFactor * geom.boundingSphere.radius) /
         Math.tan((Constants.cameraValues.fov * Math.PI) / 180);
 
       initialPosition = new THREE.Vector3();
-      initialPosition.copy(sceneCenter);
+      initialPosition.copy(meshCenter);
       initialPosition.z += sceneDistance;
 
       return {
-        target: sceneCenter,
+        target: meshCenter,
         position: initialPosition
-      } as AlCameraSerial;
+      } as AlCamera;
     }
 
     return null;
   }
 
-  static getCameraStateFromNode(
-    node: AlNodeSerial,
-    radius: number
-  ): AlCameraSerial | null {
+  static getCameraPositionFromNode(
+    node: AlNode,
+    radius: number,
+    cameraTarget: THREE.Vector3
+  ): THREE.Vector3 {
     if (!node) {
       return null;
     }
-
-    let targ: THREE.Vector3 = new THREE.Vector3();
-    targ.copy(ThreeUtils.stringToVector3(node.target));
 
     let pos: THREE.Vector3 = new THREE.Vector3();
     pos.copy(ThreeUtils.stringToVector3(node.position));
@@ -63,7 +61,7 @@ export class GetUtils {
     // (Position -> Target)
     let dir: THREE.Vector3 = pos
       .clone()
-      .sub(targ.clone())
+      .sub(cameraTarget.clone())
       .normalize();
     let camPos = new THREE.Vector3();
     camPos.copy(pos);
@@ -71,10 +69,7 @@ export class GetUtils {
     // Add {defaultZoom} intervals of dir to camPos
     camPos.add(dir.clone().multiplyScalar(radius * Constants.zoomFactor));
 
-    return {
-      target: targ,
-      position: camPos
-    } as AlCameraSerial;
+    return camPos;
   }
 
   static getBoundingBox(obj: THREE.Object3D): THREE.Box3 {

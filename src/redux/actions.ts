@@ -1,8 +1,8 @@
-import { AlNodeSerial } from "../interfaces/AlNodeSerial";
+import { AlNode } from "../interfaces/AlNode";
 import { DisplayMode } from "../enums/DisplayMode";
 import { Orientation } from "../enums/Orientation";
-import { AlEdgeSerial, AlCameraSerial } from "../interfaces";
-import { AlAngleSerial } from "../interfaces/AlAngleSerial";
+import { AlEdge, AlCamera } from "../interfaces";
+import { AlAngle } from "../interfaces/AlAngle";
 
 export interface NullAction {
   type: TypeKeys.NULL;
@@ -104,10 +104,10 @@ export const appSetSrcLoaded = (payload: boolean) => async (
 
 export interface AppSetNodeAction {
   type: TypeKeys.APP_SET_NODE;
-  payload: [string, AlNodeSerial];
+  payload: [string, AlNode];
 }
 
-export const appSetNode = (payload: [string, AlNodeSerial]) => async (
+export const appSetNode = (payload: [string, AlNode]) => async (
   dispatch,
   _getState
 ) => {
@@ -165,10 +165,10 @@ export const appClearNodes = (payload: void) => async (dispatch, _getState) => {
 
 export interface AppSetEdgeAction {
   type: TypeKeys.APP_SET_EDGE;
-  payload: [string, AlEdgeSerial];
+  payload: [string, AlEdge];
 }
 
-export const appSetEdge = (payload: [string, AlEdgeSerial]) => async (
+export const appSetEdge = (payload: [string, AlEdge]) => async (
   dispatch,
   _getState
 ) => {
@@ -226,10 +226,10 @@ export const appClearEdges = (payload: void) => async (dispatch, _getState) => {
 
 export interface AppSetAngleAction {
   type: TypeKeys.APP_SET_ANGLE;
-  payload: [string, AlAngleSerial];
+  payload: [string, AlAngle];
 }
 
-export const appSetAngle = (payload: [string, AlAngleSerial]) => async (
+export const appSetAngle = (payload: [string, AlAngle]) => async (
   dispatch,
   _getState
 ) => {
@@ -447,10 +447,10 @@ export const appSetVolumeWindowCenter = (payload: number) => async (
 
 export interface AppSetCameraAction {
   type: TypeKeys.APP_SET_CAMERA;
-  payload: AlCameraSerial;
+  payload: AlCamera;
 }
 
-export const appSetCamera = (payload: AlCameraSerial) => async (
+export const appSetCamera = (payload: AlCamera) => async (
   dispatch,
   _getState
 ) => {

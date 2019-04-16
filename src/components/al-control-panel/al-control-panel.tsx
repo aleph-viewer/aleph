@@ -1,4 +1,4 @@
-import { Component, Prop, Event, EventEmitter } from "@stencil/core";
+import { Component, Prop, Event, EventEmitter, Watch } from "@stencil/core";
 import { DisplayMode } from "../../enums/DisplayMode";
 import { Orientation } from "../../enums/Orientation";
 
@@ -9,6 +9,7 @@ import { Orientation } from "../../enums/Orientation";
 })
 export class AlControlPanel {
   private _lastStackOrientationIndex: number;
+  private _debounceRangeMS: number = 250;
 
   @Event() boundingBoxVisibleChanged: EventEmitter;
   @Event() displayModeChanged: EventEmitter;
@@ -30,10 +31,18 @@ export class AlControlPanel {
   @Prop({ mutable: true }) slicesIndex: number;
   @Prop({ mutable: true }) slicesWindowCenter: number;
   @Prop({ mutable: true }) slicesWindowWidth: number;
-  //@Prop({ mutable: true }) stack: any;
   @Prop({ mutable: true }) stackhelper:
     | AMI.StackHelper
     | AMI.VolumeRenderHelper;
+  @Watch("stackhelper")
+  watchStackhelper() {
+    this.slicesIndex = undefined;
+    this.slicesWindowCenter = undefined;
+    this.slicesWindowWidth = undefined;
+    this.volumeSteps = undefined;
+    this.volumeWindowCenter = undefined;
+    this.volumeWindowWidth = undefined;
+  }
   @Prop({ mutable: true }) graphEnabled: boolean = false;
   @Prop({ mutable: true }) graphVisible: boolean = true;
   @Prop({ mutable: true }) volumeSteps: number;
@@ -299,19 +308,19 @@ export class AlControlPanel {
                     selected={this.orientation === Orientation.CORONAL}
                     value={Orientation.CORONAL}
                   >
-                    Coronal (x)
+                    Coronal
                   </option>
                   <option
                     selected={this.orientation === Orientation.SAGGITAL}
                     value={Orientation.SAGGITAL}
                   >
-                    Saggital (y)
+                    Saggital
                   </option>
                   <option
                     selected={this.orientation === Orientation.AXIAL}
                     value={Orientation.AXIAL}
                   >
-                    Axial (z)
+                    Axial
                   </option>
                 </select>
               </ion-item>
@@ -380,7 +389,7 @@ export class AlControlPanel {
 
         if (this.volumeSteps === undefined) {
           // set default
-          steps = 8;
+          steps = 16;
         } else {
           steps = this.volumeSteps;
         }
@@ -428,7 +437,10 @@ export class AlControlPanel {
                 min={stepsMin}
                 max={stepsMax}
                 value={steps}
-                onMouseUp={e => this._volumeSteps((e.srcElement as any).value)}
+                debounce={this._debounceRangeMS}
+                onIonChange={e =>
+                  this._volumeSteps((e.srcElement as any).value)
+                }
               />
             </ion-item>
             {/* <ion-item>
@@ -448,7 +460,8 @@ export class AlControlPanel {
                 min={windowCenterMin}
                 max={windowCenterMax}
                 value={windowCenter}
-                onMouseUp={e =>
+                debounce={this._debounceRangeMS}
+                onIonChange={e =>
                   this._volumeWindowCenter((e.srcElement as any).value)
                 }
               />
@@ -460,7 +473,8 @@ export class AlControlPanel {
                 min={windowWidthMin}
                 max={windowWidthMax}
                 value={windowWidth}
-                onMouseUp={e =>
+                debounce={this._debounceRangeMS}
+                onIonChange={e =>
                   this._volumeWindowWidth((e.srcElement as any).value)
                 }
               />

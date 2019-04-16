@@ -195,11 +195,11 @@ export class AlEdge implements AframeRegistryEntry {
         let state = this.state as AlEdgeState;
 
         if (state.hovered) {
-          state.material.color = new THREE.Color(Constants.nodeColors.hovered);
+          state.material.color = new THREE.Color(Constants.buttonColors.hover);
         } else if (state.selected) {
-          state.material.color = new THREE.Color(Constants.nodeColors.selected);
+          state.material.color = new THREE.Color(Constants.buttonColors.active);
         } else {
-          state.material.color = new THREE.Color(Constants.nodeColors.normal);
+          state.material.color = new THREE.Color(Constants.buttonColors.up);
         }
       },
 

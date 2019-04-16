@@ -158,7 +158,7 @@ Type: `Promise<void>`
 
 
 
-### `setEdge(edge: [string, AlEdgeSerial]) => Promise<void>`
+### `setEdge(edge: [string, AlEdge]) => Promise<void>`
 
 
 
@@ -166,7 +166,7 @@ Type: `Promise<void>`
 
 | Name   | Type                     | Description |
 | ------ | ------------------------ | ----------- |
-| `edge` | `[string, AlEdgeSerial]` |             |
+| `edge` | `[string, AlEdge]` |             |
 
 #### Returns
 
@@ -206,7 +206,7 @@ Type: `Promise<void>`
 
 
 
-### `setNode(node: [string, AlNodeSerial]) => Promise<void>`
+### `setNode(node: [string, AlNode]) => Promise<void>`
 
 
 
@@ -214,7 +214,7 @@ Type: `Promise<void>`
 
 | Name   | Type                     | Description |
 | ------ | ------------------------ | ----------- |
-| `node` | `[string, AlNodeSerial]` |             |
+| `node` | `[string, AlNode]` |             |
 
 #### Returns
 

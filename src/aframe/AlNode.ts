@@ -1,22 +1,21 @@
 import { AframeRegistryEntry, AframeComponent } from "../interfaces";
 import { Constants } from "../Constants";
-import { ThreeUtils, ShaderUtils } from "../utils";
+import { ShaderUtils } from "../utils";
 import { AlGraphEvents } from "../utils";
 import { AlGraphEntryType } from "../enums";
 
 interface AlNodeState {
-  selected: boolean;
-  hovered: boolean;
+  camera: THREE.Camera;
+  dragging: boolean;
   geometry: THREE.SphereGeometry;
+  hovered: boolean;
   material: THREE.MeshBasicMaterial;
   mesh: THREE.Mesh;
+  mouseDown: boolean;
   outlineGeometry: THREE.SphereGeometry;
   outlineMaterial: THREE.ShaderMaterial;
   outlineMesh: THREE.Mesh;
-  camera: THREE.Camera;
-  target: THREE.Vector3;
-  dragging: boolean;
-  mouseDown: boolean;
+  selected: boolean;
 }
 
 interface AlNodeObject extends AframeComponent {
@@ -37,7 +36,6 @@ export class AlNode implements AframeRegistryEntry {
   public static get Object(): AlNodeObject {
     return {
       schema: {
-        target: { type: "vec3" },
         scale: { type: "number", default: 1 },
         selected: { type: "boolean" },
         graphEnabled: { type: "boolean" }
@@ -159,8 +157,6 @@ export class AlNode implements AframeRegistryEntry {
         el.setObject3D("mesh", mesh);
         (el.object3D as THREE.Object3D).renderOrder = 998;
 
-        let targetPos = ThreeUtils.objectToVector3(data.target);
-
         this.state = {
           selected: true,
           hovered: false,
@@ -171,14 +167,12 @@ export class AlNode implements AframeRegistryEntry {
           outlineMaterial,
           outlineMesh,
           camera,
-          target: targetPos,
           dragging: false
         } as AlNodeState;
       },
 
       update(): void {
         let state = this.state as AlNodeState;
-        state.target = this.data.target;
         state.selected = this.data.selected;
       },
 
@@ -193,11 +187,11 @@ export class AlNode implements AframeRegistryEntry {
         }
 
         if (state.hovered || state.dragging) {
-          state.material.color = new THREE.Color(Constants.nodeColors.hovered);
+          state.material.color = new THREE.Color(Constants.buttonColors.hover);
         } else if (state.selected) {
-          state.material.color = new THREE.Color(Constants.nodeColors.selected);
+          state.material.color = new THREE.Color(Constants.buttonColors.active);
         } else {
-          state.material.color = new THREE.Color(Constants.nodeColors.normal);
+          state.material.color = new THREE.Color(Constants.buttonColors.up);
         }
       },
 

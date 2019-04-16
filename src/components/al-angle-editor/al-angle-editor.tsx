@@ -1,5 +1,5 @@
 import { Component, Prop, Event, EventEmitter } from "@stencil/core";
-import { AlAngleSerial } from "../../interfaces";
+import { AlAngle } from "../../interfaces";
 
 @Component({
   tag: "al-angle-editor",
@@ -9,7 +9,7 @@ import { AlAngleSerial } from "../../interfaces";
 export class AlAngleEditor {
   @Event() delete: EventEmitter;
 
-  @Prop({ mutable: true }) angle: [string, AlAngleSerial];
+  @Prop({ mutable: true }) angle: [string, AlAngle];
 
   render() {
     if (this.angle) {

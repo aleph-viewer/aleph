@@ -1,5 +1,5 @@
 import { Component, Prop, Event, EventEmitter } from "@stencil/core";
-import { AlEdgeSerial } from "../../interfaces";
+import { AlEdge } from "../../interfaces";
 
 @Component({
   tag: "al-edge-editor",
@@ -9,7 +9,7 @@ import { AlEdgeSerial } from "../../interfaces";
 export class AlEdgeEditor {
   @Event() delete: EventEmitter;
 
-  @Prop({ mutable: true }) edge: [string, AlEdgeSerial];
+  @Prop({ mutable: true }) edge: [string, AlEdge];
 
   render() {
     if (this.edge) {
