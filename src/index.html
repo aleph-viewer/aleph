@@ -35,7 +35,6 @@
         width: 100%;
         height: 100%;
         display: flex;
-        padding: 1rem;
       }
 
       #scene {
@@ -49,12 +48,13 @@
         padding: 1rem;
         overflow-y: auto;
         max-height: 100%;
+        background-color: #f7f7f7;
       }
 
       #debug h1 {
         margin-top: 0;
-        text-align: right;
-        color: #c7c7c7;
+        /*text-align: right;*/
+        color: #b7b7b7;
       }
 
       #debug section {
@@ -75,16 +75,6 @@
   </head>
   <body>
     <div id="container">
-
-      <div id="scene">
-        <uv-aleph
-          draco-decoder-path="assets/"
-          width="100%"
-          height="100%"
-          debug="false"
-          spinner-color="#3d3d3d"
-        ></uv-aleph>
-      </div>
 
       <div id="debug" class="disabled">
 
@@ -124,6 +114,17 @@
           </al-tabs>
         </ion-app>
       </div>
+
+      <div id="scene">
+        <uv-aleph
+          draco-decoder-path="assets/"
+          width="100%"
+          height="100%"
+          debug="false"
+          spinner-color="#3d3d3d"
+        ></uv-aleph>
+      </div>
+
     </div>
 
     <script>

@@ -1,5 +1,9 @@
 :root {
-  --app-background-color: #000;
+  --app-background-color: #f7f7f7;
+  --ion-background-color: #f7f7f7;
+  --viewport-background-color: #000;
+  --ion-font-size-base: 5px;
+  --color: #00b0ff;
 
   /*
   https://ionicframework.com/docs/theming/advanced/#color-language
@@ -8,15 +12,11 @@
   */
 
   /*--padding-start: 0px !important;*/
-
-  --ion-background-color: #ffffff;
   /*--ion-font-family: sans-serif;
   --ion-text-color: #ffffff;*/
 
-  --ion-font-size-base: 5px;
-
-  --ion-color-primary: #3880ff;
-  --ion-color-primary-rgb: 56, 128, 255;
+  --ion-color-primary: #00b0ff;
+  --ion-color-primary-rgb: 0, 176, 255;
   --ion-color-primary-contrast: #ffffff;
   --ion-color-primary-contrast-rgb: 255, 255, 255;
   --ion-color-primary-shade: #3171e0;

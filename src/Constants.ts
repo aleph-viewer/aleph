@@ -10,7 +10,7 @@ export class Constants {
   static zoomFactor = 2.5;
   static minLoadingMS = 500;
   static topLayerRenderOrder = 999;
-  static decimalPlaces = 3;
+  static angleUnitsDecimalPlaces = 3;
   static edgeSize = 0.005;
 
   static maxAnimationSteps = 50;

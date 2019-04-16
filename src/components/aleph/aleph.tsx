@@ -591,7 +591,8 @@ export class Aleph {
             <a-entity
               id={`${edgeId}-title`}
               text={`
-                value: ${dist.toFixed(Constants.decimalPlaces) + " m"};
+                value: ${dist.toFixed(Constants.angleUnitsDecimalPlaces) +
+                  " m"};
                 side: double;
                 align: center;
                 baseline: bottom;
@@ -690,7 +691,7 @@ export class Aleph {
               id={`${angleId}-title`}
               text={`
                 value: ${THREE.Math.radToDeg(angle).toFixed(
-                  Constants.decimalPlaces
+                  Constants.angleUnitsDecimalPlaces
                 ) + " deg"};
                 side: double;
                 align: center;
