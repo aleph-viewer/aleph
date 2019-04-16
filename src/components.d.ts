@@ -178,7 +178,6 @@ export namespace Components {
     'setVolumeSteps': (steps: number) => Promise<void>;
     'setVolumeWindowCenter': (center: number) => Promise<void>;
     'setVolumeWindowWidth': (width: number) => Promise<void>;
-    'spinnerColor': string;
     'width': string;
   }
   interface UvAlephAttributes extends StencilHTMLAttributes {
@@ -187,7 +186,6 @@ export namespace Components {
     'height'?: string;
     'onChanged'?: (event: CustomEvent) => void;
     'onLoaded'?: (event: CustomEvent) => void;
-    'spinnerColor'?: string;
     'width'?: string;
   }
 }
