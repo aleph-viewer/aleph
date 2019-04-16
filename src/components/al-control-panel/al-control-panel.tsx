@@ -1,4 +1,4 @@
-import { Component, Prop, Event, EventEmitter } from "@stencil/core";
+import { Component, Prop, Event, EventEmitter, Watch } from "@stencil/core";
 import { DisplayMode } from "../../enums/DisplayMode";
 import { Orientation } from "../../enums/Orientation";
 
@@ -30,10 +30,18 @@ export class AlControlPanel {
   @Prop({ mutable: true }) slicesIndex: number;
   @Prop({ mutable: true }) slicesWindowCenter: number;
   @Prop({ mutable: true }) slicesWindowWidth: number;
-  //@Prop({ mutable: true }) stack: any;
   @Prop({ mutable: true }) stackhelper:
     | AMI.StackHelper
     | AMI.VolumeRenderHelper;
+  @Watch("stackhelper")
+  watchStackhelper() {
+    this.slicesIndex = undefined;
+    this.slicesWindowCenter = undefined;
+    this.slicesWindowWidth = undefined;
+    this.volumeSteps = undefined;
+    this.volumeWindowCenter = undefined;
+    this.volumeWindowWidth = undefined;
+  }
   @Prop({ mutable: true }) graphEnabled: boolean = false;
   @Prop({ mutable: true }) graphVisible: boolean = true;
   @Prop({ mutable: true }) volumeSteps: number;
@@ -299,19 +307,19 @@ export class AlControlPanel {
                     selected={this.orientation === Orientation.CORONAL}
                     value={Orientation.CORONAL}
                   >
-                    Coronal (x)
+                    Coronal
                   </option>
                   <option
                     selected={this.orientation === Orientation.SAGGITAL}
                     value={Orientation.SAGGITAL}
                   >
-                    Saggital (y)
+                    Saggital
                   </option>
                   <option
                     selected={this.orientation === Orientation.AXIAL}
                     value={Orientation.AXIAL}
                   >
-                    Axial (z)
+                    Axial
                   </option>
                 </select>
               </ion-item>
@@ -380,7 +388,7 @@ export class AlControlPanel {
 
         if (this.volumeSteps === undefined) {
           // set default
-          steps = 8;
+          steps = 16;
         } else {
           steps = this.volumeSteps;
         }

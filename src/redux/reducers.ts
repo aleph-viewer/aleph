@@ -28,7 +28,7 @@ export const getInitialState = () => {
     slicesWindowWidth: 0,
     src: null,
     srcLoaded: false,
-    volumeSteps: 8,
+    volumeSteps: 16,
     volumeWindowCenter: 0,
     volumeWindowWidth: 0
   };
@@ -52,14 +52,21 @@ export const app = (
 
       return {
         ...state,
-        src: action.payload,
-        srcLoaded: false,
+        angles: new Map<string, AlAngleSerial>(),
         controlsEnabled: false,
         displayMode: displayMode,
-        selected: null,
-        nodes: new Map<string, AlNodeSerial>(),
         edges: new Map<string, AlEdgeSerial>(),
-        angles: new Map<string, AlAngleSerial>()
+        nodes: new Map<string, AlNodeSerial>(),
+        orientation: Orientation.CORONAL,
+        selected: null,
+        slicesIndex: 0,
+        slicesWindowCenter: 0,
+        slicesWindowWidth: 0,
+        src: action.payload,
+        srcLoaded: false,
+        volumeSteps: 16,
+        volumeWindowCenter: 0,
+        volumeWindowWidth: 0
       };
     }
     case TypeKeys.APP_SET_SRC_LOADED: {
