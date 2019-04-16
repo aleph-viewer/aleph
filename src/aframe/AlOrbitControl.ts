@@ -42,7 +42,7 @@ export class AlOrbitControl implements AframeRegistryEntry {
         enableZoom: { default: true },
         keyPanSpeed: { default: 7 },
         maxAzimuthAngle: { type: "number", default: Infinity },
-        maxDistance: { default: 1000 },
+        maxDistance: { default: 8000 },
         maxPolarAngle: { default: AFRAME.utils.device.isMobile() ? 90 : 120 },
         minAzimuthAngle: { type: "number", default: -Infinity },
         minDistance: { default: 1 },
