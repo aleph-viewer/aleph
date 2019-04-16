@@ -19,7 +19,7 @@
 | `slicesIndex`        | `slices-index`         |             | `number`                                                           | `undefined`           |
 | `slicesWindowCenter` | `slices-window-center` |             | `number`                                                           | `undefined`           |
 | `slicesWindowWidth`  | `slices-window-width`  |             | `number`                                                           | `undefined`           |
-| `stackhelper`        | --                     |             | `StackHelper \| VolumeRenderHelper`                             | `undefined`           |
+| `stackhelper`        | --                     |             | `StackHelper \| VolumeRenderHelper`                                | `undefined`           |
 | `volumeSteps`        | `volume-steps`         |             | `number`                                                           | `undefined`           |
 | `volumeWindowCenter` | `volume-window-center` |             | `number`                                                           | `undefined`           |
 | `volumeWindowWidth`  | `volume-window-width`  |             | `number`                                                           | `undefined`           |
