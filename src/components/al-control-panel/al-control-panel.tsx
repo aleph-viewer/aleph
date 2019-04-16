@@ -33,7 +33,7 @@ export class AlControlPanel {
   //@Prop({ mutable: true }) stack: any;
   @Prop({ mutable: true }) stackhelper:
     | AMI.StackHelper
-    | AMI.VolumeRenderingHelper;
+    | AMI.VolumeRenderHelper;
   @Prop({ mutable: true }) graphEnabled: boolean = false;
   @Prop({ mutable: true }) graphVisible: boolean = true;
   @Prop({ mutable: true }) volumeSteps: number;
@@ -369,7 +369,7 @@ export class AlControlPanel {
         if (
           !this.stackhelper ||
           (this.stackhelper &&
-            !(this.stackhelper as AMI.VolumeRenderingHelper).uniforms)
+            !(this.stackhelper as AMI.VolumeRenderHelper).uniforms)
         ) {
           break;
         }
@@ -412,11 +412,10 @@ export class AlControlPanel {
 
         // update the stackhelper
         (this
-          .stackhelper as AMI.VolumeRenderingHelper).uniforms.uSteps.value = steps;
+          .stackhelper as AMI.VolumeRenderHelper).uniforms.uSteps.value = steps;
+        (this.stackhelper as AMI.VolumeRenderHelper).windowWidth = windowWidth;
         (this
-          .stackhelper as AMI.VolumeRenderingHelper).windowWidth = windowWidth;
-        (this
-          .stackhelper as AMI.VolumeRenderingHelper).windowCenter = windowCenter;
+          .stackhelper as AMI.VolumeRenderHelper).windowCenter = windowCenter;
 
         //if (this.optionsVisible && this.optionsEnabled) {
         return (

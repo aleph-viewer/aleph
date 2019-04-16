@@ -19,7 +19,7 @@ export class AlBoundingBox implements AframeRegistryEntry {
           new THREE.Vector3(0, 0, 0),
           ThreeUtils.stringToVector3(this.data.scale)
         );
-        this.boundingBox = new THREE.Box3Helper(
+        this.boundingBox = new (THREE as any).Box3Helper(
           this.box as any,
           this.data.color
         );
