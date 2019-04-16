@@ -75,7 +75,7 @@ type Scene = import("aframe").Scene;
 export class Aleph {
   //#region Private variables
   private _backboard: Entity;
-  private _backboardVisible: boolean = false;
+  private _backboardVisible: boolean = true;
   private _boundingBox: THREE.Box3;
   private _boundingSphereRadius: number;
   private _camera: Entity;
@@ -86,6 +86,7 @@ export class Aleph {
   private _targetEntity: Entity;
   private _validTarget: boolean;
   private _volumeHelper: AMI.VolumeRenderHelper;
+  private _volumeCaster: THREE.Raycaster;
 
   @Prop({ context: "store" }) store: Store;
   @Prop() dracoDecoderPath: string | null;
@@ -486,7 +487,6 @@ export class Aleph {
               volumeWindowWidth: ${this.volumeWindowWidth};
             `}
             position="0 0 0"
-            scale="1 1 1"
             ref={(el: Entity) => (this._targetEntity = el)}
           />
         );
@@ -745,7 +745,7 @@ export class Aleph {
         far={Constants.cameraValues.far}
         id="mainCamera"
         cursor="rayOrigin: mouse"
-        raycaster="objects: .collidable"
+        raycaster="objects: .collidable;"
         al-orbit-control={`
           maxPolarAngle: ${Constants.cameraValues.maxPolarAngle};
           minDistance: ${Constants.cameraValues.minDistance};
@@ -780,6 +780,7 @@ export class Aleph {
         vr-mode-ui="enabled: false"
         ref={el => (this._scene = el)}
       >
+        <a-sphere position=" 0 0 0 " scale="5 5 5" />
         {this._renderBackboard()}
         {this._renderSrc()}
         {this._renderBoundingBox()}
@@ -1087,7 +1088,7 @@ export class Aleph {
     this._boundingSphereRadius = this._mesh.geometry.boundingSphere.radius;
     this._boundingBox = GetUtils.getBoundingBox(this._mesh);
 
-    let cameraState: AlCamera = GetUtils.getCameraStateFromMesh(this._mesh);
+    let cameraState: AlCameraSerial = GetUtils.getCameraStateFromMesh(mesh);
 
     if (cameraState) {
       this.appSetCamera(cameraState);
@@ -1149,7 +1150,8 @@ export class Aleph {
       this._validTarget && // Target is valid
       this._graphIntersection === null // Not intersecting a Node already
     ) {
-      let intersection: THREE.Intersection = event.detail.detail.intersection;
+      let intersection: THREE.Intersection =
+        event.detail.aframeEvent.detail.intersection;
 
       const nodeId: string = GraphUtils.getNextId(
         AlGraphEntryType.NODE,
@@ -1158,23 +1160,44 @@ export class Aleph {
 
       let newNode: AlNode;
 
-      if (this.displayMode === DisplayMode.VOLUME) {
-        let direction = (this._camera.getAttribute("position") as THREE.Vector3)
-          .clone()
-          .sub(intersection.point.clone())
-          .normalize();
-
+      if (this.displayMode === DisplayMode.VOLUME && intersection) {
         let hitPosition = new THREE.Vector3();
         let hitNormal = new THREE.Vector3();
+
         AMIUtils.volumeRay(
           this._volumeHelper,
-          intersection.point,
-          direction,
+          this._camera.object3D.children[0].position.clone(),
+          this._camera.getAttribute("raycaster").direction,
           Constants.cameraValues.far,
           hitPosition,
           hitNormal
         );
-        console.log("spawn-node: ", hitPosition);
+        let p = hitPosition.sub(
+          this._camera
+            .getAttribute("raycaster")
+            .direction.clone()
+            .multiplyScalar(9000)
+        );
+        console.log("spawn-node, stack space: ", p);
+        let geom = new THREE.Geometry();
+        geom.vertices.push(this._camera.object3D.children[0].position.clone());
+        geom.vertices.push(p);
+
+        this._scene.sceneEl.object3D.add(
+          new THREE.Line(geom, new THREE.LineBasicMaterial())
+        );
+
+        if (hitPosition.lengthSq() > 0) {
+          newNode = {
+            target: ThreeUtils.vector3ToString(
+              this._targetEntity.object3D.position
+            ),
+            position: ThreeUtils.vector3ToString(p),
+            scale: this._boundingSphereRadius / Constants.nodeSizeRatio,
+            text: nodeId
+          };
+        }
+      } else if (intersection) {
         newNode = {
           targetId: "0",
           position: ThreeUtils.vector3ToString(hitPosition),
@@ -1275,23 +1298,32 @@ export class Aleph {
     }
 
     if (intersection && this.displayMode === DisplayMode.VOLUME) {
-      let direction = (this._camera.getAttribute("position") as THREE.Vector3)
-        .clone()
-        .sub(intersection.point.clone())
-        .normalize();
-
       let hitPosition = new THREE.Vector3();
       let hitNormal = new THREE.Vector3();
+
       AMIUtils.volumeRay(
         this._volumeHelper,
-        intersection.point,
-        direction,
+        this._volumeCaster.ray.origin,
+        this._volumeCaster.ray.direction,
         Constants.cameraValues.far,
         hitPosition,
         hitNormal
       );
 
-      console.log("node-moved: ", hitPosition);
+      console.log("node-moved, stack space: ", hitPosition);
+      //hitPosition = AMIUtils.toAframeSpace(hitPosition.clone());
+      //console.log("node-moved, aframe space: ", hitPosition);
+
+      if (hitPosition.lengthSq() > 0 && intersection) {
+        this._setNode([
+          nodeId,
+          {
+            position: ThreeUtils.vector3ToString(hitPosition)
+          }
+        ]);
+        const eventName = nodeId + Constants.movedEventString;
+        this._scene.emit(eventName, {}, true);
+      }
     } else if (intersection && this.displayMode !== DisplayMode.VOLUME) {
       this._setNode([
         nodeId,

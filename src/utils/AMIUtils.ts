@@ -1,3 +1,6 @@
+import { Constants } from "../Constants";
+import { ThreeUtils } from "./ThreeUtils";
+
 export class AMIUtils {
   private static _traceDataRay(
     stackHelper: {
@@ -162,6 +165,16 @@ export class AMIUtils {
       max_d,
       hit_pos,
       hit_norm
+    );
+  }
+
+  /**
+   * Convert a vector3 from (mm) world space values to (m) world space values
+   * @param vector Vector in AMI World Space (mm)
+   */
+  public static toAframeSpace(vector: THREE.Vector3): THREE.Vector3 {
+    return vector.divide(
+      ThreeUtils.objectToVector3(Constants.stackSpaceMultiplier)
     );
   }
 }
