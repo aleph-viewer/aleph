@@ -501,7 +501,9 @@ export class Aleph {
 
       return (
         <a-entity
-          position={ThreeUtils.vector3ToString(this.camera.target)}
+          position={ThreeUtils.vector3ToString(
+            this._targetEntity.object3D.position
+          )}
           al-bounding-box={`
             scale: ${ThreeUtils.vector3ToString(size)};
             color: ${Constants.colorValues.red};
