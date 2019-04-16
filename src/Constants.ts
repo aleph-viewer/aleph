@@ -18,16 +18,10 @@ export class Constants {
   static minFrameMS = 15; // Should never be higher than the returned frame time
   static minTimeForThrottle = Constants.minFrameMS * 5;
 
-  static nodeColors = {
-    selected: "#76ff03",
-    hovered: "#f50057",
-    normal: "#00b0ff"
-  };
-
-  static edgeColors = {
-    selected: "#c0ff8c",
-    hovered: "#ff89b3",
-    normal: "#8cdbff"
+  static buttonColors = {
+    active: "#f50057",
+    hover: "#f50057",
+    up: "#00b0ff"
   };
 
   static colorValues = {

@@ -22,23 +22,23 @@ export class GetUtils {
   }
 
   static getCameraStateFromMesh(mesh: Mesh): AlCameraSerial {
-    let sceneCenter: THREE.Vector3;
+    let meshCenter: THREE.Vector3;
     let initialPosition: THREE.Vector3;
     let sceneDistance: number;
 
     if (mesh) {
       const geom = mesh.geometry;
-      sceneCenter = this.getGeometryCenter(geom);
+      meshCenter = this.getGeometryCenter(geom);
       sceneDistance =
         (Constants.zoomFactor * geom.boundingSphere.radius) /
         Math.tan((Constants.cameraValues.fov * Math.PI) / 180);
 
       initialPosition = new THREE.Vector3();
-      initialPosition.copy(sceneCenter);
+      initialPosition.copy(meshCenter);
       initialPosition.z += sceneDistance;
 
       return {
-        target: sceneCenter,
+        target: meshCenter,
         position: initialPosition
       } as AlCameraSerial;
     }
