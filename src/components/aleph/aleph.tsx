@@ -39,11 +39,11 @@ import {
 } from "../../redux/actions";
 import { configureStore } from "../../redux/store";
 import {
-  AlNodeSerial,
-  AlCameraSerial,
+  AlNode,
+  AlCamera,
   AlAppState,
-  AlEdgeSerial,
-  AlAngleSerial
+  AlEdge,
+  AlAngle
 } from "../../interfaces";
 import {
   GetUtils,
@@ -122,14 +122,14 @@ export class Aleph {
   //#endregion
 
   //#region state
-  @State() angles: Map<string, AlAngleSerial>;
+  @State() angles: Map<string, AlAngle>;
   @State() boundingBoxVisible: boolean;
-  @State() camera: AlCameraSerial;
+  @State() camera: AlCamera;
   @State() controlsEnabled: boolean;
   @State() displayMode: DisplayMode;
-  @State() edges: Map<string, AlEdgeSerial>;
+  @State() edges: Map<string, AlEdge>;
   @State() graphEnabled: boolean;
-  @State() nodes: Map<string, AlNodeSerial>;
+  @State() nodes: Map<string, AlNode>;
   @State() nodesVisible: boolean;
   @State() optionsEnabled: boolean;
   @State() optionsVisible: boolean;
@@ -173,7 +173,7 @@ export class Aleph {
   //#region node methods
 
   @Method()
-  async setNode(node: [string, AlNodeSerial]): Promise<void> {
+  async setNode(node: [string, AlNode]): Promise<void> {
     this._setNode(node);
   }
 
@@ -211,7 +211,7 @@ export class Aleph {
 
   //#region Edge Methods
   @Method()
-  async setEdge(edge: [string, AlEdgeSerial]): Promise<void> {
+  async setEdge(edge: [string, AlEdge]): Promise<void> {
     this._setEdge(edge);
   }
   //#endregion
@@ -514,7 +514,7 @@ export class Aleph {
   }
 
   private _renderNodes() {
-    return Array.from(this.nodes).map((n: [string, AlNodeSerial]) => {
+    return Array.from(this.nodes).map((n: [string, AlNode]) => {
       const [nodeId, node] = n;
 
       let textOffset: THREE.Vector3 = new THREE.Vector3(0, 2.5, 0);
@@ -553,7 +553,7 @@ export class Aleph {
   }
 
   private _renderEdges() {
-    return Array.from(this.edges).map((n: [string, AlEdgeSerial]) => {
+    return Array.from(this.edges).map((n: [string, AlEdge]) => {
       const [edgeId, edge] = n;
       const node1 = this.nodes.get(edge.node1Id);
       const node2 = this.nodes.get(edge.node2Id);
@@ -609,7 +609,7 @@ export class Aleph {
   }
 
   private _renderAngles() {
-    return Array.from(this.angles).map((n: [string, AlAngleSerial]) => {
+    return Array.from(this.angles).map((n: [string, AlAngle]) => {
       const [angleId, angle] = n;
       const edge1 = this.edges.get(angle.edge1Id);
       const edge2 = this.edges.get(angle.edge2Id);
@@ -809,17 +809,17 @@ export class Aleph {
   //#region Private Methods
   private _createEdge(node1Id: string, node2Id: string): void {
     // check if there is already an edge connecting these two nodes
-    const match: [string, AlEdgeSerial] | undefined = Array.from(
-      this.edges
-    ).find(([_id, edge]) => {
-      return (
-        (edge.node1Id === node1Id && edge.node2Id === node2Id) ||
-        (edge.node1Id === node2Id && edge.node2Id === node1Id)
-      );
-    });
+    const match: [string, AlEdge] | undefined = Array.from(this.edges).find(
+      ([_id, edge]) => {
+        return (
+          (edge.node1Id === node1Id && edge.node2Id === node2Id) ||
+          (edge.node1Id === node2Id && edge.node2Id === node1Id)
+        );
+      }
+    );
 
     if (!match) {
-      const newEdge: AlEdgeSerial = {
+      const newEdge: AlEdge = {
         node1Id: node1Id,
         node2Id: node2Id
       };
@@ -836,14 +836,14 @@ export class Aleph {
 
   private _createAngle(edge1Id: string, edge2Id: string): void {
     // check if there is already an angle connecting these two edges
-    const match: [string, AlAngleSerial] | undefined = Array.from(
-      this.angles
-    ).find(([_id, angle]) => {
-      return (
-        (angle.edge1Id === edge1Id && angle.edge2Id === edge2Id) ||
-        (angle.edge1Id === edge2Id && angle.edge2Id === edge1Id)
-      );
-    });
+    const match: [string, AlAngle] | undefined = Array.from(this.angles).find(
+      ([_id, angle]) => {
+        return (
+          (angle.edge1Id === edge1Id && angle.edge2Id === edge2Id) ||
+          (angle.edge1Id === edge2Id && angle.edge2Id === edge1Id)
+        );
+      }
+    );
     if (!match) {
       let edge1 = this.edges.get(edge1Id);
       let edge2 = this.edges.get(edge2Id);
@@ -854,7 +854,7 @@ export class Aleph {
         edge1.node2Id == edge2.node1Id ||
         edge1.node2Id === edge2.node2Id
       ) {
-        const newAngle: AlAngleSerial = {
+        const newAngle: AlAngle = {
           edge1Id: edge1Id,
           edge2Id: edge2Id
         };
@@ -878,22 +878,22 @@ export class Aleph {
 
   private _setGraph(graph: AlGraph): void {
     if (graph.nodes) {
-      const nodes: Map<string, AlNodeSerial> = new Map(graph.nodes);
-      nodes.forEach((value: AlNodeSerial, key: string) => {
+      const nodes: Map<string, AlNode> = new Map(graph.nodes);
+      nodes.forEach((value: AlNode, key: string) => {
         this.appSetNode([key, value]);
       });
     }
 
     if (graph.edges) {
-      const edges: Map<string, AlEdgeSerial> = new Map(graph.edges);
-      edges.forEach((value: AlEdgeSerial, key: string) => {
+      const edges: Map<string, AlEdge> = new Map(graph.edges);
+      edges.forEach((value: AlEdge, key: string) => {
         this.appSetEdge([key, value]);
       });
     }
 
     if (graph.angles) {
-      const angles: Map<string, AlAngleSerial> = new Map(graph.angles);
-      angles.forEach((value: AlAngleSerial, key: string) => {
+      const angles: Map<string, AlAngle> = new Map(graph.angles);
+      angles.forEach((value: AlAngle, key: string) => {
         this.appSetAngle([key, value]);
       });
     }
@@ -913,7 +913,7 @@ export class Aleph {
     this._stateChanged();
   }
 
-  private _setNode(node: [string, AlNodeSerial]): void {
+  private _setNode(node: [string, AlNode]): void {
     this.appSetNode(node);
     this._stateChanged();
   }
@@ -923,13 +923,13 @@ export class Aleph {
       let animationStart = {
         position: this.camera.position.clone(),
         target: this.camera.target.clone()
-      } as AlCameraSerial;
+      } as AlCamera;
       let animationEnd = {
         position: new THREE.Vector3(-1, -1, -1),
         target: new THREE.Vector3(-1, -1, -1)
-      } as AlCameraSerial;
+      } as AlCamera;
 
-      let result: AlCameraSerial | null = GetUtils.getCameraStateFromNode(
+      let result: AlCamera | null = GetUtils.getCameraStateFromNode(
         this.nodes.get(nodeId),
         this._boundingSphereRadius
       );
@@ -975,7 +975,7 @@ export class Aleph {
     }
   }
 
-  private _setEdge(edge: [string, AlEdgeSerial]): void {
+  private _setEdge(edge: [string, AlEdge]): void {
     this.appSetEdge(edge);
     this._stateChanged();
   }
@@ -990,7 +990,7 @@ export class Aleph {
     this._stateChanged();
   }
 
-  private _setAngle(angle: [string, AlAngleSerial]): void {
+  private _setAngle(angle: [string, AlAngle]): void {
     this.appSetAngle(angle);
     this._stateChanged();
   }
@@ -1087,7 +1087,7 @@ export class Aleph {
     this._boundingSphereRadius = mesh.geometry.boundingSphere.radius;
     this._boundingBox = GetUtils.getBoundingBox(mesh);
 
-    let cameraState: AlCameraSerial = GetUtils.getCameraStateFromMesh(mesh);
+    let cameraState: AlCamera = GetUtils.getCameraStateFromMesh(mesh);
 
     if (cameraState) {
       this.appSetCamera(cameraState);
@@ -1156,7 +1156,7 @@ export class Aleph {
         this.nodes
       );
 
-      let newNode: AlNodeSerial;
+      let newNode: AlNode;
 
       if (this.displayMode === DisplayMode.VOLUME) {
         let direction = (this._camera.getAttribute("position") as THREE.Vector3)

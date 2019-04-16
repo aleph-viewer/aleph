@@ -1,5 +1,5 @@
 import { Component, Prop, Event, EventEmitter } from "@stencil/core";
-import { AlNodeSerial } from "../../interfaces";
+import { AlNode } from "../../interfaces";
 
 @Component({
   tag: "al-node-list",
@@ -9,7 +9,7 @@ import { AlNodeSerial } from "../../interfaces";
 export class AlNodeList {
   @Event() selectedChanged: EventEmitter;
 
-  @Prop({ mutable: true }) nodes: Map<string, AlNodeSerial> | null = null;
+  @Prop({ mutable: true }) nodes: Map<string, AlNode> | null = null;
   @Prop({ mutable: true }) selected: string | null = null;
 
   render() {
@@ -58,7 +58,7 @@ export class AlNodeList {
   // return (
   //   <div>
   //     <ul>
-  //       {this.nodes.map((node: AlNodeSerial) => {
+  //       {this.nodes.map((node: AlNode) => {
   //         return (
   //           <li>
   //             <label class="block">

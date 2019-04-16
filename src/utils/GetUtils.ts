@@ -1,4 +1,4 @@
-import { AlNodeSerial, AlCameraSerial } from "../interfaces";
+import { AlNode, AlCamera } from "../interfaces";
 import { Constants } from "../Constants";
 import { ThreeUtils } from ".";
 import { Mesh } from "three";
@@ -21,7 +21,7 @@ export class GetUtils {
     return geom.boundingSphere.center;
   }
 
-  static getCameraStateFromMesh(mesh: Mesh): AlCameraSerial {
+  static getCameraStateFromMesh(mesh: Mesh): AlCamera {
     let meshCenter: THREE.Vector3;
     let initialPosition: THREE.Vector3;
     let sceneDistance: number;
@@ -40,16 +40,13 @@ export class GetUtils {
       return {
         target: meshCenter,
         position: initialPosition
-      } as AlCameraSerial;
+      } as AlCamera;
     }
 
     return null;
   }
 
-  static getCameraStateFromNode(
-    node: AlNodeSerial,
-    radius: number
-  ): AlCameraSerial | null {
+  static getCameraStateFromNode(node: AlNode, radius: number): AlCamera | null {
     if (!node) {
       return null;
     }
@@ -74,7 +71,7 @@ export class GetUtils {
     return {
       target: targ,
       position: camPos
-    } as AlCameraSerial;
+    } as AlCamera;
   }
 
   static getBoundingBox(obj: THREE.Object3D): THREE.Box3 {

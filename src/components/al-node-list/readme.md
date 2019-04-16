@@ -9,7 +9,7 @@
 
 | Property   | Attribute  | Description | Type                        | Default |
 | ---------- | ---------- | ----------- | --------------------------- | ------- |
-| `nodes`    | --         |             | `Map<string, AlNodeSerial>` | `null`  |
+| `nodes`    | --         |             | `Map<string, AlNode>` | `null`  |
 | `selected` | `selected` |             | `string`                    | `null`  |
 
 

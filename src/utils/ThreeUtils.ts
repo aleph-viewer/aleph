@@ -1,4 +1,4 @@
-import { AlCameraSerial } from "../interfaces";
+import { AlCamera } from "../interfaces";
 import { Constants } from "../Constants";
 import { AlOrbitControlEvents } from "../aframe";
 
@@ -98,8 +98,8 @@ export class ThreeUtils {
   }
 
   static getSlerpPath(
-    start: AlCameraSerial,
-    end: AlCameraSerial,
+    start: AlCamera,
+    end: AlCamera,
     positionChange: boolean,
     targetChange: boolean
   ): number[] {
@@ -120,7 +120,7 @@ export class ThreeUtils {
         target: targetChange
           ? ThreeUtils.slerp(st.clone(), et.clone(), percent)
           : end.target
-      } as AlCameraSerial);
+      } as AlCamera);
     }
 
     return path;

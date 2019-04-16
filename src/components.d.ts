@@ -9,9 +9,9 @@ import '@stencil/core';
 
 import '@stencil/redux';
 import {
-  AlAngleSerial,
-  AlEdgeSerial,
-  AlNodeSerial,
+  AlAngle,
+  AlEdge,
+  AlNode,
 } from './interfaces';
 import {
   DisplayMode,
@@ -31,10 +31,10 @@ import {
 export namespace Components {
 
   interface AlAngleEditor {
-    'angle': [string, AlAngleSerial];
+    'angle': [string, AlAngle];
   }
   interface AlAngleEditorAttributes extends StencilHTMLAttributes {
-    'angle'?: [string, AlAngleSerial];
+    'angle'?: [string, AlAngle];
     'onDelete'?: (event: CustomEvent) => void;
   }
 
@@ -93,28 +93,28 @@ export namespace Components {
   }
 
   interface AlEdgeEditor {
-    'edge': [string, AlEdgeSerial];
+    'edge': [string, AlEdge];
   }
   interface AlEdgeEditorAttributes extends StencilHTMLAttributes {
-    'edge'?: [string, AlEdgeSerial];
+    'edge'?: [string, AlEdge];
     'onDelete'?: (event: CustomEvent) => void;
   }
 
   interface AlNodeEditor {
-    'node': [string, AlNodeSerial];
+    'node': [string, AlNode];
   }
   interface AlNodeEditorAttributes extends StencilHTMLAttributes {
-    'node'?: [string, AlNodeSerial];
+    'node'?: [string, AlNode];
     'onDelete'?: (event: CustomEvent) => void;
     'onSave'?: (event: CustomEvent) => void;
   }
 
   interface AlNodeList {
-    'nodes': Map<string, AlNodeSerial> | null;
+    'nodes': Map<string, AlNode> | null;
     'selected': string | null;
   }
   interface AlNodeListAttributes extends StencilHTMLAttributes {
-    'nodes'?: Map<string, AlNodeSerial> | null;
+    'nodes'?: Map<string, AlNode> | null;
     'onSelectedChanged'?: (event: CustomEvent) => void;
     'selected'?: string | null;
   }
@@ -167,10 +167,10 @@ export namespace Components {
     'selectNode': (nodeId: string) => Promise<void>;
     'setBoundingBoxVisible': (visible: boolean) => Promise<void>;
     'setDisplayMode': (displayMode: DisplayMode) => Promise<void>;
-    'setEdge': (edge: [string, AlEdgeSerial]) => Promise<void>;
+    'setEdge': (edge: [string, AlEdge]) => Promise<void>;
     'setGraph': (graph: AlGraph) => Promise<void>;
     'setGraphEnabled': (enabled: boolean) => Promise<void>;
-    'setNode': (node: [string, AlNodeSerial]) => Promise<void>;
+    'setNode': (node: [string, AlNode]) => Promise<void>;
     'setOrientation': (orientation: Orientation) => Promise<void>;
     'setSlicesIndex': (index: number) => Promise<void>;
     'setSlicesWindowCenter': (center: number) => Promise<void>;

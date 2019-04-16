@@ -9,7 +9,7 @@
 
 | Property | Attribute | Description | Type                      | Default     |
 | -------- | --------- | ----------- | ------------------------- | ----------- |
-| `angle`  | --        |             | `[string, AlAngleSerial]` | `undefined` |
+| `angle`  | --        |             | `[string, AlAngle]` | `undefined` |
 
 
 ## Events

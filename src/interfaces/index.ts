@@ -1,21 +1,21 @@
 import { AframeComponent } from "./AframeComponent";
 import { AframeRegistryEntry } from "./AframeRegistryEntry";
 import { AframeShader } from "./AframeShader";
-import { AlAngleSerial } from "./AlAngleSerial";
+import { AlAngle } from "./AlAngle";
 import { AlAppState } from "./AlAppState";
-import { AlCameraSerial } from "./AlCameraSerial";
-import { AlEdgeSerial } from "./AlEdgeSerial";
+import { AlCamera } from "./AlCamera";
+import { AlEdge } from "./AlEdge";
 import { AlGraphEntry } from "./AlGraphEntry";
-import { AlNodeSerial } from "./AlNodeSerial";
+import { AlNode } from "./AlNode";
 
 export {
   AframeComponent,
   AframeRegistryEntry,
   AframeShader,
-  AlAngleSerial,
+  AlAngle,
   AlAppState,
-  AlCameraSerial,
-  AlEdgeSerial,
+  AlCamera,
+  AlEdge,
   AlGraphEntry,
-  AlNodeSerial
+  AlNode
 };

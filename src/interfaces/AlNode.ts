@@ -1,6 +1,6 @@
 import { AlGraphEntry } from "./AlGraphEntry";
 
-export interface AlNodeSerial extends AlGraphEntry {
+export interface AlNode extends AlGraphEntry {
   target?: string;
   position?: string;
   scale?: number;

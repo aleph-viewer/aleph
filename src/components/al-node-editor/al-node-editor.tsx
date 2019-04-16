@@ -1,5 +1,5 @@
 import { Component, Prop, Event, EventEmitter } from "@stencil/core";
-import { AlNodeSerial } from "../../interfaces";
+import { AlNode } from "../../interfaces";
 
 @Component({
   tag: "al-node-editor",
@@ -10,7 +10,7 @@ export class AlNodeEditor {
   @Event() delete: EventEmitter;
   @Event() save: EventEmitter;
 
-  @Prop({ mutable: true }) node: [string, AlNodeSerial];
+  @Prop({ mutable: true }) node: [string, AlNode];
 
   render() {
     if (this.node) {

@@ -9,7 +9,7 @@
 
 | Property | Attribute | Description | Type                     | Default     |
 | -------- | --------- | ----------- | ------------------------ | ----------- |
-| `edge`   | --        |             | `[string, AlEdgeSerial]` | `undefined` |
+| `edge`   | --        |             | `[string, AlEdge]` | `undefined` |
 
 
 ## Events

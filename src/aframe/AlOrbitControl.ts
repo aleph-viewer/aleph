@@ -1,15 +1,11 @@
-import {
-  AframeRegistryEntry,
-  AframeComponent,
-  AlCameraSerial
-} from "../interfaces";
+import { AframeRegistryEntry, AframeComponent, AlCamera } from "../interfaces";
 import { Constants } from "../Constants";
 import { ThreeUtils } from "../utils";
 import { AlNodeSpawnerEvents, AlNodeEvents } from ".";
 
 interface AlOrbitControlState {
   controls: any; //THREE.OrbitControls;
-  animationCache: AlCameraSerial[];
+  animationCache: AlCamera[];
 }
 
 interface AlOrbitControlObject extends AframeComponent {
@@ -114,7 +110,7 @@ export class AlOrbitControl implements AframeRegistryEntry {
         let res = {
           position: this.state.controls.object.position,
           target: this.state.controls.target
-        } as AlCameraSerial;
+        } as AlCamera;
         this.el.sceneEl.emit(
           AlOrbitControlEvents.UPDATED,
           { cameraSerial: res },
@@ -218,7 +214,7 @@ export class AlOrbitControl implements AframeRegistryEntry {
         }
 
         if (this.data.animating) {
-          let nextFrame: AlCameraSerial = this.state.animationCache.shift();
+          let nextFrame: AlCamera = this.state.animationCache.shift();
 
           if (nextFrame && nextFrame.position && nextFrame.target) {
             controls.object.position.copy(nextFrame.position);
