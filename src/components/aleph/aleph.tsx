@@ -81,6 +81,7 @@ export class Aleph {
   private _camera: Entity;
   private _graphIntersection: string | null = null;
   private _isShiftDown: boolean = false;
+  private _mesh: THREE.Mesh;
   private _scene: Scene;
   private _targetEntity: Entity;
   private _validTarget: boolean;
@@ -449,7 +450,6 @@ export class Aleph {
       case DisplayMode.MESH: {
         return (
           <a-entity
-            id="target-entity"
             class="collidable"
             al-node-spawner={`
               graphEnabled: ${this.graphEnabled};
@@ -499,11 +499,17 @@ export class Aleph {
       let size: THREE.Vector3 = new THREE.Vector3();
       this._boundingBox.getSize(size);
 
+      // if targetEntity is a gltf, use its position (center). if it's a volume, the origin is in the bottom left, so get the position sub the geometry center
+      const position: THREE.Vector3 =
+        this.displayMode === DisplayMode.MESH
+          ? this._targetEntity.object3D.position.clone()
+          : this._targetEntity.object3D.position
+              .clone()
+              .add(GetUtils.getGeometryCenter(this._mesh.geometry));
+
       return (
         <a-entity
-          position={ThreeUtils.vector3ToString(
-            this._targetEntity.object3D.position
-          )}
+          position={ThreeUtils.vector3ToString(position)}
           al-bounding-box={`
             scale: ${ThreeUtils.vector3ToString(size)};
             color: ${Constants.colorValues.red};
@@ -528,7 +534,6 @@ export class Aleph {
           id={nodeId}
           position={node.position}
           al-node={`
-            target: ${node.target};
             scale: ${node.scale};
             selected: ${this.selected === nodeId};
             graphEnabled: ${this.graphEnabled};
@@ -926,47 +931,41 @@ export class Aleph {
         position: this.camera.position.clone(),
         target: this.camera.target.clone()
       } as AlCamera;
+
       let animationEnd = {
         position: new THREE.Vector3(-1, -1, -1),
-        target: new THREE.Vector3(-1, -1, -1)
+        target: this.camera.target.clone()
       } as AlCamera;
 
-      let result: AlCamera | null = GetUtils.getCameraStateFromNode(
+      let result: THREE.Vector3 = GetUtils.getCameraPositionFromNode(
         this.nodes.get(nodeId),
-        this._boundingSphereRadius
+        this._boundingSphereRadius,
+        this.camera.target
       );
 
       if (result) {
-        const diffPos: number = result.position.distanceTo(
-          this.camera.position
-        );
+        const diffPos: number = result.distanceTo(this.camera.position);
 
-        let diffTarg: number;
-        this.camera.target
-          ? (diffTarg = result.target.distanceTo(this.camera.target))
-          : (diffTarg = 0);
+        if (diffPos > 0) {
+          animationEnd.position.copy(result.clone());
 
-        if (diffPos > 0 || diffTarg > 0) {
-          diffPos > 0
-            ? animationEnd.position.copy(result.position.clone())
-            : animationEnd.position.copy(this.camera.position.clone());
-          diffTarg > 0
-            ? animationEnd.target.copy(result.target.clone())
-            : animationEnd.target.copy(this.camera.target.clone());
           const slerpPath: number[] = ThreeUtils.getSlerpPath(
             animationStart,
             animationEnd,
             diffPos > 0,
-            diffTarg > 0
+            false
           );
+
           this._scene.emit(
             AlOrbitControlEvents.ANIMATION_STARTED,
             { slerpPath },
             false
           );
+
           this.appSetCamera({
             animating: true
           });
+
           this.appSelectNode(nodeId);
           this._stateChanged();
         }
@@ -1065,31 +1064,30 @@ export class Aleph {
   private _srcLoaded(ev: any): void {
     const aframeMesh: THREE.Mesh = this._targetEntity.object3DMap
       .mesh as THREE.Mesh;
-    let mesh: THREE.Mesh;
 
     switch (this.displayMode) {
       case DisplayMode.MESH: {
-        mesh = aframeMesh;
+        this._mesh = aframeMesh;
         this._volumeHelper = null;
         break;
       }
       case DisplayMode.SLICES: {
-        mesh = ev.detail._bBox._mesh;
+        this._mesh = ev.detail._bBox._mesh;
         this._volumeHelper = null;
         break;
       }
       case DisplayMode.VOLUME: {
-        mesh = ev.detail._mesh;
+        this._mesh = ev.detail._mesh;
         this._volumeHelper = ev.detail;
         break;
       }
     }
 
-    mesh.geometry.computeBoundingSphere();
-    this._boundingSphereRadius = mesh.geometry.boundingSphere.radius;
-    this._boundingBox = GetUtils.getBoundingBox(mesh);
+    this._mesh.geometry.computeBoundingSphere();
+    this._boundingSphereRadius = this._mesh.geometry.boundingSphere.radius;
+    this._boundingBox = GetUtils.getBoundingBox(this._mesh);
 
-    let cameraState: AlCamera = GetUtils.getCameraStateFromMesh(mesh);
+    let cameraState: AlCamera = GetUtils.getCameraStateFromMesh(this._mesh);
 
     if (cameraState) {
       this.appSetCamera(cameraState);
@@ -1178,14 +1176,14 @@ export class Aleph {
         );
         console.log("spawn-node: ", hitPosition);
         newNode = {
-          target: ThreeUtils.vector3ToString(this.camera.target),
+          targetId: "0",
           position: ThreeUtils.vector3ToString(hitPosition),
           scale: this._boundingSphereRadius / Constants.nodeSizeRatio,
           text: nodeId
         };
       } else {
         newNode = {
-          target: ThreeUtils.vector3ToString(this.camera.target),
+          targetId: "0",
           position: ThreeUtils.vector3ToString(intersection.point),
           scale: this._boundingSphereRadius / Constants.nodeSizeRatio,
           text: nodeId
