@@ -1,7 +1,8 @@
-import { AframeRegistryEntry, AframeComponent } from "../../interfaces";
+import { AframeRegistryEntry } from "../../interfaces";
 import { Constants } from "../../Constants";
 import { ThreeUtils, AlGraphEvents, ShaderUtils } from "../../utils";
 import { AlGraphEntryType } from "../../enums";
+import { ComponentDefinition } from "aframe";
 
 interface AlAngleState {
   selected: boolean;
@@ -14,10 +15,8 @@ interface AlAngleState {
   mesh: THREE.Mesh;
 }
 
-interface AlAngleObject extends AframeComponent {
-  update(oldData): void;
+interface AlAngleObject extends ComponentDefinition {
   tickFunction(): void;
-  tick(): void;
   remove(): void;
   bindListeners(): void;
   addListeners(): void;

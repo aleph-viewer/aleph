@@ -1,8 +1,9 @@
-import { AframeRegistryEntry, AframeComponent } from "../../interfaces";
+import { AframeRegistryEntry } from "../../interfaces";
 import { Constants } from "../../Constants";
+import { ComponentDefinition } from "aframe";
 
 export class AlRenderOverlaidLineComponent implements AframeRegistryEntry {
-  public static get Object(): AframeComponent {
+  public static get Object(): ComponentDefinition {
     return {
       schema: {},
 
@@ -13,7 +14,7 @@ export class AlRenderOverlaidLineComponent implements AframeRegistryEntry {
           Constants.colorValues.blue
         );
       }
-    } as AframeComponent;
+    } as ComponentDefinition;
   }
   public static get Tag(): string {
     return "al-render-overlaid-line";

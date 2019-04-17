@@ -1,17 +1,17 @@
-import { AframeRegistryEntry, AframeComponent } from "../../interfaces";
+import { AframeRegistryEntry } from "../../interfaces";
 import { ThreeUtils } from "../../utils";
 import { AlGraphEvents } from "../../utils/GraphUtils";
+import { ComponentDefinition } from "aframe";
 
 interface AlNodeSpawnerState {
   left: boolean;
   intersecting: boolean;
 }
 
-interface AlNodeSpawnerObject extends AframeComponent {
+interface AlNodeSpawnerObject extends ComponentDefinition {
   bindListeners(): void;
   addListeners(): void;
   removeListeners(): void;
-  remove(): void;
   canvasMouseDown(event: MouseEvent): void;
   canvasMouseUp(event: MouseEvent): void;
   pointerOver(event: CustomEvent): void;

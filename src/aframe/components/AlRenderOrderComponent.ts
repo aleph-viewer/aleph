@@ -1,9 +1,8 @@
-import { AframeRegistryEntry, AframeComponent } from "../../interfaces";
+import { AframeRegistryEntry } from "../../interfaces";
 import { Constants } from "../../Constants";
+import { ComponentDefinition } from "aframe";
 
-interface AlRenderOrderObject extends AframeComponent {
-  update(): void;
-}
+interface AlRenderOrderObject extends ComponentDefinition {}
 
 export class AlRenderOrderComponent implements AframeRegistryEntry {
   public static get Object(): AlRenderOrderObject {

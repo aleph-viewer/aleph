@@ -1,7 +1,8 @@
-import { AframeRegistryEntry, AframeComponent } from "../../interfaces";
+import { AframeRegistryEntry } from "../../interfaces";
 import { GLTFUtils } from "../../utils";
+import { ComponentDefinition } from "aframe";
 
-interface AlGltfModelObject extends AframeComponent {}
+interface AlGltfModelObject extends ComponentDefinition {}
 
 export class AlGltfModelComponent implements AframeRegistryEntry {
   public static get Object(): AlGltfModelObject {

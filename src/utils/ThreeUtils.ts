@@ -1,9 +1,7 @@
 import { AlCamera } from "../interfaces";
 import { Constants } from "../Constants";
-import { AlOrbitControlEvents } from "../aframe";
 
 type Entity = import("aframe").Entity;
-type Scene = import("aframe").Scene;
 
 export class ThreeUtils {
   // Must use setAttribute, otherwise THREE.OrbitControls onMouseUp doesn't always pick up the change :-(

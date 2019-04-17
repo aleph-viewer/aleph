@@ -1,6 +1,6 @@
-import { AframeComponent, AframeShader } from ".";
+import { ComponentDefinition } from "aframe";
 
 export class AframeRegistryEntry {
-  static readonly Object: AframeComponent | AframeShader;
+  static readonly Object: ComponentDefinition;
   static readonly Tag: string;
 }

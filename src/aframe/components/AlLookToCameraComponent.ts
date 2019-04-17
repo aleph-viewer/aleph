@@ -1,9 +1,9 @@
-import { AframeRegistryEntry, AframeComponent } from "../../interfaces";
+import { AframeRegistryEntry } from "../../interfaces";
 import { Constants } from "../../Constants";
+import { ComponentDefinition } from "aframe";
 
-interface AlLookToCameraObject extends AframeComponent {
+interface AlLookToCameraObject extends ComponentDefinition {
   tickFunction(): void;
-  tick(): void;
 }
 
 export class AlLookToCameraComponent implements AframeRegistryEntry {
