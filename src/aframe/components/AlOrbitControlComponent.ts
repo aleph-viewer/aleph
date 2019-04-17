@@ -1,19 +1,16 @@
-import { AframeRegistryEntry, AframeComponent, AlCamera } from "../interfaces";
-import { Constants } from "../Constants";
-import { ThreeUtils } from "../utils";
-import { AlNodeSpawnerEvents, AlNodeEvents } from ".";
+import { AframeRegistryEntry, AlCamera } from "../../interfaces";
+import { Constants } from "../../Constants";
+import { ThreeUtils } from "../../utils";
+import { ComponentDefinition } from "aframe";
 
 interface AlOrbitControlState {
   controls: any; //THREE.OrbitControls;
   animationCache: AlCamera[];
 }
 
-interface AlOrbitControlObject extends AframeComponent {
+interface AlOrbitControlObject extends ComponentDefinition {
   dependencies: string[];
-  update(_oldData): void;
   tickFunction(): void;
-  tick(): void;
-  remove(): void;
   bindListeners(): void;
   addListeners(): void;
   removeListeners(): void;
@@ -21,10 +18,10 @@ interface AlOrbitControlObject extends AframeComponent {
   canvasMouseDown(event: MouseEvent): void;
   canvasWheel(event: WheelEvent): void;
   emitCameraState(): void;
-  catchAnimationCache(event: CustomEvent): void;
+  handleAnimationCache(event: CustomEvent): void;
 }
 
-export class AlOrbitControl implements AframeRegistryEntry {
+export class AlOrbitControlComponent implements AframeRegistryEntry {
   public static get Object(): AlOrbitControlObject {
     return {
       dependencies: ["camera"],
@@ -59,7 +56,7 @@ export class AlOrbitControl implements AframeRegistryEntry {
         this.canvasMouseDown = this.canvasMouseDown.bind(this);
         this.canvasWheel = this.canvasWheel.bind(this);
         this.emitCameraState = this.emitCameraState.bind(this);
-        this.catchAnimationCache = this.catchAnimationCache.bind(this);
+        this.handleAnimationCache = this.handleAnimationCache.bind(this);
       },
 
       addListeners() {
@@ -80,7 +77,7 @@ export class AlOrbitControl implements AframeRegistryEntry {
         });
         this.el.sceneEl.addEventListener(
           AlOrbitControlEvents.ANIMATION_STARTED,
-          this.catchAnimationCache,
+          this.handleAnimationCache,
           false
         );
       },
@@ -94,12 +91,12 @@ export class AlOrbitControl implements AframeRegistryEntry {
         this.el.sceneEl.canvas.removeEventListener("wheel", this.canvasWheel);
         this.el.sceneEl.removeEventListener(
           AlOrbitControlEvents.ANIMATION_STARTED,
-          this.catchAnimationCache,
+          this.handleAnimationCache,
           false
         );
       },
 
-      catchAnimationCache(event: CustomEvent) {
+      handleAnimationCache(event: CustomEvent) {
         this.state.animationCache = event.detail.slerpPath;
       },
 

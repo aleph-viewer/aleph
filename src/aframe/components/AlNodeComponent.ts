@@ -1,8 +1,9 @@
-import { AframeRegistryEntry, AframeComponent } from "../interfaces";
-import { Constants } from "../Constants";
-import { ShaderUtils } from "../utils";
-import { AlGraphEvents } from "../utils";
-import { AlGraphEntryType } from "../enums";
+import { AframeRegistryEntry } from "../../interfaces";
+import { Constants } from "../../Constants";
+import { ShaderUtils } from "../../utils";
+import { AlGraphEvents } from "../../utils";
+import { AlGraphEntryType } from "../../enums";
+import { ComponentDefinition } from "aframe";
 
 interface AlNodeState {
   camera: THREE.Camera;
@@ -18,11 +19,8 @@ interface AlNodeState {
   selected: boolean;
 }
 
-interface AlNodeObject extends AframeComponent {
-  update(oldData): void;
+interface AlNodeObject extends ComponentDefinition {
   tickFunction(): void;
-  tick(): void;
-  remove(): void;
   bindListeners(): void;
   addListeners(): void;
   removeListeners(): void;
@@ -32,7 +30,7 @@ interface AlNodeObject extends AframeComponent {
   pointerOut(_event: CustomEvent): void;
 }
 
-export class AlNode implements AframeRegistryEntry {
+export class AlNodeComponent implements AframeRegistryEntry {
   public static get Object(): AlNodeObject {
     return {
       schema: {

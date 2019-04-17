@@ -1,8 +1,9 @@
-import { AframeRegistryEntry, AframeComponent } from "../interfaces";
-import { ThreeUtils } from "../utils";
+import { AframeRegistryEntry } from "../../interfaces";
+import { ThreeUtils } from "../../utils";
+import { ComponentDefinition } from "aframe";
 
-export class AlBoundingBox implements AframeRegistryEntry {
-  public static get Object(): AframeComponent {
+export class AlBoundingBoxComponent implements AframeRegistryEntry {
+  public static get Object(): ComponentDefinition {
     return {
       schema: {
         color: { type: "string", default: "#f50057" },
@@ -29,7 +30,7 @@ export class AlBoundingBox implements AframeRegistryEntry {
       remove(): void {
         this.el.removeObject3D("mesh");
       }
-    } as AframeComponent;
+    } as ComponentDefinition;
   }
 
   public static get Tag(): string {

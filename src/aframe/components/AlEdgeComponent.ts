@@ -1,7 +1,8 @@
-import { AframeRegistryEntry, AframeComponent } from "../interfaces";
-import { Constants } from "../Constants";
-import { ThreeUtils, AlGraphEvents, ShaderUtils } from "../utils";
-import { AlGraphEntryType } from "../enums";
+import { AframeRegistryEntry } from "../../interfaces";
+import { Constants } from "../../Constants";
+import { ThreeUtils, AlGraphEvents, ShaderUtils } from "../../utils";
+import { AlGraphEntryType } from "../../enums";
+import { ComponentDefinition } from "aframe";
 
 interface AlEdgeState {
   selected: boolean;
@@ -14,11 +15,8 @@ interface AlEdgeState {
   outlineMesh: THREE.Mesh;
 }
 
-interface AlEdgeObject extends AframeComponent {
-  update(oldData): void;
+interface AlEdgeObject extends ComponentDefinition {
   tickFunction(): void;
-  tick(): void;
-  remove(): void;
   bindListeners(): void;
   addListeners(): void;
   removeListeners(): void;
@@ -27,7 +25,7 @@ interface AlEdgeObject extends AframeComponent {
   pointerOut(_event: CustomEvent): void;
 }
 
-export class AlEdge implements AframeRegistryEntry {
+export class AlEdgeComponent implements AframeRegistryEntry {
   public static get Object(): AlEdgeObject {
     return {
       schema: {
