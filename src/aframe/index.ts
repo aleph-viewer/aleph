@@ -7,7 +7,6 @@ import {
   AlGltfModelEvents
 } from "./components/AlGltfModelComponent";
 import { AlLookToCameraComponent } from "./components/AlLookToCameraComponent";
-import { AlNodePrimitive } from "./primitives/AlNodePrimitive";
 import { AlNodeComponent, AlNodeEvents } from "./components/AlNodeComponent";
 import {
   AlNodeSpawnerComponent,
@@ -34,7 +33,6 @@ export {
   AlLookToCameraComponent,
   AlNodeComponent,
   AlNodeEvents,
-  AlNodePrimitive,
   AlNodeSpawnerComponent,
   AlNodeSpawnerEvents,
   AlOrbitControlComponent,

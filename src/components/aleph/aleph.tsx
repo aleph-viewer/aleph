@@ -17,7 +17,6 @@ import {
   AlGltfModelComponent,
   AlLookToCameraComponent,
   AlNodeComponent,
-  AlNodePrimitive,
   AlNodeSpawnerComponent,
   AlOrbitControlComponent,
   AlRenderOrderComponent,
@@ -345,9 +344,6 @@ export class Aleph {
       AlAngleComponent.Object
     );
 
-    // aframe primitives
-    AframeUtils.registerPrimitive(AlNodePrimitive.Tag, AlNodePrimitive.Object);
-
     // redux
 
     this.store.setStore(configureStore({}));
@@ -599,13 +595,15 @@ export class Aleph {
       textOffset.multiplyScalar(node.scale);
 
       return (
-        <al-node
+        <a-entity
           class="collidable"
           id={nodeId}
           position={node.position}
-          alscale={node.scale}
-          alselected={`${this.selected === nodeId}`}
-          algraphenabled={`${this.graphEnabled}`}
+          al-node={`
+            scale: ${node.scale};
+            selected: ${this.selected === nodeId};
+            graphEnabled: ${this.graphEnabled};
+          `}
         >
           <a-entity
             text={`
@@ -622,7 +620,7 @@ export class Aleph {
             position={ThreeUtils.vector3ToString(textOffset)}
             id={`${nodeId}-label`}
           />
-        </al-node>
+        </a-entity>
       );
     });
   }
@@ -1379,7 +1377,6 @@ export class Aleph {
   private _addEventListeners(): void {
     document.addEventListener("keydown", this._keyDownHandler, false);
     document.addEventListener("keyup", this._keyUpHandler, false);
-    //document.addEventListener("mouseup", this._cameraUpdatedHandler, false);
 
     this._scene.addEventListener(
       AlOrbitControlEvents.ANIMATION_FINISHED,

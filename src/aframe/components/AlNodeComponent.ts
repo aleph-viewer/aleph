@@ -38,7 +38,7 @@ export class AlNodeComponent implements AframeRegistryEntry {
       schema: {
         scale: { type: "number", default: 1 },
         selected: { type: "boolean" },
-        graphenabled: { type: "boolean" }
+        graphEnabled: { type: "boolean" }
       },
 
       bindListeners(): void {
@@ -96,7 +96,7 @@ export class AlNodeComponent implements AframeRegistryEntry {
             true
           );
 
-          if (this.data.graphenabled) {
+          if (this.data.graphEnabled) {
             let state = this.state as AlNodeState;
             state.mouseDown = true;
             this.el.sceneEl.emit(AlGraphEvents.POINTER_DOWN, {}, true);
@@ -106,7 +106,7 @@ export class AlNodeComponent implements AframeRegistryEntry {
 
       pointerUp(_event: MouseEvent): void {
         let state = this.state as AlNodeState;
-        if (this.data.graphenabled) {
+        if (this.data.graphEnabled) {
           state.dragging = false;
           state.mouseDown = false;
           this.el.sceneEl.emit(AlGraphEvents.POINTER_UP, {}, true);
@@ -178,7 +178,7 @@ export class AlNodeComponent implements AframeRegistryEntry {
 
       tickFunction(): void {
         let state = this.state as AlNodeState;
-        if (this.data.graphenabled && state.dragging) {
+        if (this.data.graphEnabled && state.dragging) {
           this.el.sceneEl.emit(
             AlGraphEvents.DRAGGING,
             { id: this.el.id },
@@ -207,7 +207,7 @@ export class AlNodeComponent implements AframeRegistryEntry {
   }
 
   public static get Tag(): string {
-    return "alnode";
+    return "al-node";
   }
 }
 
