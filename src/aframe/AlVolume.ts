@@ -72,9 +72,7 @@ export class AlVolume implements AframeRegistryEntry {
             state.lutHelper.luts = AMI.LutHelper.presetLuts();
             state.lutHelper.lutsO = AMI.LutHelper.presetLutsO();
             state.stackhelper = new AMI.VolumeRenderHelper(state.stack);
-            state.stackhelper.uniforms.uTextureLUT.value =
-              state.lutHelper.texture;
-            state.stackhelper.uniforms.uLut.value = 1;
+            state.stackhelper.textureLUT = state.lutHelper.texture;
             break;
           }
         }

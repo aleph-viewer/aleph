@@ -776,7 +776,7 @@ export class Aleph {
     return (
       <a-scene
         embedded
-        renderer="colorManagement: true; sortObjects: true;"
+        renderer="colorManagement: true; sortObjects: true; webgl2: true;"
         vr-mode-ui="enabled: false"
         ref={el => (this._scene = el)}
       >

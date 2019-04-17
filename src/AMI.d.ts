@@ -17,12 +17,23 @@ declare namespace AMI {
   }
   class VolumeRenderHelper {
     constructor(...params);
-    uniforms: any;
     stack: any;
-    windowWidth: any;
-    windowCenter: any;
+    windowWidth: number;
+    steps: number;
+    windowCenter: number;
     orientationMaxIndex: any;
     children: any;
+    hasUniforms(): boolean;
+    textureLUT: THREE.Texture;
+  }
+  class VolumeRenderHelper2 {
+    constructor(...params);
+    stack: any;
+    clim1: number;
+    clim2: number;
+    orientationMaxIndex: any;
+    children: any;
+    textureLUT: THREE.Texture;
   }
   class LutHelper {
     constructor(el: any);
