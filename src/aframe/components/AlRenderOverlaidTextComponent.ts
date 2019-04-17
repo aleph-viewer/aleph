@@ -1,6 +1,6 @@
-import { AframeRegistryEntry, AframeComponent } from "../interfaces";
+import { AframeRegistryEntry, AframeComponent } from "../../interfaces";
 
-export class AlRenderOverlaidText implements AframeRegistryEntry {
+export class AlRenderOverlaidTextComponent implements AframeRegistryEntry {
   public static get Object(): AframeComponent {
     return {
       schema: {},

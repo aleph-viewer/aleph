@@ -1,7 +1,11 @@
-import { AframeRegistryEntry, AframeComponent, AlCamera } from "../interfaces";
-import { Constants } from "../Constants";
-import { ThreeUtils } from "../utils";
-import { AlNodeSpawnerEvents, AlNodeEvents } from ".";
+import {
+  AframeRegistryEntry,
+  AframeComponent,
+  AlCamera
+} from "../../interfaces";
+import { Constants } from "../../Constants";
+import { ThreeUtils } from "../../utils";
+import { AlNodeSpawnerEvents, AlNodeEvents } from "..";
 
 interface AlOrbitControlState {
   controls: any; //THREE.OrbitControls;
@@ -24,7 +28,7 @@ interface AlOrbitControlObject extends AframeComponent {
   catchAnimationCache(event: CustomEvent): void;
 }
 
-export class AlOrbitControl implements AframeRegistryEntry {
+export class AlOrbitControlComponent implements AframeRegistryEntry {
   public static get Object(): AlOrbitControlObject {
     return {
       dependencies: ["camera"],

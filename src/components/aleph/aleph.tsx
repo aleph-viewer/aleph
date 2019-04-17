@@ -10,6 +10,24 @@ import {
 import { Store, Action } from "@stencil/redux";
 import { KeyDown } from "@edsilv/key-codes";
 import {
+  AlAngleComponent,
+  AlBoundingBoxComponent,
+  AlEdgeComponent,
+  AlFixedToOrbitCameraComponent,
+  AlGltfModelComponent,
+  AlLookToCameraComponent,
+  AlNodeComponent,
+  AlNodePrimitive,
+  AlNodeSpawnerComponent,
+  AlOrbitControlComponent,
+  AlRenderOrderComponent,
+  AlRenderOverlaidComponent,
+  AlRenderOverlaidLineComponent,
+  AlRenderOverlaidTextComponent,
+  AlSpinnerComponent,
+  AlVolumeComponent
+} from "../../aframe";
+import {
   appClearAngles,
   appClearEdges,
   appClearNodes,
@@ -38,17 +56,11 @@ import {
   appSetVolumeWindowWidth
 } from "../../redux/actions";
 import { configureStore } from "../../redux/store";
-import {
-  AlNode,
-  AlCamera,
-  AlAppState,
-  AlEdge,
-  AlAngle
-} from "../../interfaces";
+import { AlNode, AlCamera, AlEdge, AlAngle } from "../../interfaces";
 import {
   GetUtils,
   ThreeUtils,
-  CreateUtils,
+  AframeUtils,
   GraphUtils,
   AlGraphEvents,
   AMIUtils
@@ -62,7 +74,7 @@ import {
 } from "../../aframe";
 import { AlGraphEntryType } from "../../enums";
 import { AlGraph } from "../../interfaces/AlGraph";
-import { AlVolumeEvents } from "../../aframe/AlVolume";
+import { AlVolumeEvents } from "../../aframe/components/AlVolumeComponent";
 type Entity = import("aframe").Entity;
 type Scene = import("aframe").Scene;
 //#endregion
@@ -79,14 +91,13 @@ export class Aleph {
   private _boundingBox: THREE.Box3;
   private _boundingSphereRadius: number;
   private _camera: Entity;
-  private _graphIntersection: string | null = null;
+  private _hovered: string | null = null;
   private _isShiftDown: boolean = false;
   private _mesh: THREE.Mesh;
   private _scene: Scene;
   private _targetEntity: Entity;
   private _validTarget: boolean;
   private _volumeHelper: AMI.VolumeRenderHelper;
-  private _volumeCaster: THREE.Raycaster;
 
   @Prop({ context: "store" }) store: Store;
   @Prop() dracoDecoderPath: string | null;
@@ -276,7 +287,68 @@ export class Aleph {
   @Event() loaded: EventEmitter;
 
   componentWillLoad() {
-    CreateUtils.createAframeComponents();
+    // aframe geometries
+    AframeUtils.registerGeometry(
+      AlSpinnerComponent.Tag,
+      AlSpinnerComponent.Object
+    );
+
+    // aframe components
+    AframeUtils.registerComponent(AlNodeComponent.Tag, AlNodeComponent.Object);
+    AframeUtils.registerComponent(
+      AlBoundingBoxComponent.Tag,
+      AlBoundingBoxComponent.Object
+    );
+    AframeUtils.registerComponent(
+      AlGltfModelComponent.Tag,
+      AlGltfModelComponent.Object
+    );
+    AframeUtils.registerComponent(
+      AlVolumeComponent.Tag,
+      AlVolumeComponent.Object
+    );
+    AframeUtils.registerComponent(
+      AlNodeSpawnerComponent.Tag,
+      AlNodeSpawnerComponent.Object
+    );
+    AframeUtils.registerComponent(
+      AlOrbitControlComponent.Tag,
+      AlOrbitControlComponent.Object
+    );
+    AframeUtils.registerComponent(
+      AlFixedToOrbitCameraComponent.Tag,
+      AlFixedToOrbitCameraComponent.Object
+    );
+    AframeUtils.registerComponent(
+      AlLookToCameraComponent.Tag,
+      AlLookToCameraComponent.Object
+    );
+    AframeUtils.registerComponent(
+      AlRenderOverlaidComponent.Tag,
+      AlRenderOverlaidComponent.Object
+    );
+    AframeUtils.registerComponent(
+      AlRenderOverlaidTextComponent.Tag,
+      AlRenderOverlaidTextComponent.Object
+    );
+    AframeUtils.registerComponent(
+      AlRenderOverlaidLineComponent.Tag,
+      AlRenderOverlaidLineComponent.Object
+    );
+    AframeUtils.registerComponent(
+      AlRenderOrderComponent.Tag,
+      AlRenderOrderComponent.Object
+    );
+    AframeUtils.registerComponent(AlEdgeComponent.Tag, AlEdgeComponent.Object);
+    AframeUtils.registerComponent(
+      AlAngleComponent.Tag,
+      AlAngleComponent.Object
+    );
+
+    // aframe primitives
+    AframeUtils.registerPrimitive(AlNodePrimitive.Tag, AlNodePrimitive.Object);
+
+    // redux
 
     this.store.setStore(configureStore({}));
 
@@ -362,10 +434,8 @@ export class Aleph {
     this._pointerDownHandler = this._pointerDownHandler.bind(this);
     this._pointerUpHandler = this._pointerUpHandler.bind(this);
     this._cameraUpdatedHandler = this._cameraUpdatedHandler.bind(this);
-    this._intersectingGraphHandler = this._intersectingGraphHandler.bind(this);
-    this._intersectionGraphClearedHandler = this._intersectionGraphClearedHandler.bind(
-      this
-    );
+    this._pointerOverHandler = this._pointerOverHandler.bind(this);
+    this._pointerOutHandler = this._pointerOutHandler.bind(this);
     this._nodeMovedEventHandler = this._nodeMovedEventHandler.bind(this);
     this._graphSelectedHandler = this._graphSelectedHandler.bind(this);
     this._spawnNodeEventHandler = this._spawnNodeEventHandler.bind(this);
@@ -529,15 +599,13 @@ export class Aleph {
       textOffset.multiplyScalar(node.scale);
 
       return (
-        <a-entity
+        <al-node
           class="collidable"
           id={nodeId}
           position={node.position}
-          al-node={`
-            scale: ${node.scale};
-            selected: ${this.selected === nodeId};
-            graphEnabled: ${this.graphEnabled};
-          `}
+          alscale={node.scale}
+          alselected={`${this.selected === nodeId}`}
+          algraphenabled={`${this.graphEnabled}`}
         >
           <a-entity
             text={`
@@ -554,7 +622,7 @@ export class Aleph {
             position={ThreeUtils.vector3ToString(textOffset)}
             id={`${nodeId}-label`}
           />
-        </a-entity>
+        </al-node>
       );
     });
   }
@@ -1134,12 +1202,12 @@ export class Aleph {
     ThreeUtils.enableOrbitControls(this._camera, false);
   }
 
-  private _intersectionGraphClearedHandler(_event: CustomEvent): void {
-    this._graphIntersection = null;
+  private _pointerOutHandler(_event: CustomEvent): void {
+    this._hovered = null;
   }
 
-  private _intersectingGraphHandler(event: CustomEvent): void {
-    this._graphIntersection = event.detail.id;
+  private _pointerOverHandler(event: CustomEvent): void {
+    this._hovered = event.detail.id;
   }
 
   private _spawnNodeEventHandler(event: CustomEvent): void {
@@ -1147,7 +1215,7 @@ export class Aleph {
     if (
       this.graphEnabled && // Nodes are enabled
       this._validTarget && // Target is valid
-      this._graphIntersection === null // Not intersecting a Node already
+      this._hovered === null // Not intersecting a Node already
     ) {
       let intersection: THREE.Intersection =
         event.detail.aframeEvent.detail.intersection;
@@ -1225,27 +1293,27 @@ export class Aleph {
     switch (type) {
       case AlGraphEntryType.NODE: {
         if (
-          this._graphIntersection !== null &&
-          this.nodes.has(this._graphIntersection) && // We're intersecting a node
+          this._hovered !== null &&
+          this.nodes.has(this._hovered) && // We're intersecting a node
           (this.selected !== null && this.nodes.has(this.selected)) && // We have a node already selected
-          this.selected !== this._graphIntersection && // The selected & intersecting elements are not the same
+          this.selected !== this._hovered && // The selected & intersecting elements are not the same
           this._isShiftDown // The shift key is down
         ) {
-          this._createEdge(this.selected, this._graphIntersection);
+          this._createEdge(this.selected, this._hovered);
         }
         this._selectNode(id);
         break;
       }
       case AlGraphEntryType.EDGE: {
         if (
-          this._graphIntersection !== null &&
-          this.edges.has(this._graphIntersection) && // We're intersecting an edge
+          this._hovered !== null &&
+          this.edges.has(this._hovered) && // We're intersecting an edge
           (this.selected !== null && this.edges.has(this.selected)) && // We have an edge already selected
-          this.selected !== this._graphIntersection && // The selected & intersecting elements are not the same
+          this.selected !== this._hovered && // The selected & intersecting elements are not the same
           this._isShiftDown // The shift key is down
         ) {
           // We're intersecting an edge
-          this._createAngle(this.selected, this._graphIntersection);
+          this._createAngle(this.selected, this._hovered);
         }
         this._selectEdge(id);
         break;
@@ -1326,7 +1394,7 @@ export class Aleph {
       false
     );
 
-    document.addEventListener(
+    this._scene.addEventListener(
       AlGraphEvents.POINTER_UP,
       this._pointerUpHandler,
       false
@@ -1372,13 +1440,13 @@ export class Aleph {
 
     this._scene.addEventListener(
       AlGraphEvents.POINTER_OVER,
-      this._intersectingGraphHandler,
+      this._pointerOverHandler,
       false
     );
 
     this._scene.addEventListener(
       AlGraphEvents.POINTER_OUT,
-      this._intersectionGraphClearedHandler,
+      this._pointerOutHandler,
       false
     );
   }

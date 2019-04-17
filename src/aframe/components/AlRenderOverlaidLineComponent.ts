@@ -1,7 +1,7 @@
-import { AframeRegistryEntry, AframeComponent } from "../interfaces";
-import { Constants } from "../Constants";
+import { AframeRegistryEntry, AframeComponent } from "../../interfaces";
+import { Constants } from "../../Constants";
 
-export class AlRenderOverlaidLine implements AframeRegistryEntry {
+export class AlRenderOverlaidLineComponent implements AframeRegistryEntry {
   public static get Object(): AframeComponent {
     return {
       schema: {},

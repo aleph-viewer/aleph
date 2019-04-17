@@ -1,6 +1,6 @@
-import { AframeRegistryEntry, AframeComponent } from "../interfaces";
-import { ThreeUtils } from "../utils";
-import { Constants } from "../Constants";
+import { AframeRegistryEntry, AframeComponent } from "../../interfaces";
+import { ThreeUtils } from "../../utils";
+import { Constants } from "../../Constants";
 interface AlFixedToOrbitCameraState {
   distanceFromTarget: number;
   target: THREE.Vector3;
@@ -12,7 +12,7 @@ interface AlFixedToOrbitCameraObject extends AframeComponent {
   tick(): void;
 }
 
-export class AlFixedToOrbitCamera implements AframeRegistryEntry {
+export class AlFixedToOrbitCameraComponent implements AframeRegistryEntry {
   public static get Object(): AlFixedToOrbitCameraObject {
     return {
       schema: {

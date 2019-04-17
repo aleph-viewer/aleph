@@ -1,37 +1,48 @@
-import { AlAngle } from "./AlAngle";
-import { AlBoundingBox } from "./AlBoundingBox";
-import { AlEdge } from "./AlEdge";
-import { AlFixedToOrbitCamera } from "./AlFixedToOrbitCamera";
-import { AlGltfModel, AlGltfModelEvents } from "./AlGltfModel";
-import { AlLookToCamera } from "./AlLookToCamera";
-import { AlNode, AlNodeEvents } from "./AlNode";
-import { AlNodeSpawner, AlNodeSpawnerEvents } from "./AlNodeSpawner";
-import { AlOrbitControl, AlOrbitControlEvents } from "./AlOrbitControl";
-import { AlRenderOrder } from "./AlRenderOrder";
-import { AlRenderOverlaid } from "./AlRenderOverlaid";
-import { AlRenderOverlaidLine } from "./AlRenderOverlaidLine";
-import { AlRenderOverlaidText } from "./AlRenderOverlaidText";
-import { AlSpinner } from "./AlSpinner";
-import { AlVolume } from "./AlVolume";
+import { AlAngleComponent } from "./components/AlAngleComponent";
+import { AlBoundingBoxComponent } from "./components/AlBoundingBoxComponent";
+import { AlEdgeComponent } from "./components/AlEdgeComponent";
+import { AlFixedToOrbitCameraComponent } from "./components/AlFixedToOrbitCameraComponent";
+import {
+  AlGltfModelComponent,
+  AlGltfModelEvents
+} from "./components/AlGltfModelComponent";
+import { AlLookToCameraComponent } from "./components/AlLookToCameraComponent";
+import { AlNodePrimitive } from "./primitives/AlNodePrimitive";
+import { AlNodeComponent, AlNodeEvents } from "./components/AlNodeComponent";
+import {
+  AlNodeSpawnerComponent,
+  AlNodeSpawnerEvents
+} from "./components/AlNodeSpawnerComponent";
+import {
+  AlOrbitControlComponent,
+  AlOrbitControlEvents
+} from "./components/AlOrbitControlComponent";
+import { AlRenderOrderComponent } from "./components/AlRenderOrderComponent";
+import { AlRenderOverlaidComponent } from "./components/AlRenderOverlaidComponent";
+import { AlRenderOverlaidLineComponent } from "./components/AlRenderOverlaidLineComponent";
+import { AlRenderOverlaidTextComponent } from "./components/AlRenderOverlaidTextComponent";
+import { AlSpinnerComponent } from "./components/AlSpinnerComponent";
+import { AlVolumeComponent } from "./components/AlVolumeComponent";
 
 export {
-  AlAngle,
-  AlBoundingBox,
-  AlEdge,
-  AlFixedToOrbitCamera,
-  AlGltfModel,
+  AlAngleComponent,
+  AlBoundingBoxComponent,
+  AlEdgeComponent,
+  AlFixedToOrbitCameraComponent,
+  AlGltfModelComponent,
   AlGltfModelEvents,
-  AlLookToCamera,
-  AlNode,
+  AlLookToCameraComponent,
+  AlNodeComponent,
   AlNodeEvents,
-  AlNodeSpawner,
+  AlNodePrimitive,
+  AlNodeSpawnerComponent,
   AlNodeSpawnerEvents,
-  AlOrbitControl,
+  AlOrbitControlComponent,
   AlOrbitControlEvents,
-  AlRenderOrder,
-  AlRenderOverlaid,
-  AlRenderOverlaidLine,
-  AlRenderOverlaidText,
-  AlSpinner,
-  AlVolume
+  AlRenderOrderComponent,
+  AlRenderOverlaidComponent,
+  AlRenderOverlaidLineComponent,
+  AlRenderOverlaidTextComponent,
+  AlSpinnerComponent,
+  AlVolumeComponent
 };

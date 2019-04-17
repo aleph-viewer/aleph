@@ -1,7 +1,7 @@
-import { AframeRegistryEntry, AframeComponent } from "../interfaces";
-import { ThreeUtils } from "../utils";
+import { AframeRegistryEntry, AframeComponent } from "../../interfaces";
+import { ThreeUtils } from "../../utils";
 
-export class AlBoundingBox implements AframeRegistryEntry {
+export class AlBoundingBoxComponent implements AframeRegistryEntry {
   public static get Object(): AframeComponent {
     return {
       schema: {

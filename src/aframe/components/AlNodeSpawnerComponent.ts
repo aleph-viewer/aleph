@@ -1,6 +1,6 @@
-import { AframeRegistryEntry, AframeComponent } from "../interfaces";
-import { ThreeUtils } from "../utils";
-import { AlGraphEvents } from "../utils/GraphUtils";
+import { AframeRegistryEntry, AframeComponent } from "../../interfaces";
+import { ThreeUtils } from "../../utils";
+import { AlGraphEvents } from "../../utils/GraphUtils";
 
 interface AlNodeSpawnerState {
   left: boolean;
@@ -21,7 +21,7 @@ interface AlNodeSpawnerObject extends AframeComponent {
   pointerUp(event: CustomEvent): void;
 }
 
-export class AlNodeSpawner implements AframeRegistryEntry {
+export class AlNodeSpawnerComponent implements AframeRegistryEntry {
   public static get Object(): AlNodeSpawnerObject {
     return {
       schema: {

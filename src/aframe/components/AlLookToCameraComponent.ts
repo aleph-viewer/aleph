@@ -1,12 +1,12 @@
-import { AframeRegistryEntry, AframeComponent } from "../interfaces";
-import { Constants } from "../Constants";
+import { AframeRegistryEntry, AframeComponent } from "../../interfaces";
+import { Constants } from "../../Constants";
 
 interface AlLookToCameraObject extends AframeComponent {
   tickFunction(): void;
   tick(): void;
 }
 
-export class AlLookToCamera implements AframeRegistryEntry {
+export class AlLookToCameraComponent implements AframeRegistryEntry {
   public static get Object(): AlLookToCameraObject {
     return {
       schema: {},

@@ -1,8 +1,8 @@
-import { AframeRegistryEntry, AframeComponent } from "../interfaces";
-import { Constants } from "../Constants";
-import { ShaderUtils } from "../utils";
-import { AlGraphEvents } from "../utils";
-import { AlGraphEntryType } from "../enums";
+import { AframeRegistryEntry, AframeComponent } from "../../interfaces";
+import { Constants } from "../../Constants";
+import { ShaderUtils } from "../../utils";
+import { AlGraphEvents } from "../../utils";
+import { AlGraphEntryType } from "../../enums";
 
 interface AlNodeState {
   camera: THREE.Camera;
@@ -32,13 +32,13 @@ interface AlNodeObject extends AframeComponent {
   pointerOut(_event: CustomEvent): void;
 }
 
-export class AlNode implements AframeRegistryEntry {
+export class AlNodeComponent implements AframeRegistryEntry {
   public static get Object(): AlNodeObject {
     return {
       schema: {
         scale: { type: "number", default: 1 },
         selected: { type: "boolean" },
-        graphEnabled: { type: "boolean" }
+        graphenabled: { type: "boolean" }
       },
 
       bindListeners(): void {
@@ -96,7 +96,7 @@ export class AlNode implements AframeRegistryEntry {
             true
           );
 
-          if (this.data.graphEnabled) {
+          if (this.data.graphenabled) {
             let state = this.state as AlNodeState;
             state.mouseDown = true;
             this.el.sceneEl.emit(AlGraphEvents.POINTER_DOWN, {}, true);
@@ -106,7 +106,7 @@ export class AlNode implements AframeRegistryEntry {
 
       pointerUp(_event: MouseEvent): void {
         let state = this.state as AlNodeState;
-        if (this.data.graphEnabled) {
+        if (this.data.graphenabled) {
           state.dragging = false;
           state.mouseDown = false;
           this.el.sceneEl.emit(AlGraphEvents.POINTER_UP, {}, true);
@@ -178,7 +178,7 @@ export class AlNode implements AframeRegistryEntry {
 
       tickFunction(): void {
         let state = this.state as AlNodeState;
-        if (this.data.graphEnabled && state.dragging) {
+        if (this.data.graphenabled && state.dragging) {
           this.el.sceneEl.emit(
             AlGraphEvents.DRAGGING,
             { id: this.el.id },
@@ -207,7 +207,7 @@ export class AlNode implements AframeRegistryEntry {
   }
 
   public static get Tag(): string {
-    return "al-node";
+    return "alnode";
   }
 }
 
