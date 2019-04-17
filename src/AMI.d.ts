@@ -7,33 +7,33 @@ declare namespace AMI {
     load(files: string[]): Promise<void>;
   }
   class StackHelper {
-    constructor(...params);
+    constructor(stack: any, isWebgl2: boolean);
     bbox: any;
     border: any;
     stack: any;
     slice: any;
     index: any;
     orientation: any;
+    hasUniforms(): any;
   }
   class VolumeRenderHelper {
-    constructor(...params);
+    constructor(stack: any, isWebgl2: boolean);
     stack: any;
     windowWidth: number;
     steps: number;
     windowCenter: number;
-    orientationMaxIndex: any;
     children: any;
-    hasUniforms(): boolean;
     textureLUT: THREE.Texture;
+    hasUniforms(): any;
   }
   class VolumeRenderHelper2 {
-    constructor(...params);
+    constructor(stack: any, isWebgl2: boolean);
     stack: any;
-    clim1: number;
-    clim2: number;
-    orientationMaxIndex: any;
+    windowWidth: number;
+    windowCenter: number;
     children: any;
     textureLUT: THREE.Texture;
+    hasUniforms(): any;
   }
   class LutHelper {
     constructor(el: any);
