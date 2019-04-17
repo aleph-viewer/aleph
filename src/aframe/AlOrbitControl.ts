@@ -20,7 +20,7 @@ interface AlOrbitControlObject extends AframeComponent {
   canvasMouseUp(event: MouseEvent): void;
   canvasMouseDown(event: MouseEvent): void;
   canvasWheel(event: WheelEvent): void;
-  emitNewSerial(): void;
+  emitCameraState(): void;
   catchAnimationCache(event: CustomEvent): void;
 }
 
@@ -58,12 +58,12 @@ export class AlOrbitControl implements AframeRegistryEntry {
         this.canvasMouseUp = this.canvasMouseUp.bind(this);
         this.canvasMouseDown = this.canvasMouseDown.bind(this);
         this.canvasWheel = this.canvasWheel.bind(this);
-        this.emitNewSerial = this.emitNewSerial.bind(this);
+        this.emitCameraState = this.emitCameraState.bind(this);
         this.catchAnimationCache = this.catchAnimationCache.bind(this);
       },
 
       addListeners() {
-        this.el.sceneEl.canvas.addEventListener("mouseup", this.canvasMouseUp, {
+        document.addEventListener("mouseup", this.canvasMouseUp, {
           capture: false,
           once: false,
           passive: true
@@ -86,10 +86,7 @@ export class AlOrbitControl implements AframeRegistryEntry {
       },
 
       removeListeners() {
-        this.el.sceneEl.canvas.removeEventListener(
-          "mouseup",
-          this.canvasMouseUp
-        );
+        document.removeEventListener("mouseup", this.canvasMouseUp);
         this.el.sceneEl.canvas.removeEventListener(
           "mousedown",
           this.canvasMouseDown
@@ -106,7 +103,7 @@ export class AlOrbitControl implements AframeRegistryEntry {
         this.state.animationCache = event.detail.slerpPath;
       },
 
-      emitNewSerial() {
+      emitCameraState() {
         let res = {
           position: this.state.controls.object.position,
           target: this.state.controls.target
@@ -123,7 +120,7 @@ export class AlOrbitControl implements AframeRegistryEntry {
         let controls = this.state.controls;
 
         if (controls.enabled) {
-          this.emitNewSerial();
+          this.emitCameraState();
         }
       },
 
@@ -132,10 +129,7 @@ export class AlOrbitControl implements AframeRegistryEntry {
       },
 
       canvasWheel(_event: WheelEvent) {
-        //window.clearTimeout(this.canvasWheel);
-        //this.canvasWheel = ThreeUtils.waitOneFrame(() => {
-        this.emitNewSerial();
-        //});
+        this.emitCameraState();
       },
 
       init() {
@@ -174,7 +168,7 @@ export class AlOrbitControl implements AframeRegistryEntry {
 
         // wait a frame before emitting initialised event
         ThreeUtils.waitOneFrame(() => {
-          this.emitNewSerial();
+          this.emitCameraState();
         });
       },
 

@@ -361,9 +361,9 @@ export class Aleph {
     this._animationFinished = this._animationFinished.bind(this);
     this._keyDownHandler = this._keyDownHandler.bind(this);
     this._keyUpHandler = this._keyUpHandler.bind(this);
-    this._controlsDisabledHandler = this._controlsDisabledHandler.bind(this);
-    this._controlsEnabledHandler = this._controlsEnabledHandler.bind(this);
-    this._controlsUpdatedHandler = this._controlsUpdatedHandler.bind(this);
+    this._pointerDownHandler = this._pointerDownHandler.bind(this);
+    this._pointerUpHandler = this._pointerUpHandler.bind(this);
+    this._cameraUpdatedHandler = this._cameraUpdatedHandler.bind(this);
     this._intersectingGraphHandler = this._intersectingGraphHandler.bind(this);
     this._intersectionGraphClearedHandler = this._intersectionGraphClearedHandler.bind(
       this
@@ -1125,25 +1125,25 @@ export class Aleph {
     this._isShiftDown = false;
   }
 
-  private _controlsUpdatedHandler(event: CustomEvent): void {
+  private _cameraUpdatedHandler(event: CustomEvent): void {
     this.appSetCamera(event.detail.cameraSerial);
   }
 
-  private _controlsEnabledHandler(_event: CustomEvent): void {
+  private _pointerUpHandler(_event: CustomEvent): void {
     this.appSetControlsEnabled(true);
-    ThreeUtils.enableCamera(this._camera, true);
+    ThreeUtils.enableOrbitControls(this._camera, true);
   }
 
-  private _controlsDisabledHandler(_event: CustomEvent): void {
+  private _pointerDownHandler(_event: CustomEvent): void {
     this.appSetControlsEnabled(false);
-    ThreeUtils.enableCamera(this._camera, false);
+    ThreeUtils.enableOrbitControls(this._camera, false);
   }
 
-  private _intersectionGraphClearedHandler(_event): void {
+  private _intersectionGraphClearedHandler(_event: CustomEvent): void {
     this._graphIntersection = null;
   }
 
-  private _intersectingGraphHandler(event): void {
+  private _intersectingGraphHandler(event: CustomEvent): void {
     this._graphIntersection = event.detail.id;
   }
 
@@ -1316,6 +1316,7 @@ export class Aleph {
   private _addEventListeners(): void {
     document.addEventListener("keydown", this._keyDownHandler, false);
     document.addEventListener("keyup", this._keyUpHandler, false);
+    //document.addEventListener("mouseup", this._cameraUpdatedHandler, false);
 
     this._scene.addEventListener(
       AlOrbitControlEvents.ANIMATION_FINISHED,
@@ -1323,21 +1324,22 @@ export class Aleph {
       false
     );
 
+    // happens on mouseup and mousewheel passing camera state
     this._scene.addEventListener(
       AlOrbitControlEvents.UPDATED,
-      this._controlsUpdatedHandler,
+      this._cameraUpdatedHandler,
       false
     );
 
-    this._scene.addEventListener(
+    document.addEventListener(
       AlGraphEvents.POINTER_UP,
-      this._controlsEnabledHandler,
+      this._pointerUpHandler,
       false
     );
 
     this._scene.addEventListener(
       AlGraphEvents.POINTER_DOWN,
-      this._controlsDisabledHandler,
+      this._pointerDownHandler,
       false
     );
 
