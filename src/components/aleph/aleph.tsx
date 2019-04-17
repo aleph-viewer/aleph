@@ -1121,7 +1121,6 @@ export class Aleph {
   }
 
   private _cameraUpdatedHandler(event: CustomEvent): void {
-    console.log("update");
     this.appSetCamera(event.detail.cameraSerial);
   }
 
