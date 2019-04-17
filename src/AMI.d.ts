@@ -22,6 +22,7 @@ declare namespace AMI {
     windowWidth: any;
     windowCenter: any;
     orientationMaxIndex: any;
+    children: any;
   }
   class LutHelper {
     constructor(el: any);

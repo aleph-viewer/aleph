@@ -125,22 +125,23 @@ export class AlNodeSpawner implements AframeRegistryEntry {
 
       pointerDown(_event: CustomEvent) {
         if (this.data.graphEnabled) {
-          //console.log("spawner-emit: ", AlNodeEvents.CONTROLS_DISABLED);
           this.el.sceneEl.emit(AlGraphEvents.POINTER_DOWN, {}, false);
         }
       },
 
       pointerUp(_event: CustomEvent) {
         if (this.data.graphEnabled) {
-          //console.log("spawner-emit: ", AlNodeEvents.CONTROLS_ENABLED);
           this.el.sceneEl.emit(AlGraphEvents.POINTER_UP, {}, false);
         }
       },
 
       elClick(event: CustomEvent) {
         if (this.state.left && this.data.graphEnabled) {
-          //console.log("spawner-emit: ", AlNodeSpawnerEvents.ADD_NODE);
-          this.el.sceneEl.emit(AlNodeSpawnerEvents.ADD_NODE, event, false);
+          this.el.sceneEl.emit(
+            AlNodeSpawnerEvents.ADD_NODE,
+            { aframeEvent: event },
+            false
+          );
         }
       },
 

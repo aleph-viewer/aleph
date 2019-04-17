@@ -86,6 +86,7 @@ export class Aleph {
   private _targetEntity: Entity;
   private _validTarget: boolean;
   private _volumeHelper: AMI.VolumeRenderHelper;
+  private _volumeCaster: THREE.Raycaster;
 
   @Prop({ context: "store" }) store: Store;
   @Prop() dracoDecoderPath: string | null;
@@ -486,7 +487,6 @@ export class Aleph {
               volumeWindowWidth: ${this.volumeWindowWidth};
             `}
             position="0 0 0"
-            scale="1 1 1"
             ref={(el: Entity) => (this._targetEntity = el)}
           />
         );
@@ -745,7 +745,7 @@ export class Aleph {
         far={Constants.cameraValues.far}
         id="mainCamera"
         cursor="rayOrigin: mouse"
-        raycaster="objects: .collidable"
+        raycaster="objects: .collidable;"
         al-orbit-control={`
           maxPolarAngle: ${Constants.cameraValues.maxPolarAngle};
           minDistance: ${Constants.cameraValues.minDistance};
@@ -1150,7 +1150,8 @@ export class Aleph {
       this._validTarget && // Target is valid
       this._graphIntersection === null // Not intersecting a Node already
     ) {
-      let intersection: THREE.Intersection = event.detail.detail.intersection;
+      let intersection: THREE.Intersection =
+        event.detail.aframeEvent.detail.intersection;
 
       const nodeId: string = GraphUtils.getNextId(
         AlGraphEntryType.NODE,
@@ -1159,30 +1160,27 @@ export class Aleph {
 
       let newNode: AlNode;
 
-      if (this.displayMode === DisplayMode.VOLUME) {
-        let direction = (this._camera.getAttribute("position") as THREE.Vector3)
-          .clone()
-          .sub(intersection.point.clone())
-          .normalize();
-
+      if (this.displayMode === DisplayMode.VOLUME && intersection) {
         let hitPosition = new THREE.Vector3();
         let hitNormal = new THREE.Vector3();
-        AMIUtils.volumeRay(
+
+        let rayResult = AMIUtils.volumeRay(
           this._volumeHelper,
-          intersection.point,
-          direction,
+          this._camera.object3D.children[0].position.clone(),
+          this._camera.getAttribute("raycaster").direction,
           Constants.cameraValues.far,
           hitPosition,
           hitNormal
         );
-        console.log("spawn-node: ", hitPosition);
-        newNode = {
-          targetId: "0",
-          position: ThreeUtils.vector3ToString(hitPosition),
-          scale: this._boundingSphereRadius / Constants.nodeSizeRatio,
-          text: nodeId
-        };
-      } else {
+
+        if (rayResult) {
+          newNode = {
+            position: ThreeUtils.vector3ToString(hitPosition),
+            scale: this._boundingSphereRadius / Constants.nodeSizeRatio,
+            text: nodeId
+          };
+        }
+      } else if (intersection) {
         newNode = {
           targetId: "0",
           position: ThreeUtils.vector3ToString(intersection.point),
@@ -1191,16 +1189,17 @@ export class Aleph {
         };
       }
 
-      const previousSelected = this.selected;
+      if (newNode) {
+        const previousSelected = this.selected;
+        this._setNode([nodeId, newNode]);
 
-      this._setNode([nodeId, newNode]);
-
-      if (
-        this._isShiftDown && // Shift is down
-        this.nodes.has(previousSelected) // A Node is already selected
-      ) {
-        this._createEdge(previousSelected, nodeId);
-        this._selectNode(nodeId);
+        if (
+          this._isShiftDown && // Shift is down
+          this.nodes.has(previousSelected) // A Node is already selected
+        ) {
+          this._createEdge(previousSelected, nodeId);
+          this._selectNode(nodeId);
+        }
       }
     }
   }
@@ -1276,23 +1275,28 @@ export class Aleph {
     }
 
     if (intersection && this.displayMode === DisplayMode.VOLUME) {
-      let direction = (this._camera.getAttribute("position") as THREE.Vector3)
-        .clone()
-        .sub(intersection.point.clone())
-        .normalize();
-
       let hitPosition = new THREE.Vector3();
       let hitNormal = new THREE.Vector3();
-      AMIUtils.volumeRay(
+
+      let rayResult = AMIUtils.volumeRay(
         this._volumeHelper,
-        intersection.point,
-        direction,
+        this._camera.object3D.children[0].position.clone(),
+        this._camera.getAttribute("raycaster").direction,
         Constants.cameraValues.far,
         hitPosition,
         hitNormal
       );
 
-      console.log("node-moved: ", hitPosition);
+      if (rayResult && intersection) {
+        this._setNode([
+          nodeId,
+          {
+            position: ThreeUtils.vector3ToString(hitPosition)
+          }
+        ]);
+        const eventName = nodeId + Constants.movedEventString;
+        this._scene.emit(eventName, {}, true);
+      }
     } else if (intersection && this.displayMode !== DisplayMode.VOLUME) {
       this._setNode([
         nodeId,

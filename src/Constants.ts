@@ -12,7 +12,7 @@ export class Constants {
   static topLayerRenderOrder = 999;
   static angleUnitsDecimalPlaces = 3;
   static edgeSize = 0.005;
-
+  static stackSpaceMultiplier = { x: 10, y: 10, z: 10 };
   static maxAnimationSteps = 50;
 
   static minFrameMS = 15; // Should never be higher than the returned frame time
