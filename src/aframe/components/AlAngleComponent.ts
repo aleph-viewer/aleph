@@ -2,7 +2,7 @@ import { AframeRegistryEntry } from "../../interfaces";
 import { Constants } from "../../Constants";
 import { ThreeUtils, AlGraphEvents, ShaderUtils } from "../../utils";
 import { AlGraphEntryType } from "../../enums";
-import { ComponentDefinition } from "aframe";
+import { ComponentDefinition, Entity } from "aframe";
 
 interface AlAngleState {
   selected: boolean;
@@ -15,7 +15,7 @@ interface AlAngleState {
   mesh: THREE.Mesh;
 }
 
-interface AlAngleObject extends ComponentDefinition {
+interface AlAngleDefinition extends ComponentDefinition {
   tickFunction(): void;
   remove(): void;
   bindListeners(): void;
@@ -27,7 +27,7 @@ interface AlAngleObject extends ComponentDefinition {
 }
 
 export class AlAngleComponent implements AframeRegistryEntry {
-  public static get Object(): AlAngleObject {
+  public static get Object(): AlAngleDefinition {
     return {
       schema: {
         selected: { type: "boolean" },
@@ -193,6 +193,7 @@ export class AlAngleComponent implements AframeRegistryEntry {
       },
 
       tickFunction(): void {
+        const el = this.el;
         let state = this.state as AlAngleState;
 
         if (state.hovered) {
@@ -201,6 +202,19 @@ export class AlAngleComponent implements AframeRegistryEntry {
           state.material.color = new THREE.Color(Constants.buttonColors.active);
         } else {
           state.material.color = new THREE.Color(Constants.buttonColors.up);
+        }
+
+        const text: Entity = el.firstChild;
+
+        if (text) {
+          const obj3d: THREE.Object3D = text.object3D;
+
+          // show/hide label
+          if (state.hovered) {
+            obj3d.visible = true;
+          } else {
+            obj3d.visible = false;
+          }
         }
       },
 
@@ -212,7 +226,7 @@ export class AlAngleComponent implements AframeRegistryEntry {
         this.removeListeners();
         this.el.removeObject3D("mesh");
       }
-    } as AlAngleObject;
+    } as AlAngleDefinition;
   }
 
   public static get Tag(): string {

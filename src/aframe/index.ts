@@ -1,5 +1,5 @@
 import { AlAngleComponent } from "./components/AlAngleComponent";
-import { AlBoundingBoxComponent } from "./components/AlBoundingBoxComponent";
+import { AlBoundingBoxDefinition } from "./components/AlBoundingBoxComponent";
 import { AlEdgeComponent } from "./components/AlEdgeComponent";
 import { AlFixedToOrbitCameraComponent } from "./components/AlFixedToOrbitCameraComponent";
 import {
@@ -25,7 +25,7 @@ import { AlVolumeComponent } from "./components/AlVolumeComponent";
 
 export {
   AlAngleComponent,
-  AlBoundingBoxComponent,
+  AlBoundingBoxDefinition as AlBoundingBoxComponent,
   AlEdgeComponent,
   AlFixedToOrbitCameraComponent,
   AlGltfModelComponent,

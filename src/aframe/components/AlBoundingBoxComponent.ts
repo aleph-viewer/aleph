@@ -2,7 +2,7 @@ import { AframeRegistryEntry } from "../../interfaces";
 import { ThreeUtils } from "../../utils";
 import { ComponentDefinition } from "aframe";
 
-export class AlBoundingBoxComponent implements AframeRegistryEntry {
+export class AlBoundingBoxDefinition implements AframeRegistryEntry {
   public static get Object(): ComponentDefinition {
     return {
       schema: {

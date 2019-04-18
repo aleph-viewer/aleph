@@ -8,7 +8,7 @@ interface AlNodeSpawnerState {
   intersecting: boolean;
 }
 
-interface AlNodeSpawnerObject extends ComponentDefinition {
+interface AlNodeSpawnerDefinition extends ComponentDefinition {
   bindListeners(): void;
   addListeners(): void;
   removeListeners(): void;
@@ -22,7 +22,7 @@ interface AlNodeSpawnerObject extends ComponentDefinition {
 }
 
 export class AlNodeSpawnerComponent implements AframeRegistryEntry {
-  public static get Object(): AlNodeSpawnerObject {
+  public static get Object(): AlNodeSpawnerDefinition {
     return {
       schema: {
         graphEnabled: { type: "boolean" }
@@ -158,7 +158,7 @@ export class AlNodeSpawnerComponent implements AframeRegistryEntry {
       remove(): void {
         this.removeListeners();
       }
-    } as AlNodeSpawnerObject;
+    } as AlNodeSpawnerDefinition;
   }
 
   public static get Tag(): string {

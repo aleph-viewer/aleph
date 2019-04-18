@@ -2,10 +2,10 @@ import { AframeRegistryEntry } from "../../interfaces";
 import { Constants } from "../../Constants";
 import { ComponentDefinition } from "aframe";
 
-interface AlRenderOrderObject extends ComponentDefinition {}
+interface AlRenderOrderDefinition extends ComponentDefinition {}
 
 export class AlRenderOrderComponent implements AframeRegistryEntry {
-  public static get Object(): AlRenderOrderObject {
+  public static get Object(): AlRenderOrderDefinition {
     return {
       schema: {
         order: { type: "number", default: Constants.topLayerRenderOrder }
@@ -26,7 +26,7 @@ export class AlRenderOrderComponent implements AframeRegistryEntry {
           ] as THREE.Object3D).renderOrder = this.data.order;
         });
       }
-    } as AlRenderOrderObject;
+    } as AlRenderOrderDefinition;
   }
   public static get Tag(): string {
     return "al-render-order";

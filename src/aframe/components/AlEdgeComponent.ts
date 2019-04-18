@@ -2,7 +2,7 @@ import { AframeRegistryEntry } from "../../interfaces";
 import { Constants } from "../../Constants";
 import { ThreeUtils, AlGraphEvents, ShaderUtils } from "../../utils";
 import { AlGraphEntryType } from "../../enums";
-import { ComponentDefinition } from "aframe";
+import { ComponentDefinition, Entity } from "aframe";
 
 interface AlEdgeState {
   selected: boolean;
@@ -15,7 +15,7 @@ interface AlEdgeState {
   outlineMesh: THREE.Mesh;
 }
 
-interface AlEdgeObject extends ComponentDefinition {
+interface AlEdgeDefinition extends ComponentDefinition {
   tickFunction(): void;
   bindListeners(): void;
   addListeners(): void;
@@ -26,7 +26,7 @@ interface AlEdgeObject extends ComponentDefinition {
 }
 
 export class AlEdgeComponent implements AframeRegistryEntry {
-  public static get Object(): AlEdgeObject {
+  public static get Object(): AlEdgeDefinition {
     return {
       schema: {
         selected: { type: "boolean" },
@@ -190,14 +190,29 @@ export class AlEdgeComponent implements AframeRegistryEntry {
       },
 
       tickFunction(): void {
+        const el = this.el;
         let state = this.state as AlEdgeState;
 
+        // update color
         if (state.hovered) {
           state.material.color = new THREE.Color(Constants.buttonColors.hover);
         } else if (state.selected) {
           state.material.color = new THREE.Color(Constants.buttonColors.active);
         } else {
           state.material.color = new THREE.Color(Constants.buttonColors.up);
+        }
+
+        const text: Entity = el.firstChild;
+
+        if (text) {
+          const obj3d: THREE.Object3D = text.object3D;
+
+          // show/hide label
+          if (state.hovered) {
+            obj3d.visible = true;
+          } else {
+            obj3d.visible = false;
+          }
         }
       },
 
@@ -209,7 +224,7 @@ export class AlEdgeComponent implements AframeRegistryEntry {
         this.removeListeners();
         this.el.removeObject3D("mesh");
       }
-    } as AlEdgeObject;
+    } as AlEdgeDefinition;
   }
 
   public static get Tag(): string {

@@ -8,7 +8,7 @@ interface AlOrbitControlState {
   animationCache: AlCamera[];
 }
 
-interface AlOrbitControlObject extends ComponentDefinition {
+interface AlOrbitControlDefinition extends ComponentDefinition {
   dependencies: string[];
   tickFunction(): void;
   bindListeners(): void;
@@ -22,7 +22,7 @@ interface AlOrbitControlObject extends ComponentDefinition {
 }
 
 export class AlOrbitControlComponent implements AframeRegistryEntry {
-  public static get Object(): AlOrbitControlObject {
+  public static get Object(): AlOrbitControlDefinition {
     return {
       dependencies: ["camera"],
 
@@ -240,7 +240,7 @@ export class AlOrbitControlComponent implements AframeRegistryEntry {
         state.controls.dispose();
         state = null;
       }
-    } as AlOrbitControlObject;
+    } as AlOrbitControlDefinition;
   }
 
   public static get Tag(): string {
