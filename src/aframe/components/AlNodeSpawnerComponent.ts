@@ -1,17 +1,17 @@
-import { AframeRegistryEntry, AframeComponent } from "../interfaces";
-import { ThreeUtils } from "../utils";
-import { AlGraphEvents } from "../utils/GraphUtils";
+import { AframeRegistryEntry } from "../../interfaces";
+import { ThreeUtils } from "../../utils";
+import { AlGraphEvents } from "../../utils/GraphUtils";
+import { ComponentDefinition } from "aframe";
 
 interface AlNodeSpawnerState {
   left: boolean;
   intersecting: boolean;
 }
 
-interface AlNodeSpawnerObject extends AframeComponent {
+interface AlNodeSpawnerDefinition extends ComponentDefinition {
   bindListeners(): void;
   addListeners(): void;
   removeListeners(): void;
-  remove(): void;
   canvasMouseDown(event: MouseEvent): void;
   canvasMouseUp(event: MouseEvent): void;
   pointerOver(event: CustomEvent): void;
@@ -21,8 +21,8 @@ interface AlNodeSpawnerObject extends AframeComponent {
   pointerUp(event: CustomEvent): void;
 }
 
-export class AlNodeSpawner implements AframeRegistryEntry {
-  public static get Object(): AlNodeSpawnerObject {
+export class AlNodeSpawnerComponent implements AframeRegistryEntry {
+  public static get Object(): AlNodeSpawnerDefinition {
     return {
       schema: {
         graphEnabled: { type: "boolean" }
@@ -158,7 +158,7 @@ export class AlNodeSpawner implements AframeRegistryEntry {
       remove(): void {
         this.removeListeners();
       }
-    } as AlNodeSpawnerObject;
+    } as AlNodeSpawnerDefinition;
   }
 
   public static get Tag(): string {

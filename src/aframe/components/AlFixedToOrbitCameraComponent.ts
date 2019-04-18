@@ -1,19 +1,18 @@
-import { AframeRegistryEntry, AframeComponent } from "../interfaces";
-import { ThreeUtils } from "../utils";
-import { Constants } from "../Constants";
+import { AframeRegistryEntry } from "../../interfaces";
+import { ThreeUtils } from "../../utils";
+import { Constants } from "../../Constants";
+import { ComponentDefinition } from "aframe";
 interface AlFixedToOrbitCameraState {
   distanceFromTarget: number;
   target: THREE.Vector3;
 }
 
-interface AlFixedToOrbitCameraObject extends AframeComponent {
-  update(oldData): void;
+interface AlFixedToOrbitCameraDefinition extends ComponentDefinition {
   tickFunction(): void;
-  tick(): void;
 }
 
-export class AlFixedToOrbitCamera implements AframeRegistryEntry {
-  public static get Object(): AlFixedToOrbitCameraObject {
+export class AlFixedToOrbitCameraComponent implements AframeRegistryEntry {
+  public static get Object(): AlFixedToOrbitCameraDefinition {
     return {
       schema: {
         distanceFromTarget: { type: "number", default: 0.1 },
@@ -67,7 +66,7 @@ export class AlFixedToOrbitCamera implements AframeRegistryEntry {
       tick() {
         this.tickFunction();
       }
-    } as AlFixedToOrbitCameraObject;
+    } as AlFixedToOrbitCameraDefinition;
   }
   public static get Tag(): string {
     return "al-fixed-to-orbit-camera";

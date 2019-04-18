@@ -1,8 +1,9 @@
-import { AframeRegistryEntry, AframeComponent } from "../interfaces";
-import { Constants } from "../Constants";
-import { ShaderUtils } from "../utils";
-import { AlGraphEvents } from "../utils";
-import { AlGraphEntryType } from "../enums";
+import { AframeRegistryEntry } from "../../interfaces";
+import { Constants } from "../../Constants";
+import { ShaderUtils } from "../../utils";
+import { AlGraphEvents } from "../../utils";
+import { AlGraphEntryType } from "../../enums";
+import { ComponentDefinition, Entity } from "aframe";
 
 interface AlNodeState {
   camera: THREE.Camera;
@@ -18,11 +19,8 @@ interface AlNodeState {
   selected: boolean;
 }
 
-interface AlNodeObject extends AframeComponent {
-  update(oldData): void;
+interface AlNodeDefinition extends ComponentDefinition {
   tickFunction(): void;
-  tick(): void;
-  remove(): void;
   bindListeners(): void;
   addListeners(): void;
   removeListeners(): void;
@@ -32,8 +30,8 @@ interface AlNodeObject extends AframeComponent {
   pointerOut(_event: CustomEvent): void;
 }
 
-export class AlNode implements AframeRegistryEntry {
-  public static get Object(): AlNodeObject {
+export class AlNodeComponent implements AframeRegistryEntry {
+  public static get Object(): AlNodeDefinition {
     return {
       schema: {
         scale: { type: "number", default: 1 },
@@ -177,7 +175,9 @@ export class AlNode implements AframeRegistryEntry {
       },
 
       tickFunction(): void {
+        const el = this.el;
         let state = this.state as AlNodeState;
+
         if (this.data.graphEnabled && state.dragging) {
           this.el.sceneEl.emit(
             AlGraphEvents.DRAGGING,
@@ -186,12 +186,26 @@ export class AlNode implements AframeRegistryEntry {
           );
         }
 
+        // update color
         if (state.hovered || state.dragging) {
           state.material.color = new THREE.Color(Constants.buttonColors.hover);
         } else if (state.selected) {
           state.material.color = new THREE.Color(Constants.buttonColors.active);
         } else {
           state.material.color = new THREE.Color(Constants.buttonColors.up);
+        }
+
+        const text: Entity = el.firstChild;
+
+        if (text) {
+          const obj3d: THREE.Object3D = text.object3D;
+
+          // show/hide label
+          if (state.hovered || state.dragging) {
+            obj3d.visible = true;
+          } else {
+            obj3d.visible = false;
+          }
         }
       },
 
@@ -203,7 +217,7 @@ export class AlNode implements AframeRegistryEntry {
         this.removeListeners();
         this.el.removeObject3D("mesh");
       }
-    } as AlNodeObject;
+    } as AlNodeDefinition;
   }
 
   public static get Tag(): string {

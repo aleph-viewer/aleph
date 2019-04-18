@@ -1,10 +1,11 @@
-import { AframeRegistryEntry, AframeComponent } from "../interfaces";
-import { GLTFUtils } from "../utils";
+import { AframeRegistryEntry } from "../../interfaces";
+import { GLTFUtils } from "../../utils";
+import { ComponentDefinition } from "aframe";
 
-interface AlGltfModelObject extends AframeComponent {}
+interface AlGltfModelDefinition extends ComponentDefinition {}
 
-export class AlGltfModel implements AframeRegistryEntry {
-  public static get Object(): AlGltfModelObject {
+export class AlGltfModelComponent implements AframeRegistryEntry {
+  public static get Object(): AlGltfModelDefinition {
     return {
       schema: {
         src: { type: "model", default: "" },
@@ -67,7 +68,7 @@ export class AlGltfModel implements AframeRegistryEntry {
         }
         this.el.removeObject3D("mesh");
       }
-    } as AlGltfModelObject;
+    } as AlGltfModelDefinition;
   }
 
   public static get Tag(): string {

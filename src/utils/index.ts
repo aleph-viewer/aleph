@@ -1,5 +1,5 @@
 import { GetUtils } from "./GetUtils";
-import { CreateUtils } from "./CreateUtils";
+import { AframeUtils } from "./AframeUtils";
 import { ThreeUtils } from "./ThreeUtils";
 import { RaycasterUtils } from "./RaycasterUtils";
 import { GLTFUtils } from "./GLTFUtils";
@@ -9,7 +9,7 @@ import { AMIUtils } from "./AMIUtils";
 
 export {
   GetUtils,
-  CreateUtils,
+  AframeUtils,
   ThreeUtils,
   RaycasterUtils,
   GLTFUtils,

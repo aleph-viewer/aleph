@@ -1,11 +1,8 @@
-import {
-  AframeRegistryEntry,
-  AframeComponent,
-  AframeShader
-} from "../interfaces";
+import { AframeRegistryEntry } from "../../interfaces";
+import { ComponentDefinition } from "aframe";
 
-export class AlSpinner implements AframeRegistryEntry {
-  public static get Object(): AframeComponent | AframeShader {
+export class AlSpinnerComponent implements AframeRegistryEntry {
+  public static get Object(): ComponentDefinition {
     return {
       schema: {
         detail: { default: 0, min: 0, max: 5, type: "int" },
@@ -21,7 +18,7 @@ export class AlSpinner implements AframeRegistryEntry {
           )
         );
       }
-    } as AframeComponent;
+    } as ComponentDefinition;
   }
 
   public static get Tag(): string {

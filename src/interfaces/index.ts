@@ -1,4 +1,3 @@
-import { AframeComponent } from "./AframeComponent";
 import { AframeRegistryEntry } from "./AframeRegistryEntry";
 import { AframeShader } from "./AframeShader";
 import { AlAngle } from "./AlAngle";
@@ -9,7 +8,6 @@ import { AlGraphEntry } from "./AlGraphEntry";
 import { AlNode } from "./AlNode";
 
 export {
-  AframeComponent,
   AframeRegistryEntry,
   AframeShader,
   AlAngle,

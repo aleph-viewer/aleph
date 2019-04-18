@@ -1,7 +1,8 @@
-import { AframeRegistryEntry, AframeComponent } from "../interfaces";
+import { AframeRegistryEntry } from "../../interfaces";
+import { ComponentDefinition } from "aframe";
 
-export class AlRenderOverlaidText implements AframeRegistryEntry {
-  public static get Object(): AframeComponent {
+export class AlRenderOverlaidTextComponent implements AframeRegistryEntry {
+  public static get Object(): ComponentDefinition {
     return {
       schema: {},
 
@@ -10,7 +11,7 @@ export class AlRenderOverlaidText implements AframeRegistryEntry {
         mesh.renderOrder = 999;
         (mesh.material as THREE.Material).depthTest = false;
       }
-    } as AframeComponent;
+    } as ComponentDefinition;
   }
   public static get Tag(): string {
     return "al-render-overlaid-text";

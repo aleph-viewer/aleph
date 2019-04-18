@@ -1,7 +1,8 @@
-import { AframeRegistryEntry, AframeComponent } from "../interfaces";
-import { VolumetricLoader } from "../utils/VolumetricLoader";
-import { Constants } from "../Constants";
-import { DisplayMode } from "../enums";
+import { AframeRegistryEntry } from "../../interfaces";
+import { VolumetricLoader } from "../../utils/VolumetricLoader";
+import { Constants } from "../../Constants";
+import { DisplayMode } from "../../enums";
+import { ComponentDefinition } from "aframe";
 
 interface AlVolumeState {
   stack: any;
@@ -9,17 +10,14 @@ interface AlVolumeState {
   lutHelper: AMI.LutHelper;
 }
 
-interface AlVolumeObject extends AframeComponent {
-  update(oldData): void;
+interface AlVolumeDefinition extends ComponentDefinition {
   tickFunction(): void;
-  tick(): void;
-  remove(): void;
   handleStack(stack: any): void;
   bindMethods(): void;
 }
 
-export class AlVolume implements AframeRegistryEntry {
-  public static get Object(): AlVolumeObject {
+export class AlVolumeComponent implements AframeRegistryEntry {
+  public static get Object(): AlVolumeDefinition {
     return {
       schema: {
         srcLoaded: { type: "boolean" },
@@ -142,7 +140,7 @@ export class AlVolume implements AframeRegistryEntry {
       remove(): void {
         this.el.removeObject3D("mesh");
       }
-    } as AlVolumeObject;
+    } as AlVolumeDefinition;
   }
 
   public static get Tag(): string {

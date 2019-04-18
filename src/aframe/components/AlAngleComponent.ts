@@ -1,23 +1,22 @@
-import { AframeRegistryEntry, AframeComponent } from "../interfaces";
-import { Constants } from "../Constants";
-import { ThreeUtils, AlGraphEvents, ShaderUtils } from "../utils";
-import { AlGraphEntryType } from "../enums";
+import { AframeRegistryEntry } from "../../interfaces";
+import { Constants } from "../../Constants";
+import { ThreeUtils, AlGraphEvents, ShaderUtils } from "../../utils";
+import { AlGraphEntryType } from "../../enums";
+import { ComponentDefinition, Entity } from "aframe";
 
-interface AlEdgeState {
+interface AlAngleState {
   selected: boolean;
   hovered: boolean;
-  geometry: THREE.CylinderGeometry;
-  material: THREE.MeshBasicMaterial;
-  mesh: THREE.Mesh;
   outlineGeometry: THREE.CylinderGeometry;
   outlineMaterial: THREE.MeshBasicMaterial;
   outlineMesh: THREE.Mesh;
+  geometry: THREE.CylinderGeometry;
+  material: THREE.MeshBasicMaterial;
+  mesh: THREE.Mesh;
 }
 
-interface AlEdgeObject extends AframeComponent {
-  update(oldData): void;
+interface AlAngleDefinition extends ComponentDefinition {
   tickFunction(): void;
-  tick(): void;
   remove(): void;
   bindListeners(): void;
   addListeners(): void;
@@ -27,16 +26,17 @@ interface AlEdgeObject extends AframeComponent {
   pointerOut(_event: CustomEvent): void;
 }
 
-export class AlEdge implements AframeRegistryEntry {
-  public static get Object(): AlEdgeObject {
+export class AlAngleComponent implements AframeRegistryEntry {
+  public static get Object(): AlAngleDefinition {
     return {
       schema: {
         selected: { type: "boolean" },
-        node1: { type: "vec3" },
-        node2: { type: "vec3" },
+        edge0Pos: { type: "vec3" },
+        edge1Pos: { type: "vec3" },
+        position: { type: "vec3" },
         length: { type: "number" },
         radius: { type: "number" },
-        nodeScale: { type: "number" }
+        angle: { type: "number" }
       },
 
       bindListeners(): void {
@@ -47,7 +47,7 @@ export class AlEdge implements AframeRegistryEntry {
       },
 
       addListeners(): void {
-        this.el.sceneEl.addEventListener("mousedown", this.pointerDown, {
+        this.el.addEventListener("mousedown", this.pointerDown, {
           capture: false,
           once: false,
           passive: true
@@ -65,7 +65,7 @@ export class AlEdge implements AframeRegistryEntry {
       },
 
       removeListeners(): void {
-        this.el.sceneEl.removeEventListener("mousedown", this.pointerDown);
+        this.el.removeEventListener("mousedown", this.pointerDown);
         this.el.removeEventListener("raycaster-intersected", this.pointerOver);
         this.el.removeEventListener(
           "raycaster-intersected-cleared",
@@ -74,38 +74,39 @@ export class AlEdge implements AframeRegistryEntry {
       },
 
       pointerDown(_event: CustomEvent): void {
-        let state = this.state as AlEdgeState;
-        if (state.hovered) {
-          this.el.sceneEl.emit(
-            AlGraphEvents.SELECTED,
-            { type: AlGraphEntryType.EDGE, id: this.el.id },
-            false
-          );
-        }
+        this.el.sceneEl.emit(
+          AlGraphEvents.SELECTED,
+          { type: AlGraphEntryType.ANGLE, id: this.el.id },
+          true
+        );
       },
 
       pointerOver(_event: CustomEvent): void {
-        let state = this.state as AlEdgeState;
+        let state = this.state as AlAngleState;
         state.hovered = true;
         this.el.sceneEl.emit(
           AlGraphEvents.POINTER_OVER,
           { id: this.el.id },
-          false
+          true
         );
       },
 
       pointerOut(_event: CustomEvent): void {
-        let state = this.state as AlEdgeState;
+        let state = this.state as AlAngleState;
         state.hovered = false;
-        this.el.sceneEl.emit(AlGraphEvents.POINTER_OUT, {}, false);
+        this.el.sceneEl.emit(AlGraphEvents.POINTER_OUT, {}, true);
       },
 
       createMesh() {
-        const node1Pos = ThreeUtils.objectToVector3(this.data.node1);
-        const node2Pos = ThreeUtils.objectToVector3(this.data.node2);
+        const edgePos0: THREE.Vector3 = ThreeUtils.objectToVector3(
+          this.data.edge0Pos
+        );
+        const edgePos1: THREE.Vector3 = ThreeUtils.objectToVector3(
+          this.data.edge1Pos
+        );
 
         var orientation = new THREE.Matrix4();
-        orientation.lookAt(node1Pos, node2Pos, new THREE.Object3D().up);
+        orientation.lookAt(edgePos0, edgePos1, new THREE.Object3D().up);
         orientation.multiply(
           new THREE.Matrix4().set(
             1,
@@ -134,9 +135,11 @@ export class AlEdge implements AframeRegistryEntry {
           6,
           4
         );
+
         let material = new THREE.MeshBasicMaterial();
         const mesh = new THREE.Mesh(geometry, material);
         mesh.applyMatrix(orientation);
+        mesh.position.copy(ThreeUtils.objectToVector3(this.data.position));
 
         this.state.geometry = geometry;
         this.state.material = material;
@@ -145,7 +148,7 @@ export class AlEdge implements AframeRegistryEntry {
         let outlineGeometry = new THREE.CylinderGeometry(
           this.data.radius,
           this.data.radius,
-          this.data.length - this.data.nodeScale * 2,
+          this.data.length,
           6,
           4
         );
@@ -159,7 +162,7 @@ export class AlEdge implements AframeRegistryEntry {
         mesh.add(outlineMesh);
 
         this.el.setObject3D("mesh", mesh);
-        (this.el.object3D as THREE.Object3D).renderOrder = 997;
+        (this.el.object3D as THREE.Object3D).renderOrder = 996;
       },
 
       init(): void {
@@ -174,25 +177,24 @@ export class AlEdge implements AframeRegistryEntry {
         this.state = {
           selected: true,
           hovered: false
-        } as AlEdgeState;
+        } as AlAngleState;
+
+        this.createMesh();
       },
 
       update(oldData): void {
-        let state = this.state as AlEdgeState;
+        let state = this.state as AlAngleState;
         state.selected = this.data.selected;
 
-        // If length or radius has changed, create a new mesh
-        if (
-          oldData &&
-          (oldData.radius !== this.data.radius ||
-            oldData.length !== this.data.length)
-        ) {
+        // If height or radius has changed, create a new mesh
+        if (oldData && oldData.angle !== this.data.angle) {
           this.createMesh();
         }
       },
 
       tickFunction(): void {
-        let state = this.state as AlEdgeState;
+        const el = this.el;
+        let state = this.state as AlAngleState;
 
         if (state.hovered) {
           state.material.color = new THREE.Color(Constants.buttonColors.hover);
@@ -200,6 +202,19 @@ export class AlEdge implements AframeRegistryEntry {
           state.material.color = new THREE.Color(Constants.buttonColors.active);
         } else {
           state.material.color = new THREE.Color(Constants.buttonColors.up);
+        }
+
+        const text: Entity = el.firstChild;
+
+        if (text) {
+          const obj3d: THREE.Object3D = text.object3D;
+
+          // show/hide label
+          if (state.hovered) {
+            obj3d.visible = true;
+          } else {
+            obj3d.visible = false;
+          }
         }
       },
 
@@ -211,10 +226,10 @@ export class AlEdge implements AframeRegistryEntry {
         this.removeListeners();
         this.el.removeObject3D("mesh");
       }
-    } as AlEdgeObject;
+    } as AlAngleDefinition;
   }
 
   public static get Tag(): string {
-    return "al-edge";
+    return "al-angle";
   }
 }
