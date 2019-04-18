@@ -7,8 +7,8 @@
 
 ## Properties
 
-| Property | Attribute | Description | Type                     | Default     |
-| -------- | --------- | ----------- | ------------------------ | ----------- |
+| Property | Attribute | Description | Type               | Default     |
+| -------- | --------- | ----------- | ------------------ | ----------- |
 | `node`   | --        |             | `[string, AlNode]` | `undefined` |
 
 

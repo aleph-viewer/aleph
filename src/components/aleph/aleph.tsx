@@ -92,14 +92,12 @@ export class Aleph {
   private _camera: Entity;
   private _hovered: string | null = null;
   private _isShiftDown: boolean = false;
+  private _isWebGl2: boolean = true;
   private _mesh: THREE.Mesh;
   private _scene: Scene;
   private _targetEntity: Entity;
   private _validTarget: boolean;
   private _volumeHelper: AMI.VolumeRenderHelper2;
-
-  // TODO: Put In Redux
-  private _isWebGl2: boolean = true;
 
   @Prop({ context: "store" }) store: Store;
   @Prop() dracoDecoderPath: string | null;
@@ -289,6 +287,8 @@ export class Aleph {
   @Event() loaded: EventEmitter;
 
   componentWillLoad() {
+    this._isWebGl2 = ThreeUtils.isWebGL2Available();
+
     // aframe geometries
     AframeUtils.registerGeometry(
       AlSpinnerComponent.Tag,

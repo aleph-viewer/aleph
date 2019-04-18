@@ -7,8 +7,8 @@
 
 ## Properties
 
-| Property | Attribute | Description | Type                      | Default     |
-| -------- | --------- | ----------- | ------------------------- | ----------- |
+| Property | Attribute | Description | Type                | Default     |
+| -------- | --------- | ----------- | ------------------- | ----------- |
 | `angle`  | --        |             | `[string, AlAngle]` | `undefined` |
 
 
