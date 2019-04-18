@@ -29633,16 +29633,42 @@ var VolumeRenderHelper = /** @class */ (function (_super) {
         //   this.incrementStepsSinceChange();
         // })
     }
-    Object.defineProperty(VolumeRenderHelper.prototype, "stepsSinceChange", {
+    Object.defineProperty(VolumeRenderHelper.prototype, "windowCenter", {
         //#endregion
         //#region Getters
         get: function () {
-            return this._stepsSinceChange;
+            return this._windowCenter;
+        },
+        set: function (value) {
+            this._windowCenter = value;
+            this._material.uniforms.uWindowCenterWidth.value = [
+                this._windowCenter - this._offset,
+                this._windowWidth,
+            ];
+            // this.resetStepsSinceChange()
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(VolumeRenderHelper.prototype, "windowWidth", {
+        get: function () {
+            return this._windowWidth;
+        },
+        set: function (value) {
+            this._windowWidth = value;
+            this._material.uniforms.uWindowCenterWidth.value = [
+                this._windowCenter - this._offset,
+                this._windowWidth,
+            ];
+            // this.resetStepsSinceChange()
         },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(VolumeRenderHelper.prototype, "textureLUT", {
+        // get stepsSinceChange(): number {
+        //   return this._stepsSinceChange;
+        // }
         get: function () {
             return this._textureLUT;
         },
@@ -29666,31 +29692,22 @@ var VolumeRenderHelper = /** @class */ (function (_super) {
         set: function (value) {
             this._textureLUT = value;
             this._material.uniforms.uTextureLUT.value = this._textureLUT;
-            this.resetStepsSinceChange();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(VolumeRenderHelper.prototype, "stepsPerFrame", {
-        get: function () {
-            return this._stepsPerFrame;
-        },
-        set: function (value) {
-            this._stepsPerFrame = value;
-            this._material.uniforms.uStepsPerFrame.value = this._stepsPerFrame;
-            this.resetStepsSinceChange();
+            // this.resetStepsSinceChange()
         },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(VolumeRenderHelper.prototype, "steps", {
+        // get stepsPerFrame(): number {
+        //   return this._stepsPerFrame;
+        // }
         get: function () {
             return this._steps;
         },
         set: function (steps) {
             this._steps = steps;
             this._material.uniforms.uSteps.value = this._steps;
-            this.resetStepsSinceChange();
+            // this.resetStepsSinceChange()
         },
         enumerable: true,
         configurable: true
@@ -29702,7 +29719,7 @@ var VolumeRenderHelper = /** @class */ (function (_super) {
         set: function (alphaCorrection) {
             this._alphaCorrection = alphaCorrection;
             this._material.uniforms.uAlphaCorrection.value = this._alphaCorrection;
-            this.resetStepsSinceChange();
+            // this.resetStepsSinceChange()
         },
         enumerable: true,
         configurable: true
@@ -29738,31 +29755,16 @@ var VolumeRenderHelper = /** @class */ (function (_super) {
         set: function (shininess) {
             this._shininess = shininess;
             this._material.uniforms.uShininess.value = this._shininess;
-            this.resetStepsSinceChange();
+            // this.resetStepsSinceChange()
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(VolumeRenderHelper.prototype, "windowCenter", {
+    Object.defineProperty(VolumeRenderHelper.prototype, "stepsPerFrame", {
         set: function (value) {
-            this._windowCenter = value;
-            this._material.uniforms.uWindowCenterWidth.value = [
-                this._windowCenter - this._offset,
-                this._windowWidth,
-            ];
-            this.resetStepsSinceChange();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(VolumeRenderHelper.prototype, "windowWidth", {
-        set: function (value) {
-            this._windowWidth = value;
-            this._material.uniforms.uWindowCenterWidth.value = [
-                this._windowCenter - this._offset,
-                this._windowWidth,
-            ];
-            this.resetStepsSinceChange();
+            this._stepsPerFrame = value;
+            this._material.uniforms.uStepsPerFrame.value = this._stepsPerFrame;
+            // this.resetStepsSinceChange()
         },
         enumerable: true,
         configurable: true
@@ -29839,7 +29841,7 @@ var VolumeRenderHelper = /** @class */ (function (_super) {
         this._material.uniforms.uShininess.value = this._shininess;
         // this._material.uniforms.uSteps.value = this._steps;
         // this._material.uniforms.uStepsPerFrame.value = this._stepsPerFrame;
-        // this.resetStepsSinceChange()
+        // // this.resetStepsSinceChange()
         // this._material.uniforms.uAlgorithm.value = this._algorithm;
         this._material.needsUpdate = true;
     };
