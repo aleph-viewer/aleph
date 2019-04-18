@@ -15,7 +15,7 @@ interface AlAngleState {
   mesh: THREE.Mesh;
 }
 
-interface AlAngleObject extends ComponentDefinition {
+interface AlAngleDefinition extends ComponentDefinition {
   tickFunction(): void;
   remove(): void;
   bindListeners(): void;
@@ -27,7 +27,7 @@ interface AlAngleObject extends ComponentDefinition {
 }
 
 export class AlAngleComponent implements AframeRegistryEntry {
-  public static get Object(): AlAngleObject {
+  public static get Object(): AlAngleDefinition {
     return {
       schema: {
         selected: { type: "boolean" },
@@ -212,7 +212,7 @@ export class AlAngleComponent implements AframeRegistryEntry {
         this.removeListeners();
         this.el.removeObject3D("mesh");
       }
-    } as AlAngleObject;
+    } as AlAngleDefinition;
   }
 
   public static get Tag(): string {

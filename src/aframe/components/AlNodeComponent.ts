@@ -19,7 +19,7 @@ interface AlNodeState {
   selected: boolean;
 }
 
-interface AlNodeObject extends ComponentDefinition {
+interface AlNodeDefinition extends ComponentDefinition {
   tickFunction(): void;
   bindListeners(): void;
   addListeners(): void;
@@ -31,7 +31,7 @@ interface AlNodeObject extends ComponentDefinition {
 }
 
 export class AlNodeComponent implements AframeRegistryEntry {
-  public static get Object(): AlNodeObject {
+  public static get Object(): AlNodeDefinition {
     return {
       schema: {
         scale: { type: "number", default: 1 },
@@ -201,7 +201,7 @@ export class AlNodeComponent implements AframeRegistryEntry {
         this.removeListeners();
         this.el.removeObject3D("mesh");
       }
-    } as AlNodeObject;
+    } as AlNodeDefinition;
   }
 
   public static get Tag(): string {

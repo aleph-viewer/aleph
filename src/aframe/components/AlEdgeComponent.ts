@@ -15,7 +15,7 @@ interface AlEdgeState {
   outlineMesh: THREE.Mesh;
 }
 
-interface AlEdgeObject extends ComponentDefinition {
+interface AlEdgeDefinition extends ComponentDefinition {
   tickFunction(): void;
   bindListeners(): void;
   addListeners(): void;
@@ -26,7 +26,7 @@ interface AlEdgeObject extends ComponentDefinition {
 }
 
 export class AlEdgeComponent implements AframeRegistryEntry {
-  public static get Object(): AlEdgeObject {
+  public static get Object(): AlEdgeDefinition {
     return {
       schema: {
         selected: { type: "boolean" },
@@ -209,7 +209,7 @@ export class AlEdgeComponent implements AframeRegistryEntry {
         this.removeListeners();
         this.el.removeObject3D("mesh");
       }
-    } as AlEdgeObject;
+    } as AlEdgeDefinition;
   }
 
   public static get Tag(): string {

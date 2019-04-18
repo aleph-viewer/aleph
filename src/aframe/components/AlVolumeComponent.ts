@@ -10,14 +10,14 @@ interface AlVolumeState {
   lutHelper: AMI.LutHelper;
 }
 
-interface AlVolumeObject extends ComponentDefinition {
+interface AlVolumeDefinition extends ComponentDefinition {
   tickFunction(): void;
   handleStack(stack: any): void;
   bindMethods(): void;
 }
 
 export class AlVolumeComponent implements AframeRegistryEntry {
-  public static get Object(): AlVolumeObject {
+  public static get Object(): AlVolumeDefinition {
     return {
       schema: {
         srcLoaded: { type: "boolean" },
@@ -112,7 +112,7 @@ export class AlVolumeComponent implements AframeRegistryEntry {
       remove(): void {
         this.el.removeObject3D("mesh");
       }
-    } as AlVolumeObject;
+    } as AlVolumeDefinition;
   }
 
   public static get Tag(): string {

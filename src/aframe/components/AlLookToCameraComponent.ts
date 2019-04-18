@@ -2,12 +2,12 @@ import { AframeRegistryEntry } from "../../interfaces";
 import { Constants } from "../../Constants";
 import { ComponentDefinition } from "aframe";
 
-interface AlLookToCameraObject extends ComponentDefinition {
+interface AlLookToCameraDefinition extends ComponentDefinition {
   tickFunction(): void;
 }
 
 export class AlLookToCameraComponent implements AframeRegistryEntry {
-  public static get Object(): AlLookToCameraObject {
+  public static get Object(): AlLookToCameraDefinition {
     return {
       schema: {},
 
@@ -26,7 +26,7 @@ export class AlLookToCameraComponent implements AframeRegistryEntry {
       tick() {
         this.tickFunction();
       }
-    } as AlLookToCameraObject;
+    } as AlLookToCameraDefinition;
   }
 
   public static get Tag(): string {
