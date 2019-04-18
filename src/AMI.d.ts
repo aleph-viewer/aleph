@@ -24,7 +24,6 @@ declare namespace AMI {
     windowCenter: number;
     children: any;
     textureLUT: THREE.Texture;
-    hasUniforms(): any;
   }
   class VolumeRenderHelper2 {
     constructor(stack: any, isWebgl2: boolean);
@@ -33,7 +32,6 @@ declare namespace AMI {
     windowCenter: number;
     children: any;
     textureLUT: THREE.Texture;
-    hasUniforms(): any;
   }
   class LutHelper {
     constructor(el: any);

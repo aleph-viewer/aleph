@@ -20949,10 +20949,10 @@ process.umask = function() { return 0; };
 
 /***/ }),
 
-/***/ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/glsl/contour.frag":
-/*!*****************************************************************************************************************************!*\
-  !*** ./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/glsl/contour.frag ***!
-  \*****************************************************************************************************************************/
+/***/ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/webgl/contour.frag":
+/*!******************************************************************************************************************************!*\
+  !*** ./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/webgl/contour.frag ***!
+  \******************************************************************************************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -20962,23 +20962,10 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/glsl/data.frag":
-/*!**************************************************************************************************************************!*\
-  !*** ./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/glsl/data.frag ***!
-  \**************************************************************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony default export */ __webpack_exports__["default"] = ("#define GLSLIFY 1\nexport default \"#define GLSLIFY 1\\nvoid AMItexture3D(\\n    in ivec3 dataCoordinates, \\n    in int uTextureSize,\\n    in ivec3 uDataDimensions,\\n    in sampler2D uTextureContainer[7],\\n    in int uPackedPerPixel,\\n    out vec4 dataValue, \\n    out int offset\\n){\\n    float textureSizeF = float(uTextureSize);\\n    int voxelsPerTexture = uTextureSize*uTextureSize;\\n\\n    int index = dataCoordinates.x + dataCoordinates.y * uDataDimensions.x + dataCoordinates.z * uDataDimensions.y * uDataDimensions.x;\\n\\n    // Nick: Nicolas can you give me some insight on what you'd like to do here?\\n    // ---------------------------------------------------------------------------------\\n    // dividing an integer by an integer will give you an integer result, \\n    // rounded down can not get float numbers to work :(\\n    int packedIndex = index/uPackedPerPixel;\\n    offset = index - uPackedPerPixel*packedIndex;\\n\\n    // Map data index to right sampler2D texture\\n    int textureIndex = packedIndex/voxelsPerTexture;\\n    int inTextureIndex = packedIndex - voxelsPerTexture*textureIndex;\\n\\n    // Get row and column in the texture\\n    int rowIndex = inTextureIndex/uTextureSize;\\n    float rowIndexF = float(rowIndex);\\n    float colIndex = float(inTextureIndex - uTextureSize * rowIndex);\\n\\n    // Map row and column to uv\\n    vec2 uv = vec2(0,0);\\n    uv.x = (0.5 + colIndex) / textureSizeF;\\n    uv.y = 1. - (0.5 + rowIndexF) / textureSizeF;\\n\\n    float textureIndexF = float(textureIndex);\\n    vec4 addition = vec4(0.);\\n\\n    for (int i = 0; i < 7; i++ ) {\\n        float i_float = float(i);\\n        addition += step( abs( textureIndexF - i_float ), 0.0 ) * texture2D(uTextureContainer[i], uv);\\n    }\\n    dataValue = addition;\\n}\\n\\nvoid toUInt8(\\n    in float r, \\n    out float value\\n){\\n    value = r * 255.;\\n}\\n\\n  \\n\\nvoid unpack8(\\n    in vec4 packedData, \\n    in int offset, \\n    out vec4 unpackedData\\n){\\n    float floatedOffset = float(offset);\\n    float floatedOffsetSquared = floatedOffset * floatedOffset;\\n\\n    toUInt8(\\n        step( floatedOffsetSquared , 0.0 ) * packedData.r +\\n        step( floatedOffsetSquared - 2. * floatedOffset + 1., 0.0 ) * packedData.g +\\n        step( floatedOffsetSquared - 2. * 2. *  floatedOffset + 4., 0.0 ) * packedData.b +\\n        step( floatedOffsetSquared - 2. * 3. *  floatedOffset + 9., 0.0 ) * packedData.a,\\n        unpackedData.x\\n    );\\n}\\n\\nvoid toUInt16(\\n    in float r, \\n    in float a, \\n    out float value\\n) {\\n    value = r * 255. + a * 255. * 256.;\\n}\\n\\nvoid unpack16(\\n    in vec4 packedData, \\n    in int offset, \\n    out vec4 unpackedData\\n){\\n    unpackedData = packedData;\\n    float floatedOffset = float(offset);\\n\\n    toUInt16(\\n        packedData.r * (1. - floatedOffset) + packedData.b * floatedOffset,\\n        packedData.g * (1. - floatedOffset) + packedData.a * floatedOffset,\\n        unpackedData.x\\n    );\\n    \\n}\\n\\nvoid toUInt32(\\n    in float r, \\n    in float g, \\n    in float b, \\n    in float a, \\n    out float value\\n){\\n    value = r * 255. + g * 255. * 256. + b * 255. * 256. * 256. + a * 255. * 256. * 256. * 256.;\\n}\\n\\nvoid toUFloat32(in float r, in float g, in float b, in float a, out float value){\\n\\n    // create arrays containing bits for rgba values, value between 0 and 255\\n    value = r * 255.;\\n    int bytemeR[8];\\n    bytemeR[0] = int(floor(value / 128.));\\n    value -= float(bytemeR[0] * 128);\\n    bytemeR[1] = int(floor(value / 64.));\\n    value -= float(bytemeR[1] * 64);\\n    bytemeR[2] = int(floor(value / 32.));\\n    value -= float(bytemeR[2] * 32);\\n    bytemeR[3] = int(floor(value / 16.));\\n    value -= float(bytemeR[3] * 16);\\n    bytemeR[4] = int(floor(value / 8.));\\n    value -= float(bytemeR[4] * 8);\\n    bytemeR[5] = int(floor(value / 4.));\\n    value -= float(bytemeR[5] * 4);\\n    bytemeR[6] = int(floor(value / 2.));\\n    value -= float(bytemeR[6] * 2);\\n    bytemeR[7] = int(floor(value));\\n\\n    value = g * 255.;\\n    int bytemeG[8];\\n    bytemeG[0] = int(floor(value / 128.));\\n    value -= float(bytemeG[0] * 128);\\n    bytemeG[1] = int(floor(value / 64.));\\n    value -= float(bytemeG[1] * 64);\\n    bytemeG[2] = int(floor(value / 32.));\\n    value -= float(bytemeG[2] * 32);\\n    bytemeG[3] = int(floor(value / 16.));\\n    value -= float(bytemeG[3] * 16);\\n    bytemeG[4] = int(floor(value / 8.));\\n    value -= float(bytemeG[4] * 8);\\n    bytemeG[5] = int(floor(value / 4.));\\n    value -= float(bytemeG[5] * 4);\\n    bytemeG[6] = int(floor(value / 2.));\\n    value -= float(bytemeG[6] * 2);\\n    bytemeG[7] = int(floor(value));\\n\\n    value = b * 255.;\\n    int bytemeB[8];\\n    bytemeB[0] = int(floor(value / 128.));\\n    value -= float(bytemeB[0] * 128);\\n    bytemeB[1] = int(floor(value / 64.));\\n    value -= float(bytemeB[1] * 64);\\n    bytemeB[2] = int(floor(value / 32.));\\n    value -= float(bytemeB[2] * 32);\\n    bytemeB[3] = int(floor(value / 16.));\\n    value -= float(bytemeB[3] * 16);\\n    bytemeB[4] = int(floor(value / 8.));\\n    value -= float(bytemeB[4] * 8);\\n    bytemeB[5] = int(floor(value / 4.));\\n    value -= float(bytemeB[5] * 4);\\n    bytemeB[6] = int(floor(value / 2.));\\n    value -= float(bytemeB[6] * 2);\\n    bytemeB[7] = int(floor(value));\\n\\n    value = a * 255.;\\n    int bytemeA[8];\\n    bytemeA[0] = int(floor(value / 128.));\\n    value -= float(bytemeA[0] * 128);\\n    bytemeA[1] = int(floor(value / 64.));\\n    value -= float(bytemeA[1] * 64);\\n    bytemeA[2] = int(floor(value / 32.));\\n    value -= float(bytemeA[2] * 32);\\n    bytemeA[3] = int(floor(value / 16.));\\n    value -= float(bytemeA[3] * 16);\\n    bytemeA[4] = int(floor(value / 8.));\\n    value -= float(bytemeA[4] * 8);\\n    bytemeA[5] = int(floor(value / 4.));\\n    value -= float(bytemeA[5] * 4);\\n    bytemeA[6] = int(floor(value / 2.));\\n    value -= float(bytemeA[6] * 2);\\n    bytemeA[7] = int(floor(value));\\n\\n    // compute float32 value from bit arrays\\n    // sign\\n    int issigned = 1 - 2 * bytemeR[0];\\n\\n    // exponent\\n    int exponent = 0;\\n\\n    exponent += bytemeR[1] * int(pow(2., 7.));\\n    exponent += bytemeR[2] * int(pow(2., 6.));\\n    exponent += bytemeR[3] * int(pow(2., 5.));\\n    exponent += bytemeR[4] * int(pow(2., 4.));\\n    exponent += bytemeR[5] * int(pow(2., 3.));\\n    exponent += bytemeR[6] * int(pow(2., 2.));\\n    exponent += bytemeR[7] * int(pow(2., 1.));\\n    exponent += bytemeG[0];\\n\\n    // fraction\\n    float fraction = 0.;\\n\\n    fraction = float(bytemeG[1]) * pow(2., -1.);\\n    fraction += float(bytemeG[2]) * pow(2., -2.);\\n    fraction += float(bytemeG[3]) * pow(2., -3.);\\n    fraction += float(bytemeG[4]) * pow(2., -4.);\\n    fraction += float(bytemeG[5]) * pow(2., -5.);\\n    fraction += float(bytemeG[6]) * pow(2., -6.);\\n    fraction += float(bytemeG[7]) * pow(2., -7.);\\n\\n    fraction += float(bytemeB[0]) * pow(2., -8.);\\n    fraction += float(bytemeB[1]) * pow(2., -9.);\\n    fraction += float(bytemeB[2]) * pow(2., -10.);\\n    fraction += float(bytemeB[3]) * pow(2., -11.);\\n    fraction += float(bytemeB[4]) * pow(2., -12.);\\n    fraction += float(bytemeB[5]) * pow(2., -13.);\\n    fraction += float(bytemeB[6]) * pow(2., -14.);\\n    fraction += float(bytemeB[7]) * pow(2., -15.);\\n\\n    fraction += float(bytemeA[0]) * pow(2., -16.);\\n    fraction += float(bytemeA[1]) * pow(2., -17.);\\n    fraction += float(bytemeA[2]) * pow(2., -18.);\\n    fraction += float(bytemeA[3]) * pow(2., -19.);\\n    fraction += float(bytemeA[4]) * pow(2., -20.);\\n    fraction += float(bytemeA[5]) * pow(2., -21.);\\n    fraction += float(bytemeA[6]) * pow(2., -22.);\\n    fraction += float(bytemeA[7]) * pow(2., -23.);\\n\\n    value = float(issigned) * pow( 2., float(exponent - 127)) * (1. + fraction);\\n}\\n\\nvoid unpack32(\\n    in vec4 packedData, \\n    in int offset, \\n    in int uPixelType,\\n    out vec4 unpackedData\\n){\\n    // DOES NOT NEED REMOVAL\\n    // Statically uniform branching condition - cannot cause wavefront divergance\\n    // ----------------------------------------------------------------------------------\\n    if (uPixelType == 1) {\\n        toUInt32(\\n            packedData.r,\\n            packedData.g,\\n            packedData.b,\\n            packedData.a,\\n            unpackedData.x\\n        );\\n    }\\n    else {\\n        toUFloat32(\\n            packedData.r,\\n            packedData.g,\\n            packedData.b,\\n            packedData.a,\\n            unpackedData.x\\n        );\\n    }\\n}\\n\\nvoid unpackIdentity(\\n    in vec4 packedData, \\n    in int offset, \\n    out vec4 unpackedData\\n){\\n    unpackedData = packedData;\\n}\\n\\nvoid unpack(\\n    in int uPixelType,\\n    in int uBitsAllocated,\\n    in int uNumberOfChannels,\\n    in vec4 packedData,\\n    in int offset,\\n    out vec4 unpackedData\\n) {\\n    // DOES NOT NEED REMOVAL\\n    // Statically uniform branching condition - cannot cause wavefront divergance\\n    // ----------------------------------------------------------------------------------\\n    if (uNumberOfChannels == 1) {\\n        // DOES NOT NEED REMOVAL\\n        // Statically uniform branching condition - cannot cause wavefront divergance\\n        // ----------------------------------------------------------------------------------\\n        if (uBitsAllocated == 8) {\\n            unpack8(    \\n                packedData, \\n                offset, \\n                unpackedData\\n            );\\n            return;\\n        }\\n        // DOES NOT NEED REMOVAL\\n        // Statically uniform branching condition - cannot cause wavefront divergance\\n        // ----------------------------------------------------------------------------------\\n        if (uBitsAllocated == 16) {\\n            unpack16(    \\n                packedData, \\n                offset, \\n                unpackedData\\n            );\\n            return;\\n        }\\n        // DOES NOT NEED REMOVAL\\n        // Statically uniform branching condition - cannot cause wavefront divergance\\n        // ----------------------------------------------------------------------------------\\n        if (uBitsAllocated == 32) {\\n            unpack32(    \\n                packedData, \\n                offset, \\n                uPixelType,\\n                unpackedData\\n            );\\n            return;\\n        }\\n    } \\n\\n    unpackIdentity(\\n        packedData, \\n        offset, \\n        unpackedData\\n    );\\n}\\n\\nvoid interpolationIdentity(\\n    in int uPixelType,\\n    in vec3 currentVoxel, \\n    in int uTextureSize,\\n    in ivec3 uDataDimensions,\\n    in sampler2D uTextureContainer[7],\\n    in int uBitsAllocated,\\n    in int uNumberOfChannels,\\n    in int uPackedPerPixel,\\n    out vec4 dataValue\\n){\\n    // lower bound\\n    vec3 rcurrentVoxel = vec3(floor(currentVoxel.x + 0.5 ), floor(currentVoxel.y + 0.5 ), floor(currentVoxel.z + 0.5 ));\\n    ivec3 flooredVoxel = ivec3(int(rcurrentVoxel.x), int(rcurrentVoxel.y), int(rcurrentVoxel.z));\\n\\n    vec4 temporaryDataValue = vec4(0., 0., 0., 0.);\\n    int dataOffset = 0;\\n\\n    AMItexture3D(\\n        flooredVoxel, \\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uPackedPerPixel,\\n        temporaryDataValue, \\n        dataOffset\\n    );\\n\\n    unpack(\\n        uPixelType,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        temporaryDataValue,\\n        dataOffset,\\n        dataValue\\n    );\\n}\\n\\nconst float GRADIENT_STEP_2976544439 = 0.005;\\nconst float EPSILON = 0.0000152587;\\n\\nvoid trilinearInterpolation(\\n    in vec3 normalizedPosition,\\n    out vec4 interpolatedValue,\\n    in vec4 v000, in vec4 v100,\\n    in vec4 v001, in vec4 v101,\\n    in vec4 v010, in vec4 v110,\\n    in vec4 v011, in vec4 v111\\n) {\\n    // https://en.wikipedia.org/wiki/Trilinear_interpolation\\n    vec4 c00 = v000 * ( 1.0 - normalizedPosition.x ) + v100 * normalizedPosition.x;\\n    vec4 c01 = v001 * ( 1.0 - normalizedPosition.x ) + v101 * normalizedPosition.x;\\n    vec4 c10 = v010 * ( 1.0 - normalizedPosition.x ) + v110 * normalizedPosition.x;\\n    vec4 c11 = v011 * ( 1.0 - normalizedPosition.x ) + v111 * normalizedPosition.x;\\n\\n    // c0 and c1\\n    vec4 c0 = c00 * ( 1.0 - normalizedPosition.y) + c10 * normalizedPosition.y;\\n    vec4 c1 = c01 * ( 1.0 - normalizedPosition.y) + c11 * normalizedPosition.y;\\n\\n    // c\\n    vec4 c = c0 * ( 1.0 - normalizedPosition.z) + c1 * normalizedPosition.z;\\n    interpolatedValue = c;\\n}\\n\\nvoid interpolationTrilinear(\\n    in int uPixelType,\\n    in vec3 currentVoxel, \\n    in int uTextureSize,\\n    in ivec3 uDataDimensions,\\n    in sampler2D uTextureContainer[7],\\n    in int uBitsAllocated,\\n    in int uNumberOfChannels,\\n    in int uInterpolation,\\n    in int uPackedPerPixel,\\n    out vec4 dataValue, \\n    out vec3 gradient\\n){\\n\\n    vec3 lower_bound = floor(currentVoxel);\\n    lower_bound = max(vec3(0.), lower_bound);\\n\\n    vec3 higher_bound = lower_bound + vec3(1.);\\n\\n    vec3 normalizedPosition = (currentVoxel - lower_bound);\\n    normalizedPosition =  max(vec3(0.), normalizedPosition);\\n\\n    vec4 interpolatedValue = vec4(0.);\\n\\n    // fetch values required for interpolation\\n    vec4 v000 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c000 = vec3(lower_bound.x, lower_bound.y, lower_bound.z);\\n    interpolationIdentity(\\n        uPixelType,\\n        c000,\\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        uPackedPerPixel,\\n        v000\\n    );\\n\\n    vec4 v100 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c100 = vec3(higher_bound.x, lower_bound.y, lower_bound.z);\\n    interpolationIdentity(\\n        uPixelType,\\n        c100,\\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        uPackedPerPixel,\\n        v100\\n    );\\n\\n    vec4 v001 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c001 = vec3(lower_bound.x, lower_bound.y, higher_bound.z);\\n    interpolationIdentity(\\n        uPixelType,\\n        c001,\\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        uPackedPerPixel,\\n        v001\\n    );\\n\\n    vec4 v101 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c101 = vec3(higher_bound.x, lower_bound.y, higher_bound.z);\\n    interpolationIdentity(\\n        uPixelType,\\n        c101,\\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        uPackedPerPixel,\\n        v101\\n    );\\n\\n    vec4 v010 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c010 = vec3(lower_bound.x, higher_bound.y, lower_bound.z);\\n    interpolationIdentity(\\n        uPixelType,\\n        c010,\\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        uPackedPerPixel,\\n        v010\\n    );\\n\\n    vec4 v110 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c110 = vec3(higher_bound.x, higher_bound.y, lower_bound.z);\\n    interpolationIdentity(\\n        uPixelType,\\n        c110,\\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        uPackedPerPixel,\\n        v110\\n    );\\n\\n    vec4 v011 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c011 = vec3(lower_bound.x, higher_bound.y, higher_bound.z);\\n    interpolationIdentity(\\n        uPixelType,\\n        c011,\\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        uPackedPerPixel,\\n        v011\\n    );\\n\\n    vec4 v111 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c111 = vec3(higher_bound.x, higher_bound.y, higher_bound.z);\\n    interpolationIdentity(\\n        uPixelType,\\n        c111,\\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        uPackedPerPixel,\\n        v111\\n    );\\n\\n    // compute interpolation at position\\n    trilinearInterpolation(normalizedPosition, interpolatedValue ,v000, v100, v001, v101, v010,v110, v011,v111);\\n    dataValue = interpolatedValue;\\n\\n    // x axis\\n    vec3 g100 = vec3(1., 0., 0.);\\n    vec3 ng100 = normalizedPosition + g100 * GRADIENT_STEP_2976544439;\\n    ng100.x = min(1., ng100.x);\\n\\n    vec4 vg100 = vec4(0.);\\n    trilinearInterpolation(ng100, vg100 ,v000, v100, v001, v101, v010,v110, v011,v111);\\n\\n    vec3 go100 = -g100;\\n    vec3 ngo100 = normalizedPosition + go100 * GRADIENT_STEP_2976544439;\\n    ngo100.x = max(0., ngo100.x);\\n\\n    vec4 vgo100 = vec4(0.);\\n    trilinearInterpolation(ngo100, vgo100 ,v000, v100, v001, v101, v010,v110, v011,v111);\\n\\n    gradient.x = (g100.x * vg100.x + go100.x * vgo100.x);\\n\\n    // y axis\\n    vec3 g010 = vec3(0., 1., 0.);\\n    vec3 ng010 = normalizedPosition + g010 * GRADIENT_STEP_2976544439;\\n    ng010.y = min(1., ng010.y);\\n\\n    vec4 vg010 = vec4(0.);\\n    trilinearInterpolation(ng010, vg010 ,v000, v100, v001, v101, v010,v110, v011,v111);\\n\\n    vec3 go010 = -g010;\\n    vec3 ngo010 = normalizedPosition + go010 * GRADIENT_STEP_2976544439;\\n    ngo010.y = max(0., ngo010.y);\\n\\n    vec4 vgo010 = vec4(0.);\\n    trilinearInterpolation(ngo010, vgo010 ,v000, v100, v001, v101, v010,v110, v011,v111);\\n\\n    gradient.y = (g010.y * vg010.x + go010.y * vgo010.x);\\n\\n    // z axis\\n    vec3 g001 = vec3(0., 0., 1.);\\n    vec3 ng001 = normalizedPosition + g001 * GRADIENT_STEP_2976544439;\\n    ng001.z = min(1., ng001.z);\\n\\n    vec4 vg001 = vec4(0.);\\n    trilinearInterpolation(ng001, vg001 ,v000, v100, v001, v101, v010,v110, v011,v111);\\n\\n    vec3 go001 = -g001;\\n    vec3 ngo001 = normalizedPosition + go001 * GRADIENT_STEP_2976544439;\\n    ngo001.z = max(0., ngo001.z);\\n\\n    vec4 vgo001 = vec4(0.);\\n    trilinearInterpolation(ngo001, vgo001 ,v000, v100, v001, v101, v010,v110, v011,v111);\\n\\n    gradient.z = (g001.z * vg001.x + go001.z * vgo001.x);\\n\\n    // Nick: Your wish is my command - done using Epsilon\\n    // ---------------------------------------------------------------------\\n    // normalize gradient, +0.0001  instead of if?\\n    // float gradientMagnitude = length(gradient);\\n    // if (gradientMagnitude > 0.0) {\\n    //     gradient = -(1. / gradientMagnitude) * gradient;\\n    // }\\n    gradient = -(1. / (length(gradient) + EPSILON)) * gradient;\\n}\\n\\nvoid interpolation(\\n    in int uPixelType,\\n    in vec3 currentVoxel,\\n    in int uTextureSize,\\n    in ivec3 uDataDimensions,\\n    in sampler2D uTextureContainer[7],\\n    in int uBitsAllocated,\\n    in int uNumberOfChannels,\\n    in int uInterpolation,\\n    in int uPackedPerPixel,\\n    out vec4 dataValueAcc,\\n    out vec3 gradient\\n) {\\n    // DOES NOT NEED REMOVAL\\n    // Statically uniform branching condition - cannot cause wavefront divergance\\n    // ----------------------------------------------------------------------------------\\n    if (uInterpolation == 0) {\\n        interpolationIdentity(\\n            uPixelType,\\n            currentVoxel,\\n            uTextureSize,\\n            uDataDimensions,\\n            uTextureContainer,\\n            uBitsAllocated,\\n            uNumberOfChannels,\\n            uPackedPerPixel,\\n            dataValueAcc\\n        );\\n    }\\n    else {\\n        interpolationTrilinear(\\n            uPixelType,\\n            currentVoxel,\\n            uTextureSize,\\n            uDataDimensions,\\n            uTextureContainer,\\n            uBitsAllocated,\\n            uNumberOfChannels,\\n            uInterpolation,\\n            uPackedPerPixel,\\n            dataValueAcc,\\n            gradient\\n        );\\n    }\\n}\\n\\n// THREEJS Provided uniforms\\n// uniform mat4 viewMatrix;\\n// uniform vec3 cameraPosition;\\n\\nuniform int uTextureSize;\\nuniform sampler2D uTextureContainer[7];      // Length 7\\nuniform ivec3 uDataDimensions;\\nuniform mat4 uWorldToData;\\nuniform float uWindowCenterWidth[2];         // Length 2\\nuniform float uLowerUpperThreshold[2];       // Length 2\\nuniform float uRescaleSlopeIntercept[2];     // Length 2\\nuniform int uNumberOfChannels;\\nuniform int uBitsAllocated;\\nuniform int uInvert;\\nuniform int uLut;\\nuniform sampler2D uTextureLUT;\\nuniform int uLutSegmentation;\\nuniform sampler2D uTextureLUTSegmentation;\\nuniform int uPixelType;\\nuniform int uInterpolation;                 // 0 == non, 1 == trilinear\\nuniform float uCanvasWidth;\\nuniform float uCanvasHeight;\\nuniform vec3 uBorderColor;\\nuniform float uBorderWidth;\\nuniform float uBorderMargin;\\nuniform float uBorderDashLength;\\nuniform float uOpacity;\\nuniform float uSpacing;\\nuniform float uThickness;\\nuniform int uThicknessMethod;\\nuniform int uPackedPerPixel;\\n\\nvarying vec3 vPos;\\nvarying vec3 vNormal;\\n\\nvoid main(void) {\\n    // DOES NEED REMOVAL\\n    // Dynamically branching condition - will cause wavefront divergance\\n    // ------------------------------------------------------------------\\n    if ( \\n        uCanvasWidth > 0. &&\\n        ((gl_FragCoord.x > uBorderMargin &&  (gl_FragCoord.x - uBorderMargin) < uBorderWidth) \\n        || \\n        (gl_FragCoord.x < (uCanvasWidth - uBorderMargin) && (gl_FragCoord.x + uBorderMargin) > (uCanvasWidth - uBorderWidth))) \\n    ) {\\n        float valueY = mod(gl_FragCoord.y, 2. * uBorderDashLength);\\n        // DOES NEED REMOVAL\\n        // Dynamically branching condition - will cause wavefront divergance\\n        // ------------------------------------------------------------------\\n        if (valueY < uBorderDashLength && gl_FragCoord.y > uBorderMargin && gl_FragCoord.y < (uCanvasHeight - uBorderMargin)) \\n        {\\n            gl_FragColor = vec4(uBorderColor, 1.);\\n            return;\\n        }\\n    }\\n\\n    // DOES NEED REMOVAL\\n    // Dynamically branching condition - will cause wavefront divergance\\n    // ------------------------------------------------------------------\\n    if (\\n        uCanvasHeight > 0. && \\n        ((gl_FragCoord.y > uBorderMargin && (gl_FragCoord.y - uBorderMargin) < uBorderWidth)\\n        || \\n        (gl_FragCoord.y < (uCanvasHeight - uBorderMargin) && (gl_FragCoord.y + uBorderMargin) > (uCanvasHeight - uBorderWidth))) \\n    ) {\\n        float valueX = mod(gl_FragCoord.x, 2. * uBorderDashLength);\\n        // DOES NEED REMOVAL\\n        // Dynamically branching condition - will cause wavefront divergance\\n        // ------------------------------------------------------------------\\n        if(valueX < uBorderDashLength && gl_FragCoord.x > uBorderMargin && gl_FragCoord.x < (uCanvasWidth - uBorderMargin)) \\n        {\\n            gl_FragColor = vec4(uBorderColor, 1.);\\n            return;\\n        }\\n    }\\n\\n    // get texture coordinates of current pixel\\n    vec4 dataValue = vec4(0.);\\n    // gradient calculations will be skipped if it is equal to vec3(1.) \\n    vec3 gradient = vec3(1.); \\n    int steps = int(floor(uThickness / uSpacing + 0.5));\\n\\n    // DOES NOT NEED REMOVAL\\n    // Statically uniform branching condition - cannot cause wavefront divergance\\n    // ---------------------------------------------------------------------------\\n    if (steps > 1) {\\n        vec3 origin = vPos - uThickness * 0.5 * vNormal;\\n        vec4 dataValueAcc = vec4(0.);\\n\\n        for (int i = 0; i < steps; i++) {\\n            vec4 dataCoordinates = uWorldToData * vec4(origin + float(i) * uSpacing * vNormal, 1.);\\n            vec3 currentVoxel = dataCoordinates.xyz;\\n\\n            interpolation(\\n                uPixelType,\\n                currentVoxel,\\n                uTextureSize,\\n                uDataDimensions,\\n                uTextureContainer,\\n                uBitsAllocated,\\n                uNumberOfChannels,\\n                uInterpolation,\\n                uPackedPerPixel,\\n                dataValue,\\n                gradient\\n            );\\n\\n            // DOES NOT NEED REMOVAL\\n            // Statically uniform branching condition - cannot cause wavefront divergance\\n            // ---------------------------------------------------------------------------\\n            if (i == 0) {\\n                dataValue.r = dataValueAcc.r;\\n                continue;\\n            }\\n            // DOES NOT NEED REMOVAL\\n            // Statically uniform branching condition - cannot cause wavefront divergance\\n            // ---------------------------------------------------------------------------\\n            if (uThicknessMethod == 0) {\\n                dataValue.r = max(dataValueAcc.r, dataValue.r);\\n            }\\n            // DOES NOT NEED REMOVAL\\n            // Statically uniform branching condition - cannot cause wavefront divergance\\n            // ---------------------------------------------------------------------------\\n            if (uThicknessMethod == 1) {\\n                dataValue.r += dataValueAcc.r;\\n            }\\n            // DOES NOT NEED REMOVAL\\n            // Statically uniform branching condition - cannot cause wavefront divergance\\n            // ---------------------------------------------------------------------------\\n            if (uThicknessMethod == 2) {\\n                dataValue.r = min(dataValueAcc.r, dataValue.r);\\n            }\\n        }\\n\\n        if (uThicknessMethod == 1) {\\n            dataValue.r = dataValue.r / float(steps);\\n        }\\n    } \\n    else {\\n        vec4 dataCoordinates = uWorldToData * vec4(vPos, 1.);\\n        vec3 currentVoxel = dataCoordinates.xyz;\\n        interpolation(\\n            uPixelType,\\n            currentVoxel,\\n            uTextureSize,\\n            uDataDimensions,\\n            uTextureContainer,\\n            uBitsAllocated,\\n            uNumberOfChannels,\\n            uInterpolation,\\n            uPackedPerPixel,\\n            dataValue,\\n            gradient\\n        );\\n    }\\n\\n    // DOES NOT NEED REMOVAL\\n    // Statically uniform branching condition - cannot cause wavefront divergance\\n    // ---------------------------------------------------------------------------\\n    if (uNumberOfChannels == 1) {\\n        // rescale/slope\\n        float realIntensity = dataValue.r * uRescaleSlopeIntercept[0] + uRescaleSlopeIntercept[1];\\n        \\n        // DOES NOT NEED REMOVAL\\n        // Statically uniform branching condition - cannot cause wavefront divergance\\n        // ---------------------------------------------------------------------------\\n        // threshold\\n        if (realIntensity < uLowerUpperThreshold[0] || realIntensity > uLowerUpperThreshold[1]) {\\n            discard;\\n        }\\n    \\n        // normalize\\n        float windowMin = uWindowCenterWidth[0] - uWindowCenterWidth[1] * 0.5;\\n        float normalizedIntensity =\\n            ( realIntensity - windowMin ) / uWindowCenterWidth[1];\\n        dataValue.r = dataValue.g = dataValue.b = normalizedIntensity;\\n        dataValue.a = 1.;\\n\\n        // DOES NOT NEED REMOVAL\\n        // Statically uniform branching condition - cannot cause wavefront divergance\\n        // ---------------------------------------------------------------------------\\n        // apply LUT\\n        if(uLut == 1){\\n            // should opacity be grabbed there?\\n            dataValue = texture2D( uTextureLUT, vec2( normalizedIntensity , 1.0) );\\n        }\\n    \\n        // DOES NOT NEED REMOVAL\\n        // Statically uniform branching condition - cannot cause wavefront divergance\\n        // ---------------------------------------------------------------------------\\n        // apply segmentation\\n        if(uLutSegmentation == 1){\\n            // should opacity be grabbed there?\\n            float textureWidth = 256.;\\n            float textureHeight = 128.;\\n            float min = 0.;\\n            // start at 0!\\n            int adjustedIntensity = int(floor(realIntensity + 0.5));\\n        \\n            // Get row and column in the texture\\n            int colIndex = int(mod(float(adjustedIntensity), textureWidth));\\n            int rowIndex = int(floor(float(adjustedIntensity)/textureWidth));\\n        \\n            float texWidth = 1./textureWidth;\\n            float texHeight = 1./textureHeight;\\n        \\n            // Map row and column to uv\\n            vec2 uv = vec2(0,0);\\n            uv.x = 0.5 * texWidth + (texWidth * float(colIndex));\\n            uv.y = 1. - (0.5 * texHeight + float(rowIndex) * texHeight);\\n        \\n            dataValue = texture2D( uTextureLUTSegmentation, uv );\\n        }\\n    }\\n\\n    // DOES NOT NEED REMOVAL\\n    // Statically uniform branching condition - cannot cause wavefront divergance\\n    // ---------------------------------------------------------------------------\\n    if(uInvert == 1){\\n        dataValue.xyz = vec3(1.) - dataValue.xyz;\\n    }\\n\\n    dataValue.a = dataValue.a*uOpacity;\\n    gl_FragColor = dataValue;\\n}\"");
-
-/***/ }),
-
-/***/ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/glsl/data.vert":
-/*!**************************************************************************************************************************!*\
-  !*** ./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/glsl/data.vert ***!
-  \**************************************************************************************************************************/
+/***/ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/webgl/data/data.vert":
+/*!********************************************************************************************************************************!*\
+  !*** ./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/webgl/data/data.vert ***!
+  \********************************************************************************************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -20988,10 +20975,36 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/glsl/default.vert":
-/*!*****************************************************************************************************************************!*\
-  !*** ./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/glsl/default.vert ***!
-  \*****************************************************************************************************************************/
+/***/ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/webgl/data/data_idnInterp.frag":
+/*!******************************************************************************************************************************************!*\
+  !*** ./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/webgl/data/data_idnInterp.frag ***!
+  \******************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = ("#define GLSLIFY 1\nexport default \"#define GLSLIFY 1\\nvoid AMItexture3D(\\n    in ivec3 dataCoordinates, \\n    in int uTextureSize,\\n    in ivec3 uDataDimensions,\\n    in sampler2D uTextureContainer[7],\\n    in int uPackedPerPixel,\\n    out vec4 dataValue, \\n    out int offset\\n){\\n    float textureSizeF = float(uTextureSize);\\n    int voxelsPerTexture = uTextureSize*uTextureSize;\\n\\n    int index = dataCoordinates.x + dataCoordinates.y * uDataDimensions.x + dataCoordinates.z * uDataDimensions.y * uDataDimensions.x;\\n\\n    // Nick: Nicolas can you give me some insight on what you'd like to do here?\\n    // --------------------------------------------------------------------------\\n    // dividing an integer by an integer will give you an integer result, \\n    // rounded down can not get float numbers to work :(\\n    int packedIndex = index/uPackedPerPixel;\\n    offset = index - uPackedPerPixel*packedIndex;\\n\\n    // Map data index to right sampler2D texture\\n    int textureIndex = packedIndex/voxelsPerTexture;\\n    int inTextureIndex = packedIndex - voxelsPerTexture*textureIndex;\\n\\n    // Get row and column in the texture\\n    int rowIndex = inTextureIndex/uTextureSize;\\n    float rowIndexF = float(rowIndex);\\n    float colIndex = float(inTextureIndex - uTextureSize * rowIndex);\\n\\n    // Map row and column to uv\\n    vec2 uv = vec2(0,0);\\n    uv.x = (0.5 + colIndex) / textureSizeF;\\n    uv.y = 1. - (0.5 + rowIndexF) / textureSizeF;\\n\\n    float textureIndexF = float(textureIndex);\\n    vec4 addition = vec4(0.);\\n\\n    for (int i = 0; i < 7; i++ ) {\\n        float i_float = float(i);\\n        addition += step( abs( textureIndexF - i_float ), 0.0 ) * texture2D(uTextureContainer[i], uv);\\n    }\\n    dataValue = addition;\\n}\\n\\nvoid toUInt8(\\n    in float r, \\n    out float value\\n){\\n    value = r * 255.;\\n}\\n\\n  \\n\\nvoid unpack8(\\n    in vec4 packedData, \\n    in int offset, \\n    out vec4 unpackedData\\n){\\n    float floatedOffset = float(offset);\\n    float floatedOffsetSquared = floatedOffset * floatedOffset;\\n\\n    toUInt8(\\n        step( floatedOffsetSquared , 0.0 ) * packedData.r +\\n        step( floatedOffsetSquared - 2. * floatedOffset + 1., 0.0 ) * packedData.g +\\n        step( floatedOffsetSquared - 2. * 2. *  floatedOffset + 4., 0.0 ) * packedData.b +\\n        step( floatedOffsetSquared - 2. * 3. *  floatedOffset + 9., 0.0 ) * packedData.a,\\n        unpackedData.x\\n    );\\n}\\n\\nvoid toUInt16(\\n    in float r, \\n    in float a, \\n    out float value\\n) {\\n    value = r * 255. + a * 255. * 256.;\\n}\\n\\nvoid unpack16(\\n    in vec4 packedData, \\n    in int offset, \\n    out vec4 unpackedData\\n){\\n    unpackedData = packedData;\\n    float floatedOffset = float(offset);\\n\\n    toUInt16(\\n        packedData.r * (1. - floatedOffset) + packedData.b * floatedOffset,\\n        packedData.g * (1. - floatedOffset) + packedData.a * floatedOffset,\\n        unpackedData.x\\n    );\\n    \\n}\\n\\nvoid toUInt32(\\n    in float r, \\n    in float g, \\n    in float b, \\n    in float a, \\n    out float value\\n){\\n    value = r * 255. + g * 255. * 256. + b * 255. * 256. * 256. + a * 255. * 256. * 256. * 256.;\\n}\\n\\nvoid toUFloat32(in float r, in float g, in float b, in float a, out float value){\\n\\n    // create arrays containing bits for rgba values, value between 0 and 255\\n    value = r * 255.;\\n    int bytemeR[8];\\n    bytemeR[0] = int(floor(value / 128.));\\n    value -= float(bytemeR[0] * 128);\\n    bytemeR[1] = int(floor(value / 64.));\\n    value -= float(bytemeR[1] * 64);\\n    bytemeR[2] = int(floor(value / 32.));\\n    value -= float(bytemeR[2] * 32);\\n    bytemeR[3] = int(floor(value / 16.));\\n    value -= float(bytemeR[3] * 16);\\n    bytemeR[4] = int(floor(value / 8.));\\n    value -= float(bytemeR[4] * 8);\\n    bytemeR[5] = int(floor(value / 4.));\\n    value -= float(bytemeR[5] * 4);\\n    bytemeR[6] = int(floor(value / 2.));\\n    value -= float(bytemeR[6] * 2);\\n    bytemeR[7] = int(floor(value));\\n\\n    value = g * 255.;\\n    int bytemeG[8];\\n    bytemeG[0] = int(floor(value / 128.));\\n    value -= float(bytemeG[0] * 128);\\n    bytemeG[1] = int(floor(value / 64.));\\n    value -= float(bytemeG[1] * 64);\\n    bytemeG[2] = int(floor(value / 32.));\\n    value -= float(bytemeG[2] * 32);\\n    bytemeG[3] = int(floor(value / 16.));\\n    value -= float(bytemeG[3] * 16);\\n    bytemeG[4] = int(floor(value / 8.));\\n    value -= float(bytemeG[4] * 8);\\n    bytemeG[5] = int(floor(value / 4.));\\n    value -= float(bytemeG[5] * 4);\\n    bytemeG[6] = int(floor(value / 2.));\\n    value -= float(bytemeG[6] * 2);\\n    bytemeG[7] = int(floor(value));\\n\\n    value = b * 255.;\\n    int bytemeB[8];\\n    bytemeB[0] = int(floor(value / 128.));\\n    value -= float(bytemeB[0] * 128);\\n    bytemeB[1] = int(floor(value / 64.));\\n    value -= float(bytemeB[1] * 64);\\n    bytemeB[2] = int(floor(value / 32.));\\n    value -= float(bytemeB[2] * 32);\\n    bytemeB[3] = int(floor(value / 16.));\\n    value -= float(bytemeB[3] * 16);\\n    bytemeB[4] = int(floor(value / 8.));\\n    value -= float(bytemeB[4] * 8);\\n    bytemeB[5] = int(floor(value / 4.));\\n    value -= float(bytemeB[5] * 4);\\n    bytemeB[6] = int(floor(value / 2.));\\n    value -= float(bytemeB[6] * 2);\\n    bytemeB[7] = int(floor(value));\\n\\n    value = a * 255.;\\n    int bytemeA[8];\\n    bytemeA[0] = int(floor(value / 128.));\\n    value -= float(bytemeA[0] * 128);\\n    bytemeA[1] = int(floor(value / 64.));\\n    value -= float(bytemeA[1] * 64);\\n    bytemeA[2] = int(floor(value / 32.));\\n    value -= float(bytemeA[2] * 32);\\n    bytemeA[3] = int(floor(value / 16.));\\n    value -= float(bytemeA[3] * 16);\\n    bytemeA[4] = int(floor(value / 8.));\\n    value -= float(bytemeA[4] * 8);\\n    bytemeA[5] = int(floor(value / 4.));\\n    value -= float(bytemeA[5] * 4);\\n    bytemeA[6] = int(floor(value / 2.));\\n    value -= float(bytemeA[6] * 2);\\n    bytemeA[7] = int(floor(value));\\n\\n    // compute float32 value from bit arrays\\n    // sign\\n    int issigned = 1 - 2 * bytemeR[0];\\n\\n    // exponent\\n    int exponent = 0;\\n\\n    exponent += bytemeR[1] * int(pow(2., 7.));\\n    exponent += bytemeR[2] * int(pow(2., 6.));\\n    exponent += bytemeR[3] * int(pow(2., 5.));\\n    exponent += bytemeR[4] * int(pow(2., 4.));\\n    exponent += bytemeR[5] * int(pow(2., 3.));\\n    exponent += bytemeR[6] * int(pow(2., 2.));\\n    exponent += bytemeR[7] * int(pow(2., 1.));\\n    exponent += bytemeG[0];\\n\\n    // fraction\\n    float fraction = 0.;\\n\\n    fraction = float(bytemeG[1]) * pow(2., -1.);\\n    fraction += float(bytemeG[2]) * pow(2., -2.);\\n    fraction += float(bytemeG[3]) * pow(2., -3.);\\n    fraction += float(bytemeG[4]) * pow(2., -4.);\\n    fraction += float(bytemeG[5]) * pow(2., -5.);\\n    fraction += float(bytemeG[6]) * pow(2., -6.);\\n    fraction += float(bytemeG[7]) * pow(2., -7.);\\n\\n    fraction += float(bytemeB[0]) * pow(2., -8.);\\n    fraction += float(bytemeB[1]) * pow(2., -9.);\\n    fraction += float(bytemeB[2]) * pow(2., -10.);\\n    fraction += float(bytemeB[3]) * pow(2., -11.);\\n    fraction += float(bytemeB[4]) * pow(2., -12.);\\n    fraction += float(bytemeB[5]) * pow(2., -13.);\\n    fraction += float(bytemeB[6]) * pow(2., -14.);\\n    fraction += float(bytemeB[7]) * pow(2., -15.);\\n\\n    fraction += float(bytemeA[0]) * pow(2., -16.);\\n    fraction += float(bytemeA[1]) * pow(2., -17.);\\n    fraction += float(bytemeA[2]) * pow(2., -18.);\\n    fraction += float(bytemeA[3]) * pow(2., -19.);\\n    fraction += float(bytemeA[4]) * pow(2., -20.);\\n    fraction += float(bytemeA[5]) * pow(2., -21.);\\n    fraction += float(bytemeA[6]) * pow(2., -22.);\\n    fraction += float(bytemeA[7]) * pow(2., -23.);\\n\\n    value = float(issigned) * pow( 2., float(exponent - 127)) * (1. + fraction);\\n}\\n\\nvoid unpack32(\\n    in vec4 packedData, \\n    in int offset, \\n    in int uPixelType,\\n    out vec4 unpackedData\\n){\\n    // DOES NOT NEED REMOVAL\\n    // Statically uniform branching condition - cannot cause wavefront divergance\\n    // ----------------------------------------------------------------------------------\\n    if (uPixelType == 1) {\\n        toUInt32(\\n            packedData.r,\\n            packedData.g,\\n            packedData.b,\\n            packedData.a,\\n            unpackedData.x\\n        );\\n    }\\n    else {\\n        toUFloat32(\\n            packedData.r,\\n            packedData.g,\\n            packedData.b,\\n            packedData.a,\\n            unpackedData.x\\n        );\\n    }\\n}\\n\\nvoid unpackIdentity(\\n    in vec4 packedData, \\n    in int offset, \\n    out vec4 unpackedData\\n){\\n    unpackedData = packedData;\\n}\\n\\nvoid unpack(\\n    in int uPixelType,\\n    in int uBitsAllocated,\\n    in int uNumberOfChannels,\\n    in vec4 packedData,\\n    in int offset,\\n    out vec4 unpackedData\\n) {\\n    // DOES NOT NEED REMOVAL\\n    // Statically uniform branching condition - cannot cause wavefront divergance\\n    // ---------------------------------------------------------------------------\\n    if (uNumberOfChannels == 1) {\\n        // DOES NOT NEED REMOVAL\\n        // Statically uniform branching condition - cannot cause wavefront divergance\\n        // ---------------------------------------------------------------------------\\n        if (uBitsAllocated == 8) {\\n            unpack8(    \\n                packedData, \\n                offset, \\n                unpackedData\\n            );\\n            return;\\n        }\\n        // DOES NOT NEED REMOVAL\\n        // Statically uniform branching condition - cannot cause wavefront divergance\\n        // ---------------------------------------------------------------------------\\n        if (uBitsAllocated == 16) {\\n            unpack16(    \\n                packedData, \\n                offset, \\n                unpackedData\\n            );\\n            return;\\n        }\\n        // DOES NOT NEED REMOVAL\\n        // Statically uniform branching condition - cannot cause wavefront divergance\\n        // ---------------------------------------------------------------------------\\n        if (uBitsAllocated == 32) {\\n            unpack32(    \\n                packedData, \\n                offset, \\n                uPixelType,\\n                unpackedData\\n            );\\n            return;\\n        }\\n    } \\n\\n    unpackIdentity(\\n        packedData, \\n        offset, \\n        unpackedData\\n    );\\n}\\n\\nvoid interpolationIdentity(\\n    in int uPixelType,\\n    in vec3 currentVoxel, \\n    in int uTextureSize,\\n    in ivec3 uDataDimensions,\\n    in sampler2D uTextureContainer[7],\\n    in int uBitsAllocated,\\n    in int uNumberOfChannels,\\n    in int uPackedPerPixel,\\n    out vec4 dataValue\\n) {\\n    // lower bound\\n    vec3 rcurrentVoxel = vec3(floor(currentVoxel.x + 0.5 ), floor(currentVoxel.y + 0.5 ), floor(currentVoxel.z + 0.5 ));\\n    ivec3 flooredVoxel = ivec3(int(rcurrentVoxel.x), int(rcurrentVoxel.y), int(rcurrentVoxel.z));\\n\\n    vec4 temporaryDataValue = vec4(0., 0., 0., 0.);\\n    int dataOffset = 0;\\n\\n    AMItexture3D(\\n        flooredVoxel, \\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uPackedPerPixel,\\n        temporaryDataValue, \\n        dataOffset\\n    );\\n\\n    unpack(\\n        uPixelType,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        temporaryDataValue,\\n        dataOffset,\\n        dataValue\\n    );\\n}\\n\\n// THREEJS Provided uniforms\\n// uniform mat4 viewMatrix;\\n// uniform vec3 cameraPosition;\\n\\nuniform int uTextureSize;\\nuniform sampler2D uTextureContainer[7];      // Length 7\\nuniform ivec3 uDataDimensions;\\nuniform mat4 uWorldToData;\\nuniform float uWindowCenterWidth[2];         // Length 2\\nuniform float uLowerUpperThreshold[2];       // Length 2\\nuniform float uRescaleSlopeIntercept[2];     // Length 2\\nuniform int uNumberOfChannels;\\nuniform int uBitsAllocated;\\nuniform int uInvert;\\nuniform int uLut;\\nuniform sampler2D uTextureLUT;\\nuniform int uLutSegmentation;\\nuniform sampler2D uTextureLUTSegmentation;\\nuniform int uPixelType;\\nuniform float uCanvasWidth;\\nuniform float uCanvasHeight;\\nuniform vec3 uBorderColor;\\nuniform float uBorderWidth;\\nuniform float uBorderMargin;\\nuniform float uBorderDashLength;\\nuniform float uOpacity;\\nuniform float uSpacing;\\nuniform float uThickness;\\nuniform int uThicknessMethod;\\nuniform int uPackedPerPixel;\\n\\nvarying vec3 vPos;\\nvarying vec3 vNormal;\\n\\nvoid main(void) {\\n    // DOES NEED REMOVAL\\n    // Dynamically branching condition - will cause wavefront divergance\\n    // ------------------------------------------------------------------\\n    if ( \\n        uCanvasWidth > 0. &&\\n        ((gl_FragCoord.x > uBorderMargin &&  (gl_FragCoord.x - uBorderMargin) < uBorderWidth) \\n        || \\n        (gl_FragCoord.x < (uCanvasWidth - uBorderMargin) && (gl_FragCoord.x + uBorderMargin) > (uCanvasWidth - uBorderWidth))) \\n    ) {\\n        float valueY = mod(gl_FragCoord.y, 2. * uBorderDashLength);\\n        // DOES NEED REMOVAL\\n        // Dynamically branching condition - will cause wavefront divergance\\n        // ------------------------------------------------------------------\\n        if (valueY < uBorderDashLength && gl_FragCoord.y > uBorderMargin && gl_FragCoord.y < (uCanvasHeight - uBorderMargin)) \\n        {\\n            gl_FragColor = vec4(uBorderColor, 1.);\\n            return;\\n        }\\n    }\\n\\n    // DOES NEED REMOVAL\\n    // Dynamically branching condition - will cause wavefront divergance\\n    // ------------------------------------------------------------------\\n    if (\\n        uCanvasHeight > 0. && \\n        ((gl_FragCoord.y > uBorderMargin && (gl_FragCoord.y - uBorderMargin) < uBorderWidth)\\n        || \\n        (gl_FragCoord.y < (uCanvasHeight - uBorderMargin) && (gl_FragCoord.y + uBorderMargin) > (uCanvasHeight - uBorderWidth))) \\n    ) {\\n        float valueX = mod(gl_FragCoord.x, 2. * uBorderDashLength);\\n        // DOES NEED REMOVAL\\n        // Dynamically branching condition - will cause wavefront divergance\\n        // ------------------------------------------------------------------\\n        if(valueX < uBorderDashLength && gl_FragCoord.x > uBorderMargin && gl_FragCoord.x < (uCanvasWidth - uBorderMargin)) \\n        {\\n            gl_FragColor = vec4(uBorderColor, 1.);\\n            return;\\n        }\\n    }\\n\\n    // get texture coordinates of current pixel\\n    vec4 dataValue = vec4(0.);\\n    // gradient calculations will be skipped if it is equal to vec3(1.) \\n    vec3 gradient = vec3(1.); \\n    int steps = int(floor(uThickness / uSpacing + 0.5));\\n\\n    // DOES NOT NEED REMOVAL\\n    // Statically uniform branching condition - cannot cause wavefront divergance\\n    // ---------------------------------------------------------------------------\\n    if (steps > 1) {\\n        vec3 origin = vPos - uThickness * 0.5 * vNormal;\\n        vec4 dataValueAcc = vec4(0.);\\n\\n        for (int i = 0; i < steps; i++) {\\n            vec4 dataCoordinates = uWorldToData * vec4(origin + float(i) * uSpacing * vNormal, 1.);\\n            vec3 currentVoxel = dataCoordinates.xyz;\\n\\n            interpolationIdentity(\\n                uPixelType,\\n                currentVoxel,\\n                uTextureSize,\\n                uDataDimensions,\\n                uTextureContainer,\\n                uBitsAllocated,\\n                uNumberOfChannels,\\n                0,\\n                uPackedPerPixel,\\n                dataValue,\\n                gradient\\n            );\\n\\n            // DOES NOT NEED REMOVAL\\n            // Statically uniform branching condition - cannot cause wavefront divergance\\n            // ---------------------------------------------------------------------------\\n            if (i == 0) {\\n                dataValue.r = dataValueAcc.r;\\n                continue;\\n            }\\n            // DOES NOT NEED REMOVAL\\n            // Statically uniform branching condition - cannot cause wavefront divergance\\n            // ---------------------------------------------------------------------------\\n            if (uThicknessMethod == 0) {\\n                dataValue.r = max(dataValueAcc.r, dataValue.r);\\n            }\\n            // DOES NOT NEED REMOVAL\\n            // Statically uniform branching condition - cannot cause wavefront divergance\\n            // ---------------------------------------------------------------------------\\n            if (uThicknessMethod == 1) {\\n                dataValue.r += dataValueAcc.r;\\n            }\\n            // DOES NOT NEED REMOVAL\\n            // Statically uniform branching condition - cannot cause wavefront divergance\\n            // ---------------------------------------------------------------------------\\n            if (uThicknessMethod == 2) {\\n                dataValue.r = min(dataValueAcc.r, dataValue.r);\\n            }\\n        }\\n\\n        if (uThicknessMethod == 1) {\\n            dataValue.r = dataValue.r / float(steps);\\n        }\\n    } \\n    else {\\n        vec4 dataCoordinates = uWorldToData * vec4(vPos, 1.);\\n        vec3 currentVoxel = dataCoordinates.xyz;\\n        \\n        interpolationIdentity(\\n            uPixelType,\\n            currentVoxel,\\n            uTextureSize,\\n            uDataDimensions,\\n            uTextureContainer,\\n            uBitsAllocated,\\n            uNumberOfChannels,\\n            0,\\n            uPackedPerPixel,\\n            dataValue,\\n            gradient\\n        );\\n    }\\n\\n    // DOES NOT NEED REMOVAL\\n    // Statically uniform branching condition - cannot cause wavefront divergance\\n    // ---------------------------------------------------------------------------\\n    if (uNumberOfChannels == 1) {\\n        // rescale/slope\\n        float realIntensity = dataValue.r * uRescaleSlopeIntercept[0] + uRescaleSlopeIntercept[1];\\n        \\n        // DOES NOT NEED REMOVAL\\n        // Statically uniform branching condition - cannot cause wavefront divergance\\n        // ---------------------------------------------------------------------------\\n        // threshold\\n        if (realIntensity < uLowerUpperThreshold[0] || realIntensity > uLowerUpperThreshold[1]) {\\n            discard;\\n        }\\n    \\n        // normalize\\n        float windowMin = uWindowCenterWidth[0] - uWindowCenterWidth[1] * 0.5;\\n        float normalizedIntensity =\\n            ( realIntensity - windowMin ) / uWindowCenterWidth[1];\\n        dataValue.r = dataValue.g = dataValue.b = normalizedIntensity;\\n        dataValue.a = 1.;\\n\\n        // DOES NOT NEED REMOVAL\\n        // Statically uniform branching condition - cannot cause wavefront divergance\\n        // ---------------------------------------------------------------------------\\n        // apply LUT\\n        if(uLut == 1){\\n            // should opacity be grabbed there?\\n            dataValue = texture2D( uTextureLUT, vec2( normalizedIntensity , 1.0) );\\n        }\\n    \\n        // DOES NOT NEED REMOVAL\\n        // Statically uniform branching condition - cannot cause wavefront divergance\\n        // ---------------------------------------------------------------------------\\n        // apply segmentation\\n        if(uLutSegmentation == 1){\\n            // should opacity be grabbed there?\\n            float textureWidth = 256.;\\n            float textureHeight = 128.;\\n            float min = 0.;\\n            // start at 0!\\n            int adjustedIntensity = int(floor(realIntensity + 0.5));\\n        \\n            // Get row and column in the texture\\n            int colIndex = int(mod(float(adjustedIntensity), textureWidth));\\n            int rowIndex = int(floor(float(adjustedIntensity)/textureWidth));\\n        \\n            float texWidth = 1./textureWidth;\\n            float texHeight = 1./textureHeight;\\n        \\n            // Map row and column to uv\\n            vec2 uv = vec2(0,0);\\n            uv.x = 0.5 * texWidth + (texWidth * float(colIndex));\\n            uv.y = 1. - (0.5 * texHeight + float(rowIndex) * texHeight);\\n        \\n            dataValue = texture2D( uTextureLUTSegmentation, uv );\\n        }\\n    }\\n\\n    // DOES NOT NEED REMOVAL\\n    // Statically uniform branching condition - cannot cause wavefront divergance\\n    // ---------------------------------------------------------------------------\\n    if(uInvert == 1){\\n        dataValue.xyz = vec3(1.) - dataValue.xyz;\\n    }\\n\\n    dataValue.a = dataValue.a*uOpacity;\\n    gl_FragColor = dataValue;\\n}\"");
+
+/***/ }),
+
+/***/ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/webgl/data/data_triInterp.frag":
+/*!******************************************************************************************************************************************!*\
+  !*** ./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/webgl/data/data_triInterp.frag ***!
+  \******************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = ("#define GLSLIFY 1\nexport default \"#define GLSLIFY 1\\nvoid AMItexture3D(\\n    in ivec3 dataCoordinates, \\n    in int uTextureSize,\\n    in ivec3 uDataDimensions,\\n    in sampler2D uTextureContainer[7],\\n    in int uPackedPerPixel,\\n    out vec4 dataValue, \\n    out int offset\\n){\\n    float textureSizeF = float(uTextureSize);\\n    int voxelsPerTexture = uTextureSize*uTextureSize;\\n\\n    int index = dataCoordinates.x + dataCoordinates.y * uDataDimensions.x + dataCoordinates.z * uDataDimensions.y * uDataDimensions.x;\\n\\n    // Nick: Nicolas can you give me some insight on what you'd like to do here?\\n    // --------------------------------------------------------------------------\\n    // dividing an integer by an integer will give you an integer result, \\n    // rounded down can not get float numbers to work :(\\n    int packedIndex = index/uPackedPerPixel;\\n    offset = index - uPackedPerPixel*packedIndex;\\n\\n    // Map data index to right sampler2D texture\\n    int textureIndex = packedIndex/voxelsPerTexture;\\n    int inTextureIndex = packedIndex - voxelsPerTexture*textureIndex;\\n\\n    // Get row and column in the texture\\n    int rowIndex = inTextureIndex/uTextureSize;\\n    float rowIndexF = float(rowIndex);\\n    float colIndex = float(inTextureIndex - uTextureSize * rowIndex);\\n\\n    // Map row and column to uv\\n    vec2 uv = vec2(0,0);\\n    uv.x = (0.5 + colIndex) / textureSizeF;\\n    uv.y = 1. - (0.5 + rowIndexF) / textureSizeF;\\n\\n    float textureIndexF = float(textureIndex);\\n    vec4 addition = vec4(0.);\\n\\n    for (int i = 0; i < 7; i++ ) {\\n        float i_float = float(i);\\n        addition += step( abs( textureIndexF - i_float ), 0.0 ) * texture2D(uTextureContainer[i], uv);\\n    }\\n    dataValue = addition;\\n}\\n\\nvoid toUInt8(\\n    in float r, \\n    out float value\\n){\\n    value = r * 255.;\\n}\\n\\n  \\n\\nvoid unpack8(\\n    in vec4 packedData, \\n    in int offset, \\n    out vec4 unpackedData\\n){\\n    float floatedOffset = float(offset);\\n    float floatedOffsetSquared = floatedOffset * floatedOffset;\\n\\n    toUInt8(\\n        step( floatedOffsetSquared , 0.0 ) * packedData.r +\\n        step( floatedOffsetSquared - 2. * floatedOffset + 1., 0.0 ) * packedData.g +\\n        step( floatedOffsetSquared - 2. * 2. *  floatedOffset + 4., 0.0 ) * packedData.b +\\n        step( floatedOffsetSquared - 2. * 3. *  floatedOffset + 9., 0.0 ) * packedData.a,\\n        unpackedData.x\\n    );\\n}\\n\\nvoid toUInt16(\\n    in float r, \\n    in float a, \\n    out float value\\n) {\\n    value = r * 255. + a * 255. * 256.;\\n}\\n\\nvoid unpack16(\\n    in vec4 packedData, \\n    in int offset, \\n    out vec4 unpackedData\\n){\\n    unpackedData = packedData;\\n    float floatedOffset = float(offset);\\n\\n    toUInt16(\\n        packedData.r * (1. - floatedOffset) + packedData.b * floatedOffset,\\n        packedData.g * (1. - floatedOffset) + packedData.a * floatedOffset,\\n        unpackedData.x\\n    );\\n    \\n}\\n\\nvoid toUInt32(\\n    in float r, \\n    in float g, \\n    in float b, \\n    in float a, \\n    out float value\\n){\\n    value = r * 255. + g * 255. * 256. + b * 255. * 256. * 256. + a * 255. * 256. * 256. * 256.;\\n}\\n\\nvoid toUFloat32(in float r, in float g, in float b, in float a, out float value){\\n\\n    // create arrays containing bits for rgba values, value between 0 and 255\\n    value = r * 255.;\\n    int bytemeR[8];\\n    bytemeR[0] = int(floor(value / 128.));\\n    value -= float(bytemeR[0] * 128);\\n    bytemeR[1] = int(floor(value / 64.));\\n    value -= float(bytemeR[1] * 64);\\n    bytemeR[2] = int(floor(value / 32.));\\n    value -= float(bytemeR[2] * 32);\\n    bytemeR[3] = int(floor(value / 16.));\\n    value -= float(bytemeR[3] * 16);\\n    bytemeR[4] = int(floor(value / 8.));\\n    value -= float(bytemeR[4] * 8);\\n    bytemeR[5] = int(floor(value / 4.));\\n    value -= float(bytemeR[5] * 4);\\n    bytemeR[6] = int(floor(value / 2.));\\n    value -= float(bytemeR[6] * 2);\\n    bytemeR[7] = int(floor(value));\\n\\n    value = g * 255.;\\n    int bytemeG[8];\\n    bytemeG[0] = int(floor(value / 128.));\\n    value -= float(bytemeG[0] * 128);\\n    bytemeG[1] = int(floor(value / 64.));\\n    value -= float(bytemeG[1] * 64);\\n    bytemeG[2] = int(floor(value / 32.));\\n    value -= float(bytemeG[2] * 32);\\n    bytemeG[3] = int(floor(value / 16.));\\n    value -= float(bytemeG[3] * 16);\\n    bytemeG[4] = int(floor(value / 8.));\\n    value -= float(bytemeG[4] * 8);\\n    bytemeG[5] = int(floor(value / 4.));\\n    value -= float(bytemeG[5] * 4);\\n    bytemeG[6] = int(floor(value / 2.));\\n    value -= float(bytemeG[6] * 2);\\n    bytemeG[7] = int(floor(value));\\n\\n    value = b * 255.;\\n    int bytemeB[8];\\n    bytemeB[0] = int(floor(value / 128.));\\n    value -= float(bytemeB[0] * 128);\\n    bytemeB[1] = int(floor(value / 64.));\\n    value -= float(bytemeB[1] * 64);\\n    bytemeB[2] = int(floor(value / 32.));\\n    value -= float(bytemeB[2] * 32);\\n    bytemeB[3] = int(floor(value / 16.));\\n    value -= float(bytemeB[3] * 16);\\n    bytemeB[4] = int(floor(value / 8.));\\n    value -= float(bytemeB[4] * 8);\\n    bytemeB[5] = int(floor(value / 4.));\\n    value -= float(bytemeB[5] * 4);\\n    bytemeB[6] = int(floor(value / 2.));\\n    value -= float(bytemeB[6] * 2);\\n    bytemeB[7] = int(floor(value));\\n\\n    value = a * 255.;\\n    int bytemeA[8];\\n    bytemeA[0] = int(floor(value / 128.));\\n    value -= float(bytemeA[0] * 128);\\n    bytemeA[1] = int(floor(value / 64.));\\n    value -= float(bytemeA[1] * 64);\\n    bytemeA[2] = int(floor(value / 32.));\\n    value -= float(bytemeA[2] * 32);\\n    bytemeA[3] = int(floor(value / 16.));\\n    value -= float(bytemeA[3] * 16);\\n    bytemeA[4] = int(floor(value / 8.));\\n    value -= float(bytemeA[4] * 8);\\n    bytemeA[5] = int(floor(value / 4.));\\n    value -= float(bytemeA[5] * 4);\\n    bytemeA[6] = int(floor(value / 2.));\\n    value -= float(bytemeA[6] * 2);\\n    bytemeA[7] = int(floor(value));\\n\\n    // compute float32 value from bit arrays\\n    // sign\\n    int issigned = 1 - 2 * bytemeR[0];\\n\\n    // exponent\\n    int exponent = 0;\\n\\n    exponent += bytemeR[1] * int(pow(2., 7.));\\n    exponent += bytemeR[2] * int(pow(2., 6.));\\n    exponent += bytemeR[3] * int(pow(2., 5.));\\n    exponent += bytemeR[4] * int(pow(2., 4.));\\n    exponent += bytemeR[5] * int(pow(2., 3.));\\n    exponent += bytemeR[6] * int(pow(2., 2.));\\n    exponent += bytemeR[7] * int(pow(2., 1.));\\n    exponent += bytemeG[0];\\n\\n    // fraction\\n    float fraction = 0.;\\n\\n    fraction = float(bytemeG[1]) * pow(2., -1.);\\n    fraction += float(bytemeG[2]) * pow(2., -2.);\\n    fraction += float(bytemeG[3]) * pow(2., -3.);\\n    fraction += float(bytemeG[4]) * pow(2., -4.);\\n    fraction += float(bytemeG[5]) * pow(2., -5.);\\n    fraction += float(bytemeG[6]) * pow(2., -6.);\\n    fraction += float(bytemeG[7]) * pow(2., -7.);\\n\\n    fraction += float(bytemeB[0]) * pow(2., -8.);\\n    fraction += float(bytemeB[1]) * pow(2., -9.);\\n    fraction += float(bytemeB[2]) * pow(2., -10.);\\n    fraction += float(bytemeB[3]) * pow(2., -11.);\\n    fraction += float(bytemeB[4]) * pow(2., -12.);\\n    fraction += float(bytemeB[5]) * pow(2., -13.);\\n    fraction += float(bytemeB[6]) * pow(2., -14.);\\n    fraction += float(bytemeB[7]) * pow(2., -15.);\\n\\n    fraction += float(bytemeA[0]) * pow(2., -16.);\\n    fraction += float(bytemeA[1]) * pow(2., -17.);\\n    fraction += float(bytemeA[2]) * pow(2., -18.);\\n    fraction += float(bytemeA[3]) * pow(2., -19.);\\n    fraction += float(bytemeA[4]) * pow(2., -20.);\\n    fraction += float(bytemeA[5]) * pow(2., -21.);\\n    fraction += float(bytemeA[6]) * pow(2., -22.);\\n    fraction += float(bytemeA[7]) * pow(2., -23.);\\n\\n    value = float(issigned) * pow( 2., float(exponent - 127)) * (1. + fraction);\\n}\\n\\nvoid unpack32(\\n    in vec4 packedData, \\n    in int offset, \\n    in int uPixelType,\\n    out vec4 unpackedData\\n){\\n    // DOES NOT NEED REMOVAL\\n    // Statically uniform branching condition - cannot cause wavefront divergance\\n    // ----------------------------------------------------------------------------------\\n    if (uPixelType == 1) {\\n        toUInt32(\\n            packedData.r,\\n            packedData.g,\\n            packedData.b,\\n            packedData.a,\\n            unpackedData.x\\n        );\\n    }\\n    else {\\n        toUFloat32(\\n            packedData.r,\\n            packedData.g,\\n            packedData.b,\\n            packedData.a,\\n            unpackedData.x\\n        );\\n    }\\n}\\n\\nvoid unpackIdentity(\\n    in vec4 packedData, \\n    in int offset, \\n    out vec4 unpackedData\\n){\\n    unpackedData = packedData;\\n}\\n\\nvoid unpack(\\n    in int uPixelType,\\n    in int uBitsAllocated,\\n    in int uNumberOfChannels,\\n    in vec4 packedData,\\n    in int offset,\\n    out vec4 unpackedData\\n) {\\n    // DOES NOT NEED REMOVAL\\n    // Statically uniform branching condition - cannot cause wavefront divergance\\n    // ---------------------------------------------------------------------------\\n    if (uNumberOfChannels == 1) {\\n        // DOES NOT NEED REMOVAL\\n        // Statically uniform branching condition - cannot cause wavefront divergance\\n        // ---------------------------------------------------------------------------\\n        if (uBitsAllocated == 8) {\\n            unpack8(    \\n                packedData, \\n                offset, \\n                unpackedData\\n            );\\n            return;\\n        }\\n        // DOES NOT NEED REMOVAL\\n        // Statically uniform branching condition - cannot cause wavefront divergance\\n        // ---------------------------------------------------------------------------\\n        if (uBitsAllocated == 16) {\\n            unpack16(    \\n                packedData, \\n                offset, \\n                unpackedData\\n            );\\n            return;\\n        }\\n        // DOES NOT NEED REMOVAL\\n        // Statically uniform branching condition - cannot cause wavefront divergance\\n        // ---------------------------------------------------------------------------\\n        if (uBitsAllocated == 32) {\\n            unpack32(    \\n                packedData, \\n                offset, \\n                uPixelType,\\n                unpackedData\\n            );\\n            return;\\n        }\\n    } \\n\\n    unpackIdentity(\\n        packedData, \\n        offset, \\n        unpackedData\\n    );\\n}\\n\\nvoid interpolationIdentity(\\n    in int uPixelType,\\n    in vec3 currentVoxel, \\n    in int uTextureSize,\\n    in ivec3 uDataDimensions,\\n    in sampler2D uTextureContainer[7],\\n    in int uBitsAllocated,\\n    in int uNumberOfChannels,\\n    in int uPackedPerPixel,\\n    out vec4 dataValue\\n) {\\n    // lower bound\\n    vec3 rcurrentVoxel = vec3(floor(currentVoxel.x + 0.5 ), floor(currentVoxel.y + 0.5 ), floor(currentVoxel.z + 0.5 ));\\n    ivec3 flooredVoxel = ivec3(int(rcurrentVoxel.x), int(rcurrentVoxel.y), int(rcurrentVoxel.z));\\n\\n    vec4 temporaryDataValue = vec4(0., 0., 0., 0.);\\n    int dataOffset = 0;\\n\\n    AMItexture3D(\\n        flooredVoxel, \\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uPackedPerPixel,\\n        temporaryDataValue, \\n        dataOffset\\n    );\\n\\n    unpack(\\n        uPixelType,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        temporaryDataValue,\\n        dataOffset,\\n        dataValue\\n    );\\n}\\n\\nconst float GRADIENT_STEP_2976544439 = 0.005;\\nconst float EPSILON = 0.0000152587;\\n\\nvoid trilinearInterpolation(\\n    in vec3 normalizedPosition,\\n    out vec4 interpolatedValue,\\n    in vec4 v000, in vec4 v100,\\n    in vec4 v001, in vec4 v101,\\n    in vec4 v010, in vec4 v110,\\n    in vec4 v011, in vec4 v111\\n) {\\n    // https://en.wikipedia.org/wiki/Trilinear_interpolation\\n    vec4 c00 = v000 * ( 1.0 - normalizedPosition.x ) + v100 * normalizedPosition.x;\\n    vec4 c01 = v001 * ( 1.0 - normalizedPosition.x ) + v101 * normalizedPosition.x;\\n    vec4 c10 = v010 * ( 1.0 - normalizedPosition.x ) + v110 * normalizedPosition.x;\\n    vec4 c11 = v011 * ( 1.0 - normalizedPosition.x ) + v111 * normalizedPosition.x;\\n\\n    // c0 and c1\\n    vec4 c0 = c00 * ( 1.0 - normalizedPosition.y) + c10 * normalizedPosition.y;\\n    vec4 c1 = c01 * ( 1.0 - normalizedPosition.y) + c11 * normalizedPosition.y;\\n\\n    // c\\n    vec4 c = c0 * ( 1.0 - normalizedPosition.z) + c1 * normalizedPosition.z;\\n    interpolatedValue = c;\\n}\\n\\nvoid interpolationTrilinear(\\n    in int uPixelType,\\n    in vec3 currentVoxel, \\n    in int uTextureSize,\\n    in ivec3 uDataDimensions,\\n    in sampler2D uTextureContainer[7],\\n    in int uBitsAllocated,\\n    in int uNumberOfChannels,\\n    in int uInterpolation,\\n    in int uPackedPerPixel,\\n    out vec4 dataValue, \\n    out vec3 gradient\\n){\\n\\n    vec3 lower_bound = floor(currentVoxel);\\n    lower_bound = max(vec3(0.), lower_bound);\\n\\n    vec3 higher_bound = lower_bound + vec3(1.);\\n\\n    vec3 normalizedPosition = (currentVoxel - lower_bound);\\n    normalizedPosition =  max(vec3(0.), normalizedPosition);\\n\\n    vec4 interpolatedValue = vec4(0.);\\n\\n    // fetch values required for interpolation\\n    vec4 v000 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c000 = vec3(lower_bound.x, lower_bound.y, lower_bound.z);\\n    interpolationIdentity(\\n        uPixelType,\\n        c000,\\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        uPackedPerPixel,\\n        v000\\n    );\\n\\n    vec4 v100 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c100 = vec3(higher_bound.x, lower_bound.y, lower_bound.z);\\n    interpolationIdentity(\\n        uPixelType,\\n        c100,\\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        uPackedPerPixel,\\n        v100\\n    );\\n\\n    vec4 v001 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c001 = vec3(lower_bound.x, lower_bound.y, higher_bound.z);\\n    interpolationIdentity(\\n        uPixelType,\\n        c001,\\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        uPackedPerPixel,\\n        v001\\n    );\\n\\n    vec4 v101 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c101 = vec3(higher_bound.x, lower_bound.y, higher_bound.z);\\n    interpolationIdentity(\\n        uPixelType,\\n        c101,\\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        uPackedPerPixel,\\n        v101\\n    );\\n\\n    vec4 v010 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c010 = vec3(lower_bound.x, higher_bound.y, lower_bound.z);\\n    interpolationIdentity(\\n        uPixelType,\\n        c010,\\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        uPackedPerPixel,\\n        v010\\n    );\\n\\n    vec4 v110 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c110 = vec3(higher_bound.x, higher_bound.y, lower_bound.z);\\n    interpolationIdentity(\\n        uPixelType,\\n        c110,\\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        uPackedPerPixel,\\n        v110\\n    );\\n\\n    vec4 v011 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c011 = vec3(lower_bound.x, higher_bound.y, higher_bound.z);\\n    interpolationIdentity(\\n        uPixelType,\\n        c011,\\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        uPackedPerPixel,\\n        v011\\n    );\\n\\n    vec4 v111 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c111 = vec3(higher_bound.x, higher_bound.y, higher_bound.z);\\n    interpolationIdentity(\\n        uPixelType,\\n        c111,\\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        uPackedPerPixel,\\n        v111\\n    );\\n\\n    // compute interpolation at position\\n    trilinearInterpolation(normalizedPosition, interpolatedValue ,v000, v100, v001, v101, v010,v110, v011,v111);\\n    dataValue = interpolatedValue;\\n\\n    // x axis\\n    vec3 g100 = vec3(1., 0., 0.);\\n    vec3 ng100 = normalizedPosition + g100 * GRADIENT_STEP_2976544439;\\n    ng100.x = min(1., ng100.x);\\n\\n    vec4 vg100 = vec4(0.);\\n    trilinearInterpolation(ng100, vg100 ,v000, v100, v001, v101, v010,v110, v011,v111);\\n\\n    vec3 go100 = -g100;\\n    vec3 ngo100 = normalizedPosition + go100 * GRADIENT_STEP_2976544439;\\n    ngo100.x = max(0., ngo100.x);\\n\\n    vec4 vgo100 = vec4(0.);\\n    trilinearInterpolation(ngo100, vgo100 ,v000, v100, v001, v101, v010,v110, v011,v111);\\n\\n    gradient.x = (g100.x * vg100.x + go100.x * vgo100.x);\\n\\n    // y axis\\n    vec3 g010 = vec3(0., 1., 0.);\\n    vec3 ng010 = normalizedPosition + g010 * GRADIENT_STEP_2976544439;\\n    ng010.y = min(1., ng010.y);\\n\\n    vec4 vg010 = vec4(0.);\\n    trilinearInterpolation(ng010, vg010 ,v000, v100, v001, v101, v010,v110, v011,v111);\\n\\n    vec3 go010 = -g010;\\n    vec3 ngo010 = normalizedPosition + go010 * GRADIENT_STEP_2976544439;\\n    ngo010.y = max(0., ngo010.y);\\n\\n    vec4 vgo010 = vec4(0.);\\n    trilinearInterpolation(ngo010, vgo010 ,v000, v100, v001, v101, v010,v110, v011,v111);\\n\\n    gradient.y = (g010.y * vg010.x + go010.y * vgo010.x);\\n\\n    // z axis\\n    vec3 g001 = vec3(0., 0., 1.);\\n    vec3 ng001 = normalizedPosition + g001 * GRADIENT_STEP_2976544439;\\n    ng001.z = min(1., ng001.z);\\n\\n    vec4 vg001 = vec4(0.);\\n    trilinearInterpolation(ng001, vg001 ,v000, v100, v001, v101, v010,v110, v011,v111);\\n\\n    vec3 go001 = -g001;\\n    vec3 ngo001 = normalizedPosition + go001 * GRADIENT_STEP_2976544439;\\n    ngo001.z = max(0., ngo001.z);\\n\\n    vec4 vgo001 = vec4(0.);\\n    trilinearInterpolation(ngo001, vgo001 ,v000, v100, v001, v101, v010,v110, v011,v111);\\n\\n    gradient.z = (g001.z * vg001.x + go001.z * vgo001.x);\\n\\n    // Nick: Your wish is my command - done using Epsilon\\n    // ---------------------------------------------------------------------\\n    // normalize gradient, +0.0001  instead of if?\\n    // float gradientMagnitude = length(gradient);\\n    // if (gradientMagnitude > 0.0) {\\n    //     gradient = -(1. / gradientMagnitude) * gradient;\\n    // }\\n    gradient = -(1. / (length(gradient) + EPSILON)) * gradient;\\n}\\n\\n// THREEJS Provided uniforms\\n// uniform mat4 viewMatrix;\\n// uniform vec3 cameraPosition;\\n\\nuniform int uTextureSize;\\nuniform sampler2D uTextureContainer[7];      // Length 7\\nuniform ivec3 uDataDimensions;\\nuniform mat4 uWorldToData;\\nuniform float uWindowCenterWidth[2];         // Length 2\\nuniform float uLowerUpperThreshold[2];       // Length 2\\nuniform float uRescaleSlopeIntercept[2];     // Length 2\\nuniform int uNumberOfChannels;\\nuniform int uBitsAllocated;\\nuniform int uInvert;\\nuniform int uLut;\\nuniform sampler2D uTextureLUT;\\nuniform int uLutSegmentation;\\nuniform sampler2D uTextureLUTSegmentation;\\nuniform int uPixelType;\\nuniform float uCanvasWidth;\\nuniform float uCanvasHeight;\\nuniform vec3 uBorderColor;\\nuniform float uBorderWidth;\\nuniform float uBorderMargin;\\nuniform float uBorderDashLength;\\nuniform float uOpacity;\\nuniform float uSpacing;\\nuniform float uThickness;\\nuniform int uThicknessMethod;\\nuniform int uPackedPerPixel;\\n\\nvarying vec3 vPos;\\nvarying vec3 vNormal;\\n\\nvoid main(void) {\\n    // DOES NEED REMOVAL\\n    // Dynamically branching condition - will cause wavefront divergance\\n    // ------------------------------------------------------------------\\n    if ( \\n        uCanvasWidth > 0. &&\\n        ((gl_FragCoord.x > uBorderMargin &&  (gl_FragCoord.x - uBorderMargin) < uBorderWidth) \\n        || \\n        (gl_FragCoord.x < (uCanvasWidth - uBorderMargin) && (gl_FragCoord.x + uBorderMargin) > (uCanvasWidth - uBorderWidth))) \\n    ) {\\n        float valueY = mod(gl_FragCoord.y, 2. * uBorderDashLength);\\n        // DOES NEED REMOVAL\\n        // Dynamically branching condition - will cause wavefront divergance\\n        // ------------------------------------------------------------------\\n        if (valueY < uBorderDashLength && gl_FragCoord.y > uBorderMargin && gl_FragCoord.y < (uCanvasHeight - uBorderMargin)) \\n        {\\n            gl_FragColor = vec4(uBorderColor, 1.);\\n            return;\\n        }\\n    }\\n\\n    // DOES NEED REMOVAL\\n    // Dynamically branching condition - will cause wavefront divergance\\n    // ------------------------------------------------------------------\\n    if (\\n        uCanvasHeight > 0. && \\n        ((gl_FragCoord.y > uBorderMargin && (gl_FragCoord.y - uBorderMargin) < uBorderWidth)\\n        || \\n        (gl_FragCoord.y < (uCanvasHeight - uBorderMargin) && (gl_FragCoord.y + uBorderMargin) > (uCanvasHeight - uBorderWidth))) \\n    ) {\\n        float valueX = mod(gl_FragCoord.x, 2. * uBorderDashLength);\\n        // DOES NEED REMOVAL\\n        // Dynamically branching condition - will cause wavefront divergance\\n        // ------------------------------------------------------------------\\n        if(valueX < uBorderDashLength && gl_FragCoord.x > uBorderMargin && gl_FragCoord.x < (uCanvasWidth - uBorderMargin)) \\n        {\\n            gl_FragColor = vec4(uBorderColor, 1.);\\n            return;\\n        }\\n    }\\n\\n    // get texture coordinates of current pixel\\n    vec4 dataValue = vec4(0.);\\n    // gradient calculations will be skipped if it is equal to vec3(1.) \\n    vec3 gradient = vec3(1.); \\n    int steps = int(floor(uThickness / uSpacing + 0.5));\\n\\n    // DOES NOT NEED REMOVAL\\n    // Statically uniform branching condition - cannot cause wavefront divergance\\n    // ---------------------------------------------------------------------------\\n    if (steps > 1) {\\n        vec3 origin = vPos - uThickness * 0.5 * vNormal;\\n        vec4 dataValueAcc = vec4(0.);\\n\\n        for (int i = 0; i < steps; i++) {\\n            vec4 dataCoordinates = uWorldToData * vec4(origin + float(i) * uSpacing * vNormal, 1.);\\n            vec3 currentVoxel = dataCoordinates.xyz;\\n\\n            interpolationTrilinear(\\n                uPixelType,\\n                currentVoxel,\\n                uTextureSize,\\n                uDataDimensions,\\n                uTextureContainer,\\n                uBitsAllocated,\\n                uNumberOfChannels,\\n                1,\\n                uPackedPerPixel,\\n                dataValue,\\n                gradient\\n            );\\n\\n            // DOES NOT NEED REMOVAL\\n            // Statically uniform branching condition - cannot cause wavefront divergance\\n            // ---------------------------------------------------------------------------\\n            if (i == 0) {\\n                dataValue.r = dataValueAcc.r;\\n                continue;\\n            }\\n            // DOES NOT NEED REMOVAL\\n            // Statically uniform branching condition - cannot cause wavefront divergance\\n            // ---------------------------------------------------------------------------\\n            if (uThicknessMethod == 0) {\\n                dataValue.r = max(dataValueAcc.r, dataValue.r);\\n            }\\n            // DOES NOT NEED REMOVAL\\n            // Statically uniform branching condition - cannot cause wavefront divergance\\n            // ---------------------------------------------------------------------------\\n            if (uThicknessMethod == 1) {\\n                dataValue.r += dataValueAcc.r;\\n            }\\n            // DOES NOT NEED REMOVAL\\n            // Statically uniform branching condition - cannot cause wavefront divergance\\n            // ---------------------------------------------------------------------------\\n            if (uThicknessMethod == 2) {\\n                dataValue.r = min(dataValueAcc.r, dataValue.r);\\n            }\\n        }\\n\\n        if (uThicknessMethod == 1) {\\n            dataValue.r = dataValue.r / float(steps);\\n        }\\n    } \\n    else {\\n        vec4 dataCoordinates = uWorldToData * vec4(vPos, 1.);\\n        vec3 currentVoxel = dataCoordinates.xyz;\\n        \\n        interpolationTrilinear(\\n            uPixelType,\\n            currentVoxel,\\n            uTextureSize,\\n            uDataDimensions,\\n            uTextureContainer,\\n            uBitsAllocated,\\n            uNumberOfChannels,\\n            1,\\n            uPackedPerPixel,\\n            dataValue,\\n            gradient\\n        );\\n    }\\n\\n    // DOES NOT NEED REMOVAL\\n    // Statically uniform branching condition - cannot cause wavefront divergance\\n    // ---------------------------------------------------------------------------\\n    if (uNumberOfChannels == 1) {\\n        // rescale/slope\\n        float realIntensity = dataValue.r * uRescaleSlopeIntercept[0] + uRescaleSlopeIntercept[1];\\n        \\n        // DOES NOT NEED REMOVAL\\n        // Statically uniform branching condition - cannot cause wavefront divergance\\n        // ---------------------------------------------------------------------------\\n        // threshold\\n        if (realIntensity < uLowerUpperThreshold[0] || realIntensity > uLowerUpperThreshold[1]) {\\n            discard;\\n        }\\n    \\n        // normalize\\n        float windowMin = uWindowCenterWidth[0] - uWindowCenterWidth[1] * 0.5;\\n        float normalizedIntensity =\\n            ( realIntensity - windowMin ) / uWindowCenterWidth[1];\\n        dataValue.r = dataValue.g = dataValue.b = normalizedIntensity;\\n        dataValue.a = 1.;\\n\\n        // DOES NOT NEED REMOVAL\\n        // Statically uniform branching condition - cannot cause wavefront divergance\\n        // ---------------------------------------------------------------------------\\n        // apply LUT\\n        if(uLut == 1){\\n            // should opacity be grabbed there?\\n            dataValue = texture2D( uTextureLUT, vec2( normalizedIntensity , 1.0) );\\n        }\\n    \\n        // DOES NOT NEED REMOVAL\\n        // Statically uniform branching condition - cannot cause wavefront divergance\\n        // ---------------------------------------------------------------------------\\n        // apply segmentation\\n        if(uLutSegmentation == 1){\\n            // should opacity be grabbed there?\\n            float textureWidth = 256.;\\n            float textureHeight = 128.;\\n            float min = 0.;\\n            // start at 0!\\n            int adjustedIntensity = int(floor(realIntensity + 0.5));\\n        \\n            // Get row and column in the texture\\n            int colIndex = int(mod(float(adjustedIntensity), textureWidth));\\n            int rowIndex = int(floor(float(adjustedIntensity)/textureWidth));\\n        \\n            float texWidth = 1./textureWidth;\\n            float texHeight = 1./textureHeight;\\n        \\n            // Map row and column to uv\\n            vec2 uv = vec2(0,0);\\n            uv.x = 0.5 * texWidth + (texWidth * float(colIndex));\\n            uv.y = 1. - (0.5 * texHeight + float(rowIndex) * texHeight);\\n        \\n            dataValue = texture2D( uTextureLUTSegmentation, uv );\\n        }\\n    }\\n\\n    // DOES NOT NEED REMOVAL\\n    // Statically uniform branching condition - cannot cause wavefront divergance\\n    // ---------------------------------------------------------------------------\\n    if(uInvert == 1){\\n        dataValue.xyz = vec3(1.) - dataValue.xyz;\\n    }\\n\\n    dataValue.a = dataValue.a*uOpacity;\\n    gl_FragColor = dataValue;\\n}\"");
+
+/***/ }),
+
+/***/ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/webgl/default.vert":
+/*!******************************************************************************************************************************!*\
+  !*** ./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/webgl/default.vert ***!
+  \******************************************************************************************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -21001,10 +21014,10 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/glsl/layer.frag":
-/*!***************************************************************************************************************************!*\
-  !*** ./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/glsl/layer.frag ***!
-  \***************************************************************************************************************************/
+/***/ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/webgl/layer.frag":
+/*!****************************************************************************************************************************!*\
+  !*** ./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/webgl/layer.frag ***!
+  \****************************************************************************************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -21014,42 +21027,42 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/glsl/localizer.frag":
-/*!*******************************************************************************************************************************!*\
-  !*** ./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/glsl/localizer.frag ***!
-  \*******************************************************************************************************************************/
+/***/ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/webgl/localizer.frag":
+/*!********************************************************************************************************************************!*\
+  !*** ./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/webgl/localizer.frag ***!
+  \********************************************************************************************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony default export */ __webpack_exports__["default"] = ("#define GLSLIFY 1\nexport default \"#define GLSLIFY 1\\nvoid intersectionProjection_0(\\n  in vec4 plane,\\n  in vec4 slice,\\n  out vec3 intersectionProjection){\\n\\n      vec3 intersectionDirection = normalize(cross(plane.xyz, slice.xyz));\\n      vec3 intersectionPoint = \\n        cross(intersectionDirection,slice.xyz) * plane.w +\\n        cross(plane.xyz, intersectionDirection) * slice.w;\\n\\n      intersectionProjection =\\n        intersectionPoint.xyz +\\n        (dot(vPos_0.xyz - intersectionPoint, intersectionDirection)\\n          * intersectionDirection);\\n\\n}\\n\\nuniform float uCanvasWidth;\\nuniform float uCanvasHeight;\\nuniform vec4 uSlice;\\nuniform vec4 uPlane1;\\nuniform vec3 uPlaneColor1;\\nuniform vec4 uPlane2;\\nuniform vec3 uPlaneColor2;\\nuniform vec4 uPlane3;\\nuniform vec3 uPlaneColor3;\\n\\nvarying vec4 vPos;\\nvarying mat4 vProjectionViewMatrix;\\nvarying vec4 vProjectedCoords;\\n\\nvoid main(void) {\\n  vec4 c1 = vec4(0., 0., 0., 0.);\\n  vec4 c2 = vec4(0., 0., 0., 0.);\\n  vec4 c3 = vec4(0., 0., 0., 0.);\\n\\n  // DOES NOT NEED REMOVAL\\n  // Statically uniform branching condition - cannot cause wavefront divergance\\n  // ---------------------------------------------------------------------------\\n  // localizer #1\\n  // must be normalized!\\n  if(length(uPlane1.xyz) > 0.5) {\\n    vec3 projection1 = vec3(1.);\\n    intersectionProjection_0(\\n      uPlane1,\\n      uSlice,\\n      projection1\\n    );\\n\\n    vec4 projInter1 = (vProjectionViewMatrix * vec4(projection1, 1.));\\n    vec3 ndc1 = projInter1.xyz / projInter1.w;\\n    vec2 screenSpace1 = (ndc1.xy * .5 + .5) * vec2(uCanvasWidth, uCanvasHeight);\\n\\n    float d1 = distance(gl_FragCoord.xy, screenSpace1.xy);\\n    c1 = vec4(uPlaneColor1, 1. - smoothstep(.5, .7, d1));\\n  }\\n\\n  // DOES NOT NEED REMOVAL\\n  // Statically uniform branching condition - cannot cause wavefront divergance\\n  // ---------------------------------------------------------------------------\\n  // localizer #2\\n  if(length(uPlane2.xyz) > 0.5) {\\n    vec3 projection2 = vec3(1.);\\n    intersectionProjection_0(\\n      uPlane2,\\n      uSlice,\\n      projection2\\n    );\\n\\n    vec4 projInter2 = (vProjectionViewMatrix * vec4(projection2, 1.));\\n    vec3 ndc2 = projInter2.xyz / projInter2.w;\\n    vec2 screenSpace2 = (ndc2.xy * .5 + .5) * vec2(uCanvasWidth, uCanvasHeight);\\n\\n    float d2 = distance(gl_FragCoord.xy, screenSpace2.xy);\\n    c2 = vec4(uPlaneColor2, 1. - smoothstep(.5, .7, d2));\\n  }\\n\\n  // DOES NOT NEED REMOVAL\\n  // Statically uniform branching condition - cannot cause wavefront divergance\\n  // ---------------------------------------------------------------------------\\n  // localizer #3\\n  if(length(uPlane3.xyz) > 0.5) {\\n    vec3 projection3 = vec3(1.);\\n    intersectionProjection_0(\\n      uPlane3,\\n      uSlice,\\n      projection3\\n    );\\n\\n    vec4 projInter3 = (vProjectionViewMatrix * vec4(projection3, 1.));\\n    vec3 ndc3 = projInter3.xyz / projInter3.w;\\n    vec2 screenSpace3 = (ndc3.xy * .5 + .5) * vec2(uCanvasWidth, uCanvasHeight);\\n\\n    float d3 = distance(gl_FragCoord.xy, screenSpace3.xy);\\n    c3 = vec4(uPlaneColor3, 1. - smoothstep(.5, .7, d3));\\n  }\\n\\n  vec3 colorMix = c1.xyz*c1.w + c2.xyz*c2.w + c3.xyz*c3.w;\\n  gl_FragColor = vec4(colorMix, max(max(c1.w, c2.w),c3.w)*0.5);\\n  return;\\n}\"");
+/* harmony default export */ __webpack_exports__["default"] = ("#define GLSLIFY 1\nexport default \"#define GLSLIFY 1\\nvoid intersectionProjection_0(\\n  in vec4 plane,\\n  in vec4 slice,\\n  out vec3 intersectionProjection\\n) {\\n  vec3 intersectionDirection = normalize(cross(plane.xyz, slice.xyz));\\n  vec3 intersectionPoint = \\n    cross(intersectionDirection,slice.xyz) * plane.w +\\n    cross(plane.xyz, intersectionDirection) * slice.w;\\n\\n  intersectionProjection =\\n    intersectionPoint.xyz +\\n    (dot(vPos_0.xyz - intersectionPoint, intersectionDirection)\\n      * intersectionDirection);\\n}\\n\\nuniform float uCanvasWidth;\\nuniform float uCanvasHeight;\\nuniform vec4 uSlice;\\nuniform vec4 uPlane1;\\nuniform vec3 uPlaneColor1;\\nuniform vec4 uPlane2;\\nuniform vec3 uPlaneColor2;\\nuniform vec4 uPlane3;\\nuniform vec3 uPlaneColor3;\\n\\nvarying vec4 vPos;\\nvarying mat4 vProjectionViewMatrix;\\nvarying vec4 vProjectedCoords;\\n\\nvoid main(void) {\\n  vec4 c1 = vec4(0., 0., 0., 0.);\\n  vec4 c2 = vec4(0., 0., 0., 0.);\\n  vec4 c3 = vec4(0., 0., 0., 0.);\\n\\n  // DOES NOT NEED REMOVAL\\n  // Statically uniform branching condition - cannot cause wavefront divergance\\n  // ---------------------------------------------------------------------------\\n  // localizer #1\\n  // must be normalized!\\n  if(length(uPlane1.xyz) > 0.5) {\\n    vec3 projection1 = vec3(1.);\\n    intersectionProjection_0(\\n      uPlane1,\\n      uSlice,\\n      projection1\\n    );\\n\\n    vec4 projInter1 = (vProjectionViewMatrix * vec4(projection1, 1.));\\n    vec3 ndc1 = projInter1.xyz / projInter1.w;\\n    vec2 screenSpace1 = (ndc1.xy * .5 + .5) * vec2(uCanvasWidth, uCanvasHeight);\\n\\n    float d1 = distance(gl_FragCoord.xy, screenSpace1.xy);\\n    c1 = vec4(uPlaneColor1, 1. - smoothstep(.5, .7, d1));\\n  }\\n\\n  // DOES NOT NEED REMOVAL\\n  // Statically uniform branching condition - cannot cause wavefront divergance\\n  // ---------------------------------------------------------------------------\\n  // localizer #2\\n  if(length(uPlane2.xyz) > 0.5) {\\n    vec3 projection2 = vec3(1.);\\n    intersectionProjection_0(\\n      uPlane2,\\n      uSlice,\\n      projection2\\n    );\\n\\n    vec4 projInter2 = (vProjectionViewMatrix * vec4(projection2, 1.));\\n    vec3 ndc2 = projInter2.xyz / projInter2.w;\\n    vec2 screenSpace2 = (ndc2.xy * .5 + .5) * vec2(uCanvasWidth, uCanvasHeight);\\n\\n    float d2 = distance(gl_FragCoord.xy, screenSpace2.xy);\\n    c2 = vec4(uPlaneColor2, 1. - smoothstep(.5, .7, d2));\\n  }\\n\\n  // DOES NOT NEED REMOVAL\\n  // Statically uniform branching condition - cannot cause wavefront divergance\\n  // ---------------------------------------------------------------------------\\n  // localizer #3\\n  if(length(uPlane3.xyz) > 0.5) {\\n    vec3 projection3 = vec3(1.);\\n    intersectionProjection_0(\\n      uPlane3,\\n      uSlice,\\n      projection3\\n    );\\n\\n    vec4 projInter3 = (vProjectionViewMatrix * vec4(projection3, 1.));\\n    vec3 ndc3 = projInter3.xyz / projInter3.w;\\n    vec2 screenSpace3 = (ndc3.xy * .5 + .5) * vec2(uCanvasWidth, uCanvasHeight);\\n\\n    float d3 = distance(gl_FragCoord.xy, screenSpace3.xy);\\n    c3 = vec4(uPlaneColor3, 1. - smoothstep(.5, .7, d3));\\n  }\\n\\n  vec3 colorMix = c1.xyz*c1.w + c2.xyz*c2.w + c3.xyz*c3.w;\\n  gl_FragColor = vec4(colorMix, max(max(c1.w, c2.w),c3.w)*0.5);\\n  return;\\n}\"");
 
 /***/ }),
 
-/***/ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/glsl/volume/volume_idnInterp.frag":
-/*!*********************************************************************************************************************************************!*\
-  !*** ./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/glsl/volume/volume_idnInterp.frag ***!
-  \*********************************************************************************************************************************************/
+/***/ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/webgl/volume/volume_idnInterp.frag":
+/*!**********************************************************************************************************************************************!*\
+  !*** ./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/webgl/volume/volume_idnInterp.frag ***!
+  \**********************************************************************************************************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony default export */ __webpack_exports__["default"] = ("#define GLSLIFY 1\nexport default \"#define GLSLIFY 1\\nvoid intersectsBox(\\n    vec3 rayOrigin, \\n    vec3 rayDirection, \\n    vec3 boxMin, \\n    vec3 boxMax, \\n    out float tNear, \\n    out float tFar, \\n    out bool intersect\\n){\\n    // compute intersection of ray with all six bbox planes\\n    vec3 invRay = vec3(1.) / rayDirection;\\n    vec3 tBot = invRay * (boxMin - rayOrigin);\\n    vec3 tTop = invRay * (boxMax - rayOrigin);\\n    // re-order intersections to find smallest and largest on each axis\\n    vec3 tMin = min(tTop, tBot);\\n    vec3 tMax = max(tTop, tBot);\\n    // find the largest tMin and the smallest tMax\\n    float largest_tMin = max(max(tMin.x, tMin.y), max(tMin.x, tMin.z));\\n    float smallest_tMax = min(min(tMax.x, tMax.y), min(tMax.x, tMax.z));\\n    tNear = largest_tMin;\\n    tFar = smallest_tMax;\\n    intersect = smallest_tMax > largest_tMin;\\n}\\n\\nvoid AMItexture3D(\\n    in ivec3 dataCoordinates, \\n    in int uTextureSize,\\n    in ivec3 uDataDimensions,\\n    in sampler2D uTextureContainer[7],\\n    in int uPackedPerPixel,\\n    out vec4 dataValue, \\n    out int offset\\n){\\n    float textureSizeF = float(uTextureSize);\\n    int voxelsPerTexture = uTextureSize*uTextureSize;\\n\\n    int index = dataCoordinates.x + dataCoordinates.y * uDataDimensions.x + dataCoordinates.z * uDataDimensions.y * uDataDimensions.x;\\n\\n    // Nick: Nicolas can you give me some insight on what you'd like to do here?\\n    // ---------------------------------------------------------------------------------\\n    // dividing an integer by an integer will give you an integer result, \\n    // rounded down can not get float numbers to work :(\\n    int packedIndex = index/uPackedPerPixel;\\n    offset = index - uPackedPerPixel*packedIndex;\\n\\n    // Map data index to right sampler2D texture\\n    int textureIndex = packedIndex/voxelsPerTexture;\\n    int inTextureIndex = packedIndex - voxelsPerTexture*textureIndex;\\n\\n    // Get row and column in the texture\\n    int rowIndex = inTextureIndex/uTextureSize;\\n    float rowIndexF = float(rowIndex);\\n    float colIndex = float(inTextureIndex - uTextureSize * rowIndex);\\n\\n    // Map row and column to uv\\n    vec2 uv = vec2(0,0);\\n    uv.x = (0.5 + colIndex) / textureSizeF;\\n    uv.y = 1. - (0.5 + rowIndexF) / textureSizeF;\\n\\n    float textureIndexF = float(textureIndex);\\n    vec4 addition = vec4(0.);\\n\\n    for (int i = 0; i < 7; i++ ) {\\n        float i_float = float(i);\\n        addition += step( abs( textureIndexF - i_float ), 0.0 ) * texture2D(uTextureContainer[i], uv);\\n    }\\n    dataValue = addition;\\n}\\n\\nvoid toUInt8(\\n    in float r, \\n    out float value\\n){\\n    value = r * 255.;\\n}\\n\\n  \\n\\nvoid unpack8(\\n    in vec4 packedData, \\n    in int offset, \\n    out vec4 unpackedData\\n){\\n    float floatedOffset = float(offset);\\n    float floatedOffsetSquared = floatedOffset * floatedOffset;\\n\\n    toUInt8(\\n        step( floatedOffsetSquared , 0.0 ) * packedData.r +\\n        step( floatedOffsetSquared - 2. * floatedOffset + 1., 0.0 ) * packedData.g +\\n        step( floatedOffsetSquared - 2. * 2. *  floatedOffset + 4., 0.0 ) * packedData.b +\\n        step( floatedOffsetSquared - 2. * 3. *  floatedOffset + 9., 0.0 ) * packedData.a,\\n        unpackedData.x\\n    );\\n}\\n\\nvoid toUInt16(\\n    in float r, \\n    in float a, \\n    out float value\\n) {\\n    value = r * 255. + a * 255. * 256.;\\n}\\n\\nvoid unpack16(\\n    in vec4 packedData, \\n    in int offset, \\n    out vec4 unpackedData\\n){\\n    unpackedData = packedData;\\n    float floatedOffset = float(offset);\\n\\n    toUInt16(\\n        packedData.r * (1. - floatedOffset) + packedData.b * floatedOffset,\\n        packedData.g * (1. - floatedOffset) + packedData.a * floatedOffset,\\n        unpackedData.x\\n    );\\n    \\n}\\n\\nvoid toUInt32(\\n    in float r, \\n    in float g, \\n    in float b, \\n    in float a, \\n    out float value\\n){\\n    value = r * 255. + g * 255. * 256. + b * 255. * 256. * 256. + a * 255. * 256. * 256. * 256.;\\n}\\n\\nvoid toUFloat32(in float r, in float g, in float b, in float a, out float value){\\n\\n    // create arrays containing bits for rgba values, value between 0 and 255\\n    value = r * 255.;\\n    int bytemeR[8];\\n    bytemeR[0] = int(floor(value / 128.));\\n    value -= float(bytemeR[0] * 128);\\n    bytemeR[1] = int(floor(value / 64.));\\n    value -= float(bytemeR[1] * 64);\\n    bytemeR[2] = int(floor(value / 32.));\\n    value -= float(bytemeR[2] * 32);\\n    bytemeR[3] = int(floor(value / 16.));\\n    value -= float(bytemeR[3] * 16);\\n    bytemeR[4] = int(floor(value / 8.));\\n    value -= float(bytemeR[4] * 8);\\n    bytemeR[5] = int(floor(value / 4.));\\n    value -= float(bytemeR[5] * 4);\\n    bytemeR[6] = int(floor(value / 2.));\\n    value -= float(bytemeR[6] * 2);\\n    bytemeR[7] = int(floor(value));\\n\\n    value = g * 255.;\\n    int bytemeG[8];\\n    bytemeG[0] = int(floor(value / 128.));\\n    value -= float(bytemeG[0] * 128);\\n    bytemeG[1] = int(floor(value / 64.));\\n    value -= float(bytemeG[1] * 64);\\n    bytemeG[2] = int(floor(value / 32.));\\n    value -= float(bytemeG[2] * 32);\\n    bytemeG[3] = int(floor(value / 16.));\\n    value -= float(bytemeG[3] * 16);\\n    bytemeG[4] = int(floor(value / 8.));\\n    value -= float(bytemeG[4] * 8);\\n    bytemeG[5] = int(floor(value / 4.));\\n    value -= float(bytemeG[5] * 4);\\n    bytemeG[6] = int(floor(value / 2.));\\n    value -= float(bytemeG[6] * 2);\\n    bytemeG[7] = int(floor(value));\\n\\n    value = b * 255.;\\n    int bytemeB[8];\\n    bytemeB[0] = int(floor(value / 128.));\\n    value -= float(bytemeB[0] * 128);\\n    bytemeB[1] = int(floor(value / 64.));\\n    value -= float(bytemeB[1] * 64);\\n    bytemeB[2] = int(floor(value / 32.));\\n    value -= float(bytemeB[2] * 32);\\n    bytemeB[3] = int(floor(value / 16.));\\n    value -= float(bytemeB[3] * 16);\\n    bytemeB[4] = int(floor(value / 8.));\\n    value -= float(bytemeB[4] * 8);\\n    bytemeB[5] = int(floor(value / 4.));\\n    value -= float(bytemeB[5] * 4);\\n    bytemeB[6] = int(floor(value / 2.));\\n    value -= float(bytemeB[6] * 2);\\n    bytemeB[7] = int(floor(value));\\n\\n    value = a * 255.;\\n    int bytemeA[8];\\n    bytemeA[0] = int(floor(value / 128.));\\n    value -= float(bytemeA[0] * 128);\\n    bytemeA[1] = int(floor(value / 64.));\\n    value -= float(bytemeA[1] * 64);\\n    bytemeA[2] = int(floor(value / 32.));\\n    value -= float(bytemeA[2] * 32);\\n    bytemeA[3] = int(floor(value / 16.));\\n    value -= float(bytemeA[3] * 16);\\n    bytemeA[4] = int(floor(value / 8.));\\n    value -= float(bytemeA[4] * 8);\\n    bytemeA[5] = int(floor(value / 4.));\\n    value -= float(bytemeA[5] * 4);\\n    bytemeA[6] = int(floor(value / 2.));\\n    value -= float(bytemeA[6] * 2);\\n    bytemeA[7] = int(floor(value));\\n\\n    // compute float32 value from bit arrays\\n    // sign\\n    int issigned = 1 - 2 * bytemeR[0];\\n\\n    // exponent\\n    int exponent = 0;\\n\\n    exponent += bytemeR[1] * int(pow(2., 7.));\\n    exponent += bytemeR[2] * int(pow(2., 6.));\\n    exponent += bytemeR[3] * int(pow(2., 5.));\\n    exponent += bytemeR[4] * int(pow(2., 4.));\\n    exponent += bytemeR[5] * int(pow(2., 3.));\\n    exponent += bytemeR[6] * int(pow(2., 2.));\\n    exponent += bytemeR[7] * int(pow(2., 1.));\\n    exponent += bytemeG[0];\\n\\n    // fraction\\n    float fraction = 0.;\\n\\n    fraction = float(bytemeG[1]) * pow(2., -1.);\\n    fraction += float(bytemeG[2]) * pow(2., -2.);\\n    fraction += float(bytemeG[3]) * pow(2., -3.);\\n    fraction += float(bytemeG[4]) * pow(2., -4.);\\n    fraction += float(bytemeG[5]) * pow(2., -5.);\\n    fraction += float(bytemeG[6]) * pow(2., -6.);\\n    fraction += float(bytemeG[7]) * pow(2., -7.);\\n\\n    fraction += float(bytemeB[0]) * pow(2., -8.);\\n    fraction += float(bytemeB[1]) * pow(2., -9.);\\n    fraction += float(bytemeB[2]) * pow(2., -10.);\\n    fraction += float(bytemeB[3]) * pow(2., -11.);\\n    fraction += float(bytemeB[4]) * pow(2., -12.);\\n    fraction += float(bytemeB[5]) * pow(2., -13.);\\n    fraction += float(bytemeB[6]) * pow(2., -14.);\\n    fraction += float(bytemeB[7]) * pow(2., -15.);\\n\\n    fraction += float(bytemeA[0]) * pow(2., -16.);\\n    fraction += float(bytemeA[1]) * pow(2., -17.);\\n    fraction += float(bytemeA[2]) * pow(2., -18.);\\n    fraction += float(bytemeA[3]) * pow(2., -19.);\\n    fraction += float(bytemeA[4]) * pow(2., -20.);\\n    fraction += float(bytemeA[5]) * pow(2., -21.);\\n    fraction += float(bytemeA[6]) * pow(2., -22.);\\n    fraction += float(bytemeA[7]) * pow(2., -23.);\\n\\n    value = float(issigned) * pow( 2., float(exponent - 127)) * (1. + fraction);\\n}\\n\\nvoid unpack32(\\n    in vec4 packedData, \\n    in int offset, \\n    in int uPixelType,\\n    out vec4 unpackedData\\n){\\n    // DOES NOT NEED REMOVAL\\n    // Statically uniform branching condition - cannot cause wavefront divergance\\n    // ----------------------------------------------------------------------------------\\n    if (uPixelType == 1) {\\n        toUInt32(\\n            packedData.r,\\n            packedData.g,\\n            packedData.b,\\n            packedData.a,\\n            unpackedData.x\\n        );\\n    }\\n    else {\\n        toUFloat32(\\n            packedData.r,\\n            packedData.g,\\n            packedData.b,\\n            packedData.a,\\n            unpackedData.x\\n        );\\n    }\\n}\\n\\nvoid unpackIdentity(\\n    in vec4 packedData, \\n    in int offset, \\n    out vec4 unpackedData\\n){\\n    unpackedData = packedData;\\n}\\n\\nvoid unpack(\\n    in int uPixelType,\\n    in int uBitsAllocated,\\n    in int uNumberOfChannels,\\n    in vec4 packedData,\\n    in int offset,\\n    out vec4 unpackedData\\n) {\\n    // DOES NOT NEED REMOVAL\\n    // Statically uniform branching condition - cannot cause wavefront divergance\\n    // ----------------------------------------------------------------------------------\\n    if (uNumberOfChannels == 1) {\\n        // DOES NOT NEED REMOVAL\\n        // Statically uniform branching condition - cannot cause wavefront divergance\\n        // ----------------------------------------------------------------------------------\\n        if (uBitsAllocated == 8) {\\n            unpack8(    \\n                packedData, \\n                offset, \\n                unpackedData\\n            );\\n            return;\\n        }\\n        // DOES NOT NEED REMOVAL\\n        // Statically uniform branching condition - cannot cause wavefront divergance\\n        // ----------------------------------------------------------------------------------\\n        if (uBitsAllocated == 16) {\\n            unpack16(    \\n                packedData, \\n                offset, \\n                unpackedData\\n            );\\n            return;\\n        }\\n        // DOES NOT NEED REMOVAL\\n        // Statically uniform branching condition - cannot cause wavefront divergance\\n        // ----------------------------------------------------------------------------------\\n        if (uBitsAllocated == 32) {\\n            unpack32(    \\n                packedData, \\n                offset, \\n                uPixelType,\\n                unpackedData\\n            );\\n            return;\\n        }\\n    } \\n\\n    unpackIdentity(\\n        packedData, \\n        offset, \\n        unpackedData\\n    );\\n}\\n\\nvoid interpolationIdentity(\\n    in int uPixelType,\\n    in vec3 currentVoxel, \\n    in int uTextureSize,\\n    in ivec3 uDataDimensions,\\n    in sampler2D uTextureContainer[7],\\n    in int uBitsAllocated,\\n    in int uNumberOfChannels,\\n    in int uPackedPerPixel,\\n    out vec4 dataValue\\n){\\n    // lower bound\\n    vec3 rcurrentVoxel = vec3(floor(currentVoxel.x + 0.5 ), floor(currentVoxel.y + 0.5 ), floor(currentVoxel.z + 0.5 ));\\n    ivec3 flooredVoxel = ivec3(int(rcurrentVoxel.x), int(rcurrentVoxel.y), int(rcurrentVoxel.z));\\n\\n    vec4 temporaryDataValue = vec4(0., 0., 0., 0.);\\n    int dataOffset = 0;\\n\\n    AMItexture3D(\\n        flooredVoxel, \\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uPackedPerPixel,\\n        temporaryDataValue, \\n        dataOffset\\n    );\\n\\n    unpack(\\n        uPixelType,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        temporaryDataValue,\\n        dataOffset,\\n        dataValue\\n    );\\n}\\n\\nvoid getIntensityIdn(\\n    in vec3 dataCoordinates, \\n    in int uPixelType,\\n    in int uTextureSize,\\n    in ivec3 uDataDimensions,\\n    in sampler2D uTextureContainer[7],\\n    in int uBitsAllocated,\\n    in int uNumberOfChannels,\\n    in int uPackedPerPixel,\\n    in float uRescaleSlopeIntercept[2],\\n    in float uWindowCenterWidth[2],\\n    out float intensity, \\n){\\n\\n  vec4 dataValue = vec4(0., 0., 0., 0.);\\n\\n  interpolationIdentity(\\n    uPixelType,\\n    dataCoordinates,\\n    uTextureSize,\\n    uDataDimensions,\\n    uTextureContainer[7],\\n    uBitsAllocated,\\n    uNumberOfChannels,\\n    0,\\n    uPackedPerPixel,\\n    dataValue\\n  );\\n\\n  intensity = dataValue.r;\\n\\n  // rescale/slope\\n  intensity = intensity*uRescaleSlopeIntercept[0] + uRescaleSlopeIntercept[1];\\n  \\n  // window level\\n  float windowMin = uWindowCenterWidth[0] - uWindowCenterWidth[1] * 0.5;\\n  intensity = ( intensity - windowMin ) / uWindowCenterWidth[1];\\n}\\n\\nmat4 invertMat4(mat4 m) {\\n  float\\n    a00 = m[0][0], a01 = m[0][1], a02 = m[0][2], a03 = m[0][3],\\n    a10 = m[1][0], a11 = m[1][1], a12 = m[1][2], a13 = m[1][3],\\n    a20 = m[2][0], a21 = m[2][1], a22 = m[2][2], a23 = m[2][3],\\n    a30 = m[3][0], a31 = m[3][1], a32 = m[3][2], a33 = m[3][3],\\n\\n    b00 = a00 * a11 - a01 * a10,\\n    b01 = a00 * a12 - a02 * a10,\\n    b02 = a00 * a13 - a03 * a10,\\n    b03 = a01 * a12 - a02 * a11,\\n    b04 = a01 * a13 - a03 * a11,\\n    b05 = a02 * a13 - a03 * a12,\\n    b06 = a20 * a31 - a21 * a30,\\n    b07 = a20 * a32 - a22 * a30,\\n    b08 = a20 * a33 - a23 * a30,\\n    b09 = a21 * a32 - a22 * a31,\\n    b10 = a21 * a33 - a23 * a31,\\n    b11 = a22 * a33 - a23 * a32,\\n\\n    det = b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;\\n\\n  return mat4(\\n    a11 * b11 - a12 * b10 + a13 * b09,\\n    a02 * b10 - a01 * b11 - a03 * b09,\\n    a31 * b05 - a32 * b04 + a33 * b03,\\n    a22 * b04 - a21 * b05 - a23 * b03,\\n    a12 * b08 - a10 * b11 - a13 * b07,\\n    a00 * b11 - a02 * b08 + a03 * b07,\\n    a32 * b02 - a30 * b05 - a33 * b01,\\n    a20 * b05 - a22 * b02 + a23 * b01,\\n    a10 * b10 - a11 * b08 + a13 * b06,\\n    a01 * b08 - a00 * b10 - a03 * b06,\\n    a30 * b04 - a31 * b02 + a33 * b00,\\n    a21 * b02 - a20 * b04 - a23 * b00,\\n    a11 * b07 - a10 * b09 - a12 * b06,\\n    a00 * b09 - a01 * b07 + a02 * b06,\\n    a31 * b01 - a30 * b03 - a32 * b00,\\n    a20 * b03 - a21 * b01 + a22 * b00) / det;\\n}\\n\\n/**\\n * Adapted from original sources\\n * \\n * Original code: \\n * http://jamie-wong.com/2016/07/15/ray-marching-signed-distance-functions/\\n * https://www.shadertoy.com/view/lt33z7\\n\\n * The vec3 returned is the RGB color of the light's contribution.\\n \\n * See https://en.wikipedia.org/wiki/Phong_reflection_model#Description\\n */\\n\\nconst float EPSILON_0 = 0.0000152587;\\n\\nvec3 AMIphong(\\n    vec3 ambientColor, \\n    vec3 diffuseColor, \\n    vec3 specularColor, \\n    float shininess, \\n    vec3 positionBeingLit, \\n    vec3 eye,\\n    vec3 lightPos, \\n    vec3 lightIntensity, \\n    vec3 normal\\n) {\\n  vec3 N = normal;\\n  vec3 L = lightPos - positionBeingLit;\\n  // if (length(L) > 0.) {\\n  //   L = L / length(L);\\n  // }\\n  L = L / (length(L) + EPSILON_0);\\n  vec3 V = eye - positionBeingLit;\\n  // if (length(V) > 0.) {\\n  //   V = V / length(V);\\n  // }\\n  V = V / (length(V) + EPSILON_0);\\n  vec3 R = reflect(-L, N);\\n  // if (length(R) > 0.) {\\n  //   R = R / length(R);\\n  // }\\n  R = R / (length(R) + EPSILON_0);\\n\\n  // https://en.wikipedia.org/wiki/Blinn%E2%80%93Phong_shading_model\\n  vec3 h = L + V;\\n  vec3 H = h;\\n  // if (length(h) > 0.) {\\n  //   H = H / length(h);\\n  // }\\n  H = H / (length(H) + EPSILON_0);\\n\\n  float dotLN = dot(L, N);\\n  float dotRV = dot(R, V);\\n\\n  // DOES NOT NEED REMOVAL\\n  // Statically uniform branching condition - cannot cause wavefront divergance\\n  // ----------------------------------------------------------------------------------\\n  // Light not visible from this point on the surface\\n  if (dotLN < 0.) {\\n    return ambientColor;\\n  } \\n  // DOES NOT NEED REMOVAL\\n  // Statically uniform branching condition - cannot cause wavefront divergance\\n  // ----------------------------------------------------------------------------------\\n  // Light reflection in opposite direction as viewer, apply only diffuse component\\n  if (dotRV < 0.) {\\n    return ambientColor + lightIntensity * (diffuseColor * dotLN);\\n  }\\n\\n  float specAngle = max(dot(H, normal), 0.0);\\n  float specular = pow(dotRV, shininess);\\n  return ambientColor + lightIntensity * (diffuseColor * dotLN  + specularColor * specular);\\n}\\n\\n// expects values in the range of [0,1]x[0,1], returns values in the [0,1] range.\\n// do not collapse into a single function per: \\n// http://byteblacksmith.com/improvements-to-the-canonical-one-liner-glsl-rand-for-opengl-es-2-0/\\nconst float PI = 3.14159265358979323846264 * 00000.1; // PI\\n\\nhighp float highpRandF32(const in vec2 uv) {\\n  const highp float a = 12.9898;\\n  const highp float b = 78.233;\\n  const highp float c = 43758.5453;\\n  highp float dt = dot(uv.xy, vec2(a, b)), sn = mod(dt, PI);\\n  return fract(sin(sn) * c);\\n}\\n\\nconst int MAX_STEPS = 1024;\\nconst float EPSILON = 0.0000152587;\\n\\nuniform int uTextureSize;\\nuniform sampler2D uTextureContainer[7];      // Length 7\\nuniform ivec3 uDataDimensions;\\nuniform mat4 uWorldToData;\\nuniform float uWindowCenterWidth[2];         // Length 2\\nuniform float uRescaleSlopeIntercept[2];     // Length 2\\nuniform int uNumberOfChannels;\\nuniform int uBitsAllocated;\\nuniform sampler2D uTextureLUT;\\nuniform int uPixelType;\\nuniform int uPackedPerPixel;\\nuniform float uWorldBBox[6];                 // Length 6\\nuniform int uSteps;\\nuniform float uAlphaCorrection;\\nuniform float uAmbient;\\nuniform vec3 uAmbientColor;\\nuniform int uSampleColorToAmbient;\\nuniform float uSpecular;\\nuniform vec3 uSpecularColor;\\nuniform float uDiffuse;\\nuniform vec3 uDiffuseColor;\\nuniform int uSampleColorToDiffuse;\\nuniform float uShininess;\\nuniform vec3 upositionBeingLit;\\nuniform int upositionBeingLitInCamera;\\nuniform vec3 uIntensity;\\n// uniform int uStepsPerFrame;\\n// uniform int uStepsSinceChange;\\n\\nvarying vec4 vPos;\\nvarying mat4 vProjectionViewMatrix;\\nvarying vec4 vProjectedCoords;\\n\\nvoid main(void) {\\n  // // If we've reached the maximum accumulation, return\\n  // if (uStepsSinceChange >= uSteps) {\\n  //   return\\n  // }\\n\\n  // // If we're on the first frame since a change, reset the frag colour\\n  // if (uStepsSinceChange == 0) {\\n  //   gl_FragColor = vec4(0.)\\n  // }\\n\\n  vec3 rayOrigin = cameraPosition;\\n  vec3 rayDirection = normalize(vPos.xyz - rayOrigin);\\n\\n  vec3 lightOrigin = upositionBeingLitInCamera == 1 ? cameraPosition : upositionBeingLit;\\n\\n  // the Axe-Aligned B-Box\\n  vec3 AABBMin = vec3(uWorldBBox[0], uWorldBBox[2], uWorldBBox[4]);\\n  vec3 AABBMax = vec3(uWorldBBox[1], uWorldBBox[3], uWorldBBox[5]);\\n\\n  // Intersection ray/bbox\\n  float tNear, tFar;\\n  bool intersect = false;\\n  intersectsBox(\\n    rayOrigin,\\n    rayDirection,\\n    AABBMin,\\n    AABBMax,\\n    tNear,\\n    tFar,\\n    intersect\\n  );\\n\\n  tNear = (tNear + abs(tNear)) / 2.0;\\n\\n  // x / y should be within 0-1\\n  float offset = highpRandF32(gl_FragCoord.xy);\\n  float tStep = (tFar - tNear) / float(uSteps);\\n  float tCurrent = tNear + offset * tStep;\\n  vec4 accumulatedColor = vec4(0.0);\\n  float accumulatedAlpha = 0.0;\\n  // MIP volume rendering\\n  float maxIntensity = 0.0;\\n  mat4 dataToWorld = invertMat4(uWorldToData);\\n\\n  for(int i = 0; i < uSteps; i++){\\n    vec3 currentPosition = rayOrigin + rayDirection * tCurrent;\\n    vec3 transformedPosition = currentPosition;\\n    vec4 dataCoordinatesRaw = uWorldToData * vec4(transformedPosition, 1.0);\\n    vec3 currentVoxel = vec3(dataCoordinatesRaw.x, dataCoordinatesRaw.y, dataCoordinatesRaw.z);\\n\\n    float intensity = 0.0;\\n    getIntensityIdn(\\n      currentVoxel, \\n      uPixelType,\\n      uTextureSize,\\n      uDataDimensions,\\n      uTextureContainer[7],\\n      uBitsAllocated,\\n      uNumberOfChannels,\\n      uPackedPerPixel,\\n      uRescaleSlopeIntercept,\\n      uWindowCenterWidth;\\n      intensity, \\n    );\\n\\n    // map gradient to world space and normalize before using\\n    // we avoid to call normalize as it may be undefined if vector length == 0.\\n    vec3 gradient = vec3(0., 0., 0.);\\n    gradient = (vec3(dataToWorld * vec4(gradient, 0.)));\\n    gradient = normalize(gradient + EPSILON);\\n\\n    vec4 colorSample;\\n    float alphaSample;\\n\\n    vec4 colorFromLUT = texture2D(uTextureLUT, vec2( intensity, 1.0));\\n    alphaSample = colorFromLUT.a;\\n    colorSample = colorFromLUT;\\n\\n    alphaSample = 1.0 - pow((1.0- alphaSample),tStep*uAlphaCorrection);\\n    alphaSample *= (1.0 - accumulatedAlpha);\\n\\n    accumulatedColor += alphaSample * colorSample;\\n    accumulatedAlpha += alphaSample;\\n\\n    tCurrent += tStep;\\n\\n    if (tCurrent > tFar || accumulatedAlpha >= 1.0) break;\\n  }\\n\\n  gl_FragColor = vec4(accumulatedColor.xyz, accumulatedAlpha);\\n}\"");
+/* harmony default export */ __webpack_exports__["default"] = ("#define GLSLIFY 1\nexport default \"#define GLSLIFY 1\\nvoid intersectsBox(\\n    vec3 rayOrigin, \\n    vec3 rayDirection, \\n    vec3 boxMin, \\n    vec3 boxMax, \\n    out float tNear, \\n    out float tFar, \\n    out bool intersect\\n) {\\n    // compute intersection of ray with all six bbox planes\\n    vec3 invRay = vec3(1.) / rayDirection;\\n    vec3 tBot = invRay * (boxMin - rayOrigin);\\n    vec3 tTop = invRay * (boxMax - rayOrigin);\\n    // re-order intersections to find smallest and largest on each axis\\n    vec3 tMin = min(tTop, tBot);\\n    vec3 tMax = max(tTop, tBot);\\n    // find the largest tMin and the smallest tMax\\n    float largest_tMin = max(max(tMin.x, tMin.y), max(tMin.x, tMin.z));\\n    float smallest_tMax = min(min(tMax.x, tMax.y), min(tMax.x, tMax.z));\\n    tNear = largest_tMin;\\n    tFar = smallest_tMax;\\n    intersect = smallest_tMax > largest_tMin;\\n}\\n\\nvoid AMItexture3D(\\n    in ivec3 dataCoordinates, \\n    in int uTextureSize,\\n    in ivec3 uDataDimensions,\\n    in sampler2D uTextureContainer[7],\\n    in int uPackedPerPixel,\\n    out vec4 dataValue, \\n    out int offset\\n){\\n    float textureSizeF = float(uTextureSize);\\n    int voxelsPerTexture = uTextureSize*uTextureSize;\\n\\n    int index = dataCoordinates.x + dataCoordinates.y * uDataDimensions.x + dataCoordinates.z * uDataDimensions.y * uDataDimensions.x;\\n\\n    // Nick: Nicolas can you give me some insight on what you'd like to do here?\\n    // --------------------------------------------------------------------------\\n    // dividing an integer by an integer will give you an integer result, \\n    // rounded down can not get float numbers to work :(\\n    int packedIndex = index/uPackedPerPixel;\\n    offset = index - uPackedPerPixel*packedIndex;\\n\\n    // Map data index to right sampler2D texture\\n    int textureIndex = packedIndex/voxelsPerTexture;\\n    int inTextureIndex = packedIndex - voxelsPerTexture*textureIndex;\\n\\n    // Get row and column in the texture\\n    int rowIndex = inTextureIndex/uTextureSize;\\n    float rowIndexF = float(rowIndex);\\n    float colIndex = float(inTextureIndex - uTextureSize * rowIndex);\\n\\n    // Map row and column to uv\\n    vec2 uv = vec2(0,0);\\n    uv.x = (0.5 + colIndex) / textureSizeF;\\n    uv.y = 1. - (0.5 + rowIndexF) / textureSizeF;\\n\\n    float textureIndexF = float(textureIndex);\\n    vec4 addition = vec4(0.);\\n\\n    for (int i = 0; i < 7; i++ ) {\\n        float i_float = float(i);\\n        addition += step( abs( textureIndexF - i_float ), 0.0 ) * texture2D(uTextureContainer[i], uv);\\n    }\\n    dataValue = addition;\\n}\\n\\nvoid toUInt8(\\n    in float r, \\n    out float value\\n){\\n    value = r * 255.;\\n}\\n\\n  \\n\\nvoid unpack8(\\n    in vec4 packedData, \\n    in int offset, \\n    out vec4 unpackedData\\n){\\n    float floatedOffset = float(offset);\\n    float floatedOffsetSquared = floatedOffset * floatedOffset;\\n\\n    toUInt8(\\n        step( floatedOffsetSquared , 0.0 ) * packedData.r +\\n        step( floatedOffsetSquared - 2. * floatedOffset + 1., 0.0 ) * packedData.g +\\n        step( floatedOffsetSquared - 2. * 2. *  floatedOffset + 4., 0.0 ) * packedData.b +\\n        step( floatedOffsetSquared - 2. * 3. *  floatedOffset + 9., 0.0 ) * packedData.a,\\n        unpackedData.x\\n    );\\n}\\n\\nvoid toUInt16(\\n    in float r, \\n    in float a, \\n    out float value\\n) {\\n    value = r * 255. + a * 255. * 256.;\\n}\\n\\nvoid unpack16(\\n    in vec4 packedData, \\n    in int offset, \\n    out vec4 unpackedData\\n){\\n    unpackedData = packedData;\\n    float floatedOffset = float(offset);\\n\\n    toUInt16(\\n        packedData.r * (1. - floatedOffset) + packedData.b * floatedOffset,\\n        packedData.g * (1. - floatedOffset) + packedData.a * floatedOffset,\\n        unpackedData.x\\n    );\\n    \\n}\\n\\nvoid toUInt32(\\n    in float r, \\n    in float g, \\n    in float b, \\n    in float a, \\n    out float value\\n){\\n    value = r * 255. + g * 255. * 256. + b * 255. * 256. * 256. + a * 255. * 256. * 256. * 256.;\\n}\\n\\nvoid toUFloat32(in float r, in float g, in float b, in float a, out float value){\\n\\n    // create arrays containing bits for rgba values, value between 0 and 255\\n    value = r * 255.;\\n    int bytemeR[8];\\n    bytemeR[0] = int(floor(value / 128.));\\n    value -= float(bytemeR[0] * 128);\\n    bytemeR[1] = int(floor(value / 64.));\\n    value -= float(bytemeR[1] * 64);\\n    bytemeR[2] = int(floor(value / 32.));\\n    value -= float(bytemeR[2] * 32);\\n    bytemeR[3] = int(floor(value / 16.));\\n    value -= float(bytemeR[3] * 16);\\n    bytemeR[4] = int(floor(value / 8.));\\n    value -= float(bytemeR[4] * 8);\\n    bytemeR[5] = int(floor(value / 4.));\\n    value -= float(bytemeR[5] * 4);\\n    bytemeR[6] = int(floor(value / 2.));\\n    value -= float(bytemeR[6] * 2);\\n    bytemeR[7] = int(floor(value));\\n\\n    value = g * 255.;\\n    int bytemeG[8];\\n    bytemeG[0] = int(floor(value / 128.));\\n    value -= float(bytemeG[0] * 128);\\n    bytemeG[1] = int(floor(value / 64.));\\n    value -= float(bytemeG[1] * 64);\\n    bytemeG[2] = int(floor(value / 32.));\\n    value -= float(bytemeG[2] * 32);\\n    bytemeG[3] = int(floor(value / 16.));\\n    value -= float(bytemeG[3] * 16);\\n    bytemeG[4] = int(floor(value / 8.));\\n    value -= float(bytemeG[4] * 8);\\n    bytemeG[5] = int(floor(value / 4.));\\n    value -= float(bytemeG[5] * 4);\\n    bytemeG[6] = int(floor(value / 2.));\\n    value -= float(bytemeG[6] * 2);\\n    bytemeG[7] = int(floor(value));\\n\\n    value = b * 255.;\\n    int bytemeB[8];\\n    bytemeB[0] = int(floor(value / 128.));\\n    value -= float(bytemeB[0] * 128);\\n    bytemeB[1] = int(floor(value / 64.));\\n    value -= float(bytemeB[1] * 64);\\n    bytemeB[2] = int(floor(value / 32.));\\n    value -= float(bytemeB[2] * 32);\\n    bytemeB[3] = int(floor(value / 16.));\\n    value -= float(bytemeB[3] * 16);\\n    bytemeB[4] = int(floor(value / 8.));\\n    value -= float(bytemeB[4] * 8);\\n    bytemeB[5] = int(floor(value / 4.));\\n    value -= float(bytemeB[5] * 4);\\n    bytemeB[6] = int(floor(value / 2.));\\n    value -= float(bytemeB[6] * 2);\\n    bytemeB[7] = int(floor(value));\\n\\n    value = a * 255.;\\n    int bytemeA[8];\\n    bytemeA[0] = int(floor(value / 128.));\\n    value -= float(bytemeA[0] * 128);\\n    bytemeA[1] = int(floor(value / 64.));\\n    value -= float(bytemeA[1] * 64);\\n    bytemeA[2] = int(floor(value / 32.));\\n    value -= float(bytemeA[2] * 32);\\n    bytemeA[3] = int(floor(value / 16.));\\n    value -= float(bytemeA[3] * 16);\\n    bytemeA[4] = int(floor(value / 8.));\\n    value -= float(bytemeA[4] * 8);\\n    bytemeA[5] = int(floor(value / 4.));\\n    value -= float(bytemeA[5] * 4);\\n    bytemeA[6] = int(floor(value / 2.));\\n    value -= float(bytemeA[6] * 2);\\n    bytemeA[7] = int(floor(value));\\n\\n    // compute float32 value from bit arrays\\n    // sign\\n    int issigned = 1 - 2 * bytemeR[0];\\n\\n    // exponent\\n    int exponent = 0;\\n\\n    exponent += bytemeR[1] * int(pow(2., 7.));\\n    exponent += bytemeR[2] * int(pow(2., 6.));\\n    exponent += bytemeR[3] * int(pow(2., 5.));\\n    exponent += bytemeR[4] * int(pow(2., 4.));\\n    exponent += bytemeR[5] * int(pow(2., 3.));\\n    exponent += bytemeR[6] * int(pow(2., 2.));\\n    exponent += bytemeR[7] * int(pow(2., 1.));\\n    exponent += bytemeG[0];\\n\\n    // fraction\\n    float fraction = 0.;\\n\\n    fraction = float(bytemeG[1]) * pow(2., -1.);\\n    fraction += float(bytemeG[2]) * pow(2., -2.);\\n    fraction += float(bytemeG[3]) * pow(2., -3.);\\n    fraction += float(bytemeG[4]) * pow(2., -4.);\\n    fraction += float(bytemeG[5]) * pow(2., -5.);\\n    fraction += float(bytemeG[6]) * pow(2., -6.);\\n    fraction += float(bytemeG[7]) * pow(2., -7.);\\n\\n    fraction += float(bytemeB[0]) * pow(2., -8.);\\n    fraction += float(bytemeB[1]) * pow(2., -9.);\\n    fraction += float(bytemeB[2]) * pow(2., -10.);\\n    fraction += float(bytemeB[3]) * pow(2., -11.);\\n    fraction += float(bytemeB[4]) * pow(2., -12.);\\n    fraction += float(bytemeB[5]) * pow(2., -13.);\\n    fraction += float(bytemeB[6]) * pow(2., -14.);\\n    fraction += float(bytemeB[7]) * pow(2., -15.);\\n\\n    fraction += float(bytemeA[0]) * pow(2., -16.);\\n    fraction += float(bytemeA[1]) * pow(2., -17.);\\n    fraction += float(bytemeA[2]) * pow(2., -18.);\\n    fraction += float(bytemeA[3]) * pow(2., -19.);\\n    fraction += float(bytemeA[4]) * pow(2., -20.);\\n    fraction += float(bytemeA[5]) * pow(2., -21.);\\n    fraction += float(bytemeA[6]) * pow(2., -22.);\\n    fraction += float(bytemeA[7]) * pow(2., -23.);\\n\\n    value = float(issigned) * pow( 2., float(exponent - 127)) * (1. + fraction);\\n}\\n\\nvoid unpack32(\\n    in vec4 packedData, \\n    in int offset, \\n    in int uPixelType,\\n    out vec4 unpackedData\\n){\\n    // DOES NOT NEED REMOVAL\\n    // Statically uniform branching condition - cannot cause wavefront divergance\\n    // ----------------------------------------------------------------------------------\\n    if (uPixelType == 1) {\\n        toUInt32(\\n            packedData.r,\\n            packedData.g,\\n            packedData.b,\\n            packedData.a,\\n            unpackedData.x\\n        );\\n    }\\n    else {\\n        toUFloat32(\\n            packedData.r,\\n            packedData.g,\\n            packedData.b,\\n            packedData.a,\\n            unpackedData.x\\n        );\\n    }\\n}\\n\\nvoid unpackIdentity(\\n    in vec4 packedData, \\n    in int offset, \\n    out vec4 unpackedData\\n){\\n    unpackedData = packedData;\\n}\\n\\nvoid unpack(\\n    in int uPixelType,\\n    in int uBitsAllocated,\\n    in int uNumberOfChannels,\\n    in vec4 packedData,\\n    in int offset,\\n    out vec4 unpackedData\\n) {\\n    // DOES NOT NEED REMOVAL\\n    // Statically uniform branching condition - cannot cause wavefront divergance\\n    // ---------------------------------------------------------------------------\\n    if (uNumberOfChannels == 1) {\\n        // DOES NOT NEED REMOVAL\\n        // Statically uniform branching condition - cannot cause wavefront divergance\\n        // ---------------------------------------------------------------------------\\n        if (uBitsAllocated == 8) {\\n            unpack8(    \\n                packedData, \\n                offset, \\n                unpackedData\\n            );\\n            return;\\n        }\\n        // DOES NOT NEED REMOVAL\\n        // Statically uniform branching condition - cannot cause wavefront divergance\\n        // ---------------------------------------------------------------------------\\n        if (uBitsAllocated == 16) {\\n            unpack16(    \\n                packedData, \\n                offset, \\n                unpackedData\\n            );\\n            return;\\n        }\\n        // DOES NOT NEED REMOVAL\\n        // Statically uniform branching condition - cannot cause wavefront divergance\\n        // ---------------------------------------------------------------------------\\n        if (uBitsAllocated == 32) {\\n            unpack32(    \\n                packedData, \\n                offset, \\n                uPixelType,\\n                unpackedData\\n            );\\n            return;\\n        }\\n    } \\n\\n    unpackIdentity(\\n        packedData, \\n        offset, \\n        unpackedData\\n    );\\n}\\n\\nvoid interpolationIdentity(\\n    in int uPixelType,\\n    in vec3 currentVoxel, \\n    in int uTextureSize,\\n    in ivec3 uDataDimensions,\\n    in sampler2D uTextureContainer[7],\\n    in int uBitsAllocated,\\n    in int uNumberOfChannels,\\n    in int uPackedPerPixel,\\n    out vec4 dataValue\\n) {\\n    // lower bound\\n    vec3 rcurrentVoxel = vec3(floor(currentVoxel.x + 0.5 ), floor(currentVoxel.y + 0.5 ), floor(currentVoxel.z + 0.5 ));\\n    ivec3 flooredVoxel = ivec3(int(rcurrentVoxel.x), int(rcurrentVoxel.y), int(rcurrentVoxel.z));\\n\\n    vec4 temporaryDataValue = vec4(0., 0., 0., 0.);\\n    int dataOffset = 0;\\n\\n    AMItexture3D(\\n        flooredVoxel, \\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uPackedPerPixel,\\n        temporaryDataValue, \\n        dataOffset\\n    );\\n\\n    unpack(\\n        uPixelType,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        temporaryDataValue,\\n        dataOffset,\\n        dataValue\\n    );\\n}\\n\\nvoid getIntensityIdn(\\n    in vec3 dataCoordinates, \\n    in int uPixelType,\\n    in int uTextureSize,\\n    in ivec3 uDataDimensions,\\n    in sampler2D uTextureContainer[7],\\n    in int uBitsAllocated,\\n    in int uNumberOfChannels,\\n    in int uPackedPerPixel,\\n    in float uRescaleSlopeIntercept[2],\\n    in float uWindowCenterWidth[2],\\n    out float intensity, \\n){\\n\\n  vec4 dataValue = vec4(0., 0., 0., 0.);\\n\\n  interpolationIdentity(\\n    uPixelType,\\n    dataCoordinates,\\n    uTextureSize,\\n    uDataDimensions,\\n    uTextureContainer[7],\\n    uBitsAllocated,\\n    uNumberOfChannels,\\n    0,\\n    uPackedPerPixel,\\n    dataValue\\n  );\\n\\n  intensity = dataValue.r;\\n\\n  // rescale/slope\\n  intensity = intensity*uRescaleSlopeIntercept[0] + uRescaleSlopeIntercept[1];\\n  \\n  // window level\\n  float windowMin = uWindowCenterWidth[0] - uWindowCenterWidth[1] * 0.5;\\n  intensity = ( intensity - windowMin ) / uWindowCenterWidth[1];\\n}\\n\\nmat4 invertMat4(mat4 m) {\\n  float\\n    a00 = m[0][0], a01 = m[0][1], a02 = m[0][2], a03 = m[0][3],\\n    a10 = m[1][0], a11 = m[1][1], a12 = m[1][2], a13 = m[1][3],\\n    a20 = m[2][0], a21 = m[2][1], a22 = m[2][2], a23 = m[2][3],\\n    a30 = m[3][0], a31 = m[3][1], a32 = m[3][2], a33 = m[3][3],\\n\\n    b00 = a00 * a11 - a01 * a10,\\n    b01 = a00 * a12 - a02 * a10,\\n    b02 = a00 * a13 - a03 * a10,\\n    b03 = a01 * a12 - a02 * a11,\\n    b04 = a01 * a13 - a03 * a11,\\n    b05 = a02 * a13 - a03 * a12,\\n    b06 = a20 * a31 - a21 * a30,\\n    b07 = a20 * a32 - a22 * a30,\\n    b08 = a20 * a33 - a23 * a30,\\n    b09 = a21 * a32 - a22 * a31,\\n    b10 = a21 * a33 - a23 * a31,\\n    b11 = a22 * a33 - a23 * a32,\\n\\n    det = b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;\\n\\n  return mat4(\\n    a11 * b11 - a12 * b10 + a13 * b09,\\n    a02 * b10 - a01 * b11 - a03 * b09,\\n    a31 * b05 - a32 * b04 + a33 * b03,\\n    a22 * b04 - a21 * b05 - a23 * b03,\\n    a12 * b08 - a10 * b11 - a13 * b07,\\n    a00 * b11 - a02 * b08 + a03 * b07,\\n    a32 * b02 - a30 * b05 - a33 * b01,\\n    a20 * b05 - a22 * b02 + a23 * b01,\\n    a10 * b10 - a11 * b08 + a13 * b06,\\n    a01 * b08 - a00 * b10 - a03 * b06,\\n    a30 * b04 - a31 * b02 + a33 * b00,\\n    a21 * b02 - a20 * b04 - a23 * b00,\\n    a11 * b07 - a10 * b09 - a12 * b06,\\n    a00 * b09 - a01 * b07 + a02 * b06,\\n    a31 * b01 - a30 * b03 - a32 * b00,\\n    a20 * b03 - a21 * b01 + a22 * b00) / det;\\n}\\n\\nconst float EPSILON_0 = 0.0000152587;\\n\\n/**\\n * Adapted from original sources\\n * \\n * Original code: \\n * http://jamie-wong.com/2016/07/15/ray-marching-signed-distance-functions/\\n * https://www.shadertoy.com/view/lt33z7\\n\\n * The vec3 returned is the RGB color of the light's contribution.\\n \\n * See https://en.wikipedia.org/wiki/Phong_reflection_model#Description\\n */\\nvec3 AMIphong(\\n    vec3 ambientColor, \\n    vec3 diffuseColor, \\n    vec3 specularColor, \\n    float shininess, \\n    vec3 positionBeingLit, \\n    vec3 eye,\\n    vec3 lightPos, \\n    vec3 lightIntensity, \\n    vec3 normal\\n) {\\n  vec3 N = normal;\\n  vec3 L = lightPos - positionBeingLit;\\n  L = L / (length(L) + EPSILON_0);\\n  vec3 V = eye - positionBeingLit;\\n  V = V / (length(V) + EPSILON_0);\\n  vec3 R = reflect(-L, N);\\n  R = R / (length(R) + EPSILON_0);\\n\\n  // https://en.wikipedia.org/wiki/Blinn%E2%80%93Phong_shading_model\\n  vec3 h = L + V;\\n  vec3 H = h;\\n  H = H / (length(H) + EPSILON_0);\\n\\n  float dotLN = dot(L, N);\\n  float dotRV = dot(R, V);\\n\\n  // DOES NOT NEED REMOVAL\\n  // Statically uniform branching condition - cannot cause wavefront divergance\\n  // ---------------------------------------------------------------------------\\n  // Light not visible from this point on the surface\\n  if (dotLN < 0.) {\\n    return ambientColor;\\n  } \\n  // DOES NOT NEED REMOVAL\\n  // Statically uniform branching condition - cannot cause wavefront divergance\\n  // ---------------------------------------------------------------------------\\n  // Light reflection in opposite direction as viewer, apply only diffuse component\\n  if (dotRV < 0.) {\\n    return ambientColor + lightIntensity * (diffuseColor * dotLN);\\n  }\\n\\n  float specAngle = max(dot(H, normal), 0.0);\\n  float specular = pow(dotRV, shininess);\\n  return ambientColor + lightIntensity * (diffuseColor * dotLN  + specularColor * specular);\\n}\\n\\n// expects values in the range of [0,1]x[0,1], returns values in the [0,1] range.\\n// do not collapse into a single function per: \\n// http://byteblacksmith.com/improvements-to-the-canonical-one-liner-glsl-rand-for-opengl-es-2-0/\\nconst float PI = 3.14159265358979323846264 * 00000.1; // PI\\n\\nhighp float highpRandF32(const in vec2 uv) {\\n  const highp float a = 12.9898;\\n  const highp float b = 78.233;\\n  const highp float c = 43758.5453;\\n  highp float dt = dot(uv.xy, vec2(a, b)), sn = mod(dt, PI);\\n  return fract(sin(sn) * c);\\n}\\n\\nconst int MAX_STEPS = 1024;\\nconst float EPSILON = 0.0000152587;\\n\\nuniform int uTextureSize;\\nuniform sampler2D uTextureContainer[7];      // Length 7\\nuniform ivec3 uDataDimensions;\\nuniform mat4 uWorldToData;\\nuniform float uWindowCenterWidth[2];         // Length 2\\nuniform float uRescaleSlopeIntercept[2];     // Length 2\\nuniform int uNumberOfChannels;\\nuniform int uBitsAllocated;\\nuniform sampler2D uTextureLUT;\\nuniform int uPixelType;\\nuniform int uPackedPerPixel;\\nuniform float uWorldBBox[6];                 // Length 6\\nuniform int uSteps;\\nuniform float uAlphaCorrection;\\nuniform float uAmbient;\\nuniform vec3 uAmbientColor;\\nuniform int uSampleColorToAmbient;\\nuniform float uSpecular;\\nuniform vec3 uSpecularColor;\\nuniform float uDiffuse;\\nuniform vec3 uDiffuseColor;\\nuniform int uSampleColorToDiffuse;\\nuniform float uShininess;\\nuniform vec3 upositionBeingLit;\\nuniform int upositionBeingLitInCamera;\\nuniform vec3 uIntensity;\\n\\nvarying vec4 vPos;\\nvarying mat4 vProjectionViewMatrix;\\nvarying vec4 vProjectedCoords;\\n\\nvoid main(void) {\\n  vec3 rayOrigin = cameraPosition;\\n  vec3 rayDirection = normalize(vPos.xyz - rayOrigin);\\n\\n  vec3 lightOrigin = upositionBeingLitInCamera == 1 ? cameraPosition : upositionBeingLit;\\n\\n  // the Axe-Aligned B-Box\\n  vec3 AABBMin = vec3(uWorldBBox[0], uWorldBBox[2], uWorldBBox[4]);\\n  vec3 AABBMax = vec3(uWorldBBox[1], uWorldBBox[3], uWorldBBox[5]);\\n\\n  // Intersection ray/bbox\\n  float tNear, tFar;\\n  bool intersect = false;\\n  intersectsBox(\\n    rayOrigin,\\n    rayDirection,\\n    AABBMin,\\n    AABBMax,\\n    tNear,\\n    tFar,\\n    intersect\\n  );\\n\\n  tNear = (tNear + abs(tNear)) / 2.0;\\n\\n  // x / y should be within 0-1\\n  float offset = highpRandF32(gl_FragCoord.xy);\\n  float tStep = (tFar - tNear) / float(uSteps);\\n  float tCurrent = tNear + offset * tStep;\\n  vec4 accumulatedColor = vec4(0.0);\\n  float accumulatedAlpha = 0.0;\\n\\n  // MIP volume rendering\\n  float maxIntensity = 0.0;\\n  mat4 dataToWorld = invertMat4(uWorldToData);\\n\\n  for(int i = 0; i < uSteps; i++){\\n    vec3 currentPosition = rayOrigin + rayDirection * tCurrent;\\n    vec3 transformedPosition = currentPosition;\\n    vec4 dataCoordinatesRaw = uWorldToData * vec4(transformedPosition, 1.0);\\n    vec3 currentVoxel = vec3(dataCoordinatesRaw.x, dataCoordinatesRaw.y, dataCoordinatesRaw.z);\\n    float intensity = 0.0;\\n\\n    getIntensityIdn(\\n      currentVoxel, \\n      uPixelType,\\n      uTextureSize,\\n      uDataDimensions,\\n      uTextureContainer,\\n      uBitsAllocated,\\n      uNumberOfChannels,\\n      uPackedPerPixel,\\n      uRescaleSlopeIntercept,\\n      uWindowCenterWidth,\\n      intensity, \\n    );\\n\\n    // map gradient to world space and normalize before using\\n    // we avoid to call normalize as it may be undefined if vector length == 0.\\n    vec3 gradient = vec3(0., 0., 0.);\\n    gradient = (vec3(dataToWorld * vec4(gradient, 0.)));\\n    gradient = normalize(gradient + EPSILON);\\n\\n    vec4 colorSample;\\n    float alphaSample;\\n\\n    vec4 colorFromLUT = texture2D(uTextureLUT, vec2( intensity, 1.0));\\n    alphaSample = colorFromLUT.a;\\n    colorSample = colorFromLUT;\\n\\n    alphaSample = 1.0 - pow((1.0- alphaSample),tStep*uAlphaCorrection);\\n    alphaSample *= (1.0 - accumulatedAlpha);\\n\\n    accumulatedColor += alphaSample * colorSample;\\n    accumulatedAlpha += alphaSample;\\n\\n    tCurrent += tStep;\\n\\n    if (tCurrent > tFar || accumulatedAlpha >= 1.0) break;\\n  }\\n\\n  gl_FragColor = vec4(accumulatedColor.xyz, accumulatedAlpha);\\n}\"");
 
 /***/ }),
 
-/***/ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/glsl/volume/volume_triInterp.frag":
-/*!*********************************************************************************************************************************************!*\
-  !*** ./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/glsl/volume/volume_triInterp.frag ***!
-  \*********************************************************************************************************************************************/
+/***/ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/webgl/volume/volume_triInterp.frag":
+/*!**********************************************************************************************************************************************!*\
+  !*** ./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/webgl/volume/volume_triInterp.frag ***!
+  \**********************************************************************************************************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony default export */ __webpack_exports__["default"] = ("#define GLSLIFY 1\nexport default \"#define GLSLIFY 1\\nvoid intersectsBox(\\n    vec3 rayOrigin, \\n    vec3 rayDirection, \\n    vec3 boxMin, \\n    vec3 boxMax, \\n    out float tNear, \\n    out float tFar, \\n    out bool intersect\\n){\\n    // compute intersection of ray with all six bbox planes\\n    vec3 invRay = vec3(1.) / rayDirection;\\n    vec3 tBot = invRay * (boxMin - rayOrigin);\\n    vec3 tTop = invRay * (boxMax - rayOrigin);\\n    // re-order intersections to find smallest and largest on each axis\\n    vec3 tMin = min(tTop, tBot);\\n    vec3 tMax = max(tTop, tBot);\\n    // find the largest tMin and the smallest tMax\\n    float largest_tMin = max(max(tMin.x, tMin.y), max(tMin.x, tMin.z));\\n    float smallest_tMax = min(min(tMax.x, tMax.y), min(tMax.x, tMax.z));\\n    tNear = largest_tMin;\\n    tFar = smallest_tMax;\\n    intersect = smallest_tMax > largest_tMin;\\n}\\n\\nvoid AMItexture3D(\\n    in ivec3 dataCoordinates, \\n    in int uTextureSize,\\n    in ivec3 uDataDimensions,\\n    in sampler2D uTextureContainer[7],\\n    in int uPackedPerPixel,\\n    out vec4 dataValue, \\n    out int offset\\n){\\n    float textureSizeF = float(uTextureSize);\\n    int voxelsPerTexture = uTextureSize*uTextureSize;\\n\\n    int index = dataCoordinates.x + dataCoordinates.y * uDataDimensions.x + dataCoordinates.z * uDataDimensions.y * uDataDimensions.x;\\n\\n    // Nick: Nicolas can you give me some insight on what you'd like to do here?\\n    // ---------------------------------------------------------------------------------\\n    // dividing an integer by an integer will give you an integer result, \\n    // rounded down can not get float numbers to work :(\\n    int packedIndex = index/uPackedPerPixel;\\n    offset = index - uPackedPerPixel*packedIndex;\\n\\n    // Map data index to right sampler2D texture\\n    int textureIndex = packedIndex/voxelsPerTexture;\\n    int inTextureIndex = packedIndex - voxelsPerTexture*textureIndex;\\n\\n    // Get row and column in the texture\\n    int rowIndex = inTextureIndex/uTextureSize;\\n    float rowIndexF = float(rowIndex);\\n    float colIndex = float(inTextureIndex - uTextureSize * rowIndex);\\n\\n    // Map row and column to uv\\n    vec2 uv = vec2(0,0);\\n    uv.x = (0.5 + colIndex) / textureSizeF;\\n    uv.y = 1. - (0.5 + rowIndexF) / textureSizeF;\\n\\n    float textureIndexF = float(textureIndex);\\n    vec4 addition = vec4(0.);\\n\\n    for (int i = 0; i < 7; i++ ) {\\n        float i_float = float(i);\\n        addition += step( abs( textureIndexF - i_float ), 0.0 ) * texture2D(uTextureContainer[i], uv);\\n    }\\n    dataValue = addition;\\n}\\n\\nvoid toUInt8(\\n    in float r, \\n    out float value\\n){\\n    value = r * 255.;\\n}\\n\\n  \\n\\nvoid unpack8(\\n    in vec4 packedData, \\n    in int offset, \\n    out vec4 unpackedData\\n){\\n    float floatedOffset = float(offset);\\n    float floatedOffsetSquared = floatedOffset * floatedOffset;\\n\\n    toUInt8(\\n        step( floatedOffsetSquared , 0.0 ) * packedData.r +\\n        step( floatedOffsetSquared - 2. * floatedOffset + 1., 0.0 ) * packedData.g +\\n        step( floatedOffsetSquared - 2. * 2. *  floatedOffset + 4., 0.0 ) * packedData.b +\\n        step( floatedOffsetSquared - 2. * 3. *  floatedOffset + 9., 0.0 ) * packedData.a,\\n        unpackedData.x\\n    );\\n}\\n\\nvoid toUInt16(\\n    in float r, \\n    in float a, \\n    out float value\\n) {\\n    value = r * 255. + a * 255. * 256.;\\n}\\n\\nvoid unpack16(\\n    in vec4 packedData, \\n    in int offset, \\n    out vec4 unpackedData\\n){\\n    unpackedData = packedData;\\n    float floatedOffset = float(offset);\\n\\n    toUInt16(\\n        packedData.r * (1. - floatedOffset) + packedData.b * floatedOffset,\\n        packedData.g * (1. - floatedOffset) + packedData.a * floatedOffset,\\n        unpackedData.x\\n    );\\n    \\n}\\n\\nvoid toUInt32(\\n    in float r, \\n    in float g, \\n    in float b, \\n    in float a, \\n    out float value\\n){\\n    value = r * 255. + g * 255. * 256. + b * 255. * 256. * 256. + a * 255. * 256. * 256. * 256.;\\n}\\n\\nvoid toUFloat32(in float r, in float g, in float b, in float a, out float value){\\n\\n    // create arrays containing bits for rgba values, value between 0 and 255\\n    value = r * 255.;\\n    int bytemeR[8];\\n    bytemeR[0] = int(floor(value / 128.));\\n    value -= float(bytemeR[0] * 128);\\n    bytemeR[1] = int(floor(value / 64.));\\n    value -= float(bytemeR[1] * 64);\\n    bytemeR[2] = int(floor(value / 32.));\\n    value -= float(bytemeR[2] * 32);\\n    bytemeR[3] = int(floor(value / 16.));\\n    value -= float(bytemeR[3] * 16);\\n    bytemeR[4] = int(floor(value / 8.));\\n    value -= float(bytemeR[4] * 8);\\n    bytemeR[5] = int(floor(value / 4.));\\n    value -= float(bytemeR[5] * 4);\\n    bytemeR[6] = int(floor(value / 2.));\\n    value -= float(bytemeR[6] * 2);\\n    bytemeR[7] = int(floor(value));\\n\\n    value = g * 255.;\\n    int bytemeG[8];\\n    bytemeG[0] = int(floor(value / 128.));\\n    value -= float(bytemeG[0] * 128);\\n    bytemeG[1] = int(floor(value / 64.));\\n    value -= float(bytemeG[1] * 64);\\n    bytemeG[2] = int(floor(value / 32.));\\n    value -= float(bytemeG[2] * 32);\\n    bytemeG[3] = int(floor(value / 16.));\\n    value -= float(bytemeG[3] * 16);\\n    bytemeG[4] = int(floor(value / 8.));\\n    value -= float(bytemeG[4] * 8);\\n    bytemeG[5] = int(floor(value / 4.));\\n    value -= float(bytemeG[5] * 4);\\n    bytemeG[6] = int(floor(value / 2.));\\n    value -= float(bytemeG[6] * 2);\\n    bytemeG[7] = int(floor(value));\\n\\n    value = b * 255.;\\n    int bytemeB[8];\\n    bytemeB[0] = int(floor(value / 128.));\\n    value -= float(bytemeB[0] * 128);\\n    bytemeB[1] = int(floor(value / 64.));\\n    value -= float(bytemeB[1] * 64);\\n    bytemeB[2] = int(floor(value / 32.));\\n    value -= float(bytemeB[2] * 32);\\n    bytemeB[3] = int(floor(value / 16.));\\n    value -= float(bytemeB[3] * 16);\\n    bytemeB[4] = int(floor(value / 8.));\\n    value -= float(bytemeB[4] * 8);\\n    bytemeB[5] = int(floor(value / 4.));\\n    value -= float(bytemeB[5] * 4);\\n    bytemeB[6] = int(floor(value / 2.));\\n    value -= float(bytemeB[6] * 2);\\n    bytemeB[7] = int(floor(value));\\n\\n    value = a * 255.;\\n    int bytemeA[8];\\n    bytemeA[0] = int(floor(value / 128.));\\n    value -= float(bytemeA[0] * 128);\\n    bytemeA[1] = int(floor(value / 64.));\\n    value -= float(bytemeA[1] * 64);\\n    bytemeA[2] = int(floor(value / 32.));\\n    value -= float(bytemeA[2] * 32);\\n    bytemeA[3] = int(floor(value / 16.));\\n    value -= float(bytemeA[3] * 16);\\n    bytemeA[4] = int(floor(value / 8.));\\n    value -= float(bytemeA[4] * 8);\\n    bytemeA[5] = int(floor(value / 4.));\\n    value -= float(bytemeA[5] * 4);\\n    bytemeA[6] = int(floor(value / 2.));\\n    value -= float(bytemeA[6] * 2);\\n    bytemeA[7] = int(floor(value));\\n\\n    // compute float32 value from bit arrays\\n    // sign\\n    int issigned = 1 - 2 * bytemeR[0];\\n\\n    // exponent\\n    int exponent = 0;\\n\\n    exponent += bytemeR[1] * int(pow(2., 7.));\\n    exponent += bytemeR[2] * int(pow(2., 6.));\\n    exponent += bytemeR[3] * int(pow(2., 5.));\\n    exponent += bytemeR[4] * int(pow(2., 4.));\\n    exponent += bytemeR[5] * int(pow(2., 3.));\\n    exponent += bytemeR[6] * int(pow(2., 2.));\\n    exponent += bytemeR[7] * int(pow(2., 1.));\\n    exponent += bytemeG[0];\\n\\n    // fraction\\n    float fraction = 0.;\\n\\n    fraction = float(bytemeG[1]) * pow(2., -1.);\\n    fraction += float(bytemeG[2]) * pow(2., -2.);\\n    fraction += float(bytemeG[3]) * pow(2., -3.);\\n    fraction += float(bytemeG[4]) * pow(2., -4.);\\n    fraction += float(bytemeG[5]) * pow(2., -5.);\\n    fraction += float(bytemeG[6]) * pow(2., -6.);\\n    fraction += float(bytemeG[7]) * pow(2., -7.);\\n\\n    fraction += float(bytemeB[0]) * pow(2., -8.);\\n    fraction += float(bytemeB[1]) * pow(2., -9.);\\n    fraction += float(bytemeB[2]) * pow(2., -10.);\\n    fraction += float(bytemeB[3]) * pow(2., -11.);\\n    fraction += float(bytemeB[4]) * pow(2., -12.);\\n    fraction += float(bytemeB[5]) * pow(2., -13.);\\n    fraction += float(bytemeB[6]) * pow(2., -14.);\\n    fraction += float(bytemeB[7]) * pow(2., -15.);\\n\\n    fraction += float(bytemeA[0]) * pow(2., -16.);\\n    fraction += float(bytemeA[1]) * pow(2., -17.);\\n    fraction += float(bytemeA[2]) * pow(2., -18.);\\n    fraction += float(bytemeA[3]) * pow(2., -19.);\\n    fraction += float(bytemeA[4]) * pow(2., -20.);\\n    fraction += float(bytemeA[5]) * pow(2., -21.);\\n    fraction += float(bytemeA[6]) * pow(2., -22.);\\n    fraction += float(bytemeA[7]) * pow(2., -23.);\\n\\n    value = float(issigned) * pow( 2., float(exponent - 127)) * (1. + fraction);\\n}\\n\\nvoid unpack32(\\n    in vec4 packedData, \\n    in int offset, \\n    in int uPixelType,\\n    out vec4 unpackedData\\n){\\n    // DOES NOT NEED REMOVAL\\n    // Statically uniform branching condition - cannot cause wavefront divergance\\n    // ----------------------------------------------------------------------------------\\n    if (uPixelType == 1) {\\n        toUInt32(\\n            packedData.r,\\n            packedData.g,\\n            packedData.b,\\n            packedData.a,\\n            unpackedData.x\\n        );\\n    }\\n    else {\\n        toUFloat32(\\n            packedData.r,\\n            packedData.g,\\n            packedData.b,\\n            packedData.a,\\n            unpackedData.x\\n        );\\n    }\\n}\\n\\nvoid unpackIdentity(\\n    in vec4 packedData, \\n    in int offset, \\n    out vec4 unpackedData\\n){\\n    unpackedData = packedData;\\n}\\n\\nvoid unpack(\\n    in int uPixelType,\\n    in int uBitsAllocated,\\n    in int uNumberOfChannels,\\n    in vec4 packedData,\\n    in int offset,\\n    out vec4 unpackedData\\n) {\\n    // DOES NOT NEED REMOVAL\\n    // Statically uniform branching condition - cannot cause wavefront divergance\\n    // ----------------------------------------------------------------------------------\\n    if (uNumberOfChannels == 1) {\\n        // DOES NOT NEED REMOVAL\\n        // Statically uniform branching condition - cannot cause wavefront divergance\\n        // ----------------------------------------------------------------------------------\\n        if (uBitsAllocated == 8) {\\n            unpack8(    \\n                packedData, \\n                offset, \\n                unpackedData\\n            );\\n            return;\\n        }\\n        // DOES NOT NEED REMOVAL\\n        // Statically uniform branching condition - cannot cause wavefront divergance\\n        // ----------------------------------------------------------------------------------\\n        if (uBitsAllocated == 16) {\\n            unpack16(    \\n                packedData, \\n                offset, \\n                unpackedData\\n            );\\n            return;\\n        }\\n        // DOES NOT NEED REMOVAL\\n        // Statically uniform branching condition - cannot cause wavefront divergance\\n        // ----------------------------------------------------------------------------------\\n        if (uBitsAllocated == 32) {\\n            unpack32(    \\n                packedData, \\n                offset, \\n                uPixelType,\\n                unpackedData\\n            );\\n            return;\\n        }\\n    } \\n\\n    unpackIdentity(\\n        packedData, \\n        offset, \\n        unpackedData\\n    );\\n}\\n\\nvoid interpolationIdentity(\\n    in int uPixelType,\\n    in vec3 currentVoxel, \\n    in int uTextureSize,\\n    in ivec3 uDataDimensions,\\n    in sampler2D uTextureContainer[7],\\n    in int uBitsAllocated,\\n    in int uNumberOfChannels,\\n    in int uPackedPerPixel,\\n    out vec4 dataValue\\n){\\n    // lower bound\\n    vec3 rcurrentVoxel = vec3(floor(currentVoxel.x + 0.5 ), floor(currentVoxel.y + 0.5 ), floor(currentVoxel.z + 0.5 ));\\n    ivec3 flooredVoxel = ivec3(int(rcurrentVoxel.x), int(rcurrentVoxel.y), int(rcurrentVoxel.z));\\n\\n    vec4 temporaryDataValue = vec4(0., 0., 0., 0.);\\n    int dataOffset = 0;\\n\\n    AMItexture3D(\\n        flooredVoxel, \\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uPackedPerPixel,\\n        temporaryDataValue, \\n        dataOffset\\n    );\\n\\n    unpack(\\n        uPixelType,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        temporaryDataValue,\\n        dataOffset,\\n        dataValue\\n    );\\n}\\n\\nconst float GRADIENT_STEP_208481169 = 0.005;\\nconst float EPSILON_0 = 0.0000152587;\\n\\nvoid trilinearInterpolation(\\n    in vec3 normalizedPosition,\\n    out vec4 interpolatedValue,\\n    in vec4 v000, in vec4 v100,\\n    in vec4 v001, in vec4 v101,\\n    in vec4 v010, in vec4 v110,\\n    in vec4 v011, in vec4 v111\\n) {\\n    // https://en.wikipedia.org/wiki/Trilinear_interpolation\\n    vec4 c00 = v000 * ( 1.0 - normalizedPosition.x ) + v100 * normalizedPosition.x;\\n    vec4 c01 = v001 * ( 1.0 - normalizedPosition.x ) + v101 * normalizedPosition.x;\\n    vec4 c10 = v010 * ( 1.0 - normalizedPosition.x ) + v110 * normalizedPosition.x;\\n    vec4 c11 = v011 * ( 1.0 - normalizedPosition.x ) + v111 * normalizedPosition.x;\\n\\n    // c0 and c1\\n    vec4 c0 = c00 * ( 1.0 - normalizedPosition.y) + c10 * normalizedPosition.y;\\n    vec4 c1 = c01 * ( 1.0 - normalizedPosition.y) + c11 * normalizedPosition.y;\\n\\n    // c\\n    vec4 c = c0 * ( 1.0 - normalizedPosition.z) + c1 * normalizedPosition.z;\\n    interpolatedValue = c;\\n}\\n\\nvoid interpolationTrilinear(\\n    in int uPixelType,\\n    in vec3 currentVoxel, \\n    in int uTextureSize,\\n    in ivec3 uDataDimensions,\\n    in sampler2D uTextureContainer[7],\\n    in int uBitsAllocated,\\n    in int uNumberOfChannels,\\n    in int uInterpolation,\\n    in int uPackedPerPixel,\\n    out vec4 dataValue, \\n    out vec3 gradient\\n){\\n\\n    vec3 lower_bound = floor(currentVoxel);\\n    lower_bound = max(vec3(0.), lower_bound);\\n\\n    vec3 higher_bound = lower_bound + vec3(1.);\\n\\n    vec3 normalizedPosition = (currentVoxel - lower_bound);\\n    normalizedPosition =  max(vec3(0.), normalizedPosition);\\n\\n    vec4 interpolatedValue = vec4(0.);\\n\\n    // fetch values required for interpolation\\n    vec4 v000 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c000 = vec3(lower_bound.x, lower_bound.y, lower_bound.z);\\n    interpolationIdentity(\\n        uPixelType,\\n        c000,\\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        uPackedPerPixel,\\n        v000\\n    );\\n\\n    vec4 v100 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c100 = vec3(higher_bound.x, lower_bound.y, lower_bound.z);\\n    interpolationIdentity(\\n        uPixelType,\\n        c100,\\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        uPackedPerPixel,\\n        v100\\n    );\\n\\n    vec4 v001 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c001 = vec3(lower_bound.x, lower_bound.y, higher_bound.z);\\n    interpolationIdentity(\\n        uPixelType,\\n        c001,\\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        uPackedPerPixel,\\n        v001\\n    );\\n\\n    vec4 v101 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c101 = vec3(higher_bound.x, lower_bound.y, higher_bound.z);\\n    interpolationIdentity(\\n        uPixelType,\\n        c101,\\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        uPackedPerPixel,\\n        v101\\n    );\\n\\n    vec4 v010 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c010 = vec3(lower_bound.x, higher_bound.y, lower_bound.z);\\n    interpolationIdentity(\\n        uPixelType,\\n        c010,\\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        uPackedPerPixel,\\n        v010\\n    );\\n\\n    vec4 v110 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c110 = vec3(higher_bound.x, higher_bound.y, lower_bound.z);\\n    interpolationIdentity(\\n        uPixelType,\\n        c110,\\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        uPackedPerPixel,\\n        v110\\n    );\\n\\n    vec4 v011 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c011 = vec3(lower_bound.x, higher_bound.y, higher_bound.z);\\n    interpolationIdentity(\\n        uPixelType,\\n        c011,\\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        uPackedPerPixel,\\n        v011\\n    );\\n\\n    vec4 v111 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c111 = vec3(higher_bound.x, higher_bound.y, higher_bound.z);\\n    interpolationIdentity(\\n        uPixelType,\\n        c111,\\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        uPackedPerPixel,\\n        v111\\n    );\\n\\n    // compute interpolation at position\\n    trilinearInterpolation(normalizedPosition, interpolatedValue ,v000, v100, v001, v101, v010,v110, v011,v111);\\n    dataValue = interpolatedValue;\\n\\n    // x axis\\n    vec3 g100 = vec3(1., 0., 0.);\\n    vec3 ng100 = normalizedPosition + g100 * GRADIENT_STEP_208481169;\\n    ng100.x = min(1., ng100.x);\\n\\n    vec4 vg100 = vec4(0.);\\n    trilinearInterpolation(ng100, vg100 ,v000, v100, v001, v101, v010,v110, v011,v111);\\n\\n    vec3 go100 = -g100;\\n    vec3 ngo100 = normalizedPosition + go100 * GRADIENT_STEP_208481169;\\n    ngo100.x = max(0., ngo100.x);\\n\\n    vec4 vgo100 = vec4(0.);\\n    trilinearInterpolation(ngo100, vgo100 ,v000, v100, v001, v101, v010,v110, v011,v111);\\n\\n    gradient.x = (g100.x * vg100.x + go100.x * vgo100.x);\\n\\n    // y axis\\n    vec3 g010 = vec3(0., 1., 0.);\\n    vec3 ng010 = normalizedPosition + g010 * GRADIENT_STEP_208481169;\\n    ng010.y = min(1., ng010.y);\\n\\n    vec4 vg010 = vec4(0.);\\n    trilinearInterpolation(ng010, vg010 ,v000, v100, v001, v101, v010,v110, v011,v111);\\n\\n    vec3 go010 = -g010;\\n    vec3 ngo010 = normalizedPosition + go010 * GRADIENT_STEP_208481169;\\n    ngo010.y = max(0., ngo010.y);\\n\\n    vec4 vgo010 = vec4(0.);\\n    trilinearInterpolation(ngo010, vgo010 ,v000, v100, v001, v101, v010,v110, v011,v111);\\n\\n    gradient.y = (g010.y * vg010.x + go010.y * vgo010.x);\\n\\n    // z axis\\n    vec3 g001 = vec3(0., 0., 1.);\\n    vec3 ng001 = normalizedPosition + g001 * GRADIENT_STEP_208481169;\\n    ng001.z = min(1., ng001.z);\\n\\n    vec4 vg001 = vec4(0.);\\n    trilinearInterpolation(ng001, vg001 ,v000, v100, v001, v101, v010,v110, v011,v111);\\n\\n    vec3 go001 = -g001;\\n    vec3 ngo001 = normalizedPosition + go001 * GRADIENT_STEP_208481169;\\n    ngo001.z = max(0., ngo001.z);\\n\\n    vec4 vgo001 = vec4(0.);\\n    trilinearInterpolation(ngo001, vgo001 ,v000, v100, v001, v101, v010,v110, v011,v111);\\n\\n    gradient.z = (g001.z * vg001.x + go001.z * vgo001.x);\\n\\n    // Nick: Your wish is my command - done using Epsilon\\n    // ---------------------------------------------------------------------\\n    // normalize gradient, +0.0001  instead of if?\\n    // float gradientMagnitude = length(gradient);\\n    // if (gradientMagnitude > 0.0) {\\n    //     gradient = -(1. / gradientMagnitude) * gradient;\\n    // }\\n    gradient = -(1. / (length(gradient) + EPSILON_0)) * gradient;\\n}\\n\\nvoid getIntensityTri(\\n    in vec3 dataCoordinates, \\n    in int uPixelType,\\n    in int uTextureSize,\\n    in ivec3 uDataDimensions,\\n    in sampler2D uTextureContainer[7],\\n    in int uBitsAllocated,\\n    in int uNumberOfChannels,\\n    in int uPackedPerPixel,\\n    in float uRescaleSlopeIntercept[2],\\n    in float uWindowCenterWidth[2],\\n    out float intensity, \\n    out vec3 gradient\\n){\\n\\n  vec4 dataValue = vec4(0., 0., 0., 0.);\\n\\n  interpolationTrilinear(\\n    uPixelType,\\n    dataCoordinates,\\n    uTextureSize,\\n    uDataDimensions,\\n    uTextureContainer,\\n    uBitsAllocated,\\n    uNumberOfChannels,\\n    1,\\n    uPackedPerPixel,\\n    dataValue,\\n    gradient\\n  );\\n\\n  intensity = dataValue.r;\\n\\n  // rescale/slope\\n  intensity = intensity*uRescaleSlopeIntercept[0] + uRescaleSlopeIntercept[1];\\n\\n  // window level\\n  float windowMin = uWindowCenterWidth[0] - uWindowCenterWidth[1] * 0.5;\\n  intensity = ( intensity - windowMin ) / uWindowCenterWidth[1];\\n}\\n\\nmat4 invertMat4(mat4 m) {\\n  float\\n    a00 = m[0][0], a01 = m[0][1], a02 = m[0][2], a03 = m[0][3],\\n    a10 = m[1][0], a11 = m[1][1], a12 = m[1][2], a13 = m[1][3],\\n    a20 = m[2][0], a21 = m[2][1], a22 = m[2][2], a23 = m[2][3],\\n    a30 = m[3][0], a31 = m[3][1], a32 = m[3][2], a33 = m[3][3],\\n\\n    b00 = a00 * a11 - a01 * a10,\\n    b01 = a00 * a12 - a02 * a10,\\n    b02 = a00 * a13 - a03 * a10,\\n    b03 = a01 * a12 - a02 * a11,\\n    b04 = a01 * a13 - a03 * a11,\\n    b05 = a02 * a13 - a03 * a12,\\n    b06 = a20 * a31 - a21 * a30,\\n    b07 = a20 * a32 - a22 * a30,\\n    b08 = a20 * a33 - a23 * a30,\\n    b09 = a21 * a32 - a22 * a31,\\n    b10 = a21 * a33 - a23 * a31,\\n    b11 = a22 * a33 - a23 * a32,\\n\\n    det = b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;\\n\\n  return mat4(\\n    a11 * b11 - a12 * b10 + a13 * b09,\\n    a02 * b10 - a01 * b11 - a03 * b09,\\n    a31 * b05 - a32 * b04 + a33 * b03,\\n    a22 * b04 - a21 * b05 - a23 * b03,\\n    a12 * b08 - a10 * b11 - a13 * b07,\\n    a00 * b11 - a02 * b08 + a03 * b07,\\n    a32 * b02 - a30 * b05 - a33 * b01,\\n    a20 * b05 - a22 * b02 + a23 * b01,\\n    a10 * b10 - a11 * b08 + a13 * b06,\\n    a01 * b08 - a00 * b10 - a03 * b06,\\n    a30 * b04 - a31 * b02 + a33 * b00,\\n    a21 * b02 - a20 * b04 - a23 * b00,\\n    a11 * b07 - a10 * b09 - a12 * b06,\\n    a00 * b09 - a01 * b07 + a02 * b06,\\n    a31 * b01 - a30 * b03 - a32 * b00,\\n    a20 * b03 - a21 * b01 + a22 * b00) / det;\\n}\\n\\n/**\\n * Adapted from original sources\\n * \\n * Original code: \\n * http://jamie-wong.com/2016/07/15/ray-marching-signed-distance-functions/\\n * https://www.shadertoy.com/view/lt33z7\\n\\n * The vec3 returned is the RGB color of the light's contribution.\\n \\n * See https://en.wikipedia.org/wiki/Phong_reflection_model#Description\\n */\\n\\nconst float EPSILON_1 = 0.0000152587;\\n\\nvec3 AMIphong(\\n    vec3 ambientColor, \\n    vec3 diffuseColor, \\n    vec3 specularColor, \\n    float shininess, \\n    vec3 positionBeingLit, \\n    vec3 eye,\\n    vec3 lightPos, \\n    vec3 lightIntensity, \\n    vec3 normal\\n) {\\n  vec3 N = normal;\\n  vec3 L = lightPos - positionBeingLit;\\n  // if (length(L) > 0.) {\\n  //   L = L / length(L);\\n  // }\\n  L = L / (length(L) + EPSILON_1);\\n  vec3 V = eye - positionBeingLit;\\n  // if (length(V) > 0.) {\\n  //   V = V / length(V);\\n  // }\\n  V = V / (length(V) + EPSILON_1);\\n  vec3 R = reflect(-L, N);\\n  // if (length(R) > 0.) {\\n  //   R = R / length(R);\\n  // }\\n  R = R / (length(R) + EPSILON_1);\\n\\n  // https://en.wikipedia.org/wiki/Blinn%E2%80%93Phong_shading_model\\n  vec3 h = L + V;\\n  vec3 H = h;\\n  // if (length(h) > 0.) {\\n  //   H = H / length(h);\\n  // }\\n  H = H / (length(H) + EPSILON_1);\\n\\n  float dotLN = dot(L, N);\\n  float dotRV = dot(R, V);\\n\\n  // DOES NOT NEED REMOVAL\\n  // Statically uniform branching condition - cannot cause wavefront divergance\\n  // ----------------------------------------------------------------------------------\\n  // Light not visible from this point on the surface\\n  if (dotLN < 0.) {\\n    return ambientColor;\\n  } \\n  // DOES NOT NEED REMOVAL\\n  // Statically uniform branching condition - cannot cause wavefront divergance\\n  // ----------------------------------------------------------------------------------\\n  // Light reflection in opposite direction as viewer, apply only diffuse component\\n  if (dotRV < 0.) {\\n    return ambientColor + lightIntensity * (diffuseColor * dotLN);\\n  }\\n\\n  float specAngle = max(dot(H, normal), 0.0);\\n  float specular = pow(dotRV, shininess);\\n  return ambientColor + lightIntensity * (diffuseColor * dotLN  + specularColor * specular);\\n}\\n\\n// expects values in the range of [0,1]x[0,1], returns values in the [0,1] range.\\n// do not collapse into a single function per: \\n// http://byteblacksmith.com/improvements-to-the-canonical-one-liner-glsl-rand-for-opengl-es-2-0/\\nconst float PI = 3.14159265358979323846264 * 00000.1; // PI\\n\\nhighp float highpRandF32(const in vec2 uv) {\\n  const highp float a = 12.9898;\\n  const highp float b = 78.233;\\n  const highp float c = 43758.5453;\\n  highp float dt = dot(uv.xy, vec2(a, b)), sn = mod(dt, PI);\\n  return fract(sin(sn) * c);\\n}\\n\\nconst int MAX_STEPS = 1024;\\nconst float EPSILON = 0.0000152587;\\n\\nuniform int uTextureSize;\\nuniform sampler2D uTextureContainer[7];      // Length 7\\nuniform ivec3 uDataDimensions;\\nuniform mat4 uWorldToData;\\nuniform float uWindowCenterWidth[2];         // Length 2\\nuniform float uRescaleSlopeIntercept[2];     // Length 2\\nuniform int uNumberOfChannels;\\nuniform int uBitsAllocated;\\nuniform sampler2D uTextureLUT;\\nuniform int uPixelType;\\nuniform int uPackedPerPixel;\\nuniform float uWorldBBox[6];                 // Length 6\\nuniform int uSteps;\\nuniform float uAlphaCorrection;\\nuniform float uAmbient;\\nuniform vec3 uAmbientColor;\\nuniform int uSampleColorToAmbient;\\nuniform float uSpecular;\\nuniform vec3 uSpecularColor;\\nuniform float uDiffuse;\\nuniform vec3 uDiffuseColor;\\nuniform int uSampleColorToDiffuse;\\nuniform float uShininess;\\nuniform vec3 upositionBeingLit;\\nuniform int upositionBeingLitInCamera;\\nuniform vec3 uIntensity;\\n// uniform int uStepsPerFrame;\\n// uniform int uStepsSinceChange;\\n\\nvarying vec4 vPos;\\nvarying mat4 vProjectionViewMatrix;\\nvarying vec4 vProjectedCoords;\\n\\nvoid main(void) {\\n  // // If we've reached the maximum accumulation, return\\n  // if (uStepsSinceChange >= uSteps) {\\n  //   return\\n  // }\\n\\n  // // If we're on the first frame since a change, reset the frag colour\\n  // if (uStepsSinceChange == 0) {\\n  //   gl_FragColor = vec4(0.)\\n  // }\\n\\n  vec3 rayOrigin = cameraPosition;\\n  vec3 rayDirection = normalize(vPos.xyz - rayOrigin);\\n\\n  vec3 lightOrigin = upositionBeingLitInCamera == 1 ? cameraPosition : upositionBeingLit;\\n\\n  // the Axe-Aligned B-Box\\n  vec3 AABBMin = vec3(uWorldBBox[0], uWorldBBox[2], uWorldBBox[4]);\\n  vec3 AABBMax = vec3(uWorldBBox[1], uWorldBBox[3], uWorldBBox[5]);\\n\\n  // Intersection ray/bbox\\n  float tNear, tFar;\\n  bool intersect = false;\\n  intersectsBox(\\n    rayOrigin,\\n    rayDirection,\\n    AABBMin,\\n    AABBMax,\\n    tNear,\\n    tFar,\\n    intersect\\n  );\\n\\n  tNear = (tNear + abs(tNear)) / 2.0;\\n\\n  // x / y should be within 0-1\\n  float offset = highpRandF32(gl_FragCoord.xy);\\n  float tStep = (tFar - tNear) / float(uSteps);\\n  float tCurrent = tNear + offset * tStep;\\n  vec4 accumulatedColor = vec4(0.0);\\n  float accumulatedAlpha = 0.0;\\n\\n  // MIP volume rendering\\n  float maxIntensity = 0.0;\\n\\n  mat4 dataToWorld = invertMat4(uWorldToData);\\n\\n  for(int i = 0; i < uSteps; i++){\\n    vec3 currentPosition = rayOrigin + rayDirection * tCurrent;\\n    vec3 transformedPosition = currentPosition;\\n    vec4 dataCoordinatesRaw = uWorldToData * vec4(transformedPosition, 1.0);\\n    vec3 currentVoxel = vec3(dataCoordinatesRaw.x, dataCoordinatesRaw.y, dataCoordinatesRaw.z);\\n\\n    float intensity = 0.0;\\n    vec3 gradient = vec3(0., 0., 0.);\\n    \\n    getIntensityTri(\\n      currentVoxel, \\n      uPixelType,\\n      uTextureSize,\\n      uDataDimensions,\\n      uTextureContainer[7],\\n      uBitsAllocated,\\n      uNumberOfChannels,\\n      uPackedPerPixel,\\n      uRescaleSlopeIntercept,\\n      uWindowCenterWidth;\\n      intensity, \\n      gradient\\n    );\\n\\n    // map gradient to world space and normalize before using\\n    gradient = (vec3(dataToWorld * vec4(gradient, 0.)));\\n    gradient = normalize(gradient + EPSILON);\\n\\n    vec4 colorSample;\\n    float alphaSample;\\n\\n    vec4 colorFromLUT = texture2D(uTextureLUT, vec2( intensity, 1.0));\\n    alphaSample = colorFromLUT.a;\\n    colorSample = colorFromLUT;\\n\\n    vec3 ambientComponent = uSampleColorToAmbient == 1 ? colorSample.xyz : uAmbientColor;\\n    ambientComponent *= uAmbient;\\n    vec3 diffuseComponent = uSampleColorToDiffuse == 1 ? colorSample.xyz : uDiffuseColor;\\n    diffuseComponent *= uDiffuse;\\n    vec3 specularComponent = uSpecular * uSpecularColor;\\n    float shininess = uShininess;\\n    vec3 vIntensity = uIntensity;\\n\\n    colorSample.xyz += AMIphong(\\n        ambientComponent,\\n        diffuseComponent,\\n        specularComponent,\\n        shininess,\\n        currentPosition.xyz,\\n        rayOrigin.xyz,\\n        lightOrigin.xyz,\\n        vIntensity,\\n        gradient\\n    );\\n\\n    alphaSample = 1.0 - pow((1.0- alphaSample),tStep*uAlphaCorrection);\\n    alphaSample *= (1.0 - accumulatedAlpha);\\n\\n    accumulatedColor += alphaSample * colorSample;\\n    accumulatedAlpha += alphaSample;\\n\\n    tCurrent += tStep;\\n\\n    if (tCurrent > tFar || accumulatedAlpha >= 1.0) break;\\n  }\\n\\n  gl_FragColor = vec4(accumulatedColor.xyz, accumulatedAlpha);\\n}\"");
+/* harmony default export */ __webpack_exports__["default"] = ("#define GLSLIFY 1\nexport default \"#define GLSLIFY 1\\nvoid intersectsBox(\\n    vec3 rayOrigin, \\n    vec3 rayDirection, \\n    vec3 boxMin, \\n    vec3 boxMax, \\n    out float tNear, \\n    out float tFar, \\n    out bool intersect\\n) {\\n    // compute intersection of ray with all six bbox planes\\n    vec3 invRay = vec3(1.) / rayDirection;\\n    vec3 tBot = invRay * (boxMin - rayOrigin);\\n    vec3 tTop = invRay * (boxMax - rayOrigin);\\n    // re-order intersections to find smallest and largest on each axis\\n    vec3 tMin = min(tTop, tBot);\\n    vec3 tMax = max(tTop, tBot);\\n    // find the largest tMin and the smallest tMax\\n    float largest_tMin = max(max(tMin.x, tMin.y), max(tMin.x, tMin.z));\\n    float smallest_tMax = min(min(tMax.x, tMax.y), min(tMax.x, tMax.z));\\n    tNear = largest_tMin;\\n    tFar = smallest_tMax;\\n    intersect = smallest_tMax > largest_tMin;\\n}\\n\\nvoid AMItexture3D(\\n    in ivec3 dataCoordinates, \\n    in int uTextureSize,\\n    in ivec3 uDataDimensions,\\n    in sampler2D uTextureContainer[7],\\n    in int uPackedPerPixel,\\n    out vec4 dataValue, \\n    out int offset\\n){\\n    float textureSizeF = float(uTextureSize);\\n    int voxelsPerTexture = uTextureSize*uTextureSize;\\n\\n    int index = dataCoordinates.x + dataCoordinates.y * uDataDimensions.x + dataCoordinates.z * uDataDimensions.y * uDataDimensions.x;\\n\\n    // Nick: Nicolas can you give me some insight on what you'd like to do here?\\n    // --------------------------------------------------------------------------\\n    // dividing an integer by an integer will give you an integer result, \\n    // rounded down can not get float numbers to work :(\\n    int packedIndex = index/uPackedPerPixel;\\n    offset = index - uPackedPerPixel*packedIndex;\\n\\n    // Map data index to right sampler2D texture\\n    int textureIndex = packedIndex/voxelsPerTexture;\\n    int inTextureIndex = packedIndex - voxelsPerTexture*textureIndex;\\n\\n    // Get row and column in the texture\\n    int rowIndex = inTextureIndex/uTextureSize;\\n    float rowIndexF = float(rowIndex);\\n    float colIndex = float(inTextureIndex - uTextureSize * rowIndex);\\n\\n    // Map row and column to uv\\n    vec2 uv = vec2(0,0);\\n    uv.x = (0.5 + colIndex) / textureSizeF;\\n    uv.y = 1. - (0.5 + rowIndexF) / textureSizeF;\\n\\n    float textureIndexF = float(textureIndex);\\n    vec4 addition = vec4(0.);\\n\\n    for (int i = 0; i < 7; i++ ) {\\n        float i_float = float(i);\\n        addition += step( abs( textureIndexF - i_float ), 0.0 ) * texture2D(uTextureContainer[i], uv);\\n    }\\n    dataValue = addition;\\n}\\n\\nvoid toUInt8(\\n    in float r, \\n    out float value\\n){\\n    value = r * 255.;\\n}\\n\\n  \\n\\nvoid unpack8(\\n    in vec4 packedData, \\n    in int offset, \\n    out vec4 unpackedData\\n){\\n    float floatedOffset = float(offset);\\n    float floatedOffsetSquared = floatedOffset * floatedOffset;\\n\\n    toUInt8(\\n        step( floatedOffsetSquared , 0.0 ) * packedData.r +\\n        step( floatedOffsetSquared - 2. * floatedOffset + 1., 0.0 ) * packedData.g +\\n        step( floatedOffsetSquared - 2. * 2. *  floatedOffset + 4., 0.0 ) * packedData.b +\\n        step( floatedOffsetSquared - 2. * 3. *  floatedOffset + 9., 0.0 ) * packedData.a,\\n        unpackedData.x\\n    );\\n}\\n\\nvoid toUInt16(\\n    in float r, \\n    in float a, \\n    out float value\\n) {\\n    value = r * 255. + a * 255. * 256.;\\n}\\n\\nvoid unpack16(\\n    in vec4 packedData, \\n    in int offset, \\n    out vec4 unpackedData\\n){\\n    unpackedData = packedData;\\n    float floatedOffset = float(offset);\\n\\n    toUInt16(\\n        packedData.r * (1. - floatedOffset) + packedData.b * floatedOffset,\\n        packedData.g * (1. - floatedOffset) + packedData.a * floatedOffset,\\n        unpackedData.x\\n    );\\n    \\n}\\n\\nvoid toUInt32(\\n    in float r, \\n    in float g, \\n    in float b, \\n    in float a, \\n    out float value\\n){\\n    value = r * 255. + g * 255. * 256. + b * 255. * 256. * 256. + a * 255. * 256. * 256. * 256.;\\n}\\n\\nvoid toUFloat32(in float r, in float g, in float b, in float a, out float value){\\n\\n    // create arrays containing bits for rgba values, value between 0 and 255\\n    value = r * 255.;\\n    int bytemeR[8];\\n    bytemeR[0] = int(floor(value / 128.));\\n    value -= float(bytemeR[0] * 128);\\n    bytemeR[1] = int(floor(value / 64.));\\n    value -= float(bytemeR[1] * 64);\\n    bytemeR[2] = int(floor(value / 32.));\\n    value -= float(bytemeR[2] * 32);\\n    bytemeR[3] = int(floor(value / 16.));\\n    value -= float(bytemeR[3] * 16);\\n    bytemeR[4] = int(floor(value / 8.));\\n    value -= float(bytemeR[4] * 8);\\n    bytemeR[5] = int(floor(value / 4.));\\n    value -= float(bytemeR[5] * 4);\\n    bytemeR[6] = int(floor(value / 2.));\\n    value -= float(bytemeR[6] * 2);\\n    bytemeR[7] = int(floor(value));\\n\\n    value = g * 255.;\\n    int bytemeG[8];\\n    bytemeG[0] = int(floor(value / 128.));\\n    value -= float(bytemeG[0] * 128);\\n    bytemeG[1] = int(floor(value / 64.));\\n    value -= float(bytemeG[1] * 64);\\n    bytemeG[2] = int(floor(value / 32.));\\n    value -= float(bytemeG[2] * 32);\\n    bytemeG[3] = int(floor(value / 16.));\\n    value -= float(bytemeG[3] * 16);\\n    bytemeG[4] = int(floor(value / 8.));\\n    value -= float(bytemeG[4] * 8);\\n    bytemeG[5] = int(floor(value / 4.));\\n    value -= float(bytemeG[5] * 4);\\n    bytemeG[6] = int(floor(value / 2.));\\n    value -= float(bytemeG[6] * 2);\\n    bytemeG[7] = int(floor(value));\\n\\n    value = b * 255.;\\n    int bytemeB[8];\\n    bytemeB[0] = int(floor(value / 128.));\\n    value -= float(bytemeB[0] * 128);\\n    bytemeB[1] = int(floor(value / 64.));\\n    value -= float(bytemeB[1] * 64);\\n    bytemeB[2] = int(floor(value / 32.));\\n    value -= float(bytemeB[2] * 32);\\n    bytemeB[3] = int(floor(value / 16.));\\n    value -= float(bytemeB[3] * 16);\\n    bytemeB[4] = int(floor(value / 8.));\\n    value -= float(bytemeB[4] * 8);\\n    bytemeB[5] = int(floor(value / 4.));\\n    value -= float(bytemeB[5] * 4);\\n    bytemeB[6] = int(floor(value / 2.));\\n    value -= float(bytemeB[6] * 2);\\n    bytemeB[7] = int(floor(value));\\n\\n    value = a * 255.;\\n    int bytemeA[8];\\n    bytemeA[0] = int(floor(value / 128.));\\n    value -= float(bytemeA[0] * 128);\\n    bytemeA[1] = int(floor(value / 64.));\\n    value -= float(bytemeA[1] * 64);\\n    bytemeA[2] = int(floor(value / 32.));\\n    value -= float(bytemeA[2] * 32);\\n    bytemeA[3] = int(floor(value / 16.));\\n    value -= float(bytemeA[3] * 16);\\n    bytemeA[4] = int(floor(value / 8.));\\n    value -= float(bytemeA[4] * 8);\\n    bytemeA[5] = int(floor(value / 4.));\\n    value -= float(bytemeA[5] * 4);\\n    bytemeA[6] = int(floor(value / 2.));\\n    value -= float(bytemeA[6] * 2);\\n    bytemeA[7] = int(floor(value));\\n\\n    // compute float32 value from bit arrays\\n    // sign\\n    int issigned = 1 - 2 * bytemeR[0];\\n\\n    // exponent\\n    int exponent = 0;\\n\\n    exponent += bytemeR[1] * int(pow(2., 7.));\\n    exponent += bytemeR[2] * int(pow(2., 6.));\\n    exponent += bytemeR[3] * int(pow(2., 5.));\\n    exponent += bytemeR[4] * int(pow(2., 4.));\\n    exponent += bytemeR[5] * int(pow(2., 3.));\\n    exponent += bytemeR[6] * int(pow(2., 2.));\\n    exponent += bytemeR[7] * int(pow(2., 1.));\\n    exponent += bytemeG[0];\\n\\n    // fraction\\n    float fraction = 0.;\\n\\n    fraction = float(bytemeG[1]) * pow(2., -1.);\\n    fraction += float(bytemeG[2]) * pow(2., -2.);\\n    fraction += float(bytemeG[3]) * pow(2., -3.);\\n    fraction += float(bytemeG[4]) * pow(2., -4.);\\n    fraction += float(bytemeG[5]) * pow(2., -5.);\\n    fraction += float(bytemeG[6]) * pow(2., -6.);\\n    fraction += float(bytemeG[7]) * pow(2., -7.);\\n\\n    fraction += float(bytemeB[0]) * pow(2., -8.);\\n    fraction += float(bytemeB[1]) * pow(2., -9.);\\n    fraction += float(bytemeB[2]) * pow(2., -10.);\\n    fraction += float(bytemeB[3]) * pow(2., -11.);\\n    fraction += float(bytemeB[4]) * pow(2., -12.);\\n    fraction += float(bytemeB[5]) * pow(2., -13.);\\n    fraction += float(bytemeB[6]) * pow(2., -14.);\\n    fraction += float(bytemeB[7]) * pow(2., -15.);\\n\\n    fraction += float(bytemeA[0]) * pow(2., -16.);\\n    fraction += float(bytemeA[1]) * pow(2., -17.);\\n    fraction += float(bytemeA[2]) * pow(2., -18.);\\n    fraction += float(bytemeA[3]) * pow(2., -19.);\\n    fraction += float(bytemeA[4]) * pow(2., -20.);\\n    fraction += float(bytemeA[5]) * pow(2., -21.);\\n    fraction += float(bytemeA[6]) * pow(2., -22.);\\n    fraction += float(bytemeA[7]) * pow(2., -23.);\\n\\n    value = float(issigned) * pow( 2., float(exponent - 127)) * (1. + fraction);\\n}\\n\\nvoid unpack32(\\n    in vec4 packedData, \\n    in int offset, \\n    in int uPixelType,\\n    out vec4 unpackedData\\n){\\n    // DOES NOT NEED REMOVAL\\n    // Statically uniform branching condition - cannot cause wavefront divergance\\n    // ----------------------------------------------------------------------------------\\n    if (uPixelType == 1) {\\n        toUInt32(\\n            packedData.r,\\n            packedData.g,\\n            packedData.b,\\n            packedData.a,\\n            unpackedData.x\\n        );\\n    }\\n    else {\\n        toUFloat32(\\n            packedData.r,\\n            packedData.g,\\n            packedData.b,\\n            packedData.a,\\n            unpackedData.x\\n        );\\n    }\\n}\\n\\nvoid unpackIdentity(\\n    in vec4 packedData, \\n    in int offset, \\n    out vec4 unpackedData\\n){\\n    unpackedData = packedData;\\n}\\n\\nvoid unpack(\\n    in int uPixelType,\\n    in int uBitsAllocated,\\n    in int uNumberOfChannels,\\n    in vec4 packedData,\\n    in int offset,\\n    out vec4 unpackedData\\n) {\\n    // DOES NOT NEED REMOVAL\\n    // Statically uniform branching condition - cannot cause wavefront divergance\\n    // ---------------------------------------------------------------------------\\n    if (uNumberOfChannels == 1) {\\n        // DOES NOT NEED REMOVAL\\n        // Statically uniform branching condition - cannot cause wavefront divergance\\n        // ---------------------------------------------------------------------------\\n        if (uBitsAllocated == 8) {\\n            unpack8(    \\n                packedData, \\n                offset, \\n                unpackedData\\n            );\\n            return;\\n        }\\n        // DOES NOT NEED REMOVAL\\n        // Statically uniform branching condition - cannot cause wavefront divergance\\n        // ---------------------------------------------------------------------------\\n        if (uBitsAllocated == 16) {\\n            unpack16(    \\n                packedData, \\n                offset, \\n                unpackedData\\n            );\\n            return;\\n        }\\n        // DOES NOT NEED REMOVAL\\n        // Statically uniform branching condition - cannot cause wavefront divergance\\n        // ---------------------------------------------------------------------------\\n        if (uBitsAllocated == 32) {\\n            unpack32(    \\n                packedData, \\n                offset, \\n                uPixelType,\\n                unpackedData\\n            );\\n            return;\\n        }\\n    } \\n\\n    unpackIdentity(\\n        packedData, \\n        offset, \\n        unpackedData\\n    );\\n}\\n\\nvoid interpolationIdentity(\\n    in int uPixelType,\\n    in vec3 currentVoxel, \\n    in int uTextureSize,\\n    in ivec3 uDataDimensions,\\n    in sampler2D uTextureContainer[7],\\n    in int uBitsAllocated,\\n    in int uNumberOfChannels,\\n    in int uPackedPerPixel,\\n    out vec4 dataValue\\n) {\\n    // lower bound\\n    vec3 rcurrentVoxel = vec3(floor(currentVoxel.x + 0.5 ), floor(currentVoxel.y + 0.5 ), floor(currentVoxel.z + 0.5 ));\\n    ivec3 flooredVoxel = ivec3(int(rcurrentVoxel.x), int(rcurrentVoxel.y), int(rcurrentVoxel.z));\\n\\n    vec4 temporaryDataValue = vec4(0., 0., 0., 0.);\\n    int dataOffset = 0;\\n\\n    AMItexture3D(\\n        flooredVoxel, \\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uPackedPerPixel,\\n        temporaryDataValue, \\n        dataOffset\\n    );\\n\\n    unpack(\\n        uPixelType,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        temporaryDataValue,\\n        dataOffset,\\n        dataValue\\n    );\\n}\\n\\nconst float GRADIENT_STEP_208481169 = 0.005;\\nconst float EPSILON_0 = 0.0000152587;\\n\\nvoid trilinearInterpolation(\\n    in vec3 normalizedPosition,\\n    out vec4 interpolatedValue,\\n    in vec4 v000, in vec4 v100,\\n    in vec4 v001, in vec4 v101,\\n    in vec4 v010, in vec4 v110,\\n    in vec4 v011, in vec4 v111\\n) {\\n    // https://en.wikipedia.org/wiki/Trilinear_interpolation\\n    vec4 c00 = v000 * ( 1.0 - normalizedPosition.x ) + v100 * normalizedPosition.x;\\n    vec4 c01 = v001 * ( 1.0 - normalizedPosition.x ) + v101 * normalizedPosition.x;\\n    vec4 c10 = v010 * ( 1.0 - normalizedPosition.x ) + v110 * normalizedPosition.x;\\n    vec4 c11 = v011 * ( 1.0 - normalizedPosition.x ) + v111 * normalizedPosition.x;\\n\\n    // c0 and c1\\n    vec4 c0 = c00 * ( 1.0 - normalizedPosition.y) + c10 * normalizedPosition.y;\\n    vec4 c1 = c01 * ( 1.0 - normalizedPosition.y) + c11 * normalizedPosition.y;\\n\\n    // c\\n    vec4 c = c0 * ( 1.0 - normalizedPosition.z) + c1 * normalizedPosition.z;\\n    interpolatedValue = c;\\n}\\n\\nvoid interpolationTrilinear(\\n    in int uPixelType,\\n    in vec3 currentVoxel, \\n    in int uTextureSize,\\n    in ivec3 uDataDimensions,\\n    in sampler2D uTextureContainer[7],\\n    in int uBitsAllocated,\\n    in int uNumberOfChannels,\\n    in int uInterpolation,\\n    in int uPackedPerPixel,\\n    out vec4 dataValue, \\n    out vec3 gradient\\n){\\n\\n    vec3 lower_bound = floor(currentVoxel);\\n    lower_bound = max(vec3(0.), lower_bound);\\n\\n    vec3 higher_bound = lower_bound + vec3(1.);\\n\\n    vec3 normalizedPosition = (currentVoxel - lower_bound);\\n    normalizedPosition =  max(vec3(0.), normalizedPosition);\\n\\n    vec4 interpolatedValue = vec4(0.);\\n\\n    // fetch values required for interpolation\\n    vec4 v000 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c000 = vec3(lower_bound.x, lower_bound.y, lower_bound.z);\\n    interpolationIdentity(\\n        uPixelType,\\n        c000,\\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        uPackedPerPixel,\\n        v000\\n    );\\n\\n    vec4 v100 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c100 = vec3(higher_bound.x, lower_bound.y, lower_bound.z);\\n    interpolationIdentity(\\n        uPixelType,\\n        c100,\\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        uPackedPerPixel,\\n        v100\\n    );\\n\\n    vec4 v001 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c001 = vec3(lower_bound.x, lower_bound.y, higher_bound.z);\\n    interpolationIdentity(\\n        uPixelType,\\n        c001,\\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        uPackedPerPixel,\\n        v001\\n    );\\n\\n    vec4 v101 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c101 = vec3(higher_bound.x, lower_bound.y, higher_bound.z);\\n    interpolationIdentity(\\n        uPixelType,\\n        c101,\\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        uPackedPerPixel,\\n        v101\\n    );\\n\\n    vec4 v010 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c010 = vec3(lower_bound.x, higher_bound.y, lower_bound.z);\\n    interpolationIdentity(\\n        uPixelType,\\n        c010,\\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        uPackedPerPixel,\\n        v010\\n    );\\n\\n    vec4 v110 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c110 = vec3(higher_bound.x, higher_bound.y, lower_bound.z);\\n    interpolationIdentity(\\n        uPixelType,\\n        c110,\\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        uPackedPerPixel,\\n        v110\\n    );\\n\\n    vec4 v011 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c011 = vec3(lower_bound.x, higher_bound.y, higher_bound.z);\\n    interpolationIdentity(\\n        uPixelType,\\n        c011,\\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        uPackedPerPixel,\\n        v011\\n    );\\n\\n    vec4 v111 = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec3 c111 = vec3(higher_bound.x, higher_bound.y, higher_bound.z);\\n    interpolationIdentity(\\n        uPixelType,\\n        c111,\\n        uTextureSize,\\n        uDataDimensions,\\n        uTextureContainer,\\n        uBitsAllocated,\\n        uNumberOfChannels,\\n        uPackedPerPixel,\\n        v111\\n    );\\n\\n    // compute interpolation at position\\n    trilinearInterpolation(normalizedPosition, interpolatedValue ,v000, v100, v001, v101, v010,v110, v011,v111);\\n    dataValue = interpolatedValue;\\n\\n    // x axis\\n    vec3 g100 = vec3(1., 0., 0.);\\n    vec3 ng100 = normalizedPosition + g100 * GRADIENT_STEP_208481169;\\n    ng100.x = min(1., ng100.x);\\n\\n    vec4 vg100 = vec4(0.);\\n    trilinearInterpolation(ng100, vg100 ,v000, v100, v001, v101, v010,v110, v011,v111);\\n\\n    vec3 go100 = -g100;\\n    vec3 ngo100 = normalizedPosition + go100 * GRADIENT_STEP_208481169;\\n    ngo100.x = max(0., ngo100.x);\\n\\n    vec4 vgo100 = vec4(0.);\\n    trilinearInterpolation(ngo100, vgo100 ,v000, v100, v001, v101, v010,v110, v011,v111);\\n\\n    gradient.x = (g100.x * vg100.x + go100.x * vgo100.x);\\n\\n    // y axis\\n    vec3 g010 = vec3(0., 1., 0.);\\n    vec3 ng010 = normalizedPosition + g010 * GRADIENT_STEP_208481169;\\n    ng010.y = min(1., ng010.y);\\n\\n    vec4 vg010 = vec4(0.);\\n    trilinearInterpolation(ng010, vg010 ,v000, v100, v001, v101, v010,v110, v011,v111);\\n\\n    vec3 go010 = -g010;\\n    vec3 ngo010 = normalizedPosition + go010 * GRADIENT_STEP_208481169;\\n    ngo010.y = max(0., ngo010.y);\\n\\n    vec4 vgo010 = vec4(0.);\\n    trilinearInterpolation(ngo010, vgo010 ,v000, v100, v001, v101, v010,v110, v011,v111);\\n\\n    gradient.y = (g010.y * vg010.x + go010.y * vgo010.x);\\n\\n    // z axis\\n    vec3 g001 = vec3(0., 0., 1.);\\n    vec3 ng001 = normalizedPosition + g001 * GRADIENT_STEP_208481169;\\n    ng001.z = min(1., ng001.z);\\n\\n    vec4 vg001 = vec4(0.);\\n    trilinearInterpolation(ng001, vg001 ,v000, v100, v001, v101, v010,v110, v011,v111);\\n\\n    vec3 go001 = -g001;\\n    vec3 ngo001 = normalizedPosition + go001 * GRADIENT_STEP_208481169;\\n    ngo001.z = max(0., ngo001.z);\\n\\n    vec4 vgo001 = vec4(0.);\\n    trilinearInterpolation(ngo001, vgo001 ,v000, v100, v001, v101, v010,v110, v011,v111);\\n\\n    gradient.z = (g001.z * vg001.x + go001.z * vgo001.x);\\n\\n    // Nick: Your wish is my command - done using Epsilon\\n    // ---------------------------------------------------------------------\\n    // normalize gradient, +0.0001  instead of if?\\n    // float gradientMagnitude = length(gradient);\\n    // if (gradientMagnitude > 0.0) {\\n    //     gradient = -(1. / gradientMagnitude) * gradient;\\n    // }\\n    gradient = -(1. / (length(gradient) + EPSILON_0)) * gradient;\\n}\\n\\nvoid getIntensityTri(\\n    in vec3 dataCoordinates, \\n    in int uPixelType,\\n    in int uTextureSize,\\n    in ivec3 uDataDimensions,\\n    in sampler2D uTextureContainer[7],\\n    in int uBitsAllocated,\\n    in int uNumberOfChannels,\\n    in int uPackedPerPixel,\\n    in float uRescaleSlopeIntercept[2],\\n    in float uWindowCenterWidth[2],\\n    out float intensity, \\n    out vec3 gradient\\n){\\n\\n  vec4 dataValue = vec4(0., 0., 0., 0.);\\n\\n  interpolationTrilinear(\\n    uPixelType,\\n    dataCoordinates,\\n    uTextureSize,\\n    uDataDimensions,\\n    uTextureContainer,\\n    uBitsAllocated,\\n    uNumberOfChannels,\\n    1,\\n    uPackedPerPixel,\\n    dataValue,\\n    gradient\\n  );\\n\\n  intensity = dataValue.r;\\n\\n  // rescale/slope\\n  intensity = intensity*uRescaleSlopeIntercept[0] + uRescaleSlopeIntercept[1];\\n\\n  // window level\\n  float windowMin = uWindowCenterWidth[0] - uWindowCenterWidth[1] * 0.5;\\n  intensity = ( intensity - windowMin ) / uWindowCenterWidth[1];\\n}\\n\\nmat4 invertMat4(mat4 m) {\\n  float\\n    a00 = m[0][0], a01 = m[0][1], a02 = m[0][2], a03 = m[0][3],\\n    a10 = m[1][0], a11 = m[1][1], a12 = m[1][2], a13 = m[1][3],\\n    a20 = m[2][0], a21 = m[2][1], a22 = m[2][2], a23 = m[2][3],\\n    a30 = m[3][0], a31 = m[3][1], a32 = m[3][2], a33 = m[3][3],\\n\\n    b00 = a00 * a11 - a01 * a10,\\n    b01 = a00 * a12 - a02 * a10,\\n    b02 = a00 * a13 - a03 * a10,\\n    b03 = a01 * a12 - a02 * a11,\\n    b04 = a01 * a13 - a03 * a11,\\n    b05 = a02 * a13 - a03 * a12,\\n    b06 = a20 * a31 - a21 * a30,\\n    b07 = a20 * a32 - a22 * a30,\\n    b08 = a20 * a33 - a23 * a30,\\n    b09 = a21 * a32 - a22 * a31,\\n    b10 = a21 * a33 - a23 * a31,\\n    b11 = a22 * a33 - a23 * a32,\\n\\n    det = b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;\\n\\n  return mat4(\\n    a11 * b11 - a12 * b10 + a13 * b09,\\n    a02 * b10 - a01 * b11 - a03 * b09,\\n    a31 * b05 - a32 * b04 + a33 * b03,\\n    a22 * b04 - a21 * b05 - a23 * b03,\\n    a12 * b08 - a10 * b11 - a13 * b07,\\n    a00 * b11 - a02 * b08 + a03 * b07,\\n    a32 * b02 - a30 * b05 - a33 * b01,\\n    a20 * b05 - a22 * b02 + a23 * b01,\\n    a10 * b10 - a11 * b08 + a13 * b06,\\n    a01 * b08 - a00 * b10 - a03 * b06,\\n    a30 * b04 - a31 * b02 + a33 * b00,\\n    a21 * b02 - a20 * b04 - a23 * b00,\\n    a11 * b07 - a10 * b09 - a12 * b06,\\n    a00 * b09 - a01 * b07 + a02 * b06,\\n    a31 * b01 - a30 * b03 - a32 * b00,\\n    a20 * b03 - a21 * b01 + a22 * b00) / det;\\n}\\n\\nconst float EPSILON_1 = 0.0000152587;\\n\\n/**\\n * Adapted from original sources\\n * \\n * Original code: \\n * http://jamie-wong.com/2016/07/15/ray-marching-signed-distance-functions/\\n * https://www.shadertoy.com/view/lt33z7\\n\\n * The vec3 returned is the RGB color of the light's contribution.\\n \\n * See https://en.wikipedia.org/wiki/Phong_reflection_model#Description\\n */\\nvec3 AMIphong(\\n    vec3 ambientColor, \\n    vec3 diffuseColor, \\n    vec3 specularColor, \\n    float shininess, \\n    vec3 positionBeingLit, \\n    vec3 eye,\\n    vec3 lightPos, \\n    vec3 lightIntensity, \\n    vec3 normal\\n) {\\n  vec3 N = normal;\\n  vec3 L = lightPos - positionBeingLit;\\n  L = L / (length(L) + EPSILON_1);\\n  vec3 V = eye - positionBeingLit;\\n  V = V / (length(V) + EPSILON_1);\\n  vec3 R = reflect(-L, N);\\n  R = R / (length(R) + EPSILON_1);\\n\\n  // https://en.wikipedia.org/wiki/Blinn%E2%80%93Phong_shading_model\\n  vec3 h = L + V;\\n  vec3 H = h;\\n  H = H / (length(H) + EPSILON_1);\\n\\n  float dotLN = dot(L, N);\\n  float dotRV = dot(R, V);\\n\\n  // DOES NOT NEED REMOVAL\\n  // Statically uniform branching condition - cannot cause wavefront divergance\\n  // ---------------------------------------------------------------------------\\n  // Light not visible from this point on the surface\\n  if (dotLN < 0.) {\\n    return ambientColor;\\n  } \\n  // DOES NOT NEED REMOVAL\\n  // Statically uniform branching condition - cannot cause wavefront divergance\\n  // ---------------------------------------------------------------------------\\n  // Light reflection in opposite direction as viewer, apply only diffuse component\\n  if (dotRV < 0.) {\\n    return ambientColor + lightIntensity * (diffuseColor * dotLN);\\n  }\\n\\n  float specAngle = max(dot(H, normal), 0.0);\\n  float specular = pow(dotRV, shininess);\\n  return ambientColor + lightIntensity * (diffuseColor * dotLN  + specularColor * specular);\\n}\\n\\n// expects values in the range of [0,1]x[0,1], returns values in the [0,1] range.\\n// do not collapse into a single function per: \\n// http://byteblacksmith.com/improvements-to-the-canonical-one-liner-glsl-rand-for-opengl-es-2-0/\\nconst float PI = 3.14159265358979323846264 * 00000.1; // PI\\n\\nhighp float highpRandF32(const in vec2 uv) {\\n  const highp float a = 12.9898;\\n  const highp float b = 78.233;\\n  const highp float c = 43758.5453;\\n  highp float dt = dot(uv.xy, vec2(a, b)), sn = mod(dt, PI);\\n  return fract(sin(sn) * c);\\n}\\n\\nconst int MAX_STEPS = 1024;\\nconst float EPSILON = 0.0000152587;\\n\\nuniform int uTextureSize;\\nuniform sampler2D uTextureContainer[7];      // Length 7\\nuniform ivec3 uDataDimensions;\\nuniform mat4 uWorldToData;\\nuniform float uWindowCenterWidth[2];         // Length 2\\nuniform float uRescaleSlopeIntercept[2];     // Length 2\\nuniform int uNumberOfChannels;\\nuniform int uBitsAllocated;\\nuniform sampler2D uTextureLUT;\\nuniform int uPixelType;\\nuniform int uPackedPerPixel;\\nuniform float uWorldBBox[6];                 // Length 6\\nuniform int uSteps;\\nuniform float uAlphaCorrection;\\nuniform float uAmbient;\\nuniform vec3 uAmbientColor;\\nuniform int uSampleColorToAmbient;\\nuniform float uSpecular;\\nuniform vec3 uSpecularColor;\\nuniform float uDiffuse;\\nuniform vec3 uDiffuseColor;\\nuniform int uSampleColorToDiffuse;\\nuniform float uShininess;\\nuniform vec3 upositionBeingLit;\\nuniform int upositionBeingLitInCamera;\\nuniform vec3 uIntensity;\\n\\nvarying vec4 vPos;\\nvarying mat4 vProjectionViewMatrix;\\nvarying vec4 vProjectedCoords;\\n\\nvoid main(void) {\\n  vec3 rayOrigin = cameraPosition;\\n  vec3 rayDirection = normalize(vPos.xyz - rayOrigin);\\n\\n  vec3 lightOrigin = upositionBeingLitInCamera == 1 ? cameraPosition : upositionBeingLit;\\n\\n  // the Axe-Aligned B-Box\\n  vec3 AABBMin = vec3(uWorldBBox[0], uWorldBBox[2], uWorldBBox[4]);\\n  vec3 AABBMax = vec3(uWorldBBox[1], uWorldBBox[3], uWorldBBox[5]);\\n\\n  // Intersection ray/bbox\\n  float tNear, tFar;\\n  bool intersect = false;\\n  \\n  intersectsBox(\\n    rayOrigin,\\n    rayDirection,\\n    AABBMin,\\n    AABBMax,\\n    tNear,\\n    tFar,\\n    intersect\\n  );\\n\\n  tNear = (tNear + abs(tNear)) / 2.0;\\n\\n  // x / y should be within 0-1\\n  float offset = highpRandF32(gl_FragCoord.xy);\\n  float tStep = (tFar - tNear) / float(uSteps);\\n  float tCurrent = tNear + offset * tStep;\\n  vec4 accumulatedColor = vec4(0.0);\\n  float accumulatedAlpha = 0.0;\\n\\n  // MIP volume rendering\\n  float maxIntensity = 0.0;\\n\\n  mat4 dataToWorld = invertMat4(uWorldToData);\\n\\n  for(int i = 0; i < uSteps; i++){\\n    vec3 currentPosition = rayOrigin + rayDirection * tCurrent;\\n    vec3 transformedPosition = currentPosition;\\n    vec4 dataCoordinatesRaw = uWorldToData * vec4(transformedPosition, 1.0);\\n    vec3 currentVoxel = vec3(dataCoordinatesRaw.x, dataCoordinatesRaw.y, dataCoordinatesRaw.z);\\n\\n    float intensity = 0.0;\\n    vec3 gradient = vec3(0., 0., 0.);\\n    \\n    getIntensityTri(\\n      currentVoxel, \\n      uPixelType,\\n      uTextureSize,\\n      uDataDimensions,\\n      uTextureContainer,\\n      uBitsAllocated,\\n      uNumberOfChannels,\\n      uPackedPerPixel,\\n      uRescaleSlopeIntercept,\\n      uWindowCenterWidth,\\n      intensity, \\n      gradient\\n    );\\n\\n    // map gradient to world space and normalize before using\\n    gradient = (vec3(dataToWorld * vec4(gradient, 0.)));\\n    gradient = normalize(gradient + EPSILON);\\n\\n    vec4 colorSample;\\n    float alphaSample;\\n\\n    vec4 colorFromLUT = texture2D(uTextureLUT, vec2( intensity, 1.0));\\n    alphaSample = colorFromLUT.a;\\n    colorSample = colorFromLUT;\\n\\n    vec3 ambientComponent = uSampleColorToAmbient == 1 ? colorSample.xyz : uAmbientColor;\\n    ambientComponent *= uAmbient;\\n    vec3 diffuseComponent = uSampleColorToDiffuse == 1 ? colorSample.xyz : uDiffuseColor;\\n    diffuseComponent *= uDiffuse;\\n    vec3 specularComponent = uSpecular * uSpecularColor;\\n    float shininess = uShininess;\\n    vec3 vIntensity = uIntensity;\\n\\n    colorSample.xyz += AMIphong(\\n        ambientComponent,\\n        diffuseComponent,\\n        specularComponent,\\n        shininess,\\n        currentPosition.xyz,\\n        rayOrigin.xyz,\\n        lightOrigin.xyz,\\n        vIntensity,\\n        gradient\\n    );\\n\\n    alphaSample = 1.0 - pow((1.0- alphaSample),tStep*uAlphaCorrection);\\n    alphaSample *= (1.0 - accumulatedAlpha);\\n\\n    accumulatedColor += alphaSample * colorSample;\\n    accumulatedAlpha += alphaSample;\\n\\n    tCurrent += tStep;\\n\\n    if (tCurrent > tFar || accumulatedAlpha >= 1.0) break;\\n  }\\n\\n  gl_FragColor = vec4(accumulatedColor.xyz, accumulatedAlpha);\\n}\"");
 
 /***/ }),
 
@@ -26624,8 +26637,7 @@ var THREE = window.THREE;
 var BaseTHREEHelper = /** @class */ (function (_super) {
     __extends(BaseTHREEHelper, _super);
     //#endregion
-    // tslint:disable-next-line:typedef
-    function BaseTHREEHelper(stack, isWebgl2) {
+    function BaseTHREEHelper(stack) {
         var _this = _super.call(this) || this;
         // default to trilinear interpolation
         _this._interpolation = 1;
@@ -26638,7 +26650,6 @@ var BaseTHREEHelper = /** @class */ (function (_super) {
         _this._visible = true;
         _this._isWebgl2 = false;
         _this._stack = stack;
-        _this._isWebgl2 = isWebgl2;
         return _this;
     }
     Object.defineProperty(BaseTHREEHelper.prototype, "windowCenter", {
@@ -26697,6 +26708,9 @@ var BaseTHREEHelper = /** @class */ (function (_super) {
         enumerable: true,
         configurable: true
     });
+    BaseTHREEHelper.prototype.hasUniforms = function () {
+        return this._material.uniforms;
+    };
     BaseTHREEHelper.prototype._prepareTexture = function () {
         this._textures = [];
         for (var m = 0; m < this._stack._rawData.length; m++) {
@@ -26985,15 +26999,9 @@ var THREE = window.THREE;
 var ContourHelper = /** @class */ (function (_super) {
     __extends(ContourHelper, _super);
     //#endregion
-    // tslint:disable-next-line:typedef
-    function ContourHelper(stack, isWebGl2, geometry, texture) {
-        var _this = _super.call(this, stack, isWebGl2) || this;
-        if (_this._isWebgl2) {
-            _this._material = shaders_1.ContourMaterial.shaderMaterial2;
-        }
-        else {
-            _this._material = shaders_1.ContourMaterial.shaderMaterial;
-        }
+    function ContourHelper(stack, geometry, texture) {
+        var _this = _super.call(this, stack) || this;
+        _this._material = shaders_1.ContourMaterial.material;
         _this._textureToFilter = texture;
         _this._contourWidth = 1;
         _this._contourOpacity = 1;
@@ -27006,16 +27014,15 @@ var ContourHelper = /** @class */ (function (_super) {
     }
     Object.defineProperty(ContourHelper.prototype, "textureToFilter", {
         //#endregion
-        //#region Getters / Setters
+        //#region Getters 
         get: function () {
             return this._textureToFilter;
         },
-        // tslint:disable-next-line:typedef
+        //#endregion
+        //#region Setters
         set: function (texture) {
             this._textureToFilter = texture;
-            //this._shader._FragUniforms.uTextureFilled.value = texture;
-            this._material.uniforms.uTextureFilled = texture;
-            this._material.needsUpdate = true;
+            this._material.uniforms.uTextureFilled.value = texture;
         },
         enumerable: true,
         configurable: true
@@ -27024,10 +27031,9 @@ var ContourHelper = /** @class */ (function (_super) {
         get: function () {
             return this._contourOpacity;
         },
-        // tslint:disable-next-line:typedef
         set: function (contourOpacity) {
             this._contourOpacity = contourOpacity;
-            this._material.uniforms.uOpacity = this._contourOpacity;
+            this._material.uniforms.uOpacity.value = this._contourOpacity;
         },
         enumerable: true,
         configurable: true
@@ -27036,7 +27042,6 @@ var ContourHelper = /** @class */ (function (_super) {
         get: function () {
             return this._contourWidth;
         },
-        // tslint:disable-next-line:typedef
         set: function (contourWidth) {
             this._contourWidth = contourWidth;
             this._material.uniforms.uWidth.value = this._contourWidth;
@@ -27048,10 +27053,9 @@ var ContourHelper = /** @class */ (function (_super) {
         get: function () {
             return this._canvasWidth;
         },
-        // tslint:disable-next-line:typedef
         set: function (canvasWidth) {
             this._canvasWidth = canvasWidth;
-            this._material.uniforms.uCanvasWidth = this._canvasWidth;
+            this._material.uniforms.uCanvasWidth.value = this._canvasWidth;
         },
         enumerable: true,
         configurable: true
@@ -27060,19 +27064,18 @@ var ContourHelper = /** @class */ (function (_super) {
         get: function () {
             return this._canvasHeight;
         },
-        // tslint:disable-next-line:typedef
         set: function (canvasHeight) {
             this._canvasHeight = canvasHeight;
-            this._material.uniforms.uCanvasHeight = this._canvasHeight;
+            this._material.uniforms.uCanvasHeight.value = this._canvasHeight;
         },
         enumerable: true,
         configurable: true
     });
     ContourHelper.prototype._init = function () {
-        this._material.uniforms.uWidth = this._contourWidth;
-        this._material.uniforms.uOpacity = this._contourOpacity;
-        this._material.uniforms.uCanvasWidth = this._canvasWidth;
-        this._material.uniforms.uCanvasHeight = this._canvasHeight;
+        this._material.uniforms.uWidth.value = this._contourWidth;
+        this._material.uniforms.uOpacity.value = this._contourOpacity;
+        this._material.uniforms.uCanvasWidth.value = this._canvasWidth;
+        this._material.uniforms.uCanvasHeight.value = this._canvasHeight;
         this._material.needsUpdate = true;
     };
     ContourHelper.prototype._create = function () {
@@ -27090,7 +27093,6 @@ var ContourHelper = /** @class */ (function (_super) {
         this._create();
     };
     ContourHelper.prototype.dispose = function () {
-        //
         if (this._textureToFilter !== null) {
             this._textureToFilter.dispose();
             this._textureToFilter = null;
@@ -27104,9 +27106,6 @@ var ContourHelper = /** @class */ (function (_super) {
         this._mesh = null;
         this._geometry.dispose();
         this._geometry = null;
-        this._material.vertexShader = null;
-        this._material.fragmentShader = null;
-        this._material.uniforms = null;
         this._material.dispose();
         this._material = null;
         this._stack = null;
@@ -27141,15 +27140,14 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-var BaseTHREEHelper_1 = __webpack_require__(/*! ./BaseTHREEHelper */ "./src/helpers/BaseTHREEHelper.ts");
 var shaders_1 = __webpack_require__(/*! ../shaders */ "./src/shaders/index.ts");
+var BaseTHREEHelper_1 = __webpack_require__(/*! ./BaseTHREEHelper */ "./src/helpers/BaseTHREEHelper.ts");
 var THREE = window.THREE;
 var LocalizerHelper = /** @class */ (function (_super) {
     __extends(LocalizerHelper, _super);
     //#endregion
-    // tslint:disable-next-line:typedef
-    function LocalizerHelper(stack, isWebGl2, geometry, referencePlane) {
-        var _this = _super.call(this, stack, isWebGl2) || this;
+    function LocalizerHelper(stack, geometry, referencePlane) {
+        var _this = _super.call(this, stack) || this;
         _this._plane1 = null;
         _this._color1 = null;
         _this._plane2 = null;
@@ -27158,12 +27156,7 @@ var LocalizerHelper = /** @class */ (function (_super) {
         _this._color3 = null;
         _this._canvasWidth = 0;
         _this._canvasHeight = 0;
-        if (_this._isWebgl2) {
-            _this._material = shaders_1.LocalizerMaterial.shaderMaterial2;
-        }
-        else {
-            _this._material = shaders_1.LocalizerMaterial.shaderMaterial;
-        }
+        _this._material = shaders_1.LocalizerMaterial.material;
         _this._referencePlane = referencePlane;
         _this._geometry = geometry;
         _this._init();
@@ -27172,11 +27165,12 @@ var LocalizerHelper = /** @class */ (function (_super) {
     }
     Object.defineProperty(LocalizerHelper.prototype, "referencePlane", {
         //#endregion
-        //#region Getters / Setters
+        //#region Getters
         get: function () {
             return this._referencePlane;
         },
-        // tslint:disable-next-line:typedef
+        //#endregion
+        //#region Getters / Setters
         set: function (referencePlane) {
             this._referencePlane = referencePlane;
             this._material.uniforms.uSlice.value = this._referencePlane;
@@ -27188,7 +27182,6 @@ var LocalizerHelper = /** @class */ (function (_super) {
         get: function () {
             return this._plane1;
         },
-        // tslint:disable-next-line:typedef
         set: function (plane1) {
             this._plane1 = plane1;
             this._material.uniforms.uPlane1.value = this._plane1;
@@ -27200,7 +27193,6 @@ var LocalizerHelper = /** @class */ (function (_super) {
         get: function () {
             return this._color1;
         },
-        // tslint:disable-next-line:typedef
         set: function (color1) {
             this._color1 = color1;
             this._material.uniforms.uPlaneColor1.value = this._color1;
@@ -27212,7 +27204,6 @@ var LocalizerHelper = /** @class */ (function (_super) {
         get: function () {
             return this._plane2;
         },
-        // tslint:disable-next-line:typedef
         set: function (plane2) {
             this._plane2 = plane2;
             this._material.uniforms.uPlane2.value = this._plane2;
@@ -27224,7 +27215,6 @@ var LocalizerHelper = /** @class */ (function (_super) {
         get: function () {
             return this._color2;
         },
-        // tslint:disable-next-line:typedef
         set: function (color2) {
             this._color2 = color2;
             this._material.uniforms.uPlaneColor2.value = this._color2;
@@ -27236,7 +27226,6 @@ var LocalizerHelper = /** @class */ (function (_super) {
         get: function () {
             return this._plane3;
         },
-        // tslint:disable-next-line:typedef
         set: function (plane3) {
             this._plane3 = plane3;
             this._material.uniforms.uPlane3.value = this._plane3;
@@ -27248,7 +27237,6 @@ var LocalizerHelper = /** @class */ (function (_super) {
         get: function () {
             return this._color3;
         },
-        // tslint:disable-next-line:typedef
         set: function (color3) {
             this._color3 = color3;
             this._material.uniforms.uPlaneColor3.value = this._color3;
@@ -27260,7 +27248,6 @@ var LocalizerHelper = /** @class */ (function (_super) {
         get: function () {
             return this._canvasWidth;
         },
-        // tslint:disable-next-line:typedef
         set: function (canvasWidth) {
             this._canvasWidth = canvasWidth;
             this._material.uniforms.uCanvasWidth.value = this._canvasWidth;
@@ -27272,7 +27259,6 @@ var LocalizerHelper = /** @class */ (function (_super) {
         get: function () {
             return this._canvasHeight;
         },
-        // tslint:disable-next-line:typedef
         set: function (canvasHeight) {
             this._canvasHeight = canvasHeight;
             this._material.uniforms.uCanvasHeight.value = this._canvasHeight;
@@ -27308,7 +27294,7 @@ var LocalizerHelper = /** @class */ (function (_super) {
             //
             this._material.uniforms.uCanvasWidth.value = this._canvasWidth;
             this._material.uniforms.uCanvasHeight.value = this._canvasHeight;
-            this._material = shaders_1.LocalizerMaterial.shaderMaterial;
+            this._material = shaders_1.LocalizerMaterial.material;
         }
     };
     LocalizerHelper.prototype.update = function () {
@@ -27338,9 +27324,6 @@ var LocalizerHelper = /** @class */ (function (_super) {
         this._mesh = null;
         this._geometry.dispose();
         this._geometry = null;
-        this._material.vertexShader = null;
-        this._material.fragmentShader = null;
-        this._material.uniforms = null;
         this._material.dispose();
         this._material = null;
         this._stack = null;
@@ -28561,22 +28544,18 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var geometries_1 = __webpack_require__(/*! ../geometries */ "./src/geometries/index.ts");
-var BaseTHREEHelper_1 = __webpack_require__(/*! ./BaseTHREEHelper */ "./src/helpers/BaseTHREEHelper.ts");
 var shaders_1 = __webpack_require__(/*! ../shaders */ "./src/shaders/index.ts");
+var BaseTHREEHelper_1 = __webpack_require__(/*! ./BaseTHREEHelper */ "./src/helpers/BaseTHREEHelper.ts");
 var THREE = window.THREE;
 var SliceHelper = /** @class */ (function (_super) {
     __extends(SliceHelper, _super);
     //#endregion
-    function SliceHelper(
-    // tslint:disable-next-line:typedef
-    stack, isWebGl2, index, position, direction, 
-    // tslint:disable-next-line:typedef
-    aabbSpace) {
+    function SliceHelper(stack, index, position, direction, aabbSpace) {
         if (index === void 0) { index = 0; }
         if (position === void 0) { position = new THREE.Vector3(0, 0, 0); }
         if (direction === void 0) { direction = new THREE.Vector3(0, 0, 1); }
         if (aabbSpace === void 0) { aabbSpace = 'IJK'; }
-        var _this = _super.call(this, stack, isWebGl2) || this;
+        var _this = _super.call(this, stack) || this;
         _this._lut = 'none';
         _this._lutTexture = null;
         // if auto === true, get from index
@@ -28595,12 +28574,7 @@ var SliceHelper = /** @class */ (function (_super) {
         _this._canvasWidth = 0;
         _this._canvasHeight = 0;
         _this._borderColor = null;
-        if (_this._isWebgl2) {
-            _this._material = shaders_1.DataMaterial.shaderMaterial2;
-        }
-        else {
-            _this._material = shaders_1.DataMaterial.shaderMaterial;
-        }
+        _this._material = shaders_1.DataMaterial.triMaterial;
         _this._invert = _this._stack.invert;
         _this._index = index;
         _this._planePosition = position;
@@ -28616,41 +28590,12 @@ var SliceHelper = /** @class */ (function (_super) {
         _this._create();
         return _this;
     }
-    Object.defineProperty(SliceHelper.prototype, "windowWidth", {
-        //#endregion
-        //#region Getters / Setters
-        // tslint:disable-next-line:typedef
-        set: function (windowWidth) {
-            this._windowWidth = windowWidth;
-            this.UpdateIntensitySettingsUniforms();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(SliceHelper.prototype, "windowCenter", {
-        // tslint:disable-next-line:typedef
-        set: function (windowCenter) {
-            this._windowCenter = windowCenter;
-            this.UpdateIntensitySettingsUniforms();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(SliceHelper.prototype, "interpolation", {
-        // tslint:disable-next-line:typedef
-        set: function (interpolation) {
-            this._interpolation = interpolation;
-            this.UpdateIntensitySettingsUniforms();
-            this._material.needsUpdate = true;
-        },
-        enumerable: true,
-        configurable: true
-    });
     Object.defineProperty(SliceHelper.prototype, "spacing", {
+        //#endregion
+        //#region Getters
         get: function () {
             return this._spacing;
         },
-        // tslint:disable-next-line:typedef
         set: function (spacing) {
             this._spacing = spacing;
             this._material.uniforms.uSpacing.value = this._spacing;
@@ -28662,7 +28607,6 @@ var SliceHelper = /** @class */ (function (_super) {
         get: function () {
             return this._thickness;
         },
-        // tslint:disable-next-line:typedef
         set: function (thickness) {
             this._thickness = thickness;
             this._material.uniforms.uThickness.value = this._thickness;
@@ -28674,7 +28618,6 @@ var SliceHelper = /** @class */ (function (_super) {
         get: function () {
             return this._thicknessMethod;
         },
-        // tslint:disable-next-line:typedef
         set: function (thicknessMethod) {
             this._thicknessMethod = thicknessMethod;
             this._material.uniforms.uThicknessMethod.value = this._thicknessMethod;
@@ -28686,7 +28629,6 @@ var SliceHelper = /** @class */ (function (_super) {
         get: function () {
             return this._opacity;
         },
-        // tslint:disable-next-line:typedef
         set: function (opacity) {
             this._opacity = opacity;
             this.UpdateIntensitySettingsUniforms();
@@ -28695,11 +28637,9 @@ var SliceHelper = /** @class */ (function (_super) {
         configurable: true
     });
     Object.defineProperty(SliceHelper.prototype, "upperThreshold", {
-        // adding thresholding method
         get: function () {
             return this._upperThreshold;
         },
-        // tslint:disable-next-line:typedef
         set: function (upperThreshold) {
             this._upperThreshold = upperThreshold;
             this.UpdateIntensitySettingsUniforms();
@@ -28711,7 +28651,6 @@ var SliceHelper = /** @class */ (function (_super) {
         get: function () {
             return this._lowerThreshold;
         },
-        // tslint:disable-next-line:typedef
         set: function (lowerThreshold) {
             this._lowerThreshold = lowerThreshold;
             this.UpdateIntensitySettingsUniforms();
@@ -28723,7 +28662,6 @@ var SliceHelper = /** @class */ (function (_super) {
         get: function () {
             return this._rescaleSlope;
         },
-        // tslint:disable-next-line:typedef
         set: function (rescaleSlope) {
             this._rescaleSlope = rescaleSlope;
             this.UpdateIntensitySettingsUniforms();
@@ -28735,7 +28673,6 @@ var SliceHelper = /** @class */ (function (_super) {
         get: function () {
             return this._rescaleIntercept;
         },
-        // tslint:disable-next-line:typedef
         set: function (rescaleIntercept) {
             this._rescaleIntercept = rescaleIntercept;
             this.UpdateIntensitySettingsUniforms();
@@ -28747,7 +28684,6 @@ var SliceHelper = /** @class */ (function (_super) {
         get: function () {
             return this._invert;
         },
-        // tslint:disable-next-line:typedef
         set: function (invert) {
             this._invert = invert;
             this.UpdateIntensitySettingsUniforms();
@@ -28759,7 +28695,6 @@ var SliceHelper = /** @class */ (function (_super) {
         get: function () {
             return this._lut;
         },
-        // tslint:disable-next-line:typedef
         set: function (lut) {
             this._lut = lut;
         },
@@ -28770,22 +28705,8 @@ var SliceHelper = /** @class */ (function (_super) {
         get: function () {
             return this._lutTexture;
         },
-        // tslint:disable-next-line:typedef
         set: function (lutTexture) {
             this._lutTexture = lutTexture;
-            this.UpdateIntensitySettingsUniforms();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(SliceHelper.prototype, "intensityAuto", {
-        get: function () {
-            return this._intensityAuto;
-        },
-        // tslint:disable-next-line:typedef
-        set: function (intensityAuto) {
-            this._intensityAuto = intensityAuto;
-            this.UpdateIntensitySettings();
             this.UpdateIntensitySettingsUniforms();
         },
         enumerable: true,
@@ -28795,10 +28716,21 @@ var SliceHelper = /** @class */ (function (_super) {
         get: function () {
             return this._index;
         },
-        // tslint:disable-next-line:typedef
         set: function (index) {
             this._index = index;
             this._update();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SliceHelper.prototype, "intensityAuto", {
+        get: function () {
+            return this._intensityAuto;
+        },
+        set: function (intensityAuto) {
+            this._intensityAuto = intensityAuto;
+            this.UpdateIntensitySettings();
+            this.UpdateIntensitySettingsUniforms();
         },
         enumerable: true,
         configurable: true
@@ -28807,7 +28739,6 @@ var SliceHelper = /** @class */ (function (_super) {
         get: function () {
             return this._planePosition;
         },
-        // tslint:disable-next-line:typedef
         set: function (position) {
             this._planePosition = position;
             this._update();
@@ -28819,7 +28750,6 @@ var SliceHelper = /** @class */ (function (_super) {
         get: function () {
             return this._planeDirection;
         },
-        // tslint:disable-next-line:typedef
         set: function (direction) {
             this._planeDirection = direction;
             this._update();
@@ -28831,7 +28761,6 @@ var SliceHelper = /** @class */ (function (_super) {
         get: function () {
             return this._halfDimensions;
         },
-        // tslint:disable-next-line:typedef
         set: function (halfDimensions) {
             this._halfDimensions = halfDimensions;
         },
@@ -28842,7 +28771,6 @@ var SliceHelper = /** @class */ (function (_super) {
         get: function () {
             return this._center;
         },
-        // tslint:disable-next-line:typedef
         set: function (center) {
             this._center = center;
         },
@@ -28853,7 +28781,6 @@ var SliceHelper = /** @class */ (function (_super) {
         get: function () {
             return this._aaBBspace;
         },
-        // tslint:disable-next-line:typedef
         set: function (aabbSpace) {
             this._aaBBspace = aabbSpace;
             this._init();
@@ -28865,7 +28792,6 @@ var SliceHelper = /** @class */ (function (_super) {
         get: function () {
             return this._canvasWidth;
         },
-        // tslint:disable-next-line:typedef
         set: function (canvasWidth) {
             this._canvasWidth = canvasWidth;
             this._material.uniforms.uCanvasWidth.value = this._canvasWidth;
@@ -28877,7 +28803,6 @@ var SliceHelper = /** @class */ (function (_super) {
         get: function () {
             return this._canvasHeight;
         },
-        // tslint:disable-next-line:typedef
         set: function (canvasHeight) {
             this._canvasHeight = canvasHeight;
             this._material.uniforms.uCanvasHeight.value = this._canvasHeight;
@@ -28889,10 +28814,42 @@ var SliceHelper = /** @class */ (function (_super) {
         get: function () {
             return this._borderColor;
         },
-        // tslint:disable-next-line:typedef
         set: function (borderColor) {
             this._borderColor = borderColor;
             this._material.uniforms.uBorderColor.value = new THREE.Color(borderColor);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SliceHelper.prototype, "windowWidth", {
+        //#endregion
+        //#region Setters
+        set: function (windowWidth) {
+            this._windowWidth = windowWidth;
+            this.UpdateIntensitySettingsUniforms();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SliceHelper.prototype, "windowCenter", {
+        set: function (windowCenter) {
+            this._windowCenter = windowCenter;
+            this.UpdateIntensitySettingsUniforms();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SliceHelper.prototype, "interpolation", {
+        set: function (interpolation) {
+            this._interpolation = interpolation;
+            if (this._interpolation === 1) {
+                this._material = shaders_1.DataMaterial.triMaterial;
+            }
+            else {
+                this._material = shaders_1.DataMaterial.idnMaterial;
+            }
+            this.UpdateIntensitySettingsUniforms();
+            this._prepareMaterial();
         },
         enumerable: true,
         configurable: true
@@ -28933,25 +28890,25 @@ var SliceHelper = /** @class */ (function (_super) {
         // compute texture if material exist
         this._prepareTexture();
         this._material.uniforms.uTextureContainer.value = this._textures;
-        if (this._stack.textureUnits > 8) {
-            this._material.uniforms.uTextureContainer = { value: [
-                    new THREE.Texture(),
-                    new THREE.Texture(),
-                    new THREE.Texture(),
-                    new THREE.Texture(),
-                    new THREE.Texture(),
-                    new THREE.Texture(),
-                    new THREE.Texture(),
-                    new THREE.Texture(),
-                    new THREE.Texture(),
-                    new THREE.Texture(),
-                    new THREE.Texture(),
-                    new THREE.Texture(),
-                    new THREE.Texture(),
-                    new THREE.Texture()
-                ] };
-            this._material.needsUpdate = true;
-        }
+        // if (this._stack.textureUnits > 8) {
+        //   this._material.uniforms.uTextureContainer = { value: [
+        //         new THREE.Texture(),
+        //         new THREE.Texture(),
+        //         new THREE.Texture(),
+        //         new THREE.Texture(),
+        //         new THREE.Texture(),
+        //         new THREE.Texture(),
+        //         new THREE.Texture(),
+        //         new THREE.Texture(),
+        //         new THREE.Texture(),
+        //         new THREE.Texture(),
+        //         new THREE.Texture(),
+        //         new THREE.Texture(),
+        //         new THREE.Texture(),
+        //         new THREE.Texture()
+        //     ]};
+        //   this._material.needsUpdate = true;
+        // }
     };
     SliceHelper.prototype._create = function () {
         if (!this._stack || !this._stack.prepared || !this._stack.packed) {
@@ -29031,7 +28988,7 @@ var SliceHelper = /** @class */ (function (_super) {
         // invert
         this._material.uniforms.uInvert.value = this._invert === true ? 1 : 0;
         // interpolation
-        this._material.uniforms.uInterpolation.value = this._interpolation;
+        // this._material.uniforms.uInterpolation.value = this._interpolation;
         // lut
         if (this._lut === 'none') {
             this._material.uniforms.uLut.value = 0;
@@ -29041,7 +28998,6 @@ var SliceHelper = /** @class */ (function (_super) {
             this._material.uniforms.uTextureLUT.value = this._lutTexture;
         }
     };
-    // tslint:disable-next-line:typedef
     SliceHelper.prototype.UpdateIntensitySetting = function (setting) {
         if (this._stack.frame[this._index] && this._stack.frame[this._index][setting]) {
             this['_' + setting] = this._stack.frame[this._index][setting];
@@ -29265,7 +29221,6 @@ var StackHelper = /** @class */ (function (_super) {
         get: function () {
             return this._index;
         },
-        // tslint:disable-next-line:typedef
         set: function (index) {
             this._index = index;
             // update the slice
@@ -29297,7 +29252,6 @@ var StackHelper = /** @class */ (function (_super) {
          *
          * @type {number}
          */
-        // tslint:disable-next-line:typedef
         set: function (orientation) {
             this._orientation = orientation;
             this._computeOrientationMaxIndex();
@@ -29661,8 +29615,8 @@ var VolumeRenderHelper = /** @class */ (function (_super) {
     // }
     //#endregion
     // tslint:disable-next-line:typedef
-    function VolumeRenderHelper(stack, isWebGl2) {
-        var _this = _super.call(this, stack, isWebGl2) || this;
+    function VolumeRenderHelper(stack) {
+        var _this = _super.call(this, stack) || this;
         //#region Variables 
         // ray marching
         // private _algorithm: number = 0;
@@ -29672,25 +29626,18 @@ var VolumeRenderHelper = /** @class */ (function (_super) {
         _this._shininess = 10.0;
         _this._steps = 32;
         _this._offset = 0;
-        _this._stepsPerFrame = 4;
-        _this._stepsSinceChange = 0;
         _this._init();
         _this._create();
-        _this.onAfterRender = (function (r, s, c, g, m, gr) {
-            _this.incrementStepsSinceChange();
-        });
         return _this;
+        // (this as unknown as THREE.Object3D).onAfterRender = ((r, s, c, g, m, gr) => {
+        //   this.incrementStepsSinceChange();
+        // })
     }
     Object.defineProperty(VolumeRenderHelper.prototype, "stepsSinceChange", {
         //#endregion
         //#region Getters
         get: function () {
             return this._stepsSinceChange;
-        },
-        //#region Setters 
-        set: function (value) {
-            this._stepsSinceChange = value;
-            this._material.uniforms.uStepsSinceChange.value = this._stepsSinceChange;
         },
         enumerable: true,
         configurable: true
@@ -29699,6 +29646,23 @@ var VolumeRenderHelper = /** @class */ (function (_super) {
         get: function () {
             return this._textureLUT;
         },
+        // get algorithm() {
+        //   return this._algorithm;
+        // }
+        //#endregion
+        // private resetStepsSinceChange() {
+        //   this._stepsSinceChange = 0;
+        //   // this._material.uniforms.uStepsSinceChange.value = this._stepsSinceChange;
+        // }
+        // private incrementStepsSinceChange() {
+        //   this._stepsSinceChange += this._stepsPerFrame;
+        //   this._material.uniforms.uStepsSinceChange.value = this._stepsSinceChange;
+        // }
+        //#region Setters 
+        // set stepsSinceChange(value: number) {
+        //   this._stepsSinceChange = value;
+        //   this._material.uniforms.uStepsSinceChange.value = this._stepsSinceChange;
+        // }
         set: function (value) {
             this._textureLUT = value;
             this._material.uniforms.uTextureLUT.value = this._textureLUT;
@@ -29750,13 +29714,12 @@ var VolumeRenderHelper = /** @class */ (function (_super) {
         set: function (interpolation) {
             this._interpolation = interpolation;
             if (interpolation === 0) {
-                this._material = shaders_1.VolumeMaterial.idnInterpMaterial;
-                this._prepareMaterial();
+                this._material = shaders_1.VolumeMaterial.idnMaterial;
             }
             else {
-                this._material = shaders_1.VolumeMaterial.triInterpMaterial;
-                this._prepareMaterial();
+                this._material = shaders_1.VolumeMaterial.triMaterial;
             }
+            this._prepareMaterial();
         },
         enumerable: true,
         configurable: true
@@ -29780,18 +29743,6 @@ var VolumeRenderHelper = /** @class */ (function (_super) {
         enumerable: true,
         configurable: true
     });
-    // get algorithm() {
-    //   return this._algorithm;
-    // }
-    //#endregion
-    VolumeRenderHelper.prototype.resetStepsSinceChange = function () {
-        this._stepsSinceChange = 0;
-        // this._material.uniforms.uStepsSinceChange.value = this._stepsSinceChange;
-    };
-    VolumeRenderHelper.prototype.incrementStepsSinceChange = function () {
-        this._stepsSinceChange += this._stepsPerFrame;
-        this._material.uniforms.uStepsSinceChange.value = this._stepsSinceChange;
-    };
     Object.defineProperty(VolumeRenderHelper.prototype, "windowCenter", {
         set: function (value) {
             this._windowCenter = value;
@@ -29817,12 +29768,7 @@ var VolumeRenderHelper = /** @class */ (function (_super) {
         configurable: true
     });
     VolumeRenderHelper.prototype._init = function () {
-        if (this._isWebgl2) {
-            this._material = shaders_1.VolumeMaterial.triInterpMaterial2;
-        }
-        else {
-            this._material = shaders_1.VolumeMaterial.triInterpMaterial;
-        }
+        this._material = shaders_1.VolumeMaterial.triMaterial;
         this._prepareStack();
         this._prepareTexture();
         this._prepareMaterial();
@@ -29968,8 +29914,8 @@ var THREE = window.THREE;
 var VolumeRenderHelper2 = /** @class */ (function (_super) {
     __extends(VolumeRenderHelper2, _super);
     //#endregion
-    function VolumeRenderHelper2(stack, isWebGl2) {
-        var _this = _super.call(this, stack, isWebGl2) || this;
+    function VolumeRenderHelper2(stack) {
+        var _this = _super.call(this, stack) || this;
         _this._init();
         _this._create();
         return _this;
@@ -29978,7 +29924,7 @@ var VolumeRenderHelper2 = /** @class */ (function (_super) {
         //#endregion
         //#region Getters
         get: function () {
-            return this._textureLUT;
+            return this._material.uniforms.u_cmdata.value;
         },
         //#endregion
         //#region Setters 
@@ -29988,16 +29934,22 @@ var VolumeRenderHelper2 = /** @class */ (function (_super) {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(VolumeRenderHelper2.prototype, "windowCenter", {
+    Object.defineProperty(VolumeRenderHelper2.prototype, "windowWidth", {
+        get: function () {
+            return this._material.uniforms.u_clim.value.x;
+        },
         set: function (value) {
-            this._material.uniforms.u_clim.value.y = value;
+            this._material.uniforms.u_clim.value.x = value;
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(VolumeRenderHelper2.prototype, "windowWidth", {
+    Object.defineProperty(VolumeRenderHelper2.prototype, "windowCenter", {
+        get: function () {
+            return this._material.uniforms.u_clim.value.y;
+        },
         set: function (value) {
-            this._material.uniforms.u_clim.value.x = value;
+            this._material.uniforms.u_clim.value.y = value;
         },
         enumerable: true,
         configurable: true
@@ -37400,17 +37352,10 @@ exports.default = segmentationFs;
 
 "use strict";
 
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 var MaterialUtils_1 = __webpack_require__(/*! ./MaterialUtils */ "./src/shaders/Materials/MaterialUtils.ts");
-// TODO: Why won't webpack & typescript play nicely with these?
-// import vertSource from 'raw-loader!glslify-loader!../glsl/default.vert';
-// import fragmentSource from 'raw-loader!glslify-loader!../glsl/contour.frag';
-var vertSource = __webpack_require__(/*! raw-loader!glslify-loader!../glsl/default.vert */ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/glsl/default.vert").default;
-var fragmentSource = __webpack_require__(/*! raw-loader!glslify-loader!../glsl/contour.frag */ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/glsl/contour.frag").default;
-var glslify_1 = __importDefault(__webpack_require__(/*! glslify */ "./node_modules/glslify/browser.js"));
+var vertSource = __webpack_require__(/*! raw-loader!glslify-loader!../webgl/default.vert */ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/webgl/default.vert").default;
+var fragmentSource = __webpack_require__(/*! raw-loader!glslify-loader!../webgl/contour.frag */ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/webgl/contour.frag").default;
 var THREE = window.THREE;
 var ContourMaterial = /** @class */ (function () {
     function ContourMaterial() {
@@ -37429,34 +37374,18 @@ var ContourMaterial = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(ContourMaterial, "shaderMaterial", {
+    Object.defineProperty(ContourMaterial, "material", {
         get: function () {
-            if (!ContourMaterial._shaderMaterial) {
-                ContourMaterial._shaderMaterial = new THREE.ShaderMaterial({
+            if (!ContourMaterial._material) {
+                ContourMaterial._material = new THREE.ShaderMaterial({
                     side: THREE.DoubleSide,
                     uniforms: this.defaultUniforms,
-                    vertexShader: glslify_1.default(MaterialUtils_1.MaterialUtils.processSource(vertSource, false)),
-                    fragmentShader: glslify_1.default(MaterialUtils_1.MaterialUtils.processSource(fragmentSource, false)),
+                    vertexShader: MaterialUtils_1.MaterialUtils.processSource(vertSource),
+                    fragmentShader: MaterialUtils_1.MaterialUtils.processSource(fragmentSource),
                     transparent: true,
                 });
             }
-            return ContourMaterial._shaderMaterial.clone();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(ContourMaterial, "shaderMaterial2", {
-        get: function () {
-            if (!ContourMaterial._shaderMaterial2) {
-                ContourMaterial._shaderMaterial2 = new THREE.ShaderMaterial({
-                    side: THREE.DoubleSide,
-                    uniforms: this.defaultUniforms,
-                    vertexShader: glslify_1.default(MaterialUtils_1.MaterialUtils.processSource(vertSource, true)),
-                    fragmentShader: glslify_1.default(MaterialUtils_1.MaterialUtils.processSource(fragmentSource, true)),
-                    transparent: true,
-                });
-            }
-            return ContourMaterial._shaderMaterial2.clone();
+            return ContourMaterial._material.clone();
         },
         enumerable: true,
         configurable: true
@@ -37488,16 +37417,11 @@ exports.ContourMaterial = ContourMaterial;
 
 "use strict";
 
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 var MaterialUtils_1 = __webpack_require__(/*! ./MaterialUtils */ "./src/shaders/Materials/MaterialUtils.ts");
-// import vertSource from 'raw-loader!glslify-loader!../glsl/data.vert';
-// import fragmentSource from 'raw-loader!glslify-loader!../glsl/data.frag';
-var vertSource = __webpack_require__(/*! raw-loader!glslify-loader!../glsl/data.vert */ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/glsl/data.vert").default;
-var fragmentSource = __webpack_require__(/*! raw-loader!glslify-loader!../glsl/data.frag */ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/glsl/data.frag").default;
-var glslify_1 = __importDefault(__webpack_require__(/*! glslify */ "./node_modules/glslify/browser.js"));
+var vertSource = __webpack_require__(/*! raw-loader!glslify-loader!../webgl/data/data.vert */ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/webgl/data/data.vert").default;
+var fragmentSourceIdn = __webpack_require__(/*! raw-loader!glslify-loader!../webgl/data/data_idnInterp.frag */ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/webgl/data/data_idnInterp.frag").default;
+var fragmentSourceTri = __webpack_require__(/*! raw-loader!glslify-loader!../webgl/data/data_triInterp.frag */ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/webgl/data/data_triInterp.frag").default;
 var THREE = window.THREE;
 var DataMaterial = /** @class */ (function () {
     function DataMaterial() {
@@ -37516,34 +37440,34 @@ var DataMaterial = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(DataMaterial, "shaderMaterial", {
+    Object.defineProperty(DataMaterial, "idnMaterial", {
         get: function () {
-            if (!DataMaterial._shaderMaterial) {
-                DataMaterial._shaderMaterial = new THREE.ShaderMaterial({
+            if (!DataMaterial._idnMaterial) {
+                DataMaterial._idnMaterial = new THREE.ShaderMaterial({
                     side: THREE.DoubleSide,
                     uniforms: this.defaultUniforms,
-                    vertexShader: glslify_1.default(MaterialUtils_1.MaterialUtils.processSource(vertSource, false)),
-                    fragmentShader: glslify_1.default(MaterialUtils_1.MaterialUtils.processSource(fragmentSource, false)),
+                    vertexShader: MaterialUtils_1.MaterialUtils.processSource(vertSource),
+                    fragmentShader: MaterialUtils_1.MaterialUtils.processSource(fragmentSourceIdn),
                     transparent: true,
                 });
             }
-            return DataMaterial._shaderMaterial.clone();
+            return DataMaterial._idnMaterial.clone();
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(DataMaterial, "shaderMaterial2", {
+    Object.defineProperty(DataMaterial, "triMaterial", {
         get: function () {
-            if (!DataMaterial._shaderMaterial2) {
-                DataMaterial._shaderMaterial2 = new THREE.ShaderMaterial({
+            if (!DataMaterial._triMaterial) {
+                DataMaterial._triMaterial = new THREE.ShaderMaterial({
                     side: THREE.DoubleSide,
                     uniforms: this.defaultUniforms,
-                    vertexShader: glslify_1.default(MaterialUtils_1.MaterialUtils.processSource(vertSource, true)),
-                    fragmentShader: glslify_1.default(MaterialUtils_1.MaterialUtils.processSource(fragmentSource, true)),
+                    vertexShader: MaterialUtils_1.MaterialUtils.processSource(vertSource),
+                    fragmentShader: MaterialUtils_1.MaterialUtils.processSource(fragmentSourceTri),
                     transparent: true,
                 });
             }
-            return DataMaterial._shaderMaterial2.clone();
+            return DataMaterial._triMaterial.clone();
         },
         enumerable: true,
         configurable: true
@@ -37577,7 +37501,7 @@ var DataMaterial = /** @class */ (function () {
         uTextureLUTSegmentation: { value: new THREE.Texture() },
         uPixelType: { value: 0 },
         uPackedPerPixel: { value: 1 },
-        uInterpolation: { value: 1 },
+        // uInterpolation: { value: 1 },                               // int
         uCanvasWidth: { value: 0.0 },
         uCanvasHeight: { value: 0.0 },
         uBorderColor: { value: new THREE.Vector3() },
@@ -37605,16 +37529,10 @@ exports.DataMaterial = DataMaterial;
 
 "use strict";
 
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 var MaterialUtils_1 = __webpack_require__(/*! ./MaterialUtils */ "./src/shaders/Materials/MaterialUtils.ts");
-// import vertSource from 'raw-loader!glslify-loader!../glsl/default.vert';
-// import fragmentSource from 'raw-loader!glslify-loader!../glsl/layer.frag';
-var vertSource = __webpack_require__(/*! raw-loader!glslify-loader!../glsl/default.vert */ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/glsl/default.vert").default;
-var fragmentSource = __webpack_require__(/*! raw-loader!glslify-loader!../glsl/layer.frag */ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/glsl/layer.frag").default;
-var glslify_1 = __importDefault(__webpack_require__(/*! glslify */ "./node_modules/glslify/browser.js"));
+var vertSource = __webpack_require__(/*! raw-loader!glslify-loader!../webgl/default.vert */ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/webgl/default.vert").default;
+var fragmentSource = __webpack_require__(/*! raw-loader!glslify-loader!../webgl/layer.frag */ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/webgl/layer.frag").default;
 var THREE = window.THREE;
 var LayerMaterial = /** @class */ (function () {
     function LayerMaterial() {
@@ -37633,34 +37551,18 @@ var LayerMaterial = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(LayerMaterial, "shaderMaterial", {
+    Object.defineProperty(LayerMaterial, "material", {
         get: function () {
-            if (!LayerMaterial._shaderMaterial) {
-                LayerMaterial._shaderMaterial = new THREE.ShaderMaterial({
+            if (!LayerMaterial._material) {
+                LayerMaterial._material = new THREE.ShaderMaterial({
                     side: THREE.DoubleSide,
                     uniforms: this.defaultUniforms,
-                    vertexShader: glslify_1.default(MaterialUtils_1.MaterialUtils.processSource(vertSource, false)),
-                    fragmentShader: glslify_1.default(MaterialUtils_1.MaterialUtils.processSource(fragmentSource, false)),
+                    vertexShader: MaterialUtils_1.MaterialUtils.processSource(vertSource),
+                    fragmentShader: MaterialUtils_1.MaterialUtils.processSource(fragmentSource),
                     transparent: true,
                 });
             }
-            return LayerMaterial._shaderMaterial.clone();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(LayerMaterial, "shaderMaterial2", {
-        get: function () {
-            if (!LayerMaterial._shaderMaterial2) {
-                LayerMaterial._shaderMaterial2 = new THREE.ShaderMaterial({
-                    side: THREE.DoubleSide,
-                    uniforms: this.defaultUniforms,
-                    vertexShader: glslify_1.default(MaterialUtils_1.MaterialUtils.processSource(vertSource, true)),
-                    fragmentShader: glslify_1.default(MaterialUtils_1.MaterialUtils.processSource(fragmentSource, true)),
-                    transparent: true,
-                });
-            }
-            return LayerMaterial._shaderMaterial2.clone();
+            return LayerMaterial._material.clone();
         },
         enumerable: true,
         configurable: true
@@ -37695,16 +37597,10 @@ exports.LayerMaterial = LayerMaterial;
 
 "use strict";
 
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 var MaterialUtils_1 = __webpack_require__(/*! ./MaterialUtils */ "./src/shaders/Materials/MaterialUtils.ts");
-// import vertSource from 'raw-loader!glslify-loader!../glsl/default.vert';
-// import fragmentSource from 'raw-loader!glslify-loader!../glsl/localizer.frag';
-var vertSource = __webpack_require__(/*! raw-loader!glslify-loader!../glsl/default.vert */ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/glsl/default.vert").default;
-var fragmentSource = __webpack_require__(/*! raw-loader!glslify-loader!../glsl/localizer.frag */ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/glsl/localizer.frag").default;
-var glslify_1 = __importDefault(__webpack_require__(/*! glslify */ "./node_modules/glslify/browser.js"));
+var vertSource = __webpack_require__(/*! raw-loader!glslify-loader!../webgl/default.vert */ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/webgl/default.vert").default;
+var fragmentSource = __webpack_require__(/*! raw-loader!glslify-loader!../webgl/localizer.frag */ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/webgl/localizer.frag").default;
 var THREE = window.THREE;
 var LocalizerMaterial = /** @class */ (function () {
     function LocalizerMaterial() {
@@ -37723,34 +37619,18 @@ var LocalizerMaterial = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(LocalizerMaterial, "shaderMaterial", {
+    Object.defineProperty(LocalizerMaterial, "material", {
         get: function () {
-            if (!LocalizerMaterial._shaderMaterial) {
-                LocalizerMaterial._shaderMaterial = new THREE.ShaderMaterial({
+            if (!LocalizerMaterial._material) {
+                LocalizerMaterial._material = new THREE.ShaderMaterial({
                     side: THREE.DoubleSide,
                     uniforms: this.defaultUniforms,
-                    vertexShader: glslify_1.default(MaterialUtils_1.MaterialUtils.processSource(vertSource, false)),
-                    fragmentShader: glslify_1.default(MaterialUtils_1.MaterialUtils.processSource(fragmentSource, false)),
+                    vertexShader: MaterialUtils_1.MaterialUtils.processSource(vertSource),
+                    fragmentShader: MaterialUtils_1.MaterialUtils.processSource(fragmentSource),
                     transparent: true,
                 });
             }
-            return LocalizerMaterial._shaderMaterial.clone();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(LocalizerMaterial, "shaderMaterial2", {
-        get: function () {
-            if (!LocalizerMaterial._shaderMaterial2) {
-                LocalizerMaterial._shaderMaterial2 = new THREE.ShaderMaterial({
-                    side: THREE.DoubleSide,
-                    uniforms: this.defaultUniforms,
-                    vertexShader: glslify_1.default(MaterialUtils_1.MaterialUtils.processSource(vertSource, true)),
-                    fragmentShader: glslify_1.default(MaterialUtils_1.MaterialUtils.processSource(fragmentSource, true)),
-                    transparent: true,
-                });
-            }
-            return LocalizerMaterial._shaderMaterial2.clone();
+            return LocalizerMaterial._material.clone();
         },
         enumerable: true,
         configurable: true
@@ -37786,19 +37666,17 @@ exports.LocalizerMaterial = LocalizerMaterial;
 
 "use strict";
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+var glslify_1 = __importDefault(__webpack_require__(/*! glslify */ "./node_modules/glslify/browser.js"));
 var MaterialUtils = /** @class */ (function () {
     function MaterialUtils() {
     }
-    MaterialUtils.processSource = function (source, isWebGl2) {
+    MaterialUtils.processSource = function (source) {
         var output = source.split(/"/)[1].normalize().replace(/(\\r)/gm, "").replace(/(\\n)/gm, "\n ");
-        var res;
-        if (isWebGl2) {
-            res = "#version 300 es \n" + output;
-        }
-        else {
-            res = output;
-        }
+        var res = glslify_1.default(output);
         return res;
     };
     return MaterialUtils;
@@ -37817,18 +37695,11 @@ exports.MaterialUtils = MaterialUtils;
 
 "use strict";
 
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 var MaterialUtils_1 = __webpack_require__(/*! ./MaterialUtils */ "./src/shaders/Materials/MaterialUtils.ts");
-// import vertSource from 'raw-loader!glslify-loader!../glsl/default.vert';
-// import fragmentSource from 'raw-loader!glslify-loader!../glsl/volume.frag';
-var vertSource = __webpack_require__(/*! raw-loader!glslify-loader!../glsl/default.vert */ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/glsl/default.vert").default;
-//const fragmentSource = require ('raw-loader!glslify-loader!../glsl/volume/volume.frag').default;
-var fragmentSourceIdnInterp = __webpack_require__(/*! raw-loader!glslify-loader!../glsl/volume/volume_idnInterp.frag */ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/glsl/volume/volume_idnInterp.frag").default;
-var fragmentSourceTriInterp = __webpack_require__(/*! raw-loader!glslify-loader!../glsl/volume/volume_triInterp.frag */ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/glsl/volume/volume_triInterp.frag").default;
-var glslify_1 = __importDefault(__webpack_require__(/*! glslify */ "./node_modules/glslify/browser.js"));
+var vertSource = __webpack_require__(/*! raw-loader!glslify-loader!../webgl/default.vert */ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/webgl/default.vert").default;
+var fragmentSourceIdn = __webpack_require__(/*! raw-loader!glslify-loader!../webgl/volume/volume_idnInterp.frag */ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/webgl/volume/volume_idnInterp.frag").default;
+var fragmentSourceTri = __webpack_require__(/*! raw-loader!glslify-loader!../webgl/volume/volume_triInterp.frag */ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/webgl/volume/volume_triInterp.frag").default;
 var THREE = window.THREE;
 var VolumeMaterial = /** @class */ (function () {
     function VolumeMaterial() {
@@ -37847,66 +37718,34 @@ var VolumeMaterial = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(VolumeMaterial, "idnInterpMaterial", {
+    Object.defineProperty(VolumeMaterial, "idnMaterial", {
         get: function () {
-            if (!VolumeMaterial._idnShaderMaterial) {
-                VolumeMaterial._idnShaderMaterial = new THREE.ShaderMaterial({
+            if (!VolumeMaterial._idnMaterial) {
+                VolumeMaterial._idnMaterial = new THREE.ShaderMaterial({
                     side: THREE.BackSide,
                     transparent: true,
                     uniforms: this.defaultUniforms,
-                    vertexShader: glslify_1.default(MaterialUtils_1.MaterialUtils.processSource(vertSource, false)),
-                    fragmentShader: glslify_1.default(MaterialUtils_1.MaterialUtils.processSource(fragmentSourceIdnInterp, false)),
+                    vertexShader: MaterialUtils_1.MaterialUtils.processSource(vertSource),
+                    fragmentShader: MaterialUtils_1.MaterialUtils.processSource(fragmentSourceIdn),
                 });
             }
-            return VolumeMaterial._idnShaderMaterial.clone();
+            return VolumeMaterial._idnMaterial.clone();
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(VolumeMaterial, "triInterpMaterial", {
+    Object.defineProperty(VolumeMaterial, "triMaterial", {
         get: function () {
-            if (!VolumeMaterial._triShaderMaterial) {
-                VolumeMaterial._triShaderMaterial = new THREE.ShaderMaterial({
+            if (!VolumeMaterial._triMaterial) {
+                VolumeMaterial._triMaterial = new THREE.ShaderMaterial({
                     side: THREE.BackSide,
                     transparent: true,
                     uniforms: this.defaultUniforms,
-                    vertexShader: glslify_1.default(MaterialUtils_1.MaterialUtils.processSource(vertSource, false)),
-                    fragmentShader: glslify_1.default(MaterialUtils_1.MaterialUtils.processSource(fragmentSourceTriInterp, false)),
+                    vertexShader: MaterialUtils_1.MaterialUtils.processSource(vertSource),
+                    fragmentShader: MaterialUtils_1.MaterialUtils.processSource(fragmentSourceTri),
                 });
             }
-            return VolumeMaterial._triShaderMaterial.clone();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(VolumeMaterial, "idnInterpMaterial2", {
-        get: function () {
-            if (!VolumeMaterial._idnShaderMaterial2) {
-                VolumeMaterial._idnShaderMaterial2 = new THREE.ShaderMaterial({
-                    side: THREE.BackSide,
-                    transparent: true,
-                    uniforms: this.defaultUniforms,
-                    vertexShader: glslify_1.default(MaterialUtils_1.MaterialUtils.processSource(vertSource, true)),
-                    fragmentShader: glslify_1.default(MaterialUtils_1.MaterialUtils.processSource(fragmentSourceIdnInterp, true)),
-                });
-            }
-            return VolumeMaterial._idnShaderMaterial2.clone();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(VolumeMaterial, "triInterpMaterial2", {
-        get: function () {
-            if (!VolumeMaterial._triShaderMaterial2) {
-                VolumeMaterial._triShaderMaterial2 = new THREE.ShaderMaterial({
-                    side: THREE.BackSide,
-                    transparent: true,
-                    uniforms: this.defaultUniforms,
-                    vertexShader: glslify_1.default(MaterialUtils_1.MaterialUtils.processSource(vertSource, true)),
-                    fragmentShader: glslify_1.default(MaterialUtils_1.MaterialUtils.processSource(fragmentSourceTriInterp, true)),
-                });
-            }
-            return VolumeMaterial._triShaderMaterial2.clone();
+            return VolumeMaterial._triMaterial.clone();
         },
         enumerable: true,
         configurable: true

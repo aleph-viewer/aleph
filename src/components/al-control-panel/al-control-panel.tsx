@@ -375,11 +375,7 @@ export class AlControlPanel {
         }
       }
       case DisplayMode.VOLUME: {
-        if (
-          !this.stackhelper ||
-          (this.stackhelper &&
-            !(this.stackhelper as AMI.VolumeRenderHelper).hasUniforms())
-        ) {
+        if (!this.stackhelper) {
           break;
         }
 

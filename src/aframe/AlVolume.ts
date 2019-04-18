@@ -119,7 +119,11 @@ export class AlVolume implements AframeRegistryEntry {
           this.handleStack(state.stack);
         }
 
-        if (oldData && oldData.isWebGl2 !== this.data.isWebGl2) {
+        if (
+          oldData &&
+          oldData.isWebGl2 &&
+          oldData.isWebGl2 !== this.data.isWebGl2
+        ) {
           // IF webGL Env has changed, recreate the stackhelper
           this.handleStack(state.stack);
         }
