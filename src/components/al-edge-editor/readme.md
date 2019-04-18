@@ -7,8 +7,8 @@
 
 ## Properties
 
-| Property | Attribute | Description | Type                     | Default     |
-| -------- | --------- | ----------- | ------------------------ | ----------- |
+| Property | Attribute | Description | Type               | Default     |
+| -------- | --------- | ----------- | ------------------ | ----------- |
 | `edge`   | --        |             | `[string, AlEdge]` | `undefined` |
 
 

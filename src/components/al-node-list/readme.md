@@ -7,10 +7,10 @@
 
 ## Properties
 
-| Property   | Attribute  | Description | Type                        | Default |
-| ---------- | ---------- | ----------- | --------------------------- | ------- |
+| Property   | Attribute  | Description | Type                  | Default |
+| ---------- | ---------- | ----------- | --------------------- | ------- |
 | `nodes`    | --         |             | `Map<string, AlNode>` | `null`  |
-| `selected` | `selected` |             | `string`                    | `null`  |
+| `selected` | `selected` |             | `string`              | `null`  |
 
 
 ## Events

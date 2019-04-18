@@ -12,7 +12,6 @@
 | `debug`            | `debug`              |             | `boolean` | `false`     |
 | `dracoDecoderPath` | `draco-decoder-path` |             | `string`  | `undefined` |
 | `height`           | `height`             |             | `string`  | `"480px"`   |
-| `spinnerColor`     | `spinner-color`      |             | `string`  | `"#fff"`    |
 | `width`            | `width`              |             | `string`  | `"640px"`   |
 
 
@@ -164,8 +163,8 @@ Type: `Promise<void>`
 
 #### Parameters
 
-| Name   | Type                     | Description |
-| ------ | ------------------------ | ----------- |
+| Name   | Type               | Description |
+| ------ | ------------------ | ----------- |
 | `edge` | `[string, AlEdge]` |             |
 
 #### Returns
@@ -212,8 +211,8 @@ Type: `Promise<void>`
 
 #### Parameters
 
-| Name   | Type                     | Description |
-| ------ | ------------------------ | ----------- |
+| Name   | Type               | Description |
+| ------ | ------------------ | ----------- |
 | `node` | `[string, AlNode]` |             |
 
 #### Returns

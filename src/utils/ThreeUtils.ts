@@ -4,6 +4,17 @@ import { Constants } from "../Constants";
 type Entity = import("aframe").Entity;
 
 export class ThreeUtils {
+  static isWebGL2Available() {
+    try {
+      const canvas: any = document.createElement("canvas");
+      return !!(
+        (window as any).WebGL2RenderingContext && canvas.getContext("webgl2")
+      );
+    } catch (e) {
+      return false;
+    }
+  }
+
   // Must use setAttribute, otherwise THREE.OrbitControls onMouseUp doesn't always pick up the change :-(
   static enableOrbitControls(camEntity: Entity, enabled: boolean) {
     camEntity.setAttribute("al-orbit-control", `enabled: ${enabled}`);
