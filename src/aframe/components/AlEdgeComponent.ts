@@ -2,7 +2,7 @@ import { AframeRegistryEntry } from "../../interfaces";
 import { Constants } from "../../Constants";
 import { ThreeUtils, AlGraphEvents, ShaderUtils } from "../../utils";
 import { AlGraphEntryType } from "../../enums";
-import { ComponentDefinition } from "aframe";
+import { ComponentDefinition, Entity } from "aframe";
 
 interface AlEdgeState {
   selected: boolean;
@@ -190,14 +190,29 @@ export class AlEdgeComponent implements AframeRegistryEntry {
       },
 
       tickFunction(): void {
+        const el = this.el;
         let state = this.state as AlEdgeState;
 
+        // update color
         if (state.hovered) {
           state.material.color = new THREE.Color(Constants.buttonColors.hover);
         } else if (state.selected) {
           state.material.color = new THREE.Color(Constants.buttonColors.active);
         } else {
           state.material.color = new THREE.Color(Constants.buttonColors.up);
+        }
+
+        const text: Entity = el.firstChild;
+
+        if (text) {
+          const obj3d: THREE.Object3D = text.object3D;
+
+          // show/hide label
+          if (state.hovered) {
+            obj3d.visible = true;
+          } else {
+            obj3d.visible = false;
+          }
         }
       },
 

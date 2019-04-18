@@ -3,7 +3,7 @@ import { Constants } from "../../Constants";
 import { ShaderUtils } from "../../utils";
 import { AlGraphEvents } from "../../utils";
 import { AlGraphEntryType } from "../../enums";
-import { ComponentDefinition } from "aframe";
+import { ComponentDefinition, Entity } from "aframe";
 
 interface AlNodeState {
   camera: THREE.Camera;
@@ -175,7 +175,9 @@ export class AlNodeComponent implements AframeRegistryEntry {
       },
 
       tickFunction(): void {
+        const el = this.el;
         let state = this.state as AlNodeState;
+
         if (this.data.graphEnabled && state.dragging) {
           this.el.sceneEl.emit(
             AlGraphEvents.DRAGGING,
@@ -184,12 +186,26 @@ export class AlNodeComponent implements AframeRegistryEntry {
           );
         }
 
+        // update color
         if (state.hovered || state.dragging) {
           state.material.color = new THREE.Color(Constants.buttonColors.hover);
         } else if (state.selected) {
           state.material.color = new THREE.Color(Constants.buttonColors.active);
         } else {
           state.material.color = new THREE.Color(Constants.buttonColors.up);
+        }
+
+        const text: Entity = el.firstChild;
+
+        if (text) {
+          const obj3d: THREE.Object3D = text.object3D;
+
+          // show/hide label
+          if (state.hovered || state.dragging) {
+            obj3d.visible = true;
+          } else {
+            obj3d.visible = false;
+          }
         }
       },
 
