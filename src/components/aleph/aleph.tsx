@@ -289,8 +289,6 @@ export class Aleph {
   componentWillLoad() {
     this._isWebGl2 = ThreeUtils.isWebGL2Available();
 
-    console.log("webgl2 available", this._isWebGl2);
-
     // aframe geometries
     AframeUtils.registerGeometry(
       AlSpinnerComponent.Tag,
