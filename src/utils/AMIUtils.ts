@@ -3,7 +3,7 @@ import { ThreeUtils } from "./ThreeUtils";
 
 export class AMIUtils {
   private static _traceDataRay(
-    stackHelper: AMI.VolumeRenderHelper,
+    stackHelper: AMI.VolumeRenderHelper2,
     px: number,
     py: number,
     pz: number,

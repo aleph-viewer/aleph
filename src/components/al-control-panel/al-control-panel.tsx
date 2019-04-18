@@ -416,10 +416,10 @@ export class AlControlPanel {
         //const volumeLuts: string = this._lut.lutsAvailable().join(',');
 
         // update the stackhelper
-        (this.stackhelper as AMI.VolumeRenderHelper).steps = steps;
-        (this.stackhelper as AMI.VolumeRenderHelper).windowWidth = windowWidth;
+        // (this.stackhelper as AMI.VolumeRenderHelper).steps = steps;
+        (this.stackhelper as AMI.VolumeRenderHelper2).windowWidth = windowWidth;
         (this
-          .stackhelper as AMI.VolumeRenderHelper).windowCenter = windowCenter;
+          .stackhelper as AMI.VolumeRenderHelper2).windowCenter = windowCenter;
 
         //if (this.optionsVisible && this.optionsEnabled) {
         return (

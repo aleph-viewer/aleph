@@ -96,7 +96,7 @@ export class Aleph {
   private _scene: Scene;
   private _targetEntity: Entity;
   private _validTarget: boolean;
-  private _volumeHelper: AMI.VolumeRenderHelper;
+  private _volumeHelper: AMI.VolumeRenderHelper2;
 
   // TODO: Put In Redux
   private _isWebGl2: boolean = true;
