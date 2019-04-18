@@ -731,8 +731,29 @@ export class Aleph {
           .normalize();
         let angle = dir2.angleTo(dir1);
 
-        let edge1Pos: THREE.Vector3 = dir1.clone().multiplyScalar(radius * 25);
-        let edge2Pos: THREE.Vector3 = dir2.clone().multiplyScalar(radius * 25);
+        // get the edge with the smallest length
+        // set the distance from the connecting node to be 20% of the smallest length, unless it exceeds a max
+        const smallestLength: number = Math.min(
+          centralPos.distanceTo(node1Pos),
+          centralPos.distanceTo(node2Pos)
+        );
+
+        let distanceFromCentralNode: number = Math.min(
+          smallestLength * 0.25,
+          radius * 25
+        );
+
+        distanceFromCentralNode = Math.max(
+          distanceFromCentralNode,
+          radius * 10
+        );
+
+        let edge1Pos: THREE.Vector3 = dir1
+          .clone()
+          .multiplyScalar(distanceFromCentralNode);
+        let edge2Pos: THREE.Vector3 = dir2
+          .clone()
+          .multiplyScalar(distanceFromCentralNode);
         let length = edge1Pos.clone().distanceTo(edge2Pos.clone());
         let position: THREE.Vector3 = edge1Pos
           .clone()
