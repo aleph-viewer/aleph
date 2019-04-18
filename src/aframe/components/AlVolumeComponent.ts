@@ -29,7 +29,8 @@ export class AlVolumeComponent implements AframeRegistryEntry {
         slicesWindowCenter: { type: "number" },
         volumeSteps: { type: "number" },
         volumeWindowWidth: { type: "number" },
-        volumeWindowCenter: { type: "number" }
+        volumeWindowCenter: { type: "number" },
+        isWebGl2: { type: "boolean" }
       },
 
       bindMethods(): void {
@@ -55,9 +56,26 @@ export class AlVolumeComponent implements AframeRegistryEntry {
 
         switch (this.data.displayMode) {
           case DisplayMode.SLICES: {
-            state.stackhelper = new AMI.StackHelper(state.stack);
-            state.stackhelper.bbox.visible = false;
-            state.stackhelper.border.color = Constants.colorValues.blue;
+            state.stackhelper = new AMI.StackHelper(
+              state.stack,
+              this.data.isWebGl2
+            );
+
+            // TODO: Why is this now breaking, bbox == null?
+            if (state.stackhelper.bbox) {
+              state.stackhelper.bbox.visible = false;
+            } else {
+              console.warn(
+                "AlVolume-handleStack: tried to set visibility of null bbox on StackHelper!"
+              );
+            }
+            if (state.stackhelper.border) {
+              state.stackhelper.border.color = Constants.colorValues.blue;
+            } else {
+              console.warn(
+                "AlVolume-handleStack: tried to set color of null border on StackHelper!"
+              );
+            }
             break;
           }
           case DisplayMode.VOLUME: {
@@ -69,10 +87,11 @@ export class AlVolumeComponent implements AframeRegistryEntry {
             state.lutHelper = new AMI.LutHelper(lutCanvases);
             state.lutHelper.luts = AMI.LutHelper.presetLuts();
             state.lutHelper.lutsO = AMI.LutHelper.presetLutsO();
-            state.stackhelper = new AMI.VolumeRenderHelper(state.stack);
-            state.stackhelper.uniforms.uTextureLUT.value =
-              state.lutHelper.texture;
-            state.stackhelper.uniforms.uLut.value = 1;
+            state.stackhelper = new AMI.VolumeRenderHelper(
+              state.stack,
+              this.data.isWebGl2
+            );
+            state.stackhelper.textureLUT = state.lutHelper.texture;
             break;
           }
         }
@@ -95,6 +114,15 @@ export class AlVolumeComponent implements AframeRegistryEntry {
           oldData.displayMode !== this.data.displayMode &&
           state.stack
         ) {
+          this.handleStack(state.stack);
+        }
+
+        if (
+          oldData &&
+          oldData.isWebGl2 &&
+          oldData.isWebGl2 !== this.data.isWebGl2
+        ) {
+          // IF webGL Env has changed, recreate the stackhelper
           this.handleStack(state.stack);
         }
       },

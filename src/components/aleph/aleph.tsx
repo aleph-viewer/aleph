@@ -98,6 +98,9 @@ export class Aleph {
   private _validTarget: boolean;
   private _volumeHelper: AMI.VolumeRenderHelper;
 
+  // TODO: Put In Redux
+  private _isWebGl2: boolean = true;
+
   @Prop({ context: "store" }) store: Store;
   @Prop() dracoDecoderPath: string | null;
   @Prop() width: string = "640px";
@@ -551,6 +554,7 @@ export class Aleph {
               volumeSteps: ${this.volumeSteps};
               volumeWindowCenter: ${this.volumeWindowCenter};
               volumeWindowWidth: ${this.volumeWindowWidth};
+              isWebGl2: ${this._isWebGl2};
             `}
             position="0 0 0"
             ref={(el: Entity) => (this._targetEntity = el)}
@@ -863,7 +867,9 @@ export class Aleph {
     return (
       <a-scene
         embedded
-        renderer="colorManagement: true; sortObjects: true;"
+        renderer={`colorManagement: true; sortObjects: true; webgl2: ${
+          this._isWebGl2
+        };`}
         vr-mode-ui="enabled: false"
         ref={el => (this._scene = el)}
       >

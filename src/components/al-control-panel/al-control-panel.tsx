@@ -375,11 +375,7 @@ export class AlControlPanel {
         }
       }
       case DisplayMode.VOLUME: {
-        if (
-          !this.stackhelper ||
-          (this.stackhelper &&
-            !(this.stackhelper as AMI.VolumeRenderHelper).uniforms)
-        ) {
+        if (!this.stackhelper) {
           break;
         }
 
@@ -420,8 +416,7 @@ export class AlControlPanel {
         //const volumeLuts: string = this._lut.lutsAvailable().join(',');
 
         // update the stackhelper
-        (this
-          .stackhelper as AMI.VolumeRenderHelper).uniforms.uSteps.value = steps;
+        (this.stackhelper as AMI.VolumeRenderHelper).steps = steps;
         (this.stackhelper as AMI.VolumeRenderHelper).windowWidth = windowWidth;
         (this
           .stackhelper as AMI.VolumeRenderHelper).windowCenter = windowCenter;
