@@ -33,7 +33,8 @@ export class AlControlPanel {
   @Prop({ mutable: true }) slicesWindowWidth: number;
   @Prop({ mutable: true }) stackhelper:
     | AMI.StackHelper
-    | AMI.VolumeRenderHelper;
+    | AMI.VolumeRenderHelper
+    | AMI.VolumeRenderHelper2;
   @Watch("stackhelper")
   watchStackhelper() {
     this.slicesIndex = undefined;
@@ -416,10 +417,10 @@ export class AlControlPanel {
         //const volumeLuts: string = this._lut.lutsAvailable().join(',');
 
         // update the stackhelper
-        // (this.stackhelper as AMI.VolumeRenderHelper).steps = steps;
-        (this.stackhelper as AMI.VolumeRenderHelper2).windowWidth = windowWidth;
+        (this.stackhelper as AMI.VolumeRenderHelper).steps = steps;
+        (this.stackhelper as AMI.VolumeRenderHelper).windowWidth = windowWidth;
         (this
-          .stackhelper as AMI.VolumeRenderHelper2).windowCenter = windowCenter;
+          .stackhelper as AMI.VolumeRenderHelper).windowCenter = windowCenter;
 
         //if (this.optionsVisible && this.optionsEnabled) {
         return (

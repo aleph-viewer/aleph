@@ -97,7 +97,7 @@ export class Aleph {
   private _scene: Scene;
   private _targetEntity: Entity;
   private _validTarget: boolean;
-  private _volumeHelper: AMI.VolumeRenderHelper2;
+  private _volumeHelper: AMI.VolumeRenderHelper;
 
   @Prop({ context: "store" }) store: Store;
   @Prop() dracoDecoderPath: string | null;
