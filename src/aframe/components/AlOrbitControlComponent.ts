@@ -11,13 +11,13 @@ interface AlOrbitControlState {
 interface AlOrbitControlDefinition extends ComponentDefinition {
   dependencies: string[];
   tickFunction(): void;
-  bindListeners(): void;
+  bindMethods(): void;
   addListeners(): void;
   removeListeners(): void;
   canvasMouseUp(event: MouseEvent): void;
   canvasMouseDown(event: MouseEvent): void;
+  canvasMouseMove(event: MouseEvent): void;
   canvasWheel(event: WheelEvent): void;
-  emitCameraState(): void;
   handleAnimationCache(event: CustomEvent): void;
 }
 
@@ -51,16 +51,22 @@ export class AlOrbitControlComponent implements AframeRegistryEntry {
         animating: { type: "boolean", default: false }
       },
 
-      bindListeners() {
+      bindMethods() {
         this.canvasMouseUp = this.canvasMouseUp.bind(this);
         this.canvasMouseDown = this.canvasMouseDown.bind(this);
+        this.canvasMouseMove = this.canvasMouseMove.bind(this);
         this.canvasWheel = this.canvasWheel.bind(this);
-        this.emitCameraState = this.emitCameraState.bind(this);
         this.handleAnimationCache = this.handleAnimationCache.bind(this);
+        this.getCameraState = this.getCameraState.bind(this);
       },
 
       addListeners() {
         document.addEventListener("mouseup", this.canvasMouseUp, {
+          capture: false,
+          once: false,
+          passive: true
+        });
+        document.addEventListener("mousemove", this.canvasMouseMove, {
           capture: false,
           once: false,
           passive: true
@@ -100,33 +106,41 @@ export class AlOrbitControlComponent implements AframeRegistryEntry {
         this.state.animationCache = event.detail.slerpPath;
       },
 
-      emitCameraState() {
-        let res = {
-          position: this.state.controls.object.position,
-          target: this.state.controls.target
-        } as AlCamera;
-        this.el.sceneEl.emit(
-          AlOrbitControlEvents.UPDATED,
-          { cameraSerial: res },
-          false
-        );
-      },
-
       canvasMouseUp(_event: MouseEvent) {
+        this._mouseDown = false;
         document.body.style.cursor = "grab";
         let controls = this.state.controls;
 
         if (controls.enabled) {
-          this.emitCameraState();
+          this.el.sceneEl.emit(
+            AlOrbitControlEvents.MOVED,
+            { cameraSerial: this.getCameraState() },
+            false
+          );
         }
       },
 
       canvasMouseDown(_event: MouseEvent) {
+        this._mouseDown = true;
         document.body.style.cursor = "grabbing";
       },
 
+      canvasMouseMove(_event: MouseEvent) {
+        if (this._mouseDown) {
+          this.el.sceneEl.emit(
+            AlOrbitControlEvents.MOVED,
+            { cameraSerial: this.getCameraState() },
+            false
+          );
+        }
+      },
+
       canvasWheel(_event: WheelEvent) {
-        this.emitCameraState();
+        this.el.sceneEl.emit(
+          AlOrbitControlEvents.MOVED,
+          { cameraSerial: this.getCameraState() },
+          false
+        );
       },
 
       init() {
@@ -160,13 +174,24 @@ export class AlOrbitControlComponent implements AframeRegistryEntry {
           animationCache
         };
 
-        this.bindListeners();
+        this.bindMethods();
         this.addListeners();
 
         // wait a frame before emitting initialised event
         ThreeUtils.waitOneFrame(() => {
-          this.emitCameraState();
+          this.el.sceneEl.emit(
+            AlOrbitControlEvents.MOVED,
+            { cameraSerial: this.getCameraState() },
+            false
+          );
         });
+      },
+
+      getCameraState(): AlCamera {
+        return {
+          position: this.state.controls.object.position,
+          target: this.state.controls.target
+        } as AlCamera;
       },
 
       update(_oldData) {
@@ -249,7 +274,7 @@ export class AlOrbitControlComponent implements AframeRegistryEntry {
 }
 
 export class AlOrbitControlEvents {
-  static UPDATED: string = "al-orbit-controls-updated";
+  static MOVED: string = "al-orbit-controls-moved";
   static ANIMATION_STARTED: string = "al-orbit-controls-animation-started";
   static ANIMATION_FINISHED: string = "al-orbit-controls-animation-finished";
 }

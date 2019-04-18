@@ -179,11 +179,7 @@ export class AlNodeComponent implements AframeRegistryEntry {
         let state = this.state as AlNodeState;
 
         if (this.data.graphEnabled && state.dragging) {
-          this.el.sceneEl.emit(
-            AlGraphEvents.DRAGGING,
-            { id: this.el.id },
-            true
-          );
+          this.el.sceneEl.emit(AlGraphEvents.DRAGGED, { id: this.el.id }, true);
         }
 
         // update color
