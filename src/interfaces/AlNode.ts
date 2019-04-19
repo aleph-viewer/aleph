@@ -4,5 +4,6 @@ export interface AlNode extends AlGraphEntry {
   position?: string;
   scale?: number;
   targetId?: string;
-  text?: string;
+  title?: string;
+  description?: string;
 }

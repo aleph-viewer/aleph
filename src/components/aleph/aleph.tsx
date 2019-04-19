@@ -631,7 +631,7 @@ export class Aleph {
         >
           <a-entity
             text={`
-              value: ${node.text};
+              value: ${node.title};
               side: double;
               align: center;
               baseline: bottom;
@@ -1318,7 +1318,7 @@ export class Aleph {
           newNode = {
             position: ThreeUtils.vector3ToString(hitPosition),
             scale: this._boundingSphereRadius / Constants.nodeSizeRatio,
-            text: nodeId
+            title: nodeId
           };
         }
       } else if (intersection) {
@@ -1326,7 +1326,7 @@ export class Aleph {
           targetId: "0",
           position: ThreeUtils.vector3ToString(intersection.point),
           scale: this._boundingSphereRadius / Constants.nodeSizeRatio,
-          text: nodeId
+          title: nodeId
         };
       }
 
