@@ -1,6 +1,11 @@
 import { Config } from '@stencil/core';
 
 export const config: Config = {
+  nodeResolve: {
+    browser: true,
+    preferBuiltins: false
+  },
+  plugins: [],
   namespace: 'aleph',
   outputTargets:[
     { type: 'dist' },
@@ -10,7 +15,5 @@ export const config: Config = {
       serviceWorker: null // disable service workers
     }
   ],
-  copy: [
-  ],
-  globalStyle: 'src/global/variables.css'
+  globalStyle: 'src/global/theme.css'
 };

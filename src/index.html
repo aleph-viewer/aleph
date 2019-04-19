@@ -7,14 +7,18 @@
       content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0"
     />
     <title>Aleph</title>
-    <script src="https://unpkg.com/proxy-observe@0.0.21/browser/proxy-observe.min.js"></script>
+    <script src="https://unpkg.com/mobx@4.9.4/lib/mobx.umd.js"></script>
+
     <script src="https://unpkg.com/three@0.102.1/build/three.min.js"></script>
     <script src="/assets/aframe-master.js"></script>
-    <script src="https://unpkg.com/aframe-orbit-controls@1.2.0/dist/aframe-orbit-controls.min.js"></script>
-    <script src="https://unpkg.com/aframe-fps-counter-component@1.0.1/dist/aframe-fps-counter-component.min.js"></script>
-    <script src="https://unpkg.com/ami.js@next/build/ami.min.js"></script>
+
+    <script src="https://unpkg.com/three@0.102.1/examples/js/controls/OrbitControls.js"></script>
+
     <script src="https://unpkg.com/@ionic/core@4.1.1/dist/ionic.js"></script>
+
+    <script src="/assets/ami.min.js"></script>
     <script src="/build/aleph.js"></script>
+
     <link rel="stylesheet" href="/build/aleph.css" />
     <style>
       *,
@@ -26,36 +30,42 @@
       body {
         margin: 0;
         padding: 0;
+        font-family: sans-serif;
       }
 
       #container {
         width: 100%;
         height: 100%;
         display: flex;
-        padding: 1rem;
       }
 
       #scene {
         flex: 80%;
+        color: #fff;
       }
 
       #debug {
         flex: 20%;
-        min-width: 350px;
+        min-width: 300px;
         padding: 1rem;
+        overflow-y: auto;
+        max-height: 100%;
+        background-color: #f7f7f7;
       }
 
       #debug h1 {
-        margin: 0;
+        margin-top: 0;
+        text-align: right;
+        color: #b7b7b7;
       }
 
       #debug section {
         margin: 1rem 0 0 0;
       }
 
-      #debug section textarea {
-        height: 5rem;
-        width: 100%;
+      #debug.disabled {
+        pointer-events: none;
+        opacity: 0.4;
       }
 
       .rs-base {
@@ -67,163 +77,345 @@
   </head>
   <body>
     <div id="container">
+
+      <div id="debug" class="disabled">
+
+        <h1>ℵ</h1>
+
+        <ion-app>
+          <al-tabs>
+            <ion-tab-bar>
+              <ion-tab-button tab="src">
+                <ion-label>src</ion-label>
+              </ion-tab-button>
+              <ion-tab-button tab="settings">
+                <ion-label>settings</ion-label>
+              </ion-tab-button>
+              <ion-tab-button tab="graph">
+                <ion-label>graph</ion-label>
+              </ion-tab-button>
+              <ion-tab-button tab="console">
+                <ion-label>console</ion-label>
+              </ion-tab-button>
+            </ion-tab-bar>
+            <ion-tab tab="src">
+              <al-url-picker></al-url-picker>
+            </ion-tab>
+            <ion-tab tab="graph">
+              <al-node-list></al-node-list>
+              <al-node-editor></al-node-editor>
+              <al-edge-editor></al-edge-editor>
+              <al-angle-editor></al-angle-editor>
+            </ion-tab>
+            <ion-tab tab="settings">
+              <al-control-panel></al-control-panel>
+            </ion-tab>
+            <ion-tab tab="console">
+              <al-console></al-console>
+            </ion-tab>
+          </al-tabs>
+        </ion-app>
+      </div>
+
       <div id="scene">
         <uv-aleph
           draco-decoder-path="assets/"
           width="100%"
           height="100%"
           debug="false"
-          spinner-color="#2e2e2e"
+          spinner-color="#3d3d3d"
         ></uv-aleph>
       </div>
-      <div id="debug">
-        <h1>ℵ</h1>
 
-        <section>
-          <!--
-            https://ami-test-manifests.netlify.com/collection/stl/brain/_brain/brain.json
-          -->
-          <select id="test-files-select">
-            <optgroup label="GLTF">
-              <option value="https://iiif-3d-manifests.netlify.com/collection/gltf/woody/_woody/assets/woody.gltf">Fisherman</option>
-            </optgroup>
-            <optgroup label="DRACO">
-              <option selected value="http://files.blokdust.io/test/bowl-draco.glb">Bowl</option>
-            </optgroup>
-            <optgroup label="DICOM">
-              <option
-                value="https://ami-test-manifests.netlify.com/collection/dicom/brain/_brain/brain.json">Brain</option>
-              <option
-                value="https://www.morphosource.org/media/morphosource/dcm_sample/platypus/dcm_multi_vf300_16bit_allslices.json">Platypus 16bit</option>
-              <option
-                value="https://www.morphosource.org/media/morphosource/dcm_sample/platypus/dcm_multi_vf300_jpegQ95_16bit_allslices.json">Platypus jpegQ95</option>
-            </optgroup>
-            <optgroup label="NIFTI">
-              <option
-                value="https://ami-test-manifests.netlify.com/collection/nifti/brain/_brain/brain.json">Brain</option>
-            </optgroup>
-          </select>
-        </section>
-        <section>
-          <input type="text" id="test-files-input" placeholder="test file"><button id="load-test-file-button">Load</button>
-        </section>
-        <section>
-          <textarea id="annotations-textarea" placeholder="annotations"></textarea>
-        </section>
-        <section>
-          <button id="load-annotations-button">Load</button>
-        </section>
-      </div>
     </div>
 
     <script>
 
-      let container, debug, aleph, testFilesSelect, testFileInput, loadTestFileButton, annotationsTextArea;
+      let state, lastState, urls, container, debug, alAleph, alUrlPicker, alNodeList, alConsole, alNodeEditor, alEdgeEditor, alAngleEditor, alControlPanel;
 
-      let state = {
-        testFile: null,
-        annotations: null
+      class AlephInspectorState {
+        constructor() {
+          this.src = null;
+          this.srcLoaded = false;
+          this.nodes = null;
+          this.selected = null;
+        }
       }
 
-      if (Object.observe) {
-        // use proxies for an observable state
-        state = Object.observe(state, (changeset) => {
-          render(changeset);
-        });
-      }
+      mobx.decorate(AlephInspectorState, {
+        nodes: mobx.observable,
+        selected: mobx.observable,
+        src: mobx.observable,
+        srcLoaded: mobx.observable
+      });
+
+      urls = new Map([
+        ["https://iiif-3d-manifests.netlify.com/collection/gltf/woody/_woody/assets/woody.gltf", "Fisherman (GLTF)"],
+        ["http://files.blokdust.io/test/bowl-draco.glb", "Bowl (DRACO)"],
+        ["https://ami-test-manifests.netlify.com/collection/dicom/brain/_brain/brain.json", "Brain (DICOM)"],
+        ["https://www.morphosource.org/media/morphosource/dcm_sample/platypus/dcm_multi_vf300_16bit_allslices.json", "Platypus 16bit (DICOM)"],
+        ["https://www.morphosource.org/media/morphosource/dcm_sample/platypus/dcm_multi_vf300_jpegQ95_16bit_allslices.json", "Platypus jpegQ95 (DICOM)"],
+        ["https://ami-test-manifests.netlify.com/collection/nifti/brain/_brain/brain.json", "Brain (NIFTI)"]
+      ]);
+
+      state = new AlephInspectorState();
+      lastState = {};
 
       function init() {
         container = document.getElementById("container");
         debug = document.getElementById("debug");
-        aleph = document.querySelector("uv-aleph");
-        testFilesSelect = document.getElementById("test-files-select");
-        testFileInput = document.getElementById("test-files-input");
-        loadTestFileButton = document.getElementById("load-test-file-button");
-        annotationsTextArea = document.getElementById("annotations-textarea");
-        loadAnnotationsButton = document.getElementById("load-annotations-button");
+        alAleph = document.querySelector("uv-aleph");
+        alUrlPicker = document.querySelector("al-url-picker");
+        alConsole = document.querySelector("al-console");
+        alNodeList = document.querySelector("al-node-list");
+        alNodeEditor = document.querySelector("al-node-editor");
+        alEdgeEditor = document.querySelector("al-edge-editor");
+        alAngleEditor = document.querySelector("al-angle-editor");
+        alControlPanel = document.querySelector("al-control-panel");
+        loadSrcButton = document.getElementById("load-src-button");
+        nodesTextArea = document.getElementById("nodes-textarea");
+        loadNodesButton = document.getElementById("load-nodes-button");
 
-        // aleph.addEventListener('onLoaded', function() {
-        //   aleph.setToolsVisible(true); // can only show them after src loaded
-        //   aleph.setOptionsVisible(true); // can only show them after src loaded
-        // }, false);
+        alAleph.componentOnReady().then(function() {
+          //component.setDisplayMode("slices");
+          state.src = Array.from(urls)[1][0]; // load src when component ready
 
-        aleph.addEventListener(
-          "onSave",
-          function(e) {
-            state.annotations = e.detail;
-          },
-          false
-        );
+          alAleph.addEventListener(
+            "changed",
+            function(e) {
+              state.displayMode = e.detail.displayMode;
+              state.srcLoaded = e.detail.srcLoaded;
+              state.nodes = e.detail.nodes;
+              state.edges = e.detail.edges;
+              state.angles = e.detail.angles;
+              state.selected = e.detail.selected;
+            },
+            false
+          );
 
-        aleph.addEventListener(
-          "onLoad",
-          function() {
-            // move the auto-generated framerate counter to the debug col
-            setTimeout(() => {
-              const framerate = document.querySelector(".rs-base");
-              if (framerate) {
-                debug.appendChild(framerate);
+          alAleph.addEventListener(
+            "loaded",
+            function(ev) {
+              if (state.displayMode !== "mesh") {
+                alControlPanel.stackhelper = ev.detail;
               }
-            }, 250);
-          },
-          false
-        );
+            },
+            false
+          );
 
-        loadAnnotationsButton.addEventListener(
-          "click",
-          function(e) {
-            e.preventDefault();
-            state.annotations = annotationsTextArea.value;
-          },
-          false
-        );
+        });
 
-        testFilesSelect.addEventListener("change", function() {
-          state.testFile = testFilesSelect.value;
-        }, false);
+        alUrlPicker.componentOnReady().then(function() {
+          alUrlPicker.addEventListener("urlChanged", function(e) {
+            state.src = e.detail;
+          }, false);
 
-        loadTestFileButton.addEventListener(
-          "click",
-          function(e) {
-            e.preventDefault();
-            state.testFile = testFileInput.value;
-          },
-          false
-        );
+          alUrlPicker.urls = urls;
+        });
+
+        alNodeList.componentOnReady().then(function() {
+          alNodeList.addEventListener(
+            "selectedChanged",
+            function(e) {
+              alAleph.selectNode(e.detail);
+            },
+            false
+          );
+        });
+
+        alNodeEditor.componentOnReady().then(function() {
+          alNodeEditor.addEventListener(
+            "delete",
+            function(e) {
+              alAleph.deleteNode(e.detail);
+            },
+            false
+          );
+
+          alNodeEditor.addEventListener(
+            "save",
+            function(e) {
+              alAleph.setNode(e.detail);
+            },
+            false
+          );
+        });
+
+        alEdgeEditor.componentOnReady().then(function() {
+          alEdgeEditor.addEventListener(
+            "delete",
+            function(e) {
+              alAleph.deleteEdge(e.detail);
+            },
+            false
+          );
+        });
+
+        alAngleEditor.componentOnReady().then(function() {
+          alAngleEditor.addEventListener(
+            "delete",
+            function(e) {
+              alAleph.deleteAngle(e.detail);
+            },
+            false
+          );
+        });
+
+        alConsole.componentOnReady().then(function() {
+          alConsole.addEventListener(
+            "command",
+            function(e) {
+              const graph = JSON.parse(alConsole.cmd);
+              if (graph) {
+                alAleph.clearGraph();
+                alAleph.setGraph(graph);
+              }
+            },
+            false
+          );
+        });
+
+        alControlPanel.componentOnReady().then(function() {
+
+          alControlPanel.addEventListener("displayModeChanged", function(e) {
+            alAleph.setDisplayMode(e.detail);
+          }, false);
+
+          alControlPanel.addEventListener("graphEnabledChanged", function(e) {
+            alAleph.setGraphEnabled(e.detail);
+          }, false);
+
+          alControlPanel.addEventListener("boundingBoxVisibleChanged", function(e) {
+            alAleph.setBoundingBoxVisible(e.detail);
+          }, false);
+
+          alControlPanel.addEventListener("slicesIndexChanged", function(e) {
+            alAleph.setSlicesIndex(e.detail);
+          }, false);
+
+          alControlPanel.addEventListener("orientationChanged", function(e) {
+            alAleph.setOrientation(e.detail);
+          }, false);
+
+          alControlPanel.addEventListener("slicesWindowCenterChanged", function(e) {
+            alAleph.setSlicesWindowCenter(e.detail);
+          }, false);
+
+          alControlPanel.addEventListener("slicesWindowWidthChanged", function(e) {
+            alAleph.setSlicesWindowWidth(e.detail);
+          }, false);
+
+          alControlPanel.addEventListener("volumeStepsChanged", function(e) {
+            alAleph.setVolumeSteps(e.detail);
+          }, false);
+
+          alControlPanel.addEventListener("volumeWindowCenterChanged", function(e) {
+            alAleph.setVolumeWindowCenter(e.detail);
+          }, false);
+
+          alControlPanel.addEventListener("volumeWindowWidthChanged", function(e) {
+            alAleph.setVolumeWindowWidth(e.detail);
+          }, false);
+        });
+
+        mobx.autorun(() => {
+          render();
+        });
       }
 
-      function changeSetIncludes(changeSet, name) {
-        return (changeSet.findIndex((item) => { return (item.name === name) }) !== -1);
+      function render() {
+
+        if (state.src && state.src !== lastState.src) {
+          alAleph.load(state.src);
+        }
+
+        if (state.src) {
+          alUrlPicker.url = state.src;
+        }
+
+        if (!state.srcLoaded) {
+          debug.classList.add("disabled");
+        } else {
+          debug.classList.remove("disabled");
+        }
+
+        // if (state.srcLoaded) {
+        //   // move the auto-generated framerate counter to the debug col
+        //   setTimeout(() => {
+        //     const framerate = document.querySelector(".rs-base");
+        //     if (framerate) {
+        //       debug.appendChild(framerate);
+        //     }
+        //   }, 250);
+        // }
+
+        alConsole.cmd = getGraphJson();
+        alNodeList.nodes = state.nodes;
+        alNodeList.selected = state.selected;
+        alNodeEditor.node = getSelectedNode();
+        alEdgeEditor.edge = getSelectedEdge();
+        alAngleEditor.angle = getSelectedAngle();
+        alControlPanel.displayMode = state.displayMode;
+
+        lastState = Object.assign({}, state);
       }
 
-      function render(changeSet) {
+      function getGraphJson() {
 
-        if (changeSetIncludes(changeSet, "testFile")) {
-          testFilesSelect.value = state.testFile;
-          testFileInput.value = state.testFile;
-          aleph.load(state.testFile);
+        if (state.nodes && state.edges && state.angles) {
+          var graph = {
+            nodes: Array.from(state.nodes),
+            edges: Array.from(state.edges),
+            angles: Array.from(state.angles)
+          }
+
+          return JSON.stringify(graph);
         }
 
-        if (changeSetIncludes(changeSet, "annotations")) {
-          annotationsTextArea.value = state.annotations;
-          aleph.loadAnnotations(state.annotations);
+        return "";
+      }
+
+      function getSelectedNode() {
+        if (state.selected && state.nodes) {
+          const n = state.nodes.get(state.selected);
+          if (n) {
+            return [state.selected, n];
+          }
         }
+        return null;
+      }
+
+      function getSelectedEdge() {
+        if (state.selected && state.edges) {
+          const e = state.edges.get(state.selected);
+          if (e) {
+            return [state.selected, e];
+          }
+        }
+        return null;
+      }
+
+      function getSelectedAngle() {
+        if (state.selected && state.angles) {
+          const a = state.angles.get(state.selected);
+          if (a) {
+            return [state.selected, a];
+          }
+        }
+        return null;
       }
 
       document.addEventListener("DOMContentLoaded", function(event) {
-
         init();
         resize();
-
-        aleph.componentOnReady().then(function() {
-          //component.setDisplayMode("slices");
-          state.testFile = testFilesSelect.value;
-        });
-
       });
 
       function resize() {
         container.style.height = window.innerHeight + "px";
+        if (alAleph.resize) {
+          // scene will resize internally as it listens to window.onresize. however, it's useful to be able to force a resize if the window.onresize event isn't fired
+          alAleph.resize();
+        }
       }
 
       window.addEventListener("resize", function() {

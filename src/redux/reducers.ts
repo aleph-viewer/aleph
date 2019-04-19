@@ -1,123 +1,229 @@
 import { combineReducers } from "redux";
 import { ActionTypes, TypeKeys } from "./actions";
-import { Tool } from "../interfaces/Tool";
-import { GetUtils } from "../utils/utils";
 import { DisplayMode } from "../enums/DisplayMode";
 import { Orientation } from "../enums/Orientation";
-
-interface AppState {
-  src: string | null;
-  srcLoaded: boolean;
-  tools: Tool[];
-  selectedTool: string | null;
-  displayMode: DisplayMode;
-  orientation: Orientation;
-  toolsEnabled: boolean;
-  optionsEnabled: boolean;
-  boundingBoxVisible: boolean;
-  slicesIndex: number;
-  slicesWindowWidth: number;
-  slicesWindowCenter: number;
-  volumeSteps: number;
-  volumeWindowWidth: number;
-  volumeWindowCenter: number;
-  angleToolEnabled: boolean;
-  annotationToolEnabled: boolean;
-  rulerToolEnabled: boolean;
-}
+import { AlAppState, AlNode, AlEdge, AlAngle } from "../interfaces";
+import { GetUtils } from "../utils";
+import { MeshFileType } from "../enums";
 
 export const getInitialState = () => {
   return {
+    angles: new Map<string, AlAngle>(),
+    boundingBoxVisible: false,
+    camera: null,
+    controlsEnabled: true,
+    displayMode: DisplayMode.MESH,
+    edges: new Map<string, AlEdge>(),
+    nodes: new Map<string, AlNode>(),
+    graphEnabled: false,
+    orientation: Orientation.CORONAL,
+    selected: null,
+    slicesIndex: 0,
+    slicesWindowCenter: 0,
+    slicesWindowWidth: 0,
     src: null,
     srcLoaded: false,
-    selectedTool: null,
-    tools: [],
-    displayMode: DisplayMode.MESH,
-    orientation: Orientation.CORONAL,
-    toolsVisible: true,
-    toolsEnabled: false,
-    optionsVisible: true,
-    optionsEnabled: false,
-    boundingBoxVisible: false,
-    slicesIndex: undefined,
-    slicesWindowWidth: undefined,
-    slicesWindowCenter: undefined,
-    volumeSteps: undefined,
-    volumeWindowWidth: undefined,
-    volumeWindowCenter: undefined,
-    angleToolEnabled: true,
-    annotationToolEnabled: true,
-    rulerToolEnabled: true
+    volumeSteps: 16,
+    volumeWindowCenter: 0,
+    volumeWindowWidth: 0
   };
 };
 
 export const app = (
-  state: AppState = getInitialState(),
+  state: AlAppState = getInitialState(),
   action: ActionTypes
 ) => {
   switch (action.type) {
+    //#region src
     case TypeKeys.APP_SET_SRC: {
+      let displayMode: DisplayMode = DisplayMode.MESH;
+
+      if (action.payload) {
+        const fileExtension: string = GetUtils.getFileExtension(action.payload);
+        if (!Object.values(MeshFileType).includes(fileExtension)) {
+          displayMode = DisplayMode.SLICES; // if not a mesh, default to slices
+        }
+      }
+
       return {
         ...state,
+        angles: new Map<string, AlAngle>(),
+        controlsEnabled: false,
+        displayMode: displayMode,
+        edges: new Map<string, AlEdge>(),
+        nodes: new Map<string, AlNode>(),
+        orientation: Orientation.CORONAL,
+        selected: null,
+        slicesIndex: 0,
+        slicesWindowCenter: 0,
+        slicesWindowWidth: 0,
         src: action.payload,
         srcLoaded: false,
-        tools: []
+        volumeSteps: 16,
+        volumeWindowCenter: 0,
+        volumeWindowWidth: 0
       };
     }
     case TypeKeys.APP_SET_SRC_LOADED: {
       return {
         ...state,
+        controlsEnabled: action.payload,
         srcLoaded: action.payload
       };
     }
-    case TypeKeys.APP_ADD_TOOL: {
-      return {
-        ...state,
-        selectedTool: action.payload.id,
-        tools: [...state.tools, action.payload]
-      };
-    }
-    case TypeKeys.APP_REMOVE_TOOL: {
-      const index: number = GetUtils.getToolIndex(action.payload, state.tools);
-      return {
-        ...state,
-        selectedTool:
-          state.selectedTool === action.payload ? null : state.selectedTool,
-        tools: [...state.tools.slice(0, index), ...state.tools.slice(index + 1)]
-      };
-    }
-    case TypeKeys.APP_SELECT_TOOL: {
-      return {
-        ...state,
-        selectedTool: action.payload
-      };
-    }
-    case TypeKeys.APP_UPDATE_TOOL: {
-      console.log("update tool", action.payload);
-      return {
-        ...state,
-        tools: state.tools.map(tool => {
-          if (tool.id !== action.payload.id) {
-            return tool;
-          }
+    //#endregion
+    //#region nodes
+    case TypeKeys.APP_SET_NODE: {
+      // updates a map key if it already exists, otherwise adds it.
+      const [key, value] = action.payload;
 
-          return {
-            ...tool,
-            ...action.payload
-          };
-        })
+      // sanitise
+      const sanitisedValue = JSON.parse(JSON.stringify(value));
+
+      // merge with the current value (if any)
+      const currentValue: AlNode | undefined = state.nodes.get(key);
+      let nextValue: AlNode = {
+        ...currentValue,
+        ...sanitisedValue
       };
-    }
-    case TypeKeys.APP_LOAD_TOOLS: {
+
+      // if the key already exists, keep the current selected
+      // otherwise select the new key.
       return {
         ...state,
-        tools: action.payload
+        selected: currentValue ? state.selected : key,
+        nodes: new Map(state.nodes).set(key, nextValue)
       };
     }
+    case TypeKeys.APP_DELETE_NODE: {
+      return {
+        ...state,
+        selected: state.selected === action.payload ? null : state.selected,
+        nodes: new Map(
+          [...state.nodes].filter(([key]) => key !== action.payload)
+        ),
+        edges: new Map(
+          [...state.edges].filter(
+            ([_key, edge]) =>
+              action.payload !== edge.node1Id && action.payload !== edge.node2Id
+          )
+        )
+      };
+    }
+    case TypeKeys.APP_SELECT_NODE: {
+      return {
+        ...state,
+        selected: action.payload
+      };
+    }
+    case TypeKeys.APP_CLEAR_NODES: {
+      return {
+        ...state,
+        nodes: new Map<string, AlNode>()
+      };
+    }
+    //#endregion
+    //#region edges
+    case TypeKeys.APP_SET_EDGE: {
+      // updates a map key if it already exists, otherwise adds it.
+      const [key, value] = action.payload;
+
+      // sanitise
+      const sanitisedValue = JSON.parse(JSON.stringify(value));
+
+      // merge with the current value (if any)
+      const currentValue: AlEdge | undefined = state.edges.get(key);
+      let nextValue: AlEdge = {
+        ...currentValue,
+        ...sanitisedValue
+      };
+
+      // if the key already exists, keep the current selected
+      // otherwise select the new key.
+      return {
+        ...state,
+        selected: currentValue ? state.selected : key,
+        edges: new Map(state.edges).set(key, nextValue)
+      };
+    }
+    case TypeKeys.APP_DELETE_EDGE: {
+      return {
+        ...state,
+        selected: state.selected === action.payload ? null : state.selected,
+        edges: new Map(
+          [...state.edges].filter(([key]) => key !== action.payload)
+        ),
+        angles: new Map(
+          [...state.angles].filter(
+            ([_key, angle]) =>
+              action.payload !== angle.edge1Id &&
+              action.payload !== angle.edge2Id
+          )
+        )
+      };
+    }
+    case TypeKeys.APP_SELECT_EDGE: {
+      return {
+        ...state,
+        selected: action.payload
+      };
+    }
+    case TypeKeys.APP_CLEAR_EDGES: {
+      return {
+        ...state,
+        edges: new Map<string, AlEdge>()
+      };
+    }
+    //#endregion
+    //#region angles
+    case TypeKeys.APP_SET_ANGLE: {
+      // updates a map key if it already exists, otherwise adds it.
+      const [key, value] = action.payload;
+
+      // sanitise
+      const sanitisedValue = JSON.parse(JSON.stringify(value));
+
+      // merge with the current value (if any)
+      const currentValue: AlAngle | undefined = state.angles.get(key);
+      let nextValue: AlAngle = {
+        ...currentValue,
+        ...sanitisedValue
+      };
+
+      // if the key already exists, keep the current selected
+      // otherwise select the new key.
+      return {
+        ...state,
+        selected: currentValue ? state.selected : key,
+        angles: new Map(state.angles).set(key, nextValue)
+      };
+    }
+    case TypeKeys.APP_DELETE_ANGLE: {
+      return {
+        ...state,
+        selected: state.selected === action.payload ? null : state.selected,
+        angles: new Map(
+          [...state.angles].filter(([key]) => key !== action.payload)
+        )
+      };
+    }
+    case TypeKeys.APP_SELECT_ANGLE: {
+      return {
+        ...state,
+        selected: action.payload
+      };
+    }
+    case TypeKeys.APP_CLEAR_ANGLES: {
+      return {
+        ...state,
+        angles: new Map<string, AlAngle>()
+      };
+    }
+    //#endregion
+    //#region control panel
     case TypeKeys.APP_SET_DISPLAY_MODE: {
       return {
         ...state,
-        boundingBoxVisible: action.payload === DisplayMode.SLICES, // default to bounding box visible in slices mode
         displayMode: action.payload
       };
     }
@@ -128,28 +234,10 @@ export const app = (
         orientation: action.payload
       };
     }
-    case TypeKeys.APP_SET_TOOLS_VISIBLE: {
+    case TypeKeys.APP_SET_NODES_ENABLED: {
       return {
         ...state,
-        toolsVisible: action.payload
-      };
-    }
-    case TypeKeys.APP_SET_TOOLS_ENABLED: {
-      return {
-        ...state,
-        toolsEnabled: action.payload
-      };
-    }
-    case TypeKeys.APP_SET_OPTIONS_VISIBLE: {
-      return {
-        ...state,
-        optionsVisible: action.payload
-      };
-    }
-    case TypeKeys.APP_SET_OPTIONS_ENABLED: {
-      return {
-        ...state,
-        optionsEnabled: action.payload
+        graphEnabled: action.payload
       };
     }
     case TypeKeys.APP_SET_BOUNDINGBOX_VISIBLE: {
@@ -158,6 +246,8 @@ export const app = (
         boundingBoxVisible: action.payload
       };
     }
+    //#endregion
+    //#region volumes
     case TypeKeys.APP_SET_SLICES_INDEX: {
       return {
         ...state,
@@ -194,24 +284,24 @@ export const app = (
         volumeWindowCenter: action.payload
       };
     }
-    case TypeKeys.APP_SET_ANGLE_TOOL_ENABLED: {
+    //#endregion
+    //#region camera
+    case TypeKeys.APP_SET_CAMERA: {
       return {
         ...state,
-        angleToolEnabled: action.payload
+        camera: {
+          ...state.camera,
+          ...action.payload
+        }
       };
     }
-    case TypeKeys.APP_SET_ANNOTATION_TOOL_ENABLED: {
+    case TypeKeys.APP_SET_CONTROLS_ENABLED: {
       return {
         ...state,
-        annotationToolEnabled: action.payload
+        controlsEnabled: action.payload
       };
     }
-    case TypeKeys.APP_SET_RULER_TOOL_ENABLED: {
-      return {
-        ...state,
-        rulerToolEnabled: action.payload
-      };
-    }
+    //#endregion
   }
 
   return state;

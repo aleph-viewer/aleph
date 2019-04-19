@@ -1,6 +1,8 @@
-import { Tool } from "../interfaces/Tool";
+import { AlNode } from "../interfaces/AlNode";
 import { DisplayMode } from "../enums/DisplayMode";
 import { Orientation } from "../enums/Orientation";
+import { AlEdge, AlCamera } from "../interfaces";
+import { AlAngle } from "../interfaces/AlAngle";
 
 export interface NullAction {
   type: TypeKeys.NULL;
@@ -9,46 +11,53 @@ export interface NullAction {
 // Keep this type updated with each known action
 export type ActionTypes =
   | NullAction
+  | AppClearAnglesAction
+  | AppClearEdgesAction
+  | AppClearNodesAction
+  | AppDeleteAngleAction
+  | AppDeleteEdgeAction
+  | AppDeleteNodeAction
+  | AppSelectAngleAction
+  | AppSelectEdgeAction
+  | AppSelectNodeAction
+  | AppSetAngleAction
+  | AppSetBoundingBoxVisibleAction
+  | AppSetCameraAction
+  | AppSetControlsEnabledAction
+  | AppSetDisplayModeAction
+  | AppSetEdgeAction
+  | AppSetNodeAction
+  | AppSetGraphEnabledAction
+  | AppSetOrientationAction
+  | AppSetSlicesIndexAction
+  | AppSetSlicesWindowCenterAction
+  | AppSetSlicesWindowWidthAction
   | AppSetSrcAction
   | AppSetSrcLoadedAction
-  | AppAddToolAction
-  | AppRemoveToolAction
-  | AppSelectToolAction
-  | AppUpdateToolAction
-  | AppLoadToolsAction
-  | AppSetDisplayModeAction
-  | AppSetOrientationAction
-  | AppSetToolsVisibleAction
-  | AppSetToolsEnabledAction
-  | AppSetOptionsVisibleAction
-  | AppSetOptionsEnabledAction
-  | AppSetBoundingBoxVisibleAction
-  | AppSetSlicesIndexAction
-  | AppSetSlicesWindowWidthAction
-  | AppSetSlicesWindowCenterAction
   | AppSetVolumeStepsAction
-  | AppSetVolumeWindowWidthAction
   | AppSetVolumeWindowCenterAction
-  | AppSetAngleToolEnabledAction
-  | AppSetAnnotationToolEnabledAction
-  | AppSetRulerToolEnabledAction;
+  | AppSetVolumeWindowWidthAction;
 
 export enum TypeKeys {
   NULL = "NULL",
   ERROR = "ERROR",
   APP_SET_SRC = "APP_SET_SRC",
   APP_SET_SRC_LOADED = "APP_SET_SRC_LOADED",
-  APP_ADD_TOOL = "APP_ADD_TOOL",
-  APP_REMOVE_TOOL = "APP_REMOVE_TOOL",
-  APP_SELECT_TOOL = "APP_SELECT_TOOL",
-  APP_UPDATE_TOOL = "APP_UPDATE_TOOL",
-  APP_LOAD_TOOLS = "APP_LOAD_TOOLS",
+  APP_SET_NODE = "APP_SET_NODE",
+  APP_DELETE_NODE = "APP_DELETE_NODE",
+  APP_SELECT_NODE = "APP_SELECT_NODE",
+  APP_CLEAR_NODES = "APP_LOAD_NODES",
+  APP_SET_EDGE = "APP_SET_EDGE",
+  APP_DELETE_EDGE = "APP_DELETE_EDGE",
+  APP_SELECT_EDGE = "APP_SELECT_EDGE",
+  APP_CLEAR_EDGES = "APP_LOAD_EDGES",
+  APP_SET_ANGLE = "APP_SET_ANGLE",
+  APP_DELETE_ANGLE = "APP_DELETE_ANGLE",
+  APP_SELECT_ANGLE = "APP_SELECT_ANGLE",
+  APP_CLEAR_ANGLES = "APP_LOAD_ANGLES",
   APP_SET_DISPLAY_MODE = "APP_SET_DISPLAY_MODE",
   APP_SET_ORIENTATION = "APP_SET_ORIENTATION",
-  APP_SET_TOOLS_VISIBLE = "APP_SET_TOOLS_VISIBLE",
-  APP_SET_TOOLS_ENABLED = "APP_SET_TOOLS_ENABLED",
-  APP_SET_OPTIONS_VISIBLE = "APP_SET_OPTIONS_VISIBLE",
-  APP_SET_OPTIONS_ENABLED = "APP_SET_OPTIONS_ENABLED",
+  APP_SET_NODES_ENABLED = "APP_SET_NODES_ENABLED",
   APP_SET_BOUNDINGBOX_VISIBLE = "APP_SET_BOUNDINGBOX_VISIBLE",
   APP_SET_SLICES_INDEX = "APP_SET_SLICES_INDEX",
   APP_SET_SLICES_WINDOW_WIDTH = "APP_SET_SLICES_WINDOW_WIDTH",
@@ -56,10 +65,11 @@ export enum TypeKeys {
   APP_SET_VOLUME_STEPS = "APP_SET_VOLUME_STEPS",
   APP_SET_VOLUME_WINDOW_WIDTH = "APP_SET_VOLUME_WINDOW_WIDTH",
   APP_SET_VOLUME_WINDOW_CENTER = "APP_SET_VOLUME_WINDOW_CENTER",
-  APP_SET_ANGLE_TOOL_ENABLED = "APP_SET_ANGLE_TOOL_ENABLED",
-  APP_SET_ANNOTATION_TOOL_ENABLED = "APP_SET_ANNOTATION_TOOL_ENABLED",
-  APP_SET_RULER_TOOL_ENABLED = "APP_SET_RULER_TOOL_ENABLED"
+  APP_SET_CAMERA = "APP_SET_CAMERA",
+  APP_SET_CONTROLS_ENABLED = "APP_SET_CONTROLS_ENABLED"
 }
+
+//#region src
 
 export interface AppSetSrcAction {
   type: TypeKeys.APP_SET_SRC;
@@ -88,72 +98,195 @@ export const appSetSrcLoaded = (payload: boolean) => async (
   });
 };
 
-export interface AppAddToolAction {
-  type: TypeKeys.APP_ADD_TOOL;
-  payload: Tool;
+//#endregion
+
+//#region nodes
+
+export interface AppSetNodeAction {
+  type: TypeKeys.APP_SET_NODE;
+  payload: [string, AlNode];
 }
 
-export const appAddTool = (payload: Tool) => async (dispatch, _getState) => {
-  return dispatch({
-    type: TypeKeys.APP_ADD_TOOL,
-    payload: payload
-  });
-};
-
-export interface AppRemoveToolAction {
-  type: TypeKeys.APP_REMOVE_TOOL;
-  payload: string | null;
-}
-
-export const appRemoveTool = (payload: number) => async (
+export const appSetNode = (payload: [string, AlNode]) => async (
   dispatch,
   _getState
 ) => {
   return dispatch({
-    type: TypeKeys.APP_REMOVE_TOOL,
+    type: TypeKeys.APP_SET_NODE,
     payload: payload
   });
 };
 
-export interface AppSelectToolAction {
-  type: TypeKeys.APP_SELECT_TOOL;
-  payload: number;
+export interface AppDeleteNodeAction {
+  type: TypeKeys.APP_DELETE_NODE;
+  payload: string;
 }
 
-export const appSelectTool = (payload: number) => async (
+export const appDeleteNode = (payload: string) => async (
   dispatch,
   _getState
 ) => {
   return dispatch({
-    type: TypeKeys.APP_SELECT_TOOL,
+    type: TypeKeys.APP_DELETE_NODE,
     payload: payload
   });
 };
 
-export interface AppUpdateToolAction {
-  type: TypeKeys.APP_UPDATE_TOOL;
-  payload: Tool;
+export interface AppSelectNodeAction {
+  type: TypeKeys.APP_SELECT_NODE;
+  payload: string;
 }
 
-export const appUpdateTool = (payload: Tool) => async (dispatch, _getState) => {
+export const appSelectNode = (payload: string) => async (
+  dispatch,
+  _getState
+) => {
   return dispatch({
-    type: TypeKeys.APP_UPDATE_TOOL,
+    type: TypeKeys.APP_SELECT_NODE,
     payload: payload
   });
 };
 
-export interface AppLoadToolsAction {
-  type: TypeKeys.APP_LOAD_TOOLS;
-  payload: any;
+export interface AppClearNodesAction {
+  type: TypeKeys.APP_CLEAR_NODES;
+  payload: void;
 }
 
-export const appLoadTools = (payload: void) => async (dispatch, _getState) => {
+export const appClearNodes = (payload: void) => async (dispatch, _getState) => {
   return dispatch({
-    type: TypeKeys.APP_LOAD_TOOLS,
+    type: TypeKeys.APP_CLEAR_NODES,
     payload: payload
   });
 };
 
+//#endregion
+
+//#region edges
+
+export interface AppSetEdgeAction {
+  type: TypeKeys.APP_SET_EDGE;
+  payload: [string, AlEdge];
+}
+
+export const appSetEdge = (payload: [string, AlEdge]) => async (
+  dispatch,
+  _getState
+) => {
+  return dispatch({
+    type: TypeKeys.APP_SET_EDGE,
+    payload: payload
+  });
+};
+
+export interface AppDeleteEdgeAction {
+  type: TypeKeys.APP_DELETE_EDGE;
+  payload: string;
+}
+
+export const appDeleteEdge = (payload: string) => async (
+  dispatch,
+  _getState
+) => {
+  return dispatch({
+    type: TypeKeys.APP_DELETE_EDGE,
+    payload: payload
+  });
+};
+
+export interface AppSelectEdgeAction {
+  type: TypeKeys.APP_SELECT_EDGE;
+  payload: string;
+}
+
+export const appSelectEdge = (payload: string) => async (
+  dispatch,
+  _getState
+) => {
+  return dispatch({
+    type: TypeKeys.APP_SELECT_EDGE,
+    payload: payload
+  });
+};
+
+export interface AppClearEdgesAction {
+  type: TypeKeys.APP_CLEAR_EDGES;
+  payload: void;
+}
+
+export const appClearEdges = (payload: void) => async (dispatch, _getState) => {
+  return dispatch({
+    type: TypeKeys.APP_CLEAR_EDGES,
+    payload: payload
+  });
+};
+
+//#endregion
+
+//#region angles
+
+export interface AppSetAngleAction {
+  type: TypeKeys.APP_SET_ANGLE;
+  payload: [string, AlAngle];
+}
+
+export const appSetAngle = (payload: [string, AlAngle]) => async (
+  dispatch,
+  _getState
+) => {
+  return dispatch({
+    type: TypeKeys.APP_SET_ANGLE,
+    payload: payload
+  });
+};
+
+export interface AppDeleteAngleAction {
+  type: TypeKeys.APP_DELETE_ANGLE;
+  payload: string;
+}
+
+export const appDeleteAngle = (payload: string) => async (
+  dispatch,
+  _getState
+) => {
+  return dispatch({
+    type: TypeKeys.APP_DELETE_ANGLE,
+    payload: payload
+  });
+};
+
+export interface AppSelectAngleAction {
+  type: TypeKeys.APP_SELECT_ANGLE;
+  payload: string;
+}
+
+export const appSelectAngle = (payload: string) => async (
+  dispatch,
+  _getState
+) => {
+  return dispatch({
+    type: TypeKeys.APP_SELECT_ANGLE,
+    payload: payload
+  });
+};
+
+export interface AppClearAnglesAction {
+  type: TypeKeys.APP_CLEAR_ANGLES;
+  payload: void;
+}
+
+export const appClearAngles = (payload: void) => async (
+  dispatch,
+  _getState
+) => {
+  return dispatch({
+    type: TypeKeys.APP_CLEAR_ANGLES,
+    payload: payload
+  });
+};
+
+//#endregion
+
+//#region control panel
 export interface AppSetDisplayModeAction {
   type: TypeKeys.APP_SET_DISPLAY_MODE;
   payload: DisplayMode;
@@ -169,77 +302,17 @@ export const appSetDisplayMode = (payload: DisplayMode) => async (
   });
 };
 
-export interface AppSetOrientationAction {
-  type: TypeKeys.APP_SET_ORIENTATION;
-  payload: Orientation;
-}
-
-export const appSetOrientation = (payload: Orientation) => async (
-  dispatch,
-  _getState
-) => {
-  return dispatch({
-    type: TypeKeys.APP_SET_ORIENTATION,
-    payload: payload
-  });
-};
-
-export interface AppSetToolsVisibleAction {
-  type: TypeKeys.APP_SET_TOOLS_VISIBLE;
+export interface AppSetGraphEnabledAction {
+  type: TypeKeys.APP_SET_NODES_ENABLED;
   payload: boolean;
 }
 
-export const appSetToolsVisible = (payload: boolean) => async (
+export const appSetGraphEnabled = (payload: boolean) => async (
   dispatch,
   _getState
 ) => {
   return dispatch({
-    type: TypeKeys.APP_SET_TOOLS_VISIBLE,
-    payload: payload
-  });
-};
-
-export interface AppSetToolsEnabledAction {
-  type: TypeKeys.APP_SET_TOOLS_ENABLED;
-  payload: boolean;
-}
-
-export const appSetToolsEnabled = (payload: boolean) => async (
-  dispatch,
-  _getState
-) => {
-  return dispatch({
-    type: TypeKeys.APP_SET_TOOLS_ENABLED,
-    payload: payload
-  });
-};
-
-export interface AppSetOptionsVisibleAction {
-  type: TypeKeys.APP_SET_OPTIONS_VISIBLE;
-  payload: boolean;
-}
-
-export const appSetOptionsVisible = (payload: boolean) => async (
-  dispatch,
-  _getState
-) => {
-  return dispatch({
-    type: TypeKeys.APP_SET_OPTIONS_VISIBLE,
-    payload: payload
-  });
-};
-
-export interface AppSetOptionsEnabledAction {
-  type: TypeKeys.APP_SET_OPTIONS_ENABLED;
-  payload: boolean;
-}
-
-export const appSetOptionsEnabled = (payload: boolean) => async (
-  dispatch,
-  _getState
-) => {
-  return dispatch({
-    type: TypeKeys.APP_SET_OPTIONS_ENABLED,
+    type: TypeKeys.APP_SET_NODES_ENABLED,
     payload: payload
   });
 };
@@ -255,6 +328,25 @@ export const appSetBoundingBoxVisible = (payload: boolean) => async (
 ) => {
   return dispatch({
     type: TypeKeys.APP_SET_BOUNDINGBOX_VISIBLE,
+    payload: payload
+  });
+};
+
+//#endregion
+
+//#region volumes
+
+export interface AppSetOrientationAction {
+  type: TypeKeys.APP_SET_ORIENTATION;
+  payload: Orientation;
+}
+
+export const appSetOrientation = (payload: Orientation) => async (
+  dispatch,
+  _getState
+) => {
+  return dispatch({
+    type: TypeKeys.APP_SET_ORIENTATION,
     payload: payload
   });
 };
@@ -349,47 +441,38 @@ export const appSetVolumeWindowCenter = (payload: number) => async (
   });
 };
 
-export interface AppSetAngleToolEnabledAction {
-  type: TypeKeys.APP_SET_ANGLE_TOOL_ENABLED;
-  payload: boolean;
+//#endregion
+
+//#region camera
+
+export interface AppSetCameraAction {
+  type: TypeKeys.APP_SET_CAMERA;
+  payload: AlCamera;
 }
 
-export const appSetAngleToolEnabled = (payload: boolean) => async (
+export const appSetCamera = (payload: AlCamera) => async (
   dispatch,
   _getState
 ) => {
   return dispatch({
-    type: TypeKeys.APP_SET_ANGLE_TOOL_ENABLED,
+    type: TypeKeys.APP_SET_CAMERA,
     payload: payload
   });
 };
 
-export interface AppSetAnnotationToolEnabledAction {
-  type: TypeKeys.APP_SET_ANNOTATION_TOOL_ENABLED;
+export interface AppSetControlsEnabledAction {
+  type: TypeKeys.APP_SET_CONTROLS_ENABLED;
   payload: boolean;
 }
 
-export const appSetAnnotationToolEnabled = (payload: boolean) => async (
+export const appSetControlsEnabled = (payload: boolean) => async (
   dispatch,
   _getState
 ) => {
   return dispatch({
-    type: TypeKeys.APP_SET_ANNOTATION_TOOL_ENABLED,
+    type: TypeKeys.APP_SET_CONTROLS_ENABLED,
     payload: payload
   });
 };
 
-export interface AppSetRulerToolEnabledAction {
-  type: TypeKeys.APP_SET_RULER_TOOL_ENABLED;
-  payload: boolean;
-}
-
-export const appSetRulerToolEnabled = (payload: boolean) => async (
-  dispatch,
-  _getState
-) => {
-  return dispatch({
-    type: TypeKeys.APP_SET_RULER_TOOL_ENABLED,
-    payload: payload
-  });
-};
+//#endregion

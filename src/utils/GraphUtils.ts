@@ -1,0 +1,33 @@
+import { AlGraphEntry } from "../interfaces";
+import { AlGraphEntryType } from "../enums";
+
+export class AlGraphEvents {
+  static SELECTED: string = "al-graph-selected";
+  static POINTER_OVER: string = "al-graph-pointer-over";
+  static POINTER_OUT: string = "al-graph-pointer-out";
+  static DRAGGED: string = "al-graph-dragged";
+  static POINTER_DOWN: string = "al-graph-pointer-down";
+  static POINTER_UP: string = "al-graph-pointer-up";
+}
+
+export class GraphUtils {
+  static getEntryWithHighestId(entries: Map<string, AlGraphEntry>): number {
+    if (entries.size) {
+      return Math.max.apply(
+        Math,
+        Array.from(entries).map(([id]) => {
+          return Number(id.split("-")[1]);
+        })
+      );
+    }
+
+    return -1;
+  }
+
+  static getNextId(
+    type: AlGraphEntryType,
+    entries: Map<string, AlGraphEntry>
+  ): string {
+    return type + "-" + Number(this.getEntryWithHighestId(entries) + 1);
+  }
+}

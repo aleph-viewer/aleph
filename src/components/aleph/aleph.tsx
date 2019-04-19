@@ -1,3 +1,4 @@
+//#region Imports
 import {
   Component,
   Prop,
@@ -7,40 +8,75 @@ import {
   EventEmitter
 } from "@stencil/core";
 import { Store, Action } from "@stencil/redux";
+import { KeyDown } from "@edsilv/key-codes";
 import {
+  AlAngleComponent,
+  AlBoundingBoxComponent,
+  AlEdgeComponent,
+  AlFixedToOrbitCameraComponent,
+  AlGltfModelComponent,
+  AlLookToCameraComponent,
+  AlNodeComponent,
+  AlNodeSpawnerComponent,
+  AlOrbitControlComponent,
+  AlRenderOrderComponent,
+  AlRenderOverlaidComponent,
+  AlRenderOverlaidLineComponent,
+  AlRenderOverlaidTextComponent,
+  AlSpinnerComponent,
+  AlVolumeComponent
+} from "../../aframe";
+import {
+  appClearAngles,
+  appClearEdges,
+  appClearNodes,
+  appDeleteAngle,
+  appDeleteEdge,
+  appDeleteNode,
+  appSelectAngle,
+  appSelectEdge,
+  appSelectNode,
+  appSetAngle,
+  appSetBoundingBoxVisible,
+  appSetCamera,
+  appSetControlsEnabled,
+  appSetDisplayMode,
+  appSetEdge,
+  appSetGraphEnabled,
+  appSetNode,
+  appSetOrientation,
+  appSetSlicesIndex,
+  appSetSlicesWindowCenter,
+  appSetSlicesWindowWidth,
   appSetSrc,
   appSetSrcLoaded,
-  appAddTool,
-  appRemoveTool,
-  appSelectTool,
-  appUpdateTool,
-  appLoadTools,
-  appSetDisplayMode,
-  appSetOrientation,
-  appSetToolsVisible,
-  appSetToolsEnabled,
-  appSetOptionsVisible,
-  appSetOptionsEnabled,
-  appSetBoundingBoxVisible,
-  appSetSlicesIndex,
-  appSetSlicesWindowWidth,
-  appSetSlicesWindowCenter,
   appSetVolumeSteps,
-  appSetVolumeWindowWidth,
   appSetVolumeWindowCenter,
-  appSetAngleToolEnabled,
-  appSetAnnotationToolEnabled,
-  appSetRulerToolEnabled
+  appSetVolumeWindowWidth
 } from "../../redux/actions";
 import { configureStore } from "../../redux/store";
-import { Tool } from "../../interfaces/interfaces";
-import { Orientation } from "../../enums/Orientation";
-import { DisplayMode } from "../../enums/DisplayMode";
-import { GetUtils, ThreeUtils, CreateUtils } from "../../utils/utils";
+import { AlNode, AlCamera, AlEdge, AlAngle } from "../../interfaces";
+import {
+  GetUtils,
+  ThreeUtils,
+  AframeUtils,
+  GraphUtils,
+  AlGraphEvents,
+  AMIUtils
+} from "../../utils";
 import { Constants } from "../../Constants";
-import { MeshFileType } from "../../enums/MeshFileType";
+import { Orientation, DisplayMode } from "../../enums";
+import {
+  AlGltfModelEvents,
+  AlNodeSpawnerEvents,
+  AlOrbitControlEvents
+} from "../../aframe";
+import { AlGraphEntryType } from "../../enums";
+import { AlGraph } from "../../interfaces/AlGraph";
+import { AlVolumeEvents } from "../../aframe/components/AlVolumeComponent";
 type Entity = import("aframe").Entity;
 type Scene = import("aframe").Scene;
+//#endregion
 
 @Component({
   tag: "uv-aleph",
@@ -49,230 +85,445 @@ type Scene = import("aframe").Scene;
 })
 export class Aleph {
   //#region Private variables
-  private _srcLoadedHandler: any;
-  private _stack: any;
-  private _stackHelper: AMI.StackHelper;
-
-  private _targetEntity: Entity;
-  private _scene: Scene;
-  private _scale: number;
-  private _validTarget: boolean;
+  private _backboard: Entity;
+  private _backboardVisible: boolean = false;
+  private _boundingBox: THREE.Box3;
+  private _boundingSphereRadius: number;
   private _camera: Entity;
-  private _maxMeshDistance: number;
-  private _spinner: Entity;
+  private _container: HTMLElement;
+  private _hovered: string | null = null;
+  private _isShiftDown: boolean = false;
+  private _isWebGl2: boolean = true;
+  private _mesh: THREE.Mesh;
+  private _scene: Scene;
+  private _targetEntity: Entity;
+  private _validTarget: boolean;
+  private _volumeHelper: AMI.VolumeRenderHelper;
 
-  private _intersectingTool: boolean;
-  //#endregion
-
-  //#region Redux states, props & methods
   @Prop({ context: "store" }) store: Store;
   @Prop() dracoDecoderPath: string | null;
   @Prop() width: string = "640px";
   @Prop() height: string = "480px";
   @Prop() debug: boolean = false;
-  @Prop() spinnerColor: string = "#fff";
 
+  //#region actions
+  appClearAngles: Action;
+  appClearEdges: Action;
+  appClearNodes: Action;
+  appDeleteAngle: Action;
+  appDeleteEdge: Action;
+  appDeleteNode: Action;
+  appSelectAngle: Action;
+  appSelectEdge: Action;
+  appSelectNode: Action;
+  appSetAngle: Action;
+  appSetBoundingBoxVisible: Action;
+  appSetCamera: Action;
+  appSetControlsEnabled: Action;
+  appSetDisplayMode: Action;
+  appSetEdge: Action;
+  appSetGraphEnabled: Action;
+  appSetNode: Action;
+  appSetOrientation: Action;
+  appSetSlicesIndex: Action;
+  appSetSlicesWindowCenter: Action;
+  appSetSlicesWindowWidth: Action;
   appSetSrc: Action;
   appSetSrcLoaded: Action;
-  appAddTool: Action;
-  appRemoveTool: Action;
-  appSelectTool: Action;
-  appUpdateTool: Action;
-  appLoadTools: Action;
-  appSetDisplayMode: Action;
-  appSetOrientation: Action;
-  appSetToolsVisible: Action;
-  appSetToolsEnabled: Action;
-  appSetOptionsVisible: Action;
-  appSetOptionsEnabled: Action;
-  appSetBoundingBoxVisible: Action;
-  appSetSlicesIndex: Action;
-  appSetSlicesWindowWidth: Action;
-  appSetSlicesWindowCenter: Action;
   appSetVolumeSteps: Action;
-  appSetVolumeWindowWidth: Action;
   appSetVolumeWindowCenter: Action;
-  appSetAngleToolEnabled: Action;
-  appSetAnnotationToolEnabled: Action;
-  appSetRulerToolEnabled: Action;
-
-  @State() src: string | null;
-  @State() srcLoaded: boolean;
-  @State() selectedTool: string;
-  @State() tools: Tool[];
-  @State() displayMode: DisplayMode;
-  @State() orientation: Orientation;
-  @State() toolsVisible: boolean;
-  @State() toolsEnabled: boolean;
-  @State() optionsVisible: boolean;
-  @State() optionsEnabled: boolean;
-  @State() boundingBoxVisible: boolean;
-  @State() slicesIndex: number;
-  @State() slicesWindowWidth: number;
-  @State() slicesWindowCenter: number;
-  @State() volumeSteps: number;
-  @State() volumeWindowWidth: number;
-  @State() volumeWindowCenter: number;
-  @State() angleToolEnabled: boolean;
-  @State() annotationToolEnabled: boolean;
-  @State() rulerToolEnabled: boolean;
-
-  @Method()
-  async load(src: string) {
-    // validate
-    const fileExtension: string = GetUtils.getFileExtension(src);
-
-    if (Object.values(MeshFileType).includes(fileExtension)) {
-      if (this.displayMode !== DisplayMode.MESH) {
-        throw new Error(
-          "When setting 'src' to a mesh file you must set 'displayMode' to 'mesh'"
-        );
-      }
-    } else {
-      if (this.displayMode === DisplayMode.MESH) {
-        throw new Error(
-          "When setting 'src' to a non-mesh file you must set 'displayMode' to either 'slices' or 'volume'"
-        );
-      }
-    }
-
-    if (this.src) {
-      this.appSetSrc(null); // shows loading spinner and resets gltf-model
-      setTimeout(() => {
-        this.appSetSrc(src);
-      }, 250);
-    } else {
-      this.appSetSrc(src);
-    }
-  }
-
-  @Method()
-  async setDisplayMode(displayMode: DisplayMode) {
-    this.appSetDisplayMode(displayMode);
-  }
-
-  @Method()
-  async loadAnnotations(tools: any) {
-    // remove all existing tools
-    while (this.tools.length) {
-      this.appRemoveTool(this.tools[this.tools.length - 1].id);
-    }
-
-    tools = JSON.parse(tools);
-
-    this.appLoadTools(tools);
-  }
-
-  @Event() onLoad: EventEmitter;
-  @Event() onSave: EventEmitter;
+  appSetVolumeWindowWidth: Action;
   //#endregion
 
+  //#region state
+  @State() angles: Map<string, AlAngle>;
+  @State() boundingBoxVisible: boolean;
+  @State() camera: AlCamera;
+  @State() controlsEnabled: boolean;
+  @State() displayMode: DisplayMode;
+  @State() edges: Map<string, AlEdge>;
+  @State() graphEnabled: boolean;
+  @State() nodes: Map<string, AlNode>;
+  @State() nodesVisible: boolean;
+  @State() optionsEnabled: boolean;
+  @State() optionsVisible: boolean;
+  @State() orientation: Orientation;
+  @State() selected: string;
+  @State() slicesIndex: number;
+  @State() slicesWindowCenter: number;
+  @State() slicesWindowWidth: number;
+  @State() src: string | null;
+  @State() srcLoaded: boolean;
+  @State() volumeSteps: number;
+  @State() volumeWindowCenter: number;
+  @State() volumeWindowWidth: number;
+  //#endregion
+
+  //#region general methods
+
+  @Method()
+  async load(src: string): Promise<void> {
+    // validate
+
+    if (this.src) {
+      this._setSrc(null); // shows loading spinner and resets gltf-model
+      setTimeout(() => {
+        this._setSrc(src);
+      }, Constants.minLoadingMS);
+    } else {
+      this._setSrc(src);
+    }
+  }
+
+  @Method()
+  async resize(): Promise<void> {
+    if (this._scene) {
+      (this._scene as any).resize();
+    }
+  }
+
+  //#endregion
+
+  //#region node methods
+
+  @Method()
+  async setNode(node: [string, AlNode]): Promise<void> {
+    this._setNode(node);
+  }
+
+  @Method()
+  async setGraph(graph: AlGraph): Promise<void> {
+    this._setGraph(graph);
+  }
+
+  @Method()
+  async deleteNode(nodeId: string): Promise<void> {
+    this._deleteNode(nodeId);
+  }
+
+  @Method()
+  async clearGraph(): Promise<void> {
+    this._clearGraph();
+  }
+
+  @Method()
+  async selectNode(nodeId: string): Promise<void> {
+    this._selectNode(nodeId, true);
+  }
+
+  @Method()
+  async deleteEdge(edgeId: string): Promise<void> {
+    this._deleteEdge(edgeId);
+  }
+
+  @Method()
+  async deleteAngle(angleId: string): Promise<void> {
+    this._deleteAngle(angleId);
+  }
+
+  //#endregion
+
+  //#region Edge Methods
+  @Method()
+  async setEdge(edge: [string, AlEdge]): Promise<void> {
+    this._setEdge(edge);
+  }
+  //#endregion
+
+  //#region control panel methods
+
+  @Method()
+  async setDisplayMode(displayMode: DisplayMode): Promise<void> {
+    this._setDisplayMode(displayMode);
+  }
+
+  @Method()
+  async setGraphEnabled(enabled: boolean): Promise<void> {
+    this._setGraphEnabled(enabled);
+  }
+
+  @Method()
+  async setBoundingBoxVisible(visible: boolean): Promise<void> {
+    this._setBoundingBoxVisible(visible);
+  }
+
+  @Method()
+  async setSlicesIndex(index: number): Promise<void> {
+    this._setSlicesIndex(index);
+  }
+
+  @Method()
+  async setOrientation(orientation: Orientation): Promise<void> {
+    this._setOrientation(orientation);
+  }
+
+  @Method()
+  async setSlicesWindowCenter(center: number): Promise<void> {
+    this._setSlicesWindowCenter(center);
+  }
+
+  @Method()
+  async setSlicesWindowWidth(width: number): Promise<void> {
+    this._setSlicesWindowWidth(width);
+  }
+
+  @Method()
+  async setVolumeSteps(steps: number): Promise<void> {
+    this._setVolumeSteps(steps);
+  }
+
+  @Method()
+  async setVolumeWindowCenter(center: number): Promise<void> {
+    this._setVolumeWindowCenter(center);
+  }
+
+  @Method()
+  async setVolumeWindowWidth(width: number): Promise<void> {
+    this._setVolumeWindowWidth(width);
+  }
+
+  //#endregion
+
+  @Event() changed: EventEmitter;
+  @Event() loaded: EventEmitter;
+
   componentWillLoad() {
-    CreateUtils.createAframeComponents();
+    this._isWebGl2 = ThreeUtils.isWebGL2Available();
+
+    // aframe geometries
+    AframeUtils.registerGeometry(
+      AlSpinnerComponent.Tag,
+      AlSpinnerComponent.Object
+    );
+
+    // aframe components
+    AframeUtils.registerComponent(AlNodeComponent.Tag, AlNodeComponent.Object);
+    AframeUtils.registerComponent(
+      AlBoundingBoxComponent.Tag,
+      AlBoundingBoxComponent.Object
+    );
+    AframeUtils.registerComponent(
+      AlGltfModelComponent.Tag,
+      AlGltfModelComponent.Object
+    );
+    AframeUtils.registerComponent(
+      AlVolumeComponent.Tag,
+      AlVolumeComponent.Object
+    );
+    AframeUtils.registerComponent(
+      AlNodeSpawnerComponent.Tag,
+      AlNodeSpawnerComponent.Object
+    );
+    AframeUtils.registerComponent(
+      AlOrbitControlComponent.Tag,
+      AlOrbitControlComponent.Object
+    );
+    AframeUtils.registerComponent(
+      AlFixedToOrbitCameraComponent.Tag,
+      AlFixedToOrbitCameraComponent.Object
+    );
+    AframeUtils.registerComponent(
+      AlLookToCameraComponent.Tag,
+      AlLookToCameraComponent.Object
+    );
+    AframeUtils.registerComponent(
+      AlRenderOverlaidComponent.Tag,
+      AlRenderOverlaidComponent.Object
+    );
+    AframeUtils.registerComponent(
+      AlRenderOverlaidTextComponent.Tag,
+      AlRenderOverlaidTextComponent.Object
+    );
+    AframeUtils.registerComponent(
+      AlRenderOverlaidLineComponent.Tag,
+      AlRenderOverlaidLineComponent.Object
+    );
+    AframeUtils.registerComponent(
+      AlRenderOrderComponent.Tag,
+      AlRenderOrderComponent.Object
+    );
+    AframeUtils.registerComponent(AlEdgeComponent.Tag, AlEdgeComponent.Object);
+    AframeUtils.registerComponent(
+      AlAngleComponent.Tag,
+      AlAngleComponent.Object
+    );
+
+    // redux
 
     this.store.setStore(configureStore({}));
 
     this.store.mapStateToProps(this, state => {
       const {
         app: {
+          angles,
+          boundingBoxVisible,
+          camera,
+          controlsEnabled,
+          displayMode,
+          edges,
+          graphEnabled,
+          nodes,
+          orientation,
+          selected,
+          slicesIndex,
+          slicesWindowCenter,
+          slicesWindowWidth,
           src,
           srcLoaded,
-          selectedTool,
-          tools,
-          displayMode,
-          orientation,
-          toolsVisible,
-          toolsEnabled,
-          optionsVisible,
-          optionsEnabled,
-          boundingBoxVisible,
-          THREEJSSceneNeedsUpdate,
-          slicesIndex,
-          slicesWindowWidth,
-          slicesWindowCenter,
           volumeSteps,
-          volumeWindowWidth,
           volumeWindowCenter,
-          angleToolEnabled,
-          annotationToolEnabled,
-          rulerToolEnabled
+          volumeWindowWidth
         }
       } = state;
 
       return {
+        angles,
+        boundingBoxVisible,
+        camera,
+        controlsEnabled,
+        displayMode,
+        edges,
+        graphEnabled,
+        nodes,
+        orientation,
+        selected,
+        slicesIndex,
+        slicesWindowCenter,
+        slicesWindowWidth,
         src,
         srcLoaded,
-        selectedTool,
-        tools,
-        displayMode,
-        orientation,
-        toolsVisible,
-        toolsEnabled,
-        optionsVisible,
-        optionsEnabled,
-        boundingBoxVisible,
-        THREEJSSceneNeedsUpdate,
-        slicesIndex,
-        slicesWindowWidth,
-        slicesWindowCenter,
         volumeSteps,
-        volumeWindowWidth,
         volumeWindowCenter,
-        angleToolEnabled,
-        annotationToolEnabled,
-        rulerToolEnabled
+        volumeWindowWidth
       };
     });
 
     this.store.mapDispatchToProps(this, {
+      appClearAngles,
+      appClearEdges,
+      appClearNodes,
+      appDeleteAngle,
+      appDeleteEdge,
+      appDeleteNode,
+      appSelectAngle,
+      appSelectEdge,
+      appSelectNode,
+      appSetAngle,
+      appSetBoundingBoxVisible,
+      appSetCamera,
+      appSetControlsEnabled,
+      appSetDisplayMode,
+      appSetEdge,
+      appSetGraphEnabled,
+      appSetNode,
+      appSetOrientation,
+      appSetSlicesIndex,
+      appSetSlicesWindowCenter,
+      appSetSlicesWindowWidth,
       appSetSrc,
       appSetSrcLoaded,
-      appAddTool,
-      appRemoveTool,
-      appSelectTool,
-      appUpdateTool,
-      appLoadTools,
-      appSetDisplayMode,
-      appSetOrientation,
-      appSetToolsVisible,
-      appSetToolsEnabled,
-      appSetOptionsVisible,
-      appSetOptionsEnabled,
-      appSetBoundingBoxVisible,
-      appSetSlicesIndex,
-      appSetSlicesWindowWidth,
-      appSetSlicesWindowCenter,
       appSetVolumeSteps,
-      appSetVolumeWindowWidth,
       appSetVolumeWindowCenter,
-      appSetAngleToolEnabled,
-      appSetAnnotationToolEnabled,
-      appSetRulerToolEnabled
+      appSetVolumeWindowWidth
     });
 
     // set up event handlers
-    this._srcLoadedHandler = this._srcLoaded.bind(this);
-    this._addToolHandler = this._addToolHandler.bind(this);
-    this._validTargetHandler = this._validTargetHandler.bind(this);
-    this._meshDistanceHandler = this._meshDistanceHandler.bind(this);
-    this._toolSelectedHandler = this._toolSelectedHandler.bind(this);
-    this._intersectingToolHandler = this._intersectingToolHandler.bind(this);
-    this._intersectionClearedHandler = this._intersectionClearedHandler.bind(
+    this._controlsAnimationFinishedHandler = this._controlsAnimationFinishedHandler.bind(
       this
     );
-    this._toolMovedHandler = this._toolMovedHandler.bind(this);
+    this._controlsInteractionHandler = this._controlsInteractionHandler.bind(
+      this
+    );
+    this._graphEntryDraggedHandler = this._graphEntryDraggedHandler.bind(this);
+    this._graphEntryPointerDownHandler = this._graphEntryPointerDownHandler.bind(
+      this
+    );
+    this._graphEntryPointerOutHandler = this._graphEntryPointerOutHandler.bind(
+      this
+    );
+    this._graphEntryPointerOverHandler = this._graphEntryPointerOverHandler.bind(
+      this
+    );
+    this._graphEntryPointerUpHandler = this._graphEntryPointerUpHandler.bind(
+      this
+    );
+    this._graphEntrySelectedHandler = this._graphEntrySelectedHandler.bind(
+      this
+    );
+    this._graphEntryValidTargetHandler = this._graphEntryValidTargetHandler.bind(
+      this
+    );
+    this._keyDownHandler = this._keyDownHandler.bind(this);
+    this._keyUpHandler = this._keyUpHandler.bind(this);
+    this._controlsInteractionFinishedHandler = this._controlsInteractionFinishedHandler.bind(
+      this
+    );
+    this._spawnNodeHandler = this._spawnNodeHandler.bind(this);
+    this._srcLoaded = this._srcLoaded.bind(this);
   }
 
-  //#region Rendering Methods
-  private _renderSpinner(): JSX.Element {
-    if (!this.srcLoaded) {
+  //#region Render Methods
+  // private _renderSpinner() {
+  //   if (!this.srcLoaded) {
+  //     return (
+  //       <a-entity
+  //         al-fixed-to-orbit-camera={`
+  //         distanceFromTarget: 20;
+  //         target: ${
+  //           this.camera ? this.camera.position : new THREE.Vector3(0, 0, 0)
+  //         };
+  //       `}
+  //       >
+  //         <a-entity
+  //           animation="property: rotation; to: 0 120 0; loop: true; dur: 1000; easing: easeInOutQuad"
+  //           geometry="primitive: al-spinner;"
+  //           material={`color: ${this.spinnerColor};`}
+  //         />
+  //       </a-entity>
+  //     );
+  //   }
+
+  //   return null;
+  // }
+
+  private _renderSpinner() {
+    if (this.src && !this.srcLoaded) {
+      return (
+        <div id="spinner">
+          <div class="square" />
+        </div>
+      );
+    }
+  }
+
+  private _renderBackboard() {
+    if (!this.src) {
+      return null;
+    }
+
+    let backscale: number = 0;
+
+    if (this._boundingSphereRadius) {
+      backscale = this._boundingSphereRadius * Constants.backboardSize;
+
       return (
         <a-entity
-          animation="property: rotation; to: 0 120 0; loop: true; dur: 1000; easing: easeInOutQuad"
-          geometry="primitive: al-spinner;"
-          scale="0.2 0.2 0.2"
-          material={`color: ${this.spinnerColor};`}
-          ref={(el: Entity) => (this._spinner = el)}
+          class="collidable"
+          id="backboard"
+          geometry={`primitive: plane; height: ${backscale}; width: ${backscale}`}
+          al-fixed-to-orbit-camera={`
+          distanceFromTarget: ${this._boundingSphereRadius * 2};
+          target: ${
+            this.camera ? this.camera.target : new THREE.Vector3(0, 0, 0)
+          };
+        `}
+          material={`
+          wireframe: ${this._backboardVisible};
+          transparent: true;
+          opacity: ${this._backboardVisible ? `1.0` : `0.0`};
+          side: double;
+        `}
+          ref={el => (this._backboard = el)}
         />
       );
     }
@@ -280,7 +531,7 @@ export class Aleph {
     return null;
   }
 
-  private _renderSrc(): JSX.Element {
+  private _renderSrc() {
     if (!this.src) {
       return null;
     }
@@ -289,11 +540,10 @@ export class Aleph {
       case DisplayMode.MESH: {
         return (
           <a-entity
-            al-tool-spawner={`
-              toolsEnabled: ${this.toolsEnabled};
-            `}
             class="collidable"
-            id="targetEntity"
+            al-node-spawner={`
+              graphEnabled: ${this.graphEnabled};
+            `}
             al-gltf-model={`
               src: url(${this.src});
               dracoDecoderPath: ${this.dracoDecoderPath};
@@ -304,19 +554,29 @@ export class Aleph {
           />
         );
       }
-      default: {
+      case DisplayMode.SLICES:
+      case DisplayMode.VOLUME: {
         return (
           <a-entity
-            al-tool-spawner={`
-              toolsEnabled: ${this.toolsEnabled};
+            id="target-entity"
+            class="collidable"
+            al-node-spawner={`
+              graphEnabled: ${this.graphEnabled};
             `}
-            class="collidable targets"
-            id="targetEntity"
-            al-volumetric-model={`
-              src: url(${this.src});
+            al-volume={`
+              srcLoaded: ${this.srcLoaded};
+              src: ${this.src};
+              displayMode: ${this.displayMode};
+              slicesIndex: ${this.slicesIndex};
+              slicesOrientation: ${this.orientation};
+              slicesWindowWidth: ${this.slicesWindowWidth};
+              slicesWindowCenter: ${this.slicesWindowCenter};
+              volumeSteps: ${this.volumeSteps};
+              volumeWindowCenter: ${this.volumeWindowCenter};
+              volumeWindowWidth: ${this.volumeWindowWidth};
+              isWebGl2: ${this._isWebGl2};
             `}
             position="0 0 0"
-            scale="1 1 1"
             ref={(el: Entity) => (this._targetEntity = el)}
           />
         );
@@ -324,297 +584,974 @@ export class Aleph {
     }
   }
 
-  private _renderTools(): JSX.Element {
-    const outTools: JSX.Element[] = [];
-    const dataTools: Tool[] = this.tools;
+  private _renderBoundingBox() {
+    if (this.srcLoaded && this.boundingBoxVisible) {
+      let size: THREE.Vector3 = new THREE.Vector3();
+      this._boundingBox.getSize(size);
 
-    for (var i = 0; i < dataTools.length; i++) {
-      if (i < dataTools.length) {
-        const tool: Tool = dataTools[i];
-        outTools.push(
-          <a-entity
-            class="collidable"
-            id={tool.id}
-            position={tool.position}
-            al-tool={`
-              targetId: ${tool.targetId};
-              scale: ${tool.scale};
-              selected: ${this.selectedTool === tool.id};
-              toolsEnabled: ${this.toolsEnabled};
-            `}
-          />
-        );
-      }
+      // if targetEntity is a gltf, use its position (center). if it's a volume, the origin is in the bottom left, so get the position sub the geometry center
+      const position: THREE.Vector3 =
+        this.displayMode === DisplayMode.MESH
+          ? this._targetEntity.object3D.position.clone()
+          : this._targetEntity.object3D.position
+              .clone()
+              .add(GetUtils.getGeometryCenter(this._mesh.geometry));
+
+      return (
+        <a-entity
+          position={ThreeUtils.vector3ToString(position)}
+          al-bounding-box={`
+            scale: ${ThreeUtils.vector3ToString(size)};
+            color: ${Constants.colorValues.red};
+        `}
+        />
+      );
     }
-    return outTools;
+
+    return null;
   }
 
-  private _renderLights(): JSX.Element {
+  private _renderNodes() {
+    return Array.from(this.nodes).map((n: [string, AlNode]) => {
+      const [nodeId, node] = n;
+
+      let textOffset: THREE.Vector3 = new THREE.Vector3(0, 2.5, 0);
+      textOffset.multiplyScalar(node.scale);
+
+      return (
+        <a-entity
+          class="collidable"
+          id={nodeId}
+          position={node.position}
+          al-node={`
+            scale: ${node.scale};
+            selected: ${this.selected === nodeId};
+            graphEnabled: ${this.graphEnabled};
+          `}
+        >
+          <a-entity
+            text={`
+              value: ${node.text};
+              side: double;
+              align: center;
+              baseline: bottom;
+              anchor: center;
+              width: ${Constants.fontSizeMedium * this._boundingSphereRadius}
+            `}
+            al-look-to-camera
+            al-render-overlaid-text
+            visible={`${this.selected === nodeId}`}
+            position={ThreeUtils.vector3ToString(textOffset)}
+            id={`${nodeId}-label`}
+          />
+        </a-entity>
+      );
+    });
+  }
+
+  private _renderEdges() {
+    return Array.from(this.edges).map((n: [string, AlEdge]) => {
+      const [edgeId, edge] = n;
+      const node1 = this.nodes.get(edge.node1Id);
+      const node2 = this.nodes.get(edge.node2Id);
+
+      if (node1 && node2) {
+        const sv = ThreeUtils.stringToVector3(node1.position);
+        const ev = ThreeUtils.stringToVector3(node2.position);
+
+        let dir = ev.clone().sub(sv);
+        let dist = dir.length();
+        dir = dir.normalize().multiplyScalar(dist * 0.5);
+        let centoid = sv.clone().add(dir);
+
+        let textOffset: THREE.Vector3 = new THREE.Vector3(0, 2.5, 0);
+        let scale = (node1.scale + node2.scale) / 2;
+        let radius = this._boundingSphereRadius * Constants.edgeSize;
+        textOffset.multiplyScalar(scale);
+
+        return (
+          <a-entity
+            class="collidable"
+            id={edgeId}
+            position={ThreeUtils.vector3ToString(centoid)}
+            al-edge={`
+              length: ${dist};
+              node1: ${node1.position};
+              node2: ${node2.position};
+              selected: ${this.selected === edgeId};
+              radius: ${radius};
+              nodeScale: ${scale};
+            `}
+          >
+            <a-entity
+              id={`${edgeId}-title`}
+              text={`
+                value: ${dist.toFixed(Constants.angleUnitsDecimalPlaces) +
+                  " m"};
+                side: double;
+                align: center;
+                baseline: bottom;
+                anchor: center;
+                width: ${Constants.fontSizeSmall * this._boundingSphereRadius}
+              `}
+              position={ThreeUtils.vector3ToString(textOffset)}
+              visible={`${this.selected === edgeId}`}
+              al-look-to-camera
+              al-render-overlaid-text
+            />
+          </a-entity>
+        );
+      }
+    });
+  }
+
+  private _renderAngles() {
+    return Array.from(this.angles).map((n: [string, AlAngle]) => {
+      const [angleId, angle] = n;
+      const edge1 = this.edges.get(angle.edge1Id);
+      const edge2 = this.edges.get(angle.edge2Id);
+
+      if (edge1 && edge2) {
+        let radius = this._boundingSphereRadius * Constants.edgeSize;
+        let centralNode;
+        let node1;
+        let node2;
+        // IF E1N1 === E2N1
+        if (edge1.node1Id === edge2.node1Id) {
+          centralNode = this.nodes.get(edge2.node1Id);
+          node1 = this.nodes.get(edge1.node2Id);
+          node2 = this.nodes.get(edge2.node2Id);
+        }
+        // IF E1N1 === E2N2
+        else if (edge1.node1Id === edge2.node2Id) {
+          centralNode = this.nodes.get(edge2.node2Id);
+          node1 = this.nodes.get(edge1.node2Id);
+          node2 = this.nodes.get(edge2.node1Id);
+        }
+        // IF E1N2 === E2N1
+        else if (edge1.node2Id === edge2.node1Id) {
+          centralNode = this.nodes.get(edge2.node1Id);
+          node1 = this.nodes.get(edge1.node1Id);
+          node2 = this.nodes.get(edge2.node2Id);
+        }
+        // IF E1N2 === E2N2
+        else if (edge1.node2Id === edge2.node2Id) {
+          centralNode = this.nodes.get(edge2.node2Id);
+          node1 = this.nodes.get(edge1.node1Id);
+          node2 = this.nodes.get(edge2.node1Id);
+        }
+
+        const node1Pos = ThreeUtils.stringToVector3(node1.position);
+        const node2Pos = ThreeUtils.stringToVector3(node2.position);
+        const centralPos = ThreeUtils.stringToVector3(centralNode.position);
+
+        let dir1: THREE.Vector3 = node1Pos
+          .clone()
+          .sub(centralPos)
+          .normalize();
+        let dir2: THREE.Vector3 = node2Pos
+          .clone()
+          .sub(centralPos)
+          .normalize();
+        let angle = dir2.angleTo(dir1);
+
+        // get the edge with the smallest length
+        // set the distance from the connecting node to be 20% of the smallest length, unless it exceeds a max
+        const smallestLength: number = Math.min(
+          centralPos.distanceTo(node1Pos),
+          centralPos.distanceTo(node2Pos)
+        );
+
+        let distanceFromCentralNode: number = Math.min(
+          smallestLength * 0.25,
+          radius * 25
+        );
+
+        distanceFromCentralNode = Math.max(
+          distanceFromCentralNode,
+          radius * 10
+        );
+
+        let edge1Pos: THREE.Vector3 = dir1
+          .clone()
+          .multiplyScalar(distanceFromCentralNode);
+        let edge2Pos: THREE.Vector3 = dir2
+          .clone()
+          .multiplyScalar(distanceFromCentralNode);
+        let length = edge1Pos.clone().distanceTo(edge2Pos.clone());
+        let position: THREE.Vector3 = edge1Pos
+          .clone()
+          .add(edge2Pos.clone())
+          .divideScalar(2);
+
+        let textOffset: THREE.Vector3 = new THREE.Vector3(0, 2.5, 0);
+        let scale = (node1.scale + node2.scale + centralNode.scale) / 3;
+        textOffset.multiplyScalar(scale);
+
+        return (
+          <a-entity
+            class="collidable"
+            id={angleId}
+            position={centralNode.position}
+            al-angle={`
+              selected: ${this.selected === angleId};
+              edge0Pos: ${ThreeUtils.vector3ToString(edge1Pos)};
+              edge1Pos: ${ThreeUtils.vector3ToString(edge2Pos)};
+              position: ${ThreeUtils.vector3ToString(position)};
+              length: ${length};
+              radius: ${radius};
+              angle: ${angle};
+            `}
+          >
+            <a-entity
+              id={`${angleId}-title`}
+              text={`
+                value: ${THREE.Math.radToDeg(angle).toFixed(
+                  Constants.angleUnitsDecimalPlaces
+                ) + " deg"};
+                side: double;
+                align: center;
+                baseline: bottom;
+                anchor: center;
+                width: ${Constants.fontSizeSmall * this._boundingSphereRadius}
+              `}
+              position={ThreeUtils.vector3ToString(
+                position.clone().add(textOffset)
+              )}
+              visible={`${this.selected === angleId}`}
+              al-look-to-camera
+              al-render-overlaid-text
+            />
+          </a-entity>
+        );
+      }
+    });
+  }
+
+  private _renderLights() {
     return [
       <a-entity
+        id="light-1"
         light="type: directional; color: #ffffff; intensity: 0.75"
         position="1 1 1"
       />,
       <a-entity
+        id="light-2"
         light="type: directional; color: #002958; intensity: 0.5"
         position="-1 -1 -1"
       />,
-      <a-entity light="type: ambient; color: #d0d0d0; intensity: 1" />
+      <a-entity
+        id="light-3"
+        light="type: ambient; color: #d0d0d0; intensity: 1"
+      />
     ];
   }
 
-  private _renderCamera(): JSX.Element {
-    if (this.srcLoaded) {
-      let orbitData = GetUtils.getOrbitData(this._targetEntity);
-
-      return (
-        <a-camera
-          fps-counter={`
-            enabled: ${this.debug}
-          `}
-          cursor="rayOrigin: mouse"
-          raycaster="objects: .collidable"
-          fov={Constants.cameraValues.fov}
-          near={Constants.cameraValues.near}
-          far={Constants.cameraValues.far}
-          look-controls="enabled: false"
-          orbit-controls={`
-            maxPolarAngle: ${Constants.cameraValues.maxPolarAngle};
-            minDistance: ${Constants.cameraValues.minDistance};
-            screenSpacePanning: true;
-            rotateSpeed: ${Constants.cameraValues.rotateSpeed};
-            zoomSpeed: ${Constants.cameraValues.zoomSpeed};
-            enableDamping: true;
-            dampingFactor: ${Constants.cameraValues.dampingFactor};
-            target: ${ThreeUtils.vector3ToString(orbitData.sceneCenter)};
-            initialPosition: ${ThreeUtils.vector3ToString(
-              orbitData.initialPosition
-            )};
-          `}
-          ref={el => (this._camera = el)}
-        />
-      );
-    } else {
-      return (
-        <a-camera
-          fov={Constants.cameraValues.fov}
-          near={Constants.cameraValues.near}
-          far={Constants.cameraValues.far}
-          look-controls="enabled: false"
-          ref={el => (this._camera = el)}
-        />
-      );
-    }
+  private _renderCamera() {
+    return (
+      <a-camera
+        fov={Constants.cameraValues.fov}
+        near={Constants.cameraValues.near}
+        look-controls="enabled: false"
+        far={Constants.cameraValues.far}
+        id="mainCamera"
+        cursor="rayOrigin: mouse"
+        raycaster="objects: .collidable;"
+        al-orbit-control={`
+          maxPolarAngle: ${Constants.cameraValues.maxPolarAngle};
+          minDistance: ${Constants.cameraValues.minDistance};
+          screenSpacePanning: true;
+          rotateSpeed: ${Constants.cameraValues.rotateSpeed};
+          zoomSpeed: ${Constants.cameraValues.zoomSpeed};
+          enableDamping: true;
+          dampingFactor: ${Constants.cameraValues.dampingFactor};
+          controlTarget: ${ThreeUtils.vector3ToString(
+            this.camera ? this.camera.target : new THREE.Vector3(0, 0, 0)
+          )};
+          controlPosition: ${ThreeUtils.vector3ToString(
+            this.camera ? this.camera.position : new THREE.Vector3(0, 0, 0)
+          )};
+          enabled: ${this.controlsEnabled};
+          animating: ${
+            this.camera && this.camera.animating ? this.camera.animating : false
+          }
+        `}
+        ref={el => (this._camera = el)}
+      >
+        {/* {this._renderSpinner()} */}
+      </a-camera>
+    );
   }
 
-  private _renderScene(): JSX.Element {
+  private _renderScene() {
     return (
       <a-scene
         embedded
-        renderer="colorManagement: true;"
+        renderer={`colorManagement: true; sortObjects: true; webgl2: ${
+          this._isWebGl2
+        };`}
         vr-mode-ui="enabled: false"
         ref={el => (this._scene = el)}
       >
-        {this._renderSpinner()}
+        {this._renderBackboard()}
         {this._renderSrc()}
-        {this._renderTools()}
+        {this._renderBoundingBox()}
+        {this._renderNodes()}
+        {this._renderEdges()}
+        {this._renderAngles()}
         {this._renderLights()}
         {this._renderCamera()}
       </a-scene>
     );
   }
 
-  private _renderControlPanel(): JSX.Element {
-    // todo: tunnel state
-    return (
-      <al-control-panel
-        angleToolEnabled={this.angleToolEnabled}
-        annotationToolEnabled={this.annotationToolEnabled}
-        boundingBoxVisible={this.boundingBoxVisible}
-        displayMode={this.displayMode}
-        optionsEnabled={this.optionsEnabled}
-        optionsVisible={this.optionsVisible}
-        orientation={this.orientation}
-        rulerToolEnabled={this.rulerToolEnabled}
-        selectedTool={this.selectedTool}
-        slicesIndex={this.slicesIndex}
-        slicesWindowCenter={this.slicesWindowCenter}
-        slicesWindowWidth={this.slicesWindowWidth}
-        stack={this._stack}
-        stackHelper={this._stackHelper}
-        tools={this.tools}
-        toolsEnabled={this.toolsEnabled}
-        toolsVisible={this.toolsVisible}
-        volumeSteps={this.volumeSteps}
-        volumeWindowCenter={this.volumeWindowCenter}
-        volumeWindowWidth={this.volumeWindowWidth}
-        addTool={this.appAddTool}
-        removeTool={this.appRemoveTool}
-        saveTools={this._saveTools.bind(this)}
-        selectTool={this.appSelectTool}
-        setBoundingBoxVisible={this.appSetBoundingBoxVisible}
-        setDisplayMode={this.appSetDisplayMode}
-        setOptionsEnabled={this.appSetOptionsEnabled}
-        setOrientation={this.appSetOrientation}
-        setSlicesIndex={this.appSetSlicesIndex}
-        setSlicesWindowCenter={this.appSetSlicesWindowCenter}
-        setSlicesWindowWidth={this.appSetSlicesWindowWidth}
-        setToolsEnabled={this.appSetToolsEnabled}
-        setVolumeSteps={this.appSetVolumeSteps}
-        setVolumeWindowCenter={this.appSetVolumeWindowCenter}
-        setVolumeWindowWidth={this.appSetVolumeWindowWidth}
-      />
-    );
-  }
-
-  render(): JSX.Element {
+  render() {
     return (
       <div
-        id="al-wrapper"
+        id="al-container"
         style={{
           width: this.width,
           height: this.height
         }}
+        ref={el => (this._container = el)}
       >
+        <div id="lut-container">
+          <div id="lut-min">0.0</div>
+          <div id="lut-canvases" />
+          <div id="lut-max">1.0</div>
+        </div>
         {this._renderScene()}
-        {this._renderControlPanel()}
+        {this._renderSpinner()}
       </div>
     );
   }
   //#endregion
 
-  private _saveTools(): void {
-    this.onSave.emit(JSON.stringify(this.tools));
+  //#region Private Methods
+
+  private _restorePixelDensity() {
+    setTimeout(() => {
+      this._scene.renderer.setPixelRatio(window.devicePixelRatio);
+      this._scene.renderer.setSize(
+        this._container.offsetWidth,
+        this._container.offsetHeight
+      );
+    }, 100);
   }
 
-  private _srcLoaded(): void {
-    const mesh: THREE.Mesh = this._targetEntity.object3DMap.mesh as THREE.Mesh;
-    mesh.geometry.computeBoundingSphere();
-    this._scale = mesh.geometry.boundingSphere.radius;
-    this.appSetSrcLoaded(true);
-    this.onLoad.emit();
+  private _reducePixelDensity() {
+    this._scene.renderer.setPixelRatio(0.1 * window.devicePixelRatio);
+    this._scene.renderer.setSize(
+      this._container.offsetWidth,
+      this._container.offsetHeight
+    );
   }
 
-  private _addEventListeners(): void {
-    if (this._scene) {
-      this._scene.addEventListener(
-        "al-tool-moved",
-        this._toolMovedHandler,
-        false
-      );
-      this._scene.addEventListener("al-add-tool", this._addToolHandler, false);
-      this._scene.addEventListener(
-        "al-tool-selected",
-        this._toolSelectedHandler,
-        false
-      );
-      this._scene.addEventListener(
-        "al-valid-target",
-        this._validTargetHandler,
-        false
-      );
-      this._scene.addEventListener(
-        "al-mesh-distance",
-        this._meshDistanceHandler,
-        false
-      );
-
-      if (this._targetEntity) {
-        this._targetEntity.addEventListener(
-          "al-model-loaded",
-          this._srcLoadedHandler,
-          false
+  private _createEdge(node1Id: string, node2Id: string): void {
+    // check if there is already an edge connecting these two nodes
+    const match: [string, AlEdge] | undefined = Array.from(this.edges).find(
+      ([_id, edge]) => {
+        return (
+          (edge.node1Id === node1Id && edge.node2Id === node2Id) ||
+          (edge.node1Id === node2Id && edge.node2Id === node1Id)
         );
       }
+    );
 
-      if (this._camera) {
-        this._camera.addEventListener(
-          "al-tool-intersection",
-          this._intersectingToolHandler,
-          false
+    if (!match) {
+      const newEdge: AlEdge = {
+        node1Id: node1Id,
+        node2Id: node2Id
+      };
+      const edgeId: string = GraphUtils.getNextId(
+        AlGraphEntryType.EDGE,
+        this.edges
+      );
+
+      this._setEdge([edgeId, newEdge]);
+    } else {
+      console.log("edge already exists");
+    }
+  }
+
+  private _createAngle(edge1Id: string, edge2Id: string): void {
+    // check if there is already an angle connecting these two edges
+    const match: [string, AlAngle] | undefined = Array.from(this.angles).find(
+      ([_id, angle]) => {
+        return (
+          (angle.edge1Id === edge1Id && angle.edge2Id === edge2Id) ||
+          (angle.edge1Id === edge2Id && angle.edge2Id === edge1Id)
         );
-        this._camera.addEventListener(
-          "al-tool-intersection-cleared",
-          this._intersectionClearedHandler,
-          false
+      }
+    );
+    if (!match) {
+      let edge1 = this.edges.get(edge1Id);
+      let edge2 = this.edges.get(edge2Id);
+
+      if (
+        edge1.node1Id === edge2.node1Id ||
+        edge1.node1Id == edge2.node2Id ||
+        edge1.node2Id == edge2.node1Id ||
+        edge1.node2Id === edge2.node2Id
+      ) {
+        const newAngle: AlAngle = {
+          edge1Id: edge1Id,
+          edge2Id: edge2Id
+        };
+        const angleId: string = GraphUtils.getNextId(
+          AlGraphEntryType.ANGLE,
+          this.angles
         );
+
+        this._setAngle([angleId, newAngle]);
+      } else {
+        console.warn("cannot create angle: edges not connected");
+      }
+    } else {
+      console.warn("cannot create angle: angle already exists");
+    }
+  }
+
+  private _stateChanged(): void {
+    this.changed.emit(this.store.getState().app);
+  }
+
+  private _setGraph(graph: AlGraph): void {
+    if (graph.nodes) {
+      const nodes: Map<string, AlNode> = new Map(graph.nodes);
+      nodes.forEach((value: AlNode, key: string) => {
+        this.appSetNode([key, value]);
+      });
+    }
+
+    if (graph.edges) {
+      const edges: Map<string, AlEdge> = new Map(graph.edges);
+      edges.forEach((value: AlEdge, key: string) => {
+        this.appSetEdge([key, value]);
+      });
+    }
+
+    if (graph.angles) {
+      const angles: Map<string, AlAngle> = new Map(graph.angles);
+      angles.forEach((value: AlAngle, key: string) => {
+        this.appSetAngle([key, value]);
+      });
+    }
+
+    this._stateChanged();
+  }
+
+  private _clearGraph(): void {
+    this.appClearNodes();
+    this.appClearEdges();
+    this.appClearAngles();
+    this._stateChanged();
+  }
+
+  private _deleteNode(nodeId: string): void {
+    this.appDeleteNode(nodeId);
+    this._stateChanged();
+  }
+
+  private _setNode(node: [string, AlNode]): void {
+    this.appSetNode(node);
+    this._stateChanged();
+  }
+
+  private _selectNode(nodeId: string, animate: boolean = false): void {
+    if (animate && nodeId !== this.selected) {
+      let animationStart = {
+        position: this.camera.position.clone(),
+        target: this.camera.target.clone()
+      } as AlCamera;
+
+      let animationEnd = {
+        position: new THREE.Vector3(-1, -1, -1),
+        target: this.camera.target.clone()
+      } as AlCamera;
+
+      let result: THREE.Vector3 = GetUtils.getCameraPositionFromNode(
+        this.nodes.get(nodeId),
+        this._boundingSphereRadius,
+        this.camera.target
+      );
+
+      if (result) {
+        const diffPos: number = result.distanceTo(this.camera.position);
+
+        if (diffPos > 0) {
+          animationEnd.position.copy(result.clone());
+
+          const slerpPath: number[] = ThreeUtils.getSlerpPath(
+            animationStart,
+            animationEnd,
+            diffPos > 0,
+            false
+          );
+
+          this._scene.emit(
+            AlOrbitControlEvents.ANIMATION_STARTED,
+            { slerpPath },
+            false
+          );
+
+          this.appSetCamera({
+            animating: true
+          });
+
+          this.appSelectNode(nodeId);
+          this._stateChanged();
+        }
+      }
+    } else {
+      this.appSelectNode(nodeId);
+      this._stateChanged();
+    }
+  }
+
+  private _setEdge(edge: [string, AlEdge]): void {
+    this.appSetEdge(edge);
+    this._stateChanged();
+  }
+
+  private _deleteEdge(edgeId: string): void {
+    this.appDeleteEdge(edgeId);
+    this._stateChanged();
+  }
+
+  private _selectEdge(edgeId: string): void {
+    this.appSelectEdge(edgeId);
+    this._stateChanged();
+  }
+
+  private _setAngle(angle: [string, AlAngle]): void {
+    this.appSetAngle(angle);
+    this._stateChanged();
+  }
+
+  private _selectAngle(angleId: string): void {
+    this.appSelectAngle(angleId);
+    this._stateChanged();
+  }
+
+  private _deleteAngle(angleId: string): void {
+    this.appDeleteAngle(angleId);
+    this._stateChanged();
+  }
+
+  private _setGraphEnabled(enabled: boolean): void {
+    this.appSetGraphEnabled(enabled);
+    this._stateChanged();
+  }
+
+  private _setBoundingBoxVisible(visible: boolean): void {
+    this.appSetBoundingBoxVisible(visible);
+    this._stateChanged();
+  }
+
+  private _setSlicesIndex(index: number): void {
+    this.appSetSlicesIndex(index);
+    this._stateChanged();
+  }
+
+  private _setOrientation(orientation: Orientation): void {
+    this.appSetOrientation(orientation);
+    this._stateChanged();
+  }
+
+  private _setSlicesWindowCenter(center: number): void {
+    this.appSetSlicesWindowCenter(center);
+    this._stateChanged();
+  }
+
+  private _setSlicesWindowWidth(width: number): void {
+    this.appSetSlicesWindowWidth(width);
+    this._stateChanged();
+  }
+
+  private _setVolumeSteps(steps: number): void {
+    this.appSetVolumeSteps(steps);
+    this._stateChanged();
+  }
+
+  private _setVolumeWindowCenter(center: number): void {
+    this.appSetVolumeWindowCenter(center);
+    this._stateChanged();
+  }
+
+  private _setVolumeWindowWidth(width: number): void {
+    this.appSetVolumeWindowWidth(width);
+    this._stateChanged();
+  }
+
+  private _setDisplayMode(displayMode: DisplayMode): void {
+    this.appSetDisplayMode(displayMode);
+    this._stateChanged();
+  }
+
+  private _setSrc(src: string): void {
+    this.appSetSrc(src);
+    this._stateChanged();
+  }
+
+  private _srcLoaded(ev: any): void {
+    const aframeMesh: THREE.Mesh = this._targetEntity.object3DMap
+      .mesh as THREE.Mesh;
+
+    switch (this.displayMode) {
+      case DisplayMode.MESH: {
+        this._mesh = aframeMesh;
+        this._volumeHelper = null;
+        break;
+      }
+      case DisplayMode.SLICES: {
+        this._mesh = ev.detail._bBox._mesh;
+        this._volumeHelper = null;
+        break;
+      }
+      case DisplayMode.VOLUME: {
+        this._mesh = ev.detail._mesh;
+        this._volumeHelper = ev.detail;
+        break;
+      }
+    }
+
+    this._mesh.geometry.computeBoundingSphere();
+    this._boundingSphereRadius = this._mesh.geometry.boundingSphere.radius;
+    this._boundingBox = GetUtils.getBoundingBox(this._mesh);
+
+    let cameraState: AlCamera = GetUtils.getCameraStateFromMesh(this._mesh);
+
+    if (cameraState) {
+      this.appSetCamera(cameraState);
+    }
+
+    this.appSetSrcLoaded(true);
+    this._stateChanged();
+    this.loaded.emit(ev.detail);
+  }
+  //#endregion
+
+  //#region Event Handlers
+  private _keyDownHandler(event: KeyboardEvent) {
+    this._isShiftDown = event.shiftKey;
+
+    if (event.keyCode === KeyDown.Delete) {
+      if (this.selected) {
+        if (this.nodes.has(this.selected)) {
+          this._deleteNode(this.selected);
+        } else if (this.edges.has(this.selected)) {
+          this._deleteEdge(this.selected);
+        } else if (this.angles.has(this.selected)) {
+          this._deleteAngle(this.selected);
+        }
       }
     }
   }
+
+  private _keyUpHandler(_event: KeyboardEvent) {
+    this._isShiftDown = false;
+  }
+
+  private _graphEntryPointerUpHandler(_event: CustomEvent): void {
+    this.appSetControlsEnabled(true);
+    ThreeUtils.enableOrbitControls(this._camera, true);
+  }
+
+  private _graphEntryPointerDownHandler(_event: CustomEvent): void {
+    this.appSetControlsEnabled(false);
+    ThreeUtils.enableOrbitControls(this._camera, false);
+  }
+
+  private _controlsInteractionFinishedHandler(_event: MouseEvent): void {
+    if (this.displayMode === DisplayMode.VOLUME) {
+      this._restorePixelDensity();
+    }
+  }
+
+  private _controlsInteractionHandler(event: CustomEvent): void {
+    if (this.displayMode === DisplayMode.VOLUME) {
+      this._reducePixelDensity();
+    }
+    this.appSetCamera(event.detail.cameraState);
+  }
+
+  private _graphEntryPointerOutHandler(_event: CustomEvent): void {
+    this._hovered = null;
+  }
+
+  private _graphEntryPointerOverHandler(event: CustomEvent): void {
+    this._hovered = event.detail.id;
+  }
+
+  private _spawnNodeHandler(event: CustomEvent): void {
+    // IF creating a new node and NOT intersecting an existing node
+    if (
+      this.graphEnabled && // Nodes are enabled
+      this._validTarget && // Target is valid
+      this._hovered === null // Not intersecting a Node already
+    ) {
+      let intersection: THREE.Intersection =
+        event.detail.aframeEvent.detail.intersection;
+
+      const nodeId: string = GraphUtils.getNextId(
+        AlGraphEntryType.NODE,
+        this.nodes
+      );
+
+      let newNode: AlNode;
+
+      if (this.displayMode === DisplayMode.VOLUME && intersection) {
+        let hitPosition = new THREE.Vector3();
+        let hitNormal = new THREE.Vector3();
+
+        let rayResult = AMIUtils.volumeRay(
+          this._volumeHelper,
+          this._camera.object3D.children[0].position.clone(),
+          this._camera.getAttribute("raycaster").direction,
+          Constants.cameraValues.far,
+          hitPosition,
+          hitNormal
+        );
+
+        if (rayResult) {
+          newNode = {
+            position: ThreeUtils.vector3ToString(hitPosition),
+            scale: this._boundingSphereRadius / Constants.nodeSizeRatio,
+            text: nodeId
+          };
+        }
+      } else if (intersection) {
+        newNode = {
+          targetId: "0",
+          position: ThreeUtils.vector3ToString(intersection.point),
+          scale: this._boundingSphereRadius / Constants.nodeSizeRatio,
+          text: nodeId
+        };
+      }
+
+      if (newNode) {
+        const previousSelected = this.selected;
+        this._setNode([nodeId, newNode]);
+
+        if (
+          this._isShiftDown && // Shift is down
+          this.nodes.has(previousSelected) // A Node is already selected
+        ) {
+          this._createEdge(previousSelected, nodeId);
+          this._selectNode(nodeId);
+        }
+      }
+    }
+  }
+
+  private _graphEntryValidTargetHandler(event: CustomEvent): void {
+    this._validTarget = event.detail.valid;
+  }
+
+  private _controlsAnimationFinishedHandler(_event: CustomEvent): void {
+    this.appSetCamera({
+      animating: false
+    });
+  }
+
+  private _graphEntrySelectedHandler(event: CustomEvent): void {
+    // todo: change to graphEnabled
+    if (!this.graphEnabled) {
+      return;
+    }
+
+    const type: AlGraphEntryType = event.detail.type;
+    const id: string = event.detail.id;
+
+    switch (type) {
+      case AlGraphEntryType.NODE: {
+        if (
+          this._hovered !== null &&
+          this.nodes.has(this._hovered) && // We're intersecting a node
+          (this.selected !== null && this.nodes.has(this.selected)) && // We have a node already selected
+          this.selected !== this._hovered && // The selected & intersecting elements are not the same
+          this._isShiftDown // The shift key is down
+        ) {
+          this._createEdge(this.selected, this._hovered);
+        }
+        this._selectNode(id);
+        break;
+      }
+      case AlGraphEntryType.EDGE: {
+        if (
+          this._hovered !== null &&
+          this.edges.has(this._hovered) && // We're intersecting an edge
+          (this.selected !== null && this.edges.has(this.selected)) && // We have an edge already selected
+          this.selected !== this._hovered && // The selected & intersecting elements are not the same
+          this._isShiftDown // The shift key is down
+        ) {
+          // We're intersecting an edge
+          this._createAngle(this.selected, this._hovered);
+        }
+        this._selectEdge(id);
+        break;
+      }
+      case AlGraphEntryType.ANGLE: {
+        this._selectAngle(id);
+        break;
+      }
+    }
+  }
+
+  private _graphEntryDraggedHandler(event: CustomEvent): void {
+    const nodeId: string = event.detail.id;
+    const raycaster = this._camera.components.raycaster as any;
+
+    // First try target
+    let intersection = raycaster.getIntersection(
+      this._targetEntity
+    ) as THREE.Intersection;
+
+    // Try backboard
+    if (!intersection) {
+      intersection = raycaster.getIntersection(
+        this._backboard
+      ) as THREE.Intersection;
+    }
+
+    if (intersection && this.displayMode === DisplayMode.VOLUME) {
+      let hitPosition = new THREE.Vector3();
+      let hitNormal = new THREE.Vector3();
+
+      let rayResult = AMIUtils.volumeRay(
+        this._volumeHelper,
+        this._camera.object3D.children[0].position.clone(),
+        this._camera.getAttribute("raycaster").direction,
+        Constants.cameraValues.far,
+        hitPosition,
+        hitNormal
+      );
+
+      if (rayResult && intersection) {
+        this._setNode([
+          nodeId,
+          {
+            position: ThreeUtils.vector3ToString(hitPosition)
+          }
+        ]);
+        const eventName = nodeId + Constants.movedEventString;
+        this._scene.emit(eventName, {}, true);
+      }
+    } else if (intersection && this.displayMode !== DisplayMode.VOLUME) {
+      this._setNode([
+        nodeId,
+        {
+          position: ThreeUtils.vector3ToString(intersection.point)
+        }
+      ]);
+      const eventName = nodeId + Constants.movedEventString;
+      this._scene.emit(eventName, {}, true);
+    }
+  }
+
+  private _addEventListeners(): void {
+    document.addEventListener("keydown", this._keyDownHandler, false);
+    document.addEventListener("keyup", this._keyUpHandler, false);
+    document.addEventListener(
+      "mouseup",
+      this._controlsInteractionFinishedHandler,
+      false
+    );
+
+    this._scene.addEventListener(
+      AlOrbitControlEvents.ANIMATION_FINISHED,
+      this._controlsAnimationFinishedHandler,
+      false
+    );
+
+    this._scene.addEventListener(
+      AlOrbitControlEvents.INTERACTION,
+      this._controlsInteractionHandler,
+      false
+    );
+
+    this._scene.addEventListener(
+      AlOrbitControlEvents.INTERACTION_FINISHED,
+      this._controlsInteractionFinishedHandler,
+      false
+    );
+
+    this._scene.addEventListener(
+      AlGraphEvents.POINTER_UP,
+      this._graphEntryPointerUpHandler,
+      false
+    );
+
+    this._scene.addEventListener(
+      AlGraphEvents.POINTER_DOWN,
+      this._graphEntryPointerDownHandler,
+      false
+    );
+
+    this._scene.addEventListener(
+      AlGraphEvents.DRAGGED,
+      this._graphEntryDraggedHandler,
+      false
+    );
+
+    this._scene.addEventListener(
+      AlGraphEvents.SELECTED,
+      this._graphEntrySelectedHandler,
+      false
+    );
+
+    this._scene.addEventListener(
+      AlNodeSpawnerEvents.ADD_NODE,
+      this._spawnNodeHandler,
+      false
+    );
+
+    this._scene.addEventListener(
+      AlNodeSpawnerEvents.VALID_TARGET,
+      this._graphEntryValidTargetHandler,
+      false
+    );
+
+    this._scene.addEventListener(
+      AlGltfModelEvents.LOADED,
+      this._srcLoaded,
+      false
+    );
+
+    this._scene.addEventListener(AlVolumeEvents.LOADED, this._srcLoaded, false);
+
+    this._scene.addEventListener(
+      AlGraphEvents.POINTER_OVER,
+      this._graphEntryPointerOverHandler,
+      false
+    );
+
+    this._scene.addEventListener(
+      AlGraphEvents.POINTER_OUT,
+      this._graphEntryPointerOutHandler,
+      false
+    );
+  }
+  //#endregion
 
   componentDidLoad() {}
 
   componentDidUpdate() {
-    this._addEventListeners();
-    if (!this.srcLoaded && this._camera) {
-      // reset the camera to look at the spinner
-      // doing this in the render method has no effect
-      this._camera.object3DMap.camera.position.set(0, 2.15, -4);
-      this._camera.object3DMap.camera.lookAt(this._spinner.object3D.position);
+    if (this._scene) {
+      this._addEventListeners();
+    }
+
+    // Turns debug text inside the models invisible
+    // TODO: Wire to debug variable
+    if (this.debug) {
+      try {
+        const mat = (this._camera.object3DMap.text as THREE.Mesh)
+          .material as THREE.Material;
+        if (mat) {
+          mat.transparent = true;
+        }
+      } catch {}
     }
   }
-
-  //#region Event Handlers
-  private _intersectionClearedHandler(_evt): void {
-    this._intersectingTool = false;
-  }
-
-  private _intersectingToolHandler(_evt): void {
-    this._intersectingTool = true;
-  }
-
-  private _addToolHandler(event: CustomEvent): void {
-    if (this.toolsEnabled && this._validTarget && !this._intersectingTool) {
-      let intersection: THREE.Intersection = event.detail.detail.intersection;
-
-      const newTool: Tool = CreateUtils.createTool(
-        this.tools,
-        "#targetEntity",
-        intersection.point,
-        this._scale
-      );
-
-      this.appAddTool(newTool);
-    }
-  }
-
-  private _meshDistanceHandler(event: CustomEvent): void {
-    this._maxMeshDistance = event.detail.dist;
-  }
-
-  private _validTargetHandler(event: CustomEvent): void {
-    this._validTarget = event.detail.payload;
-  }
-
-  private _toolSelectedHandler(event: CustomEvent): void {
-    this.appSelectTool(event.detail.id);
-  }
-
-  private _toolMovedHandler(event: CustomEvent): void {
-    const toolId: string = event.detail.id;
-    const raycaster = this._camera.components.raycaster as any;
-    const intersection = raycaster.getIntersection(
-      this._targetEntity
-    ) as THREE.Intersection;
-
-    if (intersection) {
-      this.appUpdateTool({
-        id: toolId,
-        position: ThreeUtils.vector3ToString(intersection.point)
-      });
-    } else {
-      let toolPos: THREE.Vector3 = (this._scene
-        .querySelector("#" + toolId)
-        .getAttribute("position") as unknown) as THREE.Vector3;
-      const raycasterPos = raycaster.raycaster.ray.origin;
-      toolPos.x = raycasterPos.x;
-      toolPos.y = raycasterPos.y;
-
-      this.appUpdateTool({
-        id: toolId,
-        position: ThreeUtils.vector3ToString(toolPos)
-      });
-    }
-  }
-  //#endregion
 }

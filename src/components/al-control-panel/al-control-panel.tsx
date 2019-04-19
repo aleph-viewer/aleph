@@ -1,59 +1,123 @@
-import { Component, Prop } from "@stencil/core";
-import { Tool } from "../../interfaces/interfaces";
+import { Component, Prop, Event, EventEmitter, Watch } from "@stencil/core";
 import { DisplayMode } from "../../enums/DisplayMode";
 import { Orientation } from "../../enums/Orientation";
 
 @Component({
   tag: "al-control-panel",
   styleUrl: "al-control-panel.css",
-  shadow: false
+  shadow: true
 })
-export class ControlPanel {
-  @Prop() angleToolEnabled: boolean;
-  @Prop() annotationToolEnabled: boolean;
-  @Prop() boundingBoxVisible: boolean;
-  @Prop() displayMode: DisplayMode;
-  @Prop() optionsEnabled: boolean;
-  @Prop() optionsVisible: boolean;
-  @Prop() orientation: Orientation;
-  @Prop() rulerToolEnabled: boolean;
-  @Prop() selectedTool: string | null;
-  @Prop() slicesIndex: number;
-  @Prop() slicesWindowCenter: number;
-  @Prop() slicesWindowWidth: number;
-  @Prop() stack: any;
-  @Prop() stackHelper: AMI.StackHelper;
-  @Prop() tools: Tool[];
-  @Prop() toolsEnabled: boolean;
-  @Prop() toolsVisible: boolean;
-  @Prop() volumeSteps: number;
-  @Prop() volumeWindowCenter: number;
-  @Prop() volumeWindowWidth: number;
+export class AlControlPanel {
+  private _lastStackOrientationIndex: number;
+  private _debounceRangeMS: number = 250;
 
-  @Prop() addTool: (tool: Tool) => void;
-  @Prop() removeTool: (id: string) => void;
-  @Prop() saveTools: () => void;
-  @Prop() selectTool: (id: string) => void;
-  @Prop() setBoundingBoxVisible: (visible: boolean) => void;
-  @Prop() setDisplayMode: (mode: DisplayMode) => void;
-  @Prop() setOptionsEnabled: (enabled: boolean) => void;
-  @Prop() setOrientation: (orientation: Orientation) => void;
-  @Prop() setSlicesIndex: (index: number) => void;
-  @Prop() setSlicesWindowCenter: (index: number) => void;
-  @Prop() setSlicesWindowWidth: (index: number) => void;
-  @Prop() setToolsEnabled: (enabled: boolean) => void;
-  @Prop() setVolumeSteps: (steps: number) => void;
-  @Prop() setVolumeWindowCenter: (index: number) => void;
-  @Prop() setVolumeWindowWidth: (index: number) => void;
+  @Event() boundingBoxVisibleChanged: EventEmitter;
+  @Event() displayModeChanged: EventEmitter;
+  @Event() optionsEnabledChanged: EventEmitter;
+  @Event() orientationChanged: EventEmitter;
+  @Event() slicesIndexChanged: EventEmitter;
+  @Event() slicesWindowCenterChanged: EventEmitter;
+  @Event() slicesWindowWidthChanged: EventEmitter;
+  @Event() graphEnabledChanged: EventEmitter;
+  @Event() volumeStepsChanged: EventEmitter;
+  @Event() volumeWindowCenterChanged: EventEmitter;
+  @Event() volumeWindowWidthChanged: EventEmitter;
 
-  renderDisplayModeToggle(): JSX.Element {
+  @Prop({ mutable: true }) boundingBoxVisible: boolean = false;
+  @Prop({ mutable: true }) displayMode: DisplayMode = DisplayMode.MESH;
+  @Prop({ mutable: true }) optionsEnabled: boolean = true;
+  @Prop({ mutable: true }) optionsVisible: boolean = true;
+  @Prop({ mutable: true }) orientation: Orientation = Orientation.CORONAL;
+  @Prop({ mutable: true }) slicesIndex: number;
+  @Prop({ mutable: true }) slicesWindowCenter: number;
+  @Prop({ mutable: true }) slicesWindowWidth: number;
+  @Prop({ mutable: true }) stackhelper:
+    | AMI.StackHelper
+    | AMI.VolumeRenderHelper;
+  @Watch("stackhelper")
+  watchStackhelper() {
+    this.slicesIndex = undefined;
+    this.slicesWindowCenter = undefined;
+    this.slicesWindowWidth = undefined;
+    this.volumeSteps = undefined;
+    this.volumeWindowCenter = undefined;
+    this.volumeWindowWidth = undefined;
+  }
+  @Prop({ mutable: true }) graphEnabled: boolean = false;
+  @Prop({ mutable: true }) graphVisible: boolean = true;
+  @Prop({ mutable: true }) volumeSteps: number;
+  @Prop({ mutable: true }) volumeWindowCenter: number;
+  @Prop({ mutable: true }) volumeWindowWidth: number;
+
+  private _boundingBoxVisible(visible: boolean) {
+    this.boundingBoxVisible = visible;
+    this.boundingBoxVisibleChanged.emit(visible);
+  }
+
+  private _displayMode(displayMode: DisplayMode) {
+    this.displayMode = displayMode;
+    this.displayModeChanged.emit(displayMode);
+  }
+
+  // private _optionsEnabled(enabled: boolean) {
+  //   this.optionsEnabled = enabled;
+  //   this.optionsEnabledChanged.emit(enabled);
+  // }
+
+  // private _optionsVisible(visible: boolean) {
+  //   this.optionsVisible = visible;
+  // }
+
+  private _graphEnabled(enabled: boolean) {
+    this.graphEnabled = enabled;
+    this.graphEnabledChanged.emit(enabled);
+  }
+
+  private _orientation(orientation: Orientation) {
+    this.orientation = orientation;
+    this.orientationChanged.emit(orientation);
+  }
+
+  private _slicesIndex(index: number) {
+    this.slicesIndex = index;
+    this.slicesIndexChanged.emit(index);
+  }
+
+  private _slicesWindowCenter(center: number) {
+    this.slicesWindowCenter = center;
+    this.slicesWindowCenterChanged.emit(center);
+  }
+
+  private _slicesWindowWidth(width: number) {
+    this.slicesWindowWidth = width;
+    this.slicesWindowWidthChanged.emit(width);
+  }
+
+  private _volumeSteps(steps: number) {
+    this.volumeSteps = steps;
+    this.volumeStepsChanged.emit(steps);
+  }
+
+  private _volumeWindowCenter(center: number) {
+    this.volumeWindowCenter = center;
+    this.volumeWindowCenterChanged.emit(center);
+  }
+
+  private _volumeWindowWidth(width: number) {
+    this.volumeWindowWidth = width;
+    this.volumeWindowWidthChanged.emit(width);
+  }
+
+  renderDisplayModeToggle() {
     if (this.displayMode !== DisplayMode.MESH) {
       return (
         <ion-item id="mode">
-          <ion-icon name="eye" />
+          <ion-icon name="eye" slot="start" />
           <select
+            slot="end"
             onChange={e =>
-              this.setDisplayMode(e.srcElement.nodeValue as DisplayMode)
+              this._displayMode((e.srcElement as HTMLSelectElement)
+                .value as DisplayMode)
             }
           >
             <option
@@ -76,13 +140,15 @@ export class ControlPanel {
     return null;
   }
 
-  renderToolsToggle(): JSX.Element {
-    if (this.toolsVisible) {
+  renderNodesToggle() {
+    if (this.graphVisible) {
       return (
         <ion-item>
-          <ion-icon name="create" />
+          <ion-icon name="add-circle" slot="start" />
           <ion-toggle
-            onIonChange={e => this.setToolsEnabled(e.detail.checked)}
+            slot="end"
+            checked={this.graphEnabled}
+            onIonChange={e => this._graphEnabled(e.detail.checked)}
           />
         </ion-item>
       );
@@ -91,131 +157,57 @@ export class ControlPanel {
     return null;
   }
 
-  renderTools(): JSX.Element {
-    if (this.toolsVisible && this.toolsEnabled) {
-      return [
-        <div class="al-list">
-          {this.tools.map((tool: Tool) => {
-            return (
-              <label class="block">
-                <input
-                  type="radio"
-                  checked={this.selectedTool === tool.id}
-                  id={tool.id}
-                  name="tool"
-                  value={tool.id}
-                  onChange={e => this.selectTool(e.srcElement.id)}
-                />
-                {tool.id}
-              </label>
-            );
-          })}
-        </div>,
-        <ion-footer>
-          {/* <ion-item>
-            <ion-label>Tool Type</ion-label>
-            <select
-              onChange={e =>
-                this.setToolType((e.target as HTMLSelectElement)
-                  .value as ToolType)
-              }
-            >
-              {this.angleToolEnabled ? (
-                <option
-                  selected={this.toolType === ToolType.ANGLE}
-                  value={ToolType.ANGLE}
-                >
-                  Angle
-                </option>
-              ) : null}
-              {this.annotationToolEnabled ? (
-                <option
-                  selected={this.toolType === ToolType.ANNOTATION}
-                  value={ToolType.ANNOTATION}
-                >
-                  Annotation
-                </option>
-              ) : null}
-              {this.rulerToolEnabled ? (
-                <option
-                  selected={this.toolType === ToolType.RULER}
-                  value={ToolType.RULER}
-                >
-                  Ruler
-                </option>
-              ) : null}
-            </select>
-          </ion-item> */}
-          <ion-toolbar>
-            <ion-buttons>
-              {/* <ion-button
-                onClick={() => {
-                  this.addTool(
-                    CreateUtils.createTool(this.tools, this.toolType)
-                  );
-                }}
-              >
-                Add
-              </ion-button> */}
-              <ion-button
-                onClick={() => {
-                  this.saveTools();
-                }}
-              >
-                Save
-              </ion-button>
-              {this.selectedTool !== null ? (
-                <ion-button
-                  onClick={() => {
-                    this.removeTool(this.selectedTool);
-                  }}
-                >
-                  Delete
-                </ion-button>
-              ) : null}
-            </ion-buttons>
-          </ion-toolbar>
-        </ion-footer>
-      ];
-    }
-
-    return null;
-  }
-
-  renderOptionsToggle(): JSX.Element {
+  /*
+  renderOptionsToggle() {
     if (this.optionsVisible) {
       return (
         <ion-item>
-          <ion-icon name="options" />
+          <ion-icon name="options" slot="start" />
           <ion-toggle
-            onIonChange={e => this.setOptionsEnabled(e.detail.checked)}
+            slot="end"
+            checked={this.optionsEnabled}
+            onIonChange={e => this._optionsEnabled(e.detail.checked)}
           />
         </ion-item>
       );
     }
   }
+  */
 
-  renderBoundingBoxEnabled(): JSX.Element {
+  renderBoundingBoxEnabled() {
     return (
       <ion-item>
-        <ion-label>Bounding box</ion-label>
+        <ion-icon name="cube" slot="start" />
         <ion-toggle
+          slot="end"
           checked={this.boundingBoxVisible}
-          onIonChange={e => this.setBoundingBoxVisible(e.detail.checked)}
+          onIonChange={e => this._boundingBoxVisible(e.detail.checked)}
         />
       </ion-item>
     );
   }
 
-  renderOptions(): JSX.Element {
-    switch (this.displayMode) {
-      /*
-      case DisplayMode.SLICES: {
+  private _reverseNumber(num: number, min: number, max: number): number {
+    return max + min - num;
+  }
 
-        const orientationIndex: number = Object.keys(Orientation).indexOf(this.orientation.toUpperCase());
+  renderOptions() {
+    switch (this.displayMode) {
+      case DisplayMode.SLICES: {
+        if (
+          !this.stackhelper ||
+          (this.stackhelper && !(this.stackhelper as AMI.StackHelper).slice)
+        ) {
+          break;
+        }
+
+        const orientationIndex: number = Object.keys(Orientation).indexOf(
+          this.orientation.toUpperCase()
+        );
 
         // based off zCosine, x:1 = saggital, y:1 = coronal, z:1 = axial
-        const zCosine: THREE.Vector3 = this.stack.zCosine as THREE.Vector3;
+        const zCosine: THREE.Vector3 = this.stackhelper.stack
+          .zCosine as THREE.Vector3;
 
         let orientationOffset;
         // If DICOM's up axis is X, offset the viewer's orientation by 1
@@ -232,21 +224,36 @@ export class ControlPanel {
         }
 
         // Wrap the orientationIndex so that it may never exceed 2
-        const displayOrientationIndex = Math.round((orientationIndex + orientationOffset) % 3);
-        const stackOrientationIndex = Math.round((orientationIndex + orientationOffset + 2) % 3);
+        const displayOrientationIndex = Math.round(
+          (orientationIndex + orientationOffset) % 3
+        );
+        const stackOrientationIndex = Math.round(
+          (orientationIndex + orientationOffset + 2) % 3
+        );
 
-        const indexMax: number = this.stack.dimensionsIJK[Object.keys(this.stack.dimensionsIJK)[stackOrientationIndex]] - 1;
+        const indexMax: number =
+          this.stackhelper.stack.dimensionsIJK[
+            Object.keys(this.stackhelper.stack.dimensionsIJK)[
+              stackOrientationIndex
+            ]
+          ] - 1;
         let index: number;
 
-        if (this.slicesIndex === undefined) {
+        if (
+          stackOrientationIndex !== this._lastStackOrientationIndex ||
+          this.slicesIndex === undefined
+        ) {
           // set default
           index = Math.floor(indexMax / 2);
         } else {
           index = this.slicesIndex;
         }
 
+        this._lastStackOrientationIndex = stackOrientationIndex;
+
         const windowWidthMin: number = 1;
-        const windowWidthMax: number = this.stack.minMax[1] - this.stack.minMax[0];
+        const windowWidthMax: number =
+          this.stackhelper.stack.minMax[1] - this.stackhelper.stack.minMax[0];
         let windowWidth: number;
 
         if (this.slicesWindowWidth === undefined) {
@@ -256,8 +263,8 @@ export class ControlPanel {
           windowWidth = this.slicesWindowWidth;
         }
 
-        const windowCenterMin: number = this.stack.minMax[0];
-        const windowCenterMax: number = this.stack.minMax[1];
+        const windowCenterMin: number = this.stackhelper.stack.minMax[0];
+        const windowCenterMax: number = this.stackhelper.stack.minMax[1];
         let windowCenter: number;
 
         if (this.slicesWindowCenter === undefined) {
@@ -268,50 +275,109 @@ export class ControlPanel {
         }
 
         // update the stackhelper
-        (this.stackHelper as AMI.StackHelper).orientation = displayOrientationIndex;
-        (this.stackHelper as AMI.StackHelper).index = index;
-        (this.stackHelper as AMI.StackHelper).slice.windowWidth = windowWidth;
-        (this.stackHelper as AMI.StackHelper).slice.windowCenter = windowCenter;
+        (this
+          .stackhelper as AMI.StackHelper).orientation = displayOrientationIndex;
+        (this.stackhelper as AMI.StackHelper).index = index;
+        (this.stackhelper as AMI.StackHelper).slice.windowWidth = windowWidth;
+        (this.stackhelper as AMI.StackHelper).slice.windowCenter = windowCenter;
 
         if (this.optionsVisible && this.optionsEnabled) {
           return (
             <div>
-              { this.renderBoundingBoxEnabled() }
+              {this.renderBoundingBoxEnabled()}
               <ion-item>
-                <ion-label>Index</ion-label>
-                <ion-range pin="true" min="0" max={indexMax} value={index} onIonChange={ this._slicesIndexChanged.bind(this) }></ion-range>
+                <ion-icon name="swap" slot="start" />
+                <ion-range
+                  slot="end"
+                  min="0"
+                  max={indexMax}
+                  value={index}
+                  onIonChange={e => this._slicesIndex(e.detail.value)}
+                />
               </ion-item>
               <ion-item>
-              <ion-label>Orientation</ion-label>
-                <select onChange={ (e) => this.setOrientation(e.detail.value) }>
-                  <option selected={this.orientation === Orientation.CORONAL} value={Orientation.CORONAL}>Coronal (x)</option>
-                  <option selected={this.orientation === Orientation.SAGGITAL} value={Orientation.SAGGITAL}>Saggital (y)</option>
-                  <option selected={this.orientation === Orientation.AXIAL} value={Orientation.AXIAL}>Axial (z)</option>
+                <ion-icon name="compass" slot="start" />
+                <select
+                  slot="end"
+                  onChange={e =>
+                    this._orientation((e.srcElement as HTMLSelectElement)
+                      .value as Orientation)
+                  }
+                >
+                  <option
+                    selected={this.orientation === Orientation.CORONAL}
+                    value={Orientation.CORONAL}
+                  >
+                    Coronal
+                  </option>
+                  <option
+                    selected={this.orientation === Orientation.SAGGITAL}
+                    value={Orientation.SAGGITAL}
+                  >
+                    Saggital
+                  </option>
+                  <option
+                    selected={this.orientation === Orientation.AXIAL}
+                    value={Orientation.AXIAL}
+                  >
+                    Axial
+                  </option>
                 </select>
               </ion-item>
               <ion-item>
-                <ion-icon name="sunny"></ion-icon>
-                <ion-range pin="true"
+                <ion-icon name="sunny" slot="start" />
+                <ion-range
+                  slot="end"
                   min={windowCenterMin}
                   max={windowCenterMax}
-                  value={windowCenter}
-                  onIonChange={ this._slicesWindowCenterChanged.bind(this) }></ion-range>
+                  value={this._reverseNumber(
+                    windowCenter,
+                    windowCenterMin,
+                    windowCenterMax
+                  )}
+                  onIonChange={e =>
+                    this._slicesWindowCenter(
+                      this._reverseNumber(
+                        e.detail.value,
+                        windowCenterMin,
+                        windowCenterMax
+                      )
+                    )
+                  }
+                />
               </ion-item>
               <ion-item>
-                <ion-icon name="contrast"></ion-icon>
-                <ion-range pin="true"
+                <ion-icon name="contrast" slot="start" />
+                <ion-range
+                  slot="end"
                   min={windowWidthMin}
                   max={windowWidthMax}
-                  value={windowWidth}
-                  onIonChange={ this._slicesWindowWidthChanged.bind(this) }></ion-range>
+                  value={this._reverseNumber(
+                    windowWidth,
+                    windowWidthMin,
+                    windowWidthMax
+                  )}
+                  onIonChange={e =>
+                    this._slicesWindowWidth(
+                      this._reverseNumber(
+                        e.detail.value,
+                        windowWidthMin,
+                        windowWidthMax
+                      )
+                    )
+                  }
+                />
               </ion-item>
             </div>
-          )
+          );
         } else {
           return null;
         }
       }
-      case DisplayMode.VOLUME : {
+      case DisplayMode.VOLUME: {
+        if (!this.stackhelper) {
+          break;
+        }
 
         const stepsMin: number = 1;
         const stepsMax: number = 128;
@@ -325,7 +391,8 @@ export class ControlPanel {
         }
 
         const windowWidthMin: number = 1;
-        const windowWidthMax: number = this.stack.minMax[1] - this.stack.minMax[0];
+        const windowWidthMax: number =
+          this.stackhelper.stack.minMax[1] - this.stackhelper.stack.minMax[0];
         let windowWidth: number;
 
         if (this.volumeWindowWidth === undefined) {
@@ -335,8 +402,8 @@ export class ControlPanel {
           windowWidth = this.volumeWindowWidth;
         }
 
-        const windowCenterMin: number = this.stack.minMax[0];
-        const windowCenterMax: number = this.stack.minMax[1];
+        const windowCenterMin: number = this.stackhelper.stack.minMax[0];
+        const windowCenterMax: number = this.stackhelper.stack.minMax[1];
         let windowCenter: number;
 
         if (this.volumeWindowCenter === undefined) {
@@ -349,23 +416,29 @@ export class ControlPanel {
         //const volumeLuts: string = this._lut.lutsAvailable().join(',');
 
         // update the stackhelper
-        (this.stackHelper as AMI.VolumeRenderingHelper).uniforms.uSteps.value = steps;
-        (this.stackHelper as AMI.VolumeRenderingHelper).windowWidth = windowWidth;
-        (this.stackHelper as AMI.VolumeRenderingHelper).windowCenter = windowCenter;
+        (this.stackhelper as AMI.VolumeRenderHelper).steps = steps;
+        (this.stackhelper as AMI.VolumeRenderHelper).windowWidth = windowWidth;
+        (this
+          .stackhelper as AMI.VolumeRenderHelper).windowCenter = windowCenter;
 
-        if (this.optionsVisible && this.optionsEnabled) {
-          return (
-            <div>
-              { this.renderBoundingBoxEnabled() }
-              <ion-item>
-                <ion-label>Steps</ion-label>
-                <ion-range min={stepsMin}
-                  max={stepsMax}
-                  value={steps}
-                  pin="true"
-                  onMouseUp={ this._volumeStepsChanged.bind(this) }></ion-range>
-              </ion-item>
-              <ion-item>
+        //if (this.optionsVisible && this.optionsEnabled) {
+        return (
+          <div>
+            {this.renderBoundingBoxEnabled()}
+            <ion-item>
+              <ion-icon name="swap" slot="start" />
+              <ion-range
+                slot="end"
+                min={stepsMin}
+                max={stepsMax}
+                value={steps}
+                debounce={this._debounceRangeMS}
+                onIonChange={e =>
+                  this._volumeSteps((e.srcElement as any).value)
+                }
+              />
+            </ion-item>
+            {/* <ion-item>
                 <ion-label>LUT</ion-label>
                 <select onChange={ (e) => this.onVolumeLutChanged.emit(e.detail.value) }>
                 {
@@ -374,70 +447,51 @@ export class ControlPanel {
                   })
                 }
                 </ion-select>
-              </ion-item>
-              <ion-item>
-                <ion-icon name="sunny"></ion-icon>
-                <ion-range min={windowCenterMin}
-                  max={windowCenterMax}
-                  value={windowCenter}
-                  pin="true"
-                  onMouseUp={ this._volumeWindowCenterChanged.bind(this) }></ion-range>
-              </ion-item>
-              <ion-item>
-                <ion-icon name="contrast"></ion-icon>
-                <ion-range min={windowWidthMin}
-                  max={windowWidthMax}
-                  value={windowWidth}
-                  pin="true"
-                  onMouseUp={ this._volumeWindowWidthChanged.bind(this) }></ion-range>
-              </ion-item>
-            </div>
-          )
-        }
-      }*/
+              </ion-item> */}
+            <ion-item>
+              <ion-icon name="sunny" slot="start" />
+              <ion-range
+                slot="end"
+                min={windowCenterMin}
+                max={windowCenterMax}
+                value={windowCenter}
+                debounce={this._debounceRangeMS}
+                onIonChange={e =>
+                  this._volumeWindowCenter((e.srcElement as any).value)
+                }
+              />
+            </ion-item>
+            <ion-item>
+              <ion-icon name="contrast" slot="start" />
+              <ion-range
+                slot="end"
+                min={windowWidthMin}
+                max={windowWidthMax}
+                value={windowWidth}
+                debounce={this._debounceRangeMS}
+                onIonChange={e =>
+                  this._volumeWindowWidth((e.srcElement as any).value)
+                }
+              />
+            </ion-item>
+          </div>
+        );
+        //}
+      }
       case DisplayMode.MESH: {
-        if (this.optionsVisible && this.optionsEnabled) {
-          return <div>{this.renderBoundingBoxEnabled()}</div>;
-        }
+        return this.renderBoundingBoxEnabled();
       }
     }
+
+    return null;
   }
 
-  // private _slicesIndexChanged(evt: MouseEvent) {
-  //   this.setSlicesIndex((evt.srcElement as any).value);
-  // }
-
-  // private _slicesWindowCenterChanged(evt: MouseEvent) {
-  //   this.setSlicesWindowCenter((evt.srcElement as any).value);
-  // }
-
-  // private _slicesWindowWidthChanged(evt: MouseEvent) {
-  //   this.setSlicesWindowWidth((evt.srcElement as any).value);
-  // }
-
-  // private _volumeStepsChanged(evt: MouseEvent) {
-  //   this.setVolumeSteps((evt.srcElement as any).value);
-  // }
-
-  // private _volumeWindowCenterChanged(evt: MouseEvent) {
-  //   this.setVolumeWindowCenter((evt.srcElement as any).value);
-  // }
-
-  // private _volumeWindowWidthChanged(evt: MouseEvent) {
-  //   this.setVolumeWindowWidth((evt.srcElement as any).value);
-  // }
-
-  render(): JSX.Element {
-    return (
-      <div id="al-control-panel-wrapper">
-        <ion-app>
-          {this.renderDisplayModeToggle()}
-          {this.renderToolsToggle()}
-          {this.renderTools()}
-          {this.renderOptionsToggle()}
-          {this.renderOptions()}
-        </ion-app>
-      </div>
-    );
+  render() {
+    return [
+      this.renderDisplayModeToggle(),
+      this.renderNodesToggle(),
+      //this.renderOptionsToggle(),
+      this.renderOptions()
+    ];
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@universalviewer/aleph",
-  "version": "0.0.1",
+  "version": "0.0.1-pre.8",
   "description": "Aleph",
   "module": "dist/esm/index.js",
   "main": "dist/index.js",
@@ -19,25 +19,26 @@
     "test.watch": "stencil test --spec --e2e --watchAll"
   },
   "dependencies": {
+    "@edsilv/key-codes": "0.1.1",
     "@stencil/redux": "0.1.1",
     "redux": "4.0.1",
     "redux-logger": "3.0.6",
     "redux-thunk": "2.3.0"
   },
   "devDependencies": {
-    "@stencil/core": "0.18.1",
+    "@stencil/core": "0.18.0",
     "@types/aframe": "^0.8.2",
     "@types/jest": "24.0.11",
     "@types/puppeteer": "1.12.3",
     "@types/redux": "3.6.0",
-    "@types/three": "0.93.27",
+    "@types/three": "0.93.30",
     "copyfiles": "2.1.0",
-    "jest": "24.5.0",
-    "jest-cli": "24.5.0",
+    "jest": "24.7.1",
+    "jest-cli": "24.7.1",
     "prettier": "^1.16.4",
     "prettier-check": "^2.0.0",
-    "puppeteer": "1.13.0",
-    "typescript": "^3.3.3333",
+    "puppeteer": "1.14.0",
+    "typescript": "^3.4.1",
     "typescript-tslint-plugin": "^0.3.1"
   },
   "license": "MIT"

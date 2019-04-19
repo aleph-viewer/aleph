@@ -7,37 +7,25 @@ declare namespace AMI {
     load(files: string[]): Promise<void>;
   }
   class StackHelper {
-    constructor(...params);
+    constructor(stack: any);
     bbox: any;
     border: any;
     stack: any;
     slice: any;
     index: any;
     orientation: any;
+    hasUniforms(): any;
   }
-  class AngleWidget {
-    constructor(...params);
-    worldPosition: any;
-  }
-  class AnnotationWidget {
-    constructor(...params);
-    worldPosition: any;
-  }
-  class RulerWidget {
-    constructor(...params);
-    lps2IJK: any;
-    pixelSpacing: any;
-    ultrasoundRegions: any;
-    worldPosition: any;
-  }
-  class VolumeRenderingHelper {
-    constructor(...params);
-    uniforms: any;
+  class VolumeRenderHelper {
+    constructor(stack: any);
     stack: any;
-    windowWidth: any;
-    windowCenter: any;
-    orientationMaxIndex: any;
+    windowWidth: number;
+    steps: number;
+    windowCenter: number;
+    children: any;
+    textureLUT: THREE.Texture;
   }
+
   class LutHelper {
     constructor(el: any);
     luts: any;
@@ -47,34 +35,10 @@ declare namespace AMI {
     static presetLutsO(): () => void;
     lutsAvailable(): string[];
   }
-  class UtilsCore {
+  class CoreUtils {
     constructor(...params);
     static getPixelData(...params): any;
     static worldToData(...params): THREE.Vector3;
     static rescaleSlopeIntercept(...params): any;
-  }
-  class WidgetsCss {
-    constructor(...params);
-    static code: any;
-  }
-  class IntersectionsCore {
-    constructor(...params);
-    static rayPlane(...params): THREE.Vector3;
-    static sub(...params): () => any;
-  }
-
-  class TrackballControl {
-    constructor(camera: any, el: HTMLElement);
-    target: any;
-    update: any;
-    rotateSpeed: number;
-    zoomSpeed: number;
-    panSpeed: number;
-    staticMoving: boolean;
-    dynamicDampingFactor: number;
-    addEventListener: any;
-    object: any;
-    enabled: boolean;
-    domElement: any;
   }
 }

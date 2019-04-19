@@ -15,8 +15,8 @@
     ],
     "moduleResolution": "node",
     "module": "esnext",
-    "target": "es2017",
-    "noUnusedLocals": false, // todo: change to true
+    "target": "es6",
+    "noUnusedLocals": true,
     "noUnusedParameters": true,
     "jsx": "react",
     "jsxFactory": "h"

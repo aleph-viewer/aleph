@@ -1,10 +1,27 @@
 export class Constants {
-  static toolSize = 100;
+  static fontSizeSmall = 0.75;
+  static fontSizeMedium = 1.5;
+  static fontSizeLarge = 2.5;
+  static movedEventString = "-moved";
+  static titleIdString = "-title";
+  static controllerString = "-controller";
+  static nodeSizeRatio = 50;
+  static backboardSize = 10;
+  static zoomFactor = 2.5;
+  static minLoadingMS = 500;
+  static topLayerRenderOrder = 999;
+  static angleUnitsDecimalPlaces = 3;
+  static edgeSize = 0.005;
+  static stackSpaceMultiplier = { x: 10, y: 10, z: 10 };
+  static maxAnimationSteps = 50;
 
-  static toolColors = {
-    selected: "#76ff03",
-    hovered: "#f50057",
-    normal: "#00b0ff"
+  static minFrameMS = 15; // Should never be higher than the returned frame time
+  static minTimeForThrottle = Constants.minFrameMS * 5;
+
+  static buttonColors = {
+    active: "#f50057",
+    hover: "#f50057",
+    up: "#00b0ff"
   };
 
   static colorValues = {
