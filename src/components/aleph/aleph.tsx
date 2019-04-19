@@ -930,21 +930,23 @@ export class Aleph {
   //#region Private Methods
 
   private _restorePixelDensity() {
-    setTimeout(() => {
+    if (this._scene) {
       this._scene.renderer.setPixelRatio(window.devicePixelRatio);
       this._scene.renderer.setSize(
         this._container.offsetWidth,
         this._container.offsetHeight
       );
-    }, 100);
+    }
   }
 
   private _reducePixelDensity() {
-    this._scene.renderer.setPixelRatio(0.1 * window.devicePixelRatio);
-    this._scene.renderer.setSize(
-      this._container.offsetWidth,
-      this._container.offsetHeight
-    );
+    if (this._scene) {
+      this._scene.renderer.setPixelRatio(0.1 * window.devicePixelRatio);
+      this._scene.renderer.setSize(
+        this._container.offsetWidth,
+        this._container.offsetHeight
+      );
+    }
   }
 
   private _createEdge(node1Id: string, node2Id: string): void {
