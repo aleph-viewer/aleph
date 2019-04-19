@@ -6,18 +6,23 @@ import { ComponentDefinition } from "aframe";
 interface AlOrbitControlState {
   controls: any; //THREE.OrbitControls;
   animationCache: AlCamera[];
+  wheelMarker: boolean;
+  wheelInterval: number;
+  wheelCounter1: number;
+  wheelCounter2: number;
 }
 
 interface AlOrbitControlDefinition extends ComponentDefinition {
   dependencies: string[];
   tickFunction(): void;
-  bindListeners(): void;
+  bindMethods(): void;
   addListeners(): void;
   removeListeners(): void;
   canvasMouseUp(event: MouseEvent): void;
   canvasMouseDown(event: MouseEvent): void;
+  canvasMouseMove(event: MouseEvent): void;
   canvasWheel(event: WheelEvent): void;
-  emitCameraState(): void;
+  wheelAct(): void;
   handleAnimationCache(event: CustomEvent): void;
 }
 
@@ -51,16 +56,23 @@ export class AlOrbitControlComponent implements AframeRegistryEntry {
         animating: { type: "boolean", default: false }
       },
 
-      bindListeners() {
-        this.canvasMouseUp = this.canvasMouseUp.bind(this);
+      bindMethods() {
         this.canvasMouseDown = this.canvasMouseDown.bind(this);
+        this.canvasMouseMove = this.canvasMouseMove.bind(this);
+        this.canvasMouseUp = this.canvasMouseUp.bind(this);
         this.canvasWheel = this.canvasWheel.bind(this);
-        this.emitCameraState = this.emitCameraState.bind(this);
+        this.getCameraState = this.getCameraState.bind(this);
         this.handleAnimationCache = this.handleAnimationCache.bind(this);
+        this.wheelAct = this.wheelAct.bind(this);
       },
 
       addListeners() {
         document.addEventListener("mouseup", this.canvasMouseUp, {
+          capture: false,
+          once: false,
+          passive: true
+        });
+        document.addEventListener("mousemove", this.canvasMouseMove, {
           capture: false,
           once: false,
           passive: true
@@ -100,33 +112,71 @@ export class AlOrbitControlComponent implements AframeRegistryEntry {
         this.state.animationCache = event.detail.slerpPath;
       },
 
-      emitCameraState() {
-        let res = {
-          position: this.state.controls.object.position,
-          target: this.state.controls.target
-        } as AlCamera;
-        this.el.sceneEl.emit(
-          AlOrbitControlEvents.UPDATED,
-          { cameraSerial: res },
-          false
-        );
-      },
-
       canvasMouseUp(_event: MouseEvent) {
+        this._mouseDown = false;
         document.body.style.cursor = "grab";
         let controls = this.state.controls;
 
         if (controls.enabled) {
-          this.emitCameraState();
+          this.el.sceneEl.emit(
+            AlOrbitControlEvents.INTERACTION,
+            { cameraState: this.getCameraState() },
+            false
+          );
         }
       },
 
       canvasMouseDown(_event: MouseEvent) {
+        this._mouseDown = true;
         document.body.style.cursor = "grabbing";
       },
 
+      canvasMouseMove(_event: MouseEvent) {
+        if (this._mouseDown) {
+          this.el.sceneEl.emit(
+            AlOrbitControlEvents.INTERACTION,
+            { cameraState: this.getCameraState() },
+            false
+          );
+        }
+      },
+
+      wheelAct() {
+        const state = this.state;
+
+        state.wheelMarker = false;
+        state.wheelCounter2 = state.wheelCounter1;
+
+        setTimeout(() => {
+          if (state.wheelCounter2 === state.wheelCounter1) {
+            state.wheelMarker = true;
+            state.wheelCounter1 = 0;
+            state.wheelCounter2 = 0;
+            this.el.sceneEl.emit(
+              AlOrbitControlEvents.INTERACTION_FINISHED,
+              { cameraState: this.getCameraState() },
+              false
+            );
+          } else {
+            this.wheelAct();
+          }
+        }, state.wheelInterval);
+      },
+
       canvasWheel(_event: WheelEvent) {
-        this.emitCameraState();
+        const state = this.state;
+
+        state.wheelCounter1 += 1;
+
+        if (state.wheelMarker) {
+          this.wheelAct();
+        }
+
+        this.el.sceneEl.emit(
+          AlOrbitControlEvents.INTERACTION,
+          { cameraState: this.getCameraState() },
+          false
+        );
       },
 
       init() {
@@ -157,16 +207,31 @@ export class AlOrbitControlComponent implements AframeRegistryEntry {
 
         (this.state as AlOrbitControlState) = {
           controls,
-          animationCache
+          animationCache,
+          wheelMarker: true,
+          wheelInterval: 50,
+          wheelCounter1: 0,
+          wheelCounter2: undefined
         };
 
-        this.bindListeners();
+        this.bindMethods();
         this.addListeners();
 
         // wait a frame before emitting initialised event
         ThreeUtils.waitOneFrame(() => {
-          this.emitCameraState();
+          this.el.sceneEl.emit(
+            AlOrbitControlEvents.INTERACTION,
+            { cameraState: this.getCameraState() },
+            false
+          );
         });
+      },
+
+      getCameraState(): AlCamera {
+        return {
+          position: this.state.controls.object.position,
+          target: this.state.controls.target
+        } as AlCamera;
       },
 
       update(_oldData) {
@@ -249,7 +314,9 @@ export class AlOrbitControlComponent implements AframeRegistryEntry {
 }
 
 export class AlOrbitControlEvents {
-  static UPDATED: string = "al-orbit-controls-updated";
+  static INTERACTION: string = "al-orbit-interaction";
+  static INTERACTION_FINISHED: string =
+    "al-orbit-controls-interaction-finished";
   static ANIMATION_STARTED: string = "al-orbit-controls-animation-started";
   static ANIMATION_FINISHED: string = "al-orbit-controls-animation-finished";
 }
