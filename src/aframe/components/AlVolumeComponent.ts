@@ -6,10 +6,7 @@ import { ComponentDefinition } from "aframe";
 
 interface AlVolumeState {
   stack: any;
-  stackhelper:
-    | AMI.StackHelper
-    | AMI.VolumeRenderHelper
-    | AMI.VolumeRenderHelper2;
+  stackhelper: AMI.StackHelper | AMI.VolumeRenderHelper;
   lutHelper: AMI.LutHelper;
 }
 
