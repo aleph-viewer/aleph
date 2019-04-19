@@ -6,6 +6,10 @@ import { ComponentDefinition } from "aframe";
 interface AlOrbitControlState {
   controls: any; //THREE.OrbitControls;
   animationCache: AlCamera[];
+  wheelMarker: boolean;
+  wheelInterval: number;
+  wheelCounter1: number;
+  wheelCounter2: number;
 }
 
 interface AlOrbitControlDefinition extends ComponentDefinition {
@@ -18,6 +22,7 @@ interface AlOrbitControlDefinition extends ComponentDefinition {
   canvasMouseDown(event: MouseEvent): void;
   canvasMouseMove(event: MouseEvent): void;
   canvasWheel(event: WheelEvent): void;
+  wheelAct(): void;
   handleAnimationCache(event: CustomEvent): void;
 }
 
@@ -52,12 +57,13 @@ export class AlOrbitControlComponent implements AframeRegistryEntry {
       },
 
       bindMethods() {
-        this.canvasMouseUp = this.canvasMouseUp.bind(this);
         this.canvasMouseDown = this.canvasMouseDown.bind(this);
         this.canvasMouseMove = this.canvasMouseMove.bind(this);
+        this.canvasMouseUp = this.canvasMouseUp.bind(this);
         this.canvasWheel = this.canvasWheel.bind(this);
-        this.handleAnimationCache = this.handleAnimationCache.bind(this);
         this.getCameraState = this.getCameraState.bind(this);
+        this.handleAnimationCache = this.handleAnimationCache.bind(this);
+        this.wheelAct = this.wheelAct.bind(this);
       },
 
       addListeners() {
@@ -113,8 +119,8 @@ export class AlOrbitControlComponent implements AframeRegistryEntry {
 
         if (controls.enabled) {
           this.el.sceneEl.emit(
-            AlOrbitControlEvents.MOVED,
-            { cameraSerial: this.getCameraState() },
+            AlOrbitControlEvents.INTERACTION,
+            { cameraState: this.getCameraState() },
             false
           );
         }
@@ -128,17 +134,47 @@ export class AlOrbitControlComponent implements AframeRegistryEntry {
       canvasMouseMove(_event: MouseEvent) {
         if (this._mouseDown) {
           this.el.sceneEl.emit(
-            AlOrbitControlEvents.MOVED,
-            { cameraSerial: this.getCameraState() },
+            AlOrbitControlEvents.INTERACTION,
+            { cameraState: this.getCameraState() },
             false
           );
         }
       },
 
+      wheelAct() {
+        const state = this.state;
+
+        state.wheelMarker = false;
+        state.wheelCounter2 = state.wheelCounter1;
+
+        setTimeout(() => {
+          if (state.wheelCounter2 === state.wheelCounter1) {
+            state.wheelMarker = true;
+            state.wheelCounter1 = 0;
+            state.wheelCounter2 = 0;
+            this.el.sceneEl.emit(
+              AlOrbitControlEvents.INTERACTION_FINISHED,
+              { cameraState: this.getCameraState() },
+              false
+            );
+          } else {
+            this.wheelAct();
+          }
+        }, state.wheelInterval);
+      },
+
       canvasWheel(_event: WheelEvent) {
+        const state = this.state;
+
+        state.wheelCounter1 += 1;
+
+        if (state.wheelMarker) {
+          this.wheelAct();
+        }
+
         this.el.sceneEl.emit(
-          AlOrbitControlEvents.MOVED,
-          { cameraSerial: this.getCameraState() },
+          AlOrbitControlEvents.INTERACTION,
+          { cameraState: this.getCameraState() },
           false
         );
       },
@@ -171,7 +207,11 @@ export class AlOrbitControlComponent implements AframeRegistryEntry {
 
         (this.state as AlOrbitControlState) = {
           controls,
-          animationCache
+          animationCache,
+          wheelMarker: true,
+          wheelInterval: 50,
+          wheelCounter1: 0,
+          wheelCounter2: undefined
         };
 
         this.bindMethods();
@@ -180,8 +220,8 @@ export class AlOrbitControlComponent implements AframeRegistryEntry {
         // wait a frame before emitting initialised event
         ThreeUtils.waitOneFrame(() => {
           this.el.sceneEl.emit(
-            AlOrbitControlEvents.MOVED,
-            { cameraSerial: this.getCameraState() },
+            AlOrbitControlEvents.INTERACTION,
+            { cameraState: this.getCameraState() },
             false
           );
         });
@@ -274,7 +314,9 @@ export class AlOrbitControlComponent implements AframeRegistryEntry {
 }
 
 export class AlOrbitControlEvents {
-  static MOVED: string = "al-orbit-controls-moved";
+  static INTERACTION: string = "al-orbit-interaction";
+  static INTERACTION_FINISHED: string =
+    "al-orbit-controls-interaction-finished";
   static ANIMATION_STARTED: string = "al-orbit-controls-animation-started";
   static ANIMATION_FINISHED: string = "al-orbit-controls-animation-finished";
 }

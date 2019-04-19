@@ -428,11 +428,13 @@ export class Aleph {
     });
 
     // set up event handlers
-    this._animationFinished = this._animationFinished.bind(this);
-    this._controlsMovedHandler = this._controlsMovedHandler.bind(this);
-    this._graphEntryDraggedEventHandler = this._graphEntryDraggedEventHandler.bind(
+    this._controlsAnimationFinishedHandler = this._controlsAnimationFinishedHandler.bind(
       this
     );
+    this._controlsInteractionHandler = this._controlsInteractionHandler.bind(
+      this
+    );
+    this._graphEntryDraggedHandler = this._graphEntryDraggedHandler.bind(this);
     this._graphEntryPointerDownHandler = this._graphEntryPointerDownHandler.bind(
       this
     );
@@ -448,13 +450,15 @@ export class Aleph {
     this._graphEntrySelectedHandler = this._graphEntrySelectedHandler.bind(
       this
     );
-    this._graphEntryValidTargetEventHandler = this._graphEntryValidTargetEventHandler.bind(
+    this._graphEntryValidTargetHandler = this._graphEntryValidTargetHandler.bind(
       this
     );
     this._keyDownHandler = this._keyDownHandler.bind(this);
     this._keyUpHandler = this._keyUpHandler.bind(this);
-    this._pointerUpHandler = this._pointerUpHandler.bind(this);
-    this._spawnNodeEventHandler = this._spawnNodeEventHandler.bind(this);
+    this._controlsInteractionFinishedHandler = this._controlsInteractionFinishedHandler.bind(
+      this
+    );
+    this._spawnNodeHandler = this._spawnNodeHandler.bind(this);
     this._srcLoaded = this._srcLoaded.bind(this);
   }
 
@@ -1259,17 +1263,17 @@ export class Aleph {
     ThreeUtils.enableOrbitControls(this._camera, false);
   }
 
-  private _pointerUpHandler(_event: MouseEvent): void {
+  private _controlsInteractionFinishedHandler(_event: MouseEvent): void {
     if (this.displayMode === DisplayMode.VOLUME) {
       this._restorePixelDensity();
     }
   }
 
-  private _controlsMovedHandler(event: CustomEvent): void {
+  private _controlsInteractionHandler(event: CustomEvent): void {
     if (this.displayMode === DisplayMode.VOLUME) {
       this._reducePixelDensity();
     }
-    this.appSetCamera(event.detail.cameraSerial);
+    this.appSetCamera(event.detail.cameraState);
   }
 
   private _graphEntryPointerOutHandler(_event: CustomEvent): void {
@@ -1280,7 +1284,7 @@ export class Aleph {
     this._hovered = event.detail.id;
   }
 
-  private _spawnNodeEventHandler(event: CustomEvent): void {
+  private _spawnNodeHandler(event: CustomEvent): void {
     // IF creating a new node and NOT intersecting an existing node
     if (
       this.graphEnabled && // Nodes are enabled
@@ -1341,11 +1345,11 @@ export class Aleph {
     }
   }
 
-  private _graphEntryValidTargetEventHandler(event: CustomEvent): void {
+  private _graphEntryValidTargetHandler(event: CustomEvent): void {
     this._validTarget = event.detail.valid;
   }
 
-  private _animationFinished(_event: CustomEvent): void {
+  private _controlsAnimationFinishedHandler(_event: CustomEvent): void {
     this.appSetCamera({
       animating: false
     });
@@ -1395,7 +1399,7 @@ export class Aleph {
     }
   }
 
-  private _graphEntryDraggedEventHandler(event: CustomEvent): void {
+  private _graphEntryDraggedHandler(event: CustomEvent): void {
     const nodeId: string = event.detail.id;
     const raycaster = this._camera.components.raycaster as any;
 
@@ -1449,18 +1453,27 @@ export class Aleph {
   private _addEventListeners(): void {
     document.addEventListener("keydown", this._keyDownHandler, false);
     document.addEventListener("keyup", this._keyUpHandler, false);
-    document.addEventListener("mouseup", this._pointerUpHandler, false);
-
-    this._scene.addEventListener(
-      AlOrbitControlEvents.ANIMATION_FINISHED,
-      this._animationFinished,
+    document.addEventListener(
+      "mouseup",
+      this._controlsInteractionFinishedHandler,
       false
     );
 
-    // happens on mouseup and mousewheel passing camera state
     this._scene.addEventListener(
-      AlOrbitControlEvents.MOVED,
-      this._controlsMovedHandler,
+      AlOrbitControlEvents.ANIMATION_FINISHED,
+      this._controlsAnimationFinishedHandler,
+      false
+    );
+
+    this._scene.addEventListener(
+      AlOrbitControlEvents.INTERACTION,
+      this._controlsInteractionHandler,
+      false
+    );
+
+    this._scene.addEventListener(
+      AlOrbitControlEvents.INTERACTION_FINISHED,
+      this._controlsInteractionFinishedHandler,
       false
     );
 
@@ -1478,13 +1491,7 @@ export class Aleph {
 
     this._scene.addEventListener(
       AlGraphEvents.DRAGGED,
-      this._graphEntryDraggedEventHandler,
-      false
-    );
-
-    this._scene.addEventListener(
-      AlNodeSpawnerEvents.ADD_NODE,
-      this._spawnNodeEventHandler,
+      this._graphEntryDraggedHandler,
       false
     );
 
@@ -1495,8 +1502,14 @@ export class Aleph {
     );
 
     this._scene.addEventListener(
+      AlNodeSpawnerEvents.ADD_NODE,
+      this._spawnNodeHandler,
+      false
+    );
+
+    this._scene.addEventListener(
       AlNodeSpawnerEvents.VALID_TARGET,
-      this._graphEntryValidTargetEventHandler,
+      this._graphEntryValidTargetHandler,
       false
     );
 
