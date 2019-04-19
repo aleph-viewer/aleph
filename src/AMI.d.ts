@@ -7,7 +7,7 @@ declare namespace AMI {
     load(files: string[]): Promise<void>;
   }
   class StackHelper {
-    constructor(stack: any, isWebgl2: boolean);
+    constructor(stack: any);
     bbox: any;
     border: any;
     stack: any;
@@ -17,7 +17,7 @@ declare namespace AMI {
     hasUniforms(): any;
   }
   class VolumeRenderHelper {
-    constructor(stack: any, isWebgl2: boolean);
+    constructor(stack: any);
     stack: any;
     windowWidth: number;
     steps: number;

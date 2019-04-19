@@ -21066,6 +21066,32 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/webgl/volume2/volume2.frag":
+/*!**************************************************************************************************************************************!*\
+  !*** ./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/webgl/volume2/volume2.frag ***!
+  \**************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = ("#define GLSLIFY 1\nexport default \"/**\\n* @author Almar Klein / http://almarklein.org\\n*\\n* Shaders to render 3D volumes using raycasting.\\n* The applied techniques are based on similar implementations in the Visvis and Vispy projects.\\n*/\\nprecision highp float;\\nprecision highp sampler3D;\\n#define GLSLIFY 1\\n\\nuniform vec3 uSize;\\nuniform int uRenderstyle;\\nuniform float uIsoRenderThreshold;\\nuniform vec2 uClim;\\n\\nuniform sampler3D uData;\\nuniform sampler2D uLutTexture;\\n\\nvarying vec3 v_position;\\nvarying vec4 v_nearpos;\\nvarying vec4 v_farpos;\\n\\n// The maximum distance through our rendering volume is sqrt(3).\\nconst int MAX_STEPS = 887;  // 887 for 512^3 1774 for 1024^3\\nconst int REFINEMENT_STEPS = 4;\\nconst float relative_step_size = 1.0;\\nconst vec4 ambient_color = vec4(0.2, 0.4, 0.2, 1.0);\\nconst vec4 diffuse_color = vec4(0.8, 0.2, 0.2, 1.0);\\nconst vec4 specular_color = vec4(1.0, 1.0, 1.0, 1.0);\\nconst float shininess = 40.0;\\n\\n/* Sample float value from a 3D texture. Assumes intensity data. */\\nfloat sample1(vec3 texcoords) {\\n    return texture(uData, texcoords.xyz).r;\\n}\\n\\nvec4 apply_colormap(float val) {\\n    val = (val - uClim[0]) / (uClim[1] - uClim[0]);\\n    return texture2D(uLutTexture, vec2(val, 0.5));\\n}\\n\\nvec4 add_lighting(float val, vec3 loc, vec3 step, vec3 view_ray) {\\n    // Calculate color by incorporating lighting\\n\\n    // View direction\\n    vec3 V = normalize(view_ray);\\n\\n    // calculate normal vector from gradient\\n    vec3 N;\\n    float val1, val2;\\n    val1 = sample1(loc + vec3(-step[0], 0.0, 0.0));\\n    val2 = sample1(loc + vec3(+step[0], 0.0, 0.0));\\n    N[0] = val1 - val2;\\n    val = max(max(val1, val2), val);\\n    val1 = sample1(loc + vec3(0.0, -step[1], 0.0));\\n    val2 = sample1(loc + vec3(0.0, +step[1], 0.0));\\n    N[1] = val1 - val2;\\n    val = max(max(val1, val2), val);\\n    val1 = sample1(loc + vec3(0.0, 0.0, -step[2]));\\n    val2 = sample1(loc + vec3(0.0, 0.0, +step[2]));\\n    N[2] = val1 - val2;\\n    val = max(max(val1, val2), val);\\n\\n    float gm = length(N); // gradient magnitude\\n    N = normalize(N);\\n\\n    // Flip normal so it points towards viewer\\n    float Nselect = float(dot(N, V) > 0.0);\\n    N = (2.0 * Nselect - 1.0) * N;  // ==  Nselect * N - (1.0-Nselect)*N;\\n\\n    // Init colors\\n    vec4 ambient_color = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec4 diffuse_color = vec4(0.0, 0.0, 0.0, 0.0);\\n    vec4 specular_color = vec4(0.0, 0.0, 0.0, 0.0);\\n\\n    // note: could allow multiple lights\\n    // for (int i=0; i<1; i++) {\\n        // Get light direction (make sure to prevent zero devision)\\n        vec3 L = normalize(view_ray);  //lightDirs[i];\\n        float lightEnabled = float( length(L) > 0.0 );\\n        L = normalize(L + (1.0 - lightEnabled));\\n\\n        // Calculate lighting properties\\n        float lambertTerm = clamp(dot(N, L), 0.0, 1.0);\\n        vec3 H = normalize(L+V); // Halfway vector\\n        float specularTerm = pow(max(dot(H, N), 0.0), shininess);\\n\\n        // Calculate mask\\n        float mask1 = lightEnabled;\\n\\n        // Calculate colors\\n        ambient_color +=  mask1 * ambient_color;  // * gl_LightSource[i].ambient;\\n        diffuse_color +=  mask1 * lambertTerm;\\n        specular_color += mask1 * specularTerm * specular_color;\\n    // }\\n\\n    // Calculate final color by componing different components\\n    vec4 final_color;\\n    vec4 color = apply_colormap(val);\\n    final_color = color * (ambient_color + diffuse_color) + specular_color;\\n    final_color.a = color.a;\\n    return final_color;\\n}\\n\\nvoid cast_mip(\\n    vec3 start_loc, \\n    vec3 step, \\n    int nsteps, \\n    vec3 view_ray\\n) {\\n    float max_val = -1e6;\\n    int max_i = 100;\\n    vec3 loc = start_loc;\\n\\n    // Enter the raycasting loop. In WebGL 1 the loop index cannot be compared with\\n    // non-constant expression. So we use a hard-coded max and an additional condition\\n    // inside the loop.\\n    for (int iter=0; iter<MAX_STEPS; iter++) {\\n        if (iter >= nsteps)\\n            break;\\n        // Sample from the 3D texture\\n        float val = sample1(loc);\\n        // Apply MIP operation\\n        if (val > max_val) {\\n            max_val = val;\\n            max_i = iter;\\n        }\\n        // Advance location deeper into the volume\\n        loc += step;\\n    }\\n\\n    // Refine location gives crispier images\\n    vec3 iloc = start_loc + step * (float(max_i) - 0.5);\\n    vec3 istep = step / float(REFINEMENT_STEPS);\\n    for (int i=0; i<REFINEMENT_STEPS; i++) {\\n        max_val = max(max_val, sample1(iloc));\\n        iloc += istep;\\n    }\\n\\n    // Resolve final color\\n    gl_FragColor = apply_colormap(max_val);\\n}\\n\\nvoid cast_iso(\\n    vec3 start_loc,\\n    vec3 step,\\n    int nsteps,\\n    vec3 view_ray\\n) {\\n    //gl_FragColor = vec4(0.0);  // init transparent\\n    vec4 color3 = vec4(0.0);  // final color\\n    vec3 dstep = 1.5 / uSize;  // step to sample derivative\\n    vec3 loc = start_loc;\\n\\n    float low_threshold = uIsoRenderThreshold - 0.02 * (uClim[1] - uClim[0]);\\n\\n    // Enter the raycasting loop. In WebGL 1 the loop index cannot be compared with\\n    // non-constant expression. So we use a hard-coded max and an additional condition\\n    // inside the loop.\\n    for (int iter=0; iter<MAX_STEPS; iter++) {\\n        if (iter >= nsteps)\\n            break;\\n\\n        // Sample from the 3D texture\\n        float val = sample1(loc);\\n\\n        if (val > low_threshold) {\\n            // Take the last interval in smaller steps\\n            vec3 iloc = loc - 0.5 * step;\\n            vec3 istep = step / float(REFINEMENT_STEPS);\\n            for (int i=0; i<REFINEMENT_STEPS; i++) {\\n                val = sample1(iloc);\\n                if (val > uIsoRenderThreshold) {\\n                    gl_FragColor = add_lighting(val, iloc, dstep, view_ray);\\n                    return;\\n                }\\n                iloc += istep;\\n            }\\n        }\\n\\n        // Advance location deeper into the volume\\n        loc += step;\\n    }\\n}\\n\\nvoid main() {\\n    // Normalize clipping plane info\\n    vec3 farpos = v_farpos.xyz / v_farpos.w;\\n    vec3 nearpos = v_nearpos.xyz / v_nearpos.w;\\n\\n    // Calculate unit vector pointing in the view direction through this fragment.\\n    vec3 view_ray = normalize(nearpos.xyz - farpos.xyz);\\n\\n    // Compute the (negative) distance to the front surface or near clipping plane.\\n    // v_position is the back face of the cuboid so the initial distance calculated in the dot\\n    // product below is the distance from near clip plane to the back of the cuboid\\n    float distance = dot(nearpos - v_position, view_ray);\\n    distance = max(distance, min((-0.5 - v_position.x) / view_ray.x,\\n                                (uSize.x - 0.5 - v_position.x) / view_ray.x));\\n    distance = max(distance, min((-0.5 - v_position.y) / view_ray.y,\\n                                (uSize.y - 0.5 - v_position.y) / view_ray.y));\\n    distance = max(distance, min((-0.5 - v_position.z) / view_ray.z,\\n                                (uSize.z - 0.5 - v_position.z) / view_ray.z));\\n\\n                                // Now we have the starting position on the front surface\\n    vec3 front = v_position + view_ray * distance;\\n\\n    // Decide how many steps to take\\n    int nsteps = int(-distance / relative_step_size + 0.5);\\n    if ( nsteps < 1 )\\n        discard;\\n\\n    // Get starting location and step vector in texture coordinates\\n    vec3 step = ((v_position - front) / uSize) / float(nsteps);\\n    vec3 start_loc = front / uSize;\\n\\n    // For testing: show the number of steps. This helps to establish\\n    // whether the rays are correctly oriented\\n    //gl_FragColor = vec4(0.0 float(nsteps) / 1.0 / uSize.x 1.0 1.0);\\n    //return;\\n\\n    if (uRenderstyle == 0)\\n        cast_mip(start_loc, step, nsteps, view_ray);\\n    else if (uRenderstyle == 1)\\n        cast_iso(start_loc, step, nsteps, view_ray);\\n\\n    if (gl_FragColor.a < 0.05)\\n        discard;\\n}\"");
+
+/***/ }),
+
+/***/ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/webgl/volume2/volume2.vert":
+/*!**************************************************************************************************************************************!*\
+  !*** ./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/webgl/volume2/volume2.vert ***!
+  \**************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = ("#define GLSLIFY 1\nexport default \"#define GLSLIFY 1\\nmat4 invertMat4(mat4 m) {\\n  float\\n    a00 = m[0][0], a01 = m[0][1], a02 = m[0][2], a03 = m[0][3],\\n    a10 = m[1][0], a11 = m[1][1], a12 = m[1][2], a13 = m[1][3],\\n    a20 = m[2][0], a21 = m[2][1], a22 = m[2][2], a23 = m[2][3],\\n    a30 = m[3][0], a31 = m[3][1], a32 = m[3][2], a33 = m[3][3],\\n\\n    b00 = a00 * a11 - a01 * a10,\\n    b01 = a00 * a12 - a02 * a10,\\n    b02 = a00 * a13 - a03 * a10,\\n    b03 = a01 * a12 - a02 * a11,\\n    b04 = a01 * a13 - a03 * a11,\\n    b05 = a02 * a13 - a03 * a12,\\n    b06 = a20 * a31 - a21 * a30,\\n    b07 = a20 * a32 - a22 * a30,\\n    b08 = a20 * a33 - a23 * a30,\\n    b09 = a21 * a32 - a22 * a31,\\n    b10 = a21 * a33 - a23 * a31,\\n    b11 = a22 * a33 - a23 * a32,\\n\\n    det = b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;\\n\\n  return mat4(\\n    a11 * b11 - a12 * b10 + a13 * b09,\\n    a02 * b10 - a01 * b11 - a03 * b09,\\n    a31 * b05 - a32 * b04 + a33 * b03,\\n    a22 * b04 - a21 * b05 - a23 * b03,\\n    a12 * b08 - a10 * b11 - a13 * b07,\\n    a00 * b11 - a02 * b08 + a03 * b07,\\n    a32 * b02 - a30 * b05 - a33 * b01,\\n    a20 * b05 - a22 * b02 + a23 * b01,\\n    a10 * b10 - a11 * b08 + a13 * b06,\\n    a01 * b08 - a00 * b10 - a03 * b06,\\n    a30 * b04 - a31 * b02 + a33 * b00,\\n    a21 * b02 - a20 * b04 - a23 * b00,\\n    a11 * b07 - a10 * b09 - a12 * b06,\\n    a00 * b09 - a01 * b07 + a02 * b06,\\n    a31 * b01 - a30 * b03 - a32 * b00,\\n    a20 * b03 - a21 * b01 + a22 * b00) / det;\\n}\\n\\n/**\\n * @author Almar Klein / http://almarklein.org\\n *\\n * Shaders to render 3D volumes using raycasting.\\n * The applied techniques are based on similar implementations in the Visvis and Vispy projects.\\n */\\nvarying vec4 v_nearpos;\\nvarying vec4 v_farpos;\\nvarying vec3 v_position;\\n\\nvoid main() {\\n    // Prepare transforms to map to camera view. See also:\\n    // https://threejs.org/docs/#api/renderers/webgl/WebGLProgram\\n    mat4 viewtransformf = viewMatrix;\\n    mat4 viewtransformi = invertMat4(viewMatrix);\\n\\n    // Project local vertex coordinate to camera position. Then do a step\\n    // backward (in cam coords) to the near clipping plane and project back. Do\\n    // the same for the far clipping plane. This gives us all the information we\\n    // need to calculate the ray and truncate it to the viewing cone.\\n    vec4 position4 = vec4(position, 1.0);\\n    vec4 pos_in_cam = viewtransformf * position4;\\n\\n    // Intersection of ray and near clipping plane (z = -1 in clip coords)\\n    pos_in_cam.z = -pos_in_cam.w;\\n    v_nearpos = viewtransformi * pos_in_cam;\\n\\n    // Intersection of ray and far clipping plane (z = +1 in clip coords)\\n    pos_in_cam.z = pos_in_cam.w;\\n    v_farpos = viewtransformi * pos_in_cam;\\n\\n    // Set varyings and output pos\\n    v_position = position;\\n    gl_Position = projectionMatrix * viewMatrix * modelMatrix * position4;\\n}\"");
+
+/***/ }),
+
 /***/ "./node_modules/three/src/constants.js":
 /*!*********************************************!*\
   !*** ./node_modules/three/src/constants.js ***!
@@ -26648,7 +26674,6 @@ var BaseTHREEHelper = /** @class */ (function (_super) {
         _this._geometry = null;
         _this._mesh = null;
         _this._visible = true;
-        _this._isWebgl2 = false;
         _this._stack = stack;
         return _this;
     }
@@ -29905,13 +29930,10 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var BaseTHREEHelper_1 = __webpack_require__(/*! ./BaseTHREEHelper */ "./src/helpers/BaseTHREEHelper.ts");
+var shaders_1 = __webpack_require__(/*! ../shaders */ "./src/shaders/index.ts");
 var THREE = window.THREE;
 /**
- * This variant of the VolumeRenderHelper uses WebGL 2 - the following
- * scripts MUST be placed at the top of the index.html to work:
- *
- * <script src="https://unpkg.com/three@0.102.1/examples/js/shaders/VolumeShader.js"></script>
- * <script src="https://unpkg.com/three@0.102.1/examples/js/Volume.js"></script>
+ * This variant of the VolumeRenderHelper uses WebGL 2
  */
 var VolumeRenderHelper2 = /** @class */ (function (_super) {
     __extends(VolumeRenderHelper2, _super);
@@ -29923,35 +29945,34 @@ var VolumeRenderHelper2 = /** @class */ (function (_super) {
         return _this;
     }
     Object.defineProperty(VolumeRenderHelper2.prototype, "textureLUT", {
-        //#endregion
         //#region Getters
         get: function () {
-            return this._material.uniforms.u_cmdata.value;
+            return this._material.uniforms.uLutTexture.value;
         },
         //#endregion
         //#region Setters 
         set: function (value) {
-            this._material.uniforms.u_cmdata.value = value;
+            this._material.uniforms.uLutTexture.value = value;
         },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(VolumeRenderHelper2.prototype, "windowWidth", {
         get: function () {
-            return this._material.uniforms.u_clim.value.x;
+            return this._material.uniforms.uClim.value.y;
         },
         set: function (value) {
-            this._material.uniforms.u_clim.value.x = value;
+            //this._material.uniforms.uClim.value.y = value;
         },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(VolumeRenderHelper2.prototype, "windowCenter", {
         get: function () {
-            return this._material.uniforms.u_clim.value.y;
+            return this._material.uniforms.uClim.value.x;
         },
         set: function (value) {
-            this._material.uniforms.u_clim.value.y = value;
+            //this._material.uniforms.uClim.value.x = value;
         },
         enumerable: true,
         configurable: true
@@ -29974,24 +29995,24 @@ var VolumeRenderHelper2 = /** @class */ (function (_super) {
         if (!this._stack.packed) {
             this._stack.pack();
         }
-        this._material.uniforms.u_clim = new THREE.Vector2(this._stack.windowCenter, this._stack.windowWidth * 0.8); // multiply for better default visualization
     };
     VolumeRenderHelper2.prototype._prepareMaterial = function () {
-        this._dataTexture = new THREE.DataTexture3D(this._stack.rawData, this._stack.dimensionsIJK.x, this._stack.dimensionsIJK.y, this._stack.dimensionsIJK.z);
-        this._volumeShader = THREE.VolumeRenderShader;
-        var uniforms = THREE.UniformsUtils.clone(this._volumeShader.uniforms);
-        uniforms.u_data.value = this._dataTexture;
-        uniforms.u_size.value.copy(this._stack.dimensionsIJK.clone());
-        uniforms.u_clim.value = new THREE.Vector2(0.01, 0.01);
-        uniforms.u_renderstyle.value = 1;
-        uniforms.u_cmdata.value = new THREE.Texture;
-        this._material = new THREE.ShaderMaterial({
-            uniforms: uniforms,
-            vertexShader: this._volumeShader.vertexShader,
-            fragmentShader: this._volumeShader.fragmentShader,
-            side: THREE.BackSide // The volume shader uses the backface as its "reference point"
-        });
-        this._material.needsUpdate = true;
+        var length = this._stack.rawData[0].length;
+        var f32A = new Float32Array(length);
+        for (var i = 0; i < length; i++) {
+            f32A[i] = this._stack.rawData[0][i] / 255.0;
+        }
+        this._dataTexture = new THREE.DataTexture3D(f32A, this._stack.dimensionsIJK.x, this._stack.dimensionsIJK.y, this._stack.dimensionsIJK.z);
+        this._dataTexture.format = THREE.RedFormat;
+        this._dataTexture.type = THREE.FloatType;
+        this._dataTexture.minFilter = THREE.LinearFilter;
+        this._dataTexture.magFilter = THREE.LinearFilter;
+        this._dataTexture.unpackAlignment = 1;
+        this._dataTexture.needsUpdate = true;
+        this._material = shaders_1.Volume2Material.material;
+        this._material.uniforms.uData.value = this._dataTexture;
+        this._material.uniforms.uSize.value.copy(this._stack.dimensionsIJK.clone());
+        this._material.uniforms.uClim.value.set(0.8, 0.8);
     };
     VolumeRenderHelper2.prototype._prepareGeometry = function () {
         var worldBBox = this._stack.worldBoundingBox();
@@ -37688,6 +37709,72 @@ exports.MaterialUtils = MaterialUtils;
 
 /***/ }),
 
+/***/ "./src/shaders/Materials/Volume2Material.ts":
+/*!**************************************************!*\
+  !*** ./src/shaders/Materials/Volume2Material.ts ***!
+  \**************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var MaterialUtils_1 = __webpack_require__(/*! ./MaterialUtils */ "./src/shaders/Materials/MaterialUtils.ts");
+var vertSource = __webpack_require__(/*! raw-loader!glslify-loader!../webgl/volume2/volume2.vert */ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/webgl/volume2/volume2.vert").default;
+var fragmentSource = __webpack_require__(/*! raw-loader!glslify-loader!../webgl/volume2/volume2.frag */ "./node_modules/raw-loader/dist/cjs.js!./node_modules/glslify-loader/glslify-loader.js!./src/shaders/webgl/volume2/volume2.frag").default;
+var THREE = window.THREE;
+var Volume2Material = /** @class */ (function () {
+    function Volume2Material() {
+    }
+    Object.defineProperty(Volume2Material, "shaderName", {
+        get: function () {
+            return Volume2Material._shaderName;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Volume2Material, "defaultUniforms", {
+        get: function () {
+            return Volume2Material._defaultUniforms;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Volume2Material, "material", {
+        get: function () {
+            if (!Volume2Material._material) {
+                Volume2Material._material = new THREE.ShaderMaterial({
+                    side: THREE.BackSide,
+                    transparent: true,
+                    uniforms: this.defaultUniforms,
+                    vertexShader: MaterialUtils_1.MaterialUtils.processSource(vertSource),
+                    fragmentShader: MaterialUtils_1.MaterialUtils.processSource(fragmentSource),
+                });
+            }
+            return Volume2Material._material.clone();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Volume2Material._shaderName = 'volume2';
+    /**
+     * Default Uniform values
+     */
+    Volume2Material._defaultUniforms = {
+        uSize: { value: new THREE.Vector3(1, 1, 1) },
+        uRenderstyle: { value: 0 },
+        uIsoRenderThreshold: { value: 0.5 },
+        uClim: { value: new THREE.Vector2(1, 1) },
+        uData: { value: new THREE.DataTexture3D() },
+        uLutTexture: { value: new THREE.Texture() } // sampler2D
+    };
+    return Volume2Material;
+}());
+exports.Volume2Material = Volume2Material;
+
+
+/***/ }),
+
 /***/ "./src/shaders/Materials/VolumeMaterial.ts":
 /*!*************************************************!*\
   !*** ./src/shaders/Materials/VolumeMaterial.ts ***!
@@ -37839,6 +37926,8 @@ var LayerMaterial_1 = __webpack_require__(/*! ./Materials/LayerMaterial */ "./sr
 exports.LayerMaterial = LayerMaterial_1.LayerMaterial;
 var LocalizerMaterial_1 = __webpack_require__(/*! ./Materials/LocalizerMaterial */ "./src/shaders/Materials/LocalizerMaterial.ts");
 exports.LocalizerMaterial = LocalizerMaterial_1.LocalizerMaterial;
+var Volume2Material_1 = __webpack_require__(/*! ./Materials/Volume2Material */ "./src/shaders/Materials/Volume2Material.ts");
+exports.Volume2Material = Volume2Material_1.Volume2Material;
 
 
 /***/ }),

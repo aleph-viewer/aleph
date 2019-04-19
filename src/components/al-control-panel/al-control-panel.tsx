@@ -33,7 +33,8 @@ export class AlControlPanel {
   @Prop({ mutable: true }) slicesWindowWidth: number;
   @Prop({ mutable: true }) stackhelper:
     | AMI.StackHelper
-    | AMI.VolumeRenderHelper;
+    | AMI.VolumeRenderHelper
+    | AMI.VolumeRenderHelper2;
   @Watch("stackhelper")
   watchStackhelper() {
     this.slicesIndex = undefined;
