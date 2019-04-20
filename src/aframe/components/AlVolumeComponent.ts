@@ -6,7 +6,10 @@ import { ComponentDefinition } from "aframe";
 
 interface AlVolumeState {
   stack: any;
-  stackhelper: AMI.StackHelper | AMI.VolumeRenderHelper;
+  stackhelper:
+    | AMI.StackHelper
+    | AMI.VolumeRenderHelper
+    | AMI.VolumeRenderHelper2;
   lutHelper: AMI.LutHelper;
 }
 
@@ -84,8 +87,8 @@ export class AlVolumeComponent implements AframeRegistryEntry {
             state.lutHelper = new AMI.LutHelper(lutCanvases);
             state.lutHelper.luts = AMI.LutHelper.presetLuts();
             state.lutHelper.lutsO = AMI.LutHelper.presetLutsO();
-            state.stackhelper = new AMI.VolumeRenderHelper(state.stack);
-            // state.stackhelper = new AMI.VolumeRenderHelper2(state.stack);
+            //state.stackhelper = new AMI.VolumeRenderHelper(state.stack);
+            state.stackhelper = new AMI.VolumeRenderHelper2(state.stack);
             state.stackhelper.textureLUT = state.lutHelper.texture;
             break;
           }

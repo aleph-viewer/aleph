@@ -29998,9 +29998,18 @@ var VolumeRenderHelper2 = /** @class */ (function (_super) {
     };
     VolumeRenderHelper2.prototype._prepareMaterial = function () {
         var length = this._stack.rawData[0].length;
-        var f32A = new Float32Array(length);
-        for (var i = 0; i < length; i++) {
-            f32A[i] = this._stack.rawData[0][i] / 255.0;
+        var stack = this._stack;
+        //let f32A = new Float32Array(length);
+        // for (let i = 0; i < length; i++) {
+        //   f32A[i] = this._stack.rawData[0][i] / 255.0;
+        // }
+        var totalNbOfVoxels = stack._dimensionsIJK.x * stack._dimensionsIJK.y * stack._dimensionsIJK.z;
+        var f32A = new Float32Array(totalNbOfVoxels);
+        for (var i = 0; i < this._stack.frame.length; i++) {
+            var frame = stack.frame[i];
+            for (var k = 0; k < frame._rows * frame._columns; k++) {
+                f32A[i * frame._rows * frame._columns + k] = frame.pixelData[k] / 255.0;
+            }
         }
         this._dataTexture = new THREE.DataTexture3D(f32A, this._stack.dimensionsIJK.x, this._stack.dimensionsIJK.y, this._stack.dimensionsIJK.z);
         this._dataTexture.format = THREE.RedFormat;
@@ -30017,7 +30026,12 @@ var VolumeRenderHelper2 = /** @class */ (function (_super) {
     VolumeRenderHelper2.prototype._prepareGeometry = function () {
         var worldBBox = this._stack.worldBoundingBox();
         var centerLPS = this._stack.worldCenter();
-        this._geometry = new THREE.BoxGeometry(worldBBox[1] - worldBBox[0], worldBBox[3] - worldBBox[2], worldBBox[5] - worldBBox[4]);
+        // this._geometry = new THREE.BoxGeometry(
+        //   worldBBox[1] - worldBBox[0],
+        //   worldBBox[3] - worldBBox[2],
+        //   worldBBox[5] - worldBBox[4]
+        // );
+        this._geometry = new THREE.BoxGeometry(this.stack.dimensionsIJK.x, this.stack.dimensionsIJK.y, this.stack.dimensionsIJK.z);
         this._geometry.applyMatrix(new THREE.Matrix4().makeTranslation(centerLPS.x, centerLPS.y, centerLPS.z));
     };
     // Release memory

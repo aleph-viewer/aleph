@@ -90,7 +90,6 @@ export class Aleph {
   private _boundingBox: THREE.Box3;
   private _boundingSphereRadius: number;
   private _camera: Entity;
-  private _container: HTMLElement;
   private _hovered: string | null = null;
   private _isShiftDown: boolean = false;
   private _isWebGl2: boolean = true;
@@ -98,7 +97,7 @@ export class Aleph {
   private _scene: Scene;
   private _targetEntity: Entity;
   private _validTarget: boolean;
-  private _volumeHelper: AMI.VolumeRenderHelper;
+  private _volumeHelper: AMI.VolumeRenderHelper2;
 
   @Prop({ context: "store" }) store: Store;
   @Prop() dracoDecoderPath: string | null;
@@ -428,38 +427,19 @@ export class Aleph {
     });
 
     // set up event handlers
-    this._controlsAnimationFinishedHandler = this._controlsAnimationFinishedHandler.bind(
-      this
-    );
-    this._controlsInteractionHandler = this._controlsInteractionHandler.bind(
-      this
-    );
-    this._graphEntryDraggedHandler = this._graphEntryDraggedHandler.bind(this);
-    this._graphEntryPointerDownHandler = this._graphEntryPointerDownHandler.bind(
-      this
-    );
-    this._graphEntryPointerOutHandler = this._graphEntryPointerOutHandler.bind(
-      this
-    );
-    this._graphEntryPointerOverHandler = this._graphEntryPointerOverHandler.bind(
-      this
-    );
-    this._graphEntryPointerUpHandler = this._graphEntryPointerUpHandler.bind(
-      this
-    );
-    this._graphEntrySelectedHandler = this._graphEntrySelectedHandler.bind(
-      this
-    );
-    this._graphEntryValidTargetHandler = this._graphEntryValidTargetHandler.bind(
-      this
-    );
+    this._animationFinished = this._animationFinished.bind(this);
     this._keyDownHandler = this._keyDownHandler.bind(this);
     this._keyUpHandler = this._keyUpHandler.bind(this);
-    this._controlsInteractionFinishedHandler = this._controlsInteractionFinishedHandler.bind(
-      this
-    );
-    this._spawnNodeHandler = this._spawnNodeHandler.bind(this);
+    this._pointerDownHandler = this._pointerDownHandler.bind(this);
+    this._pointerUpHandler = this._pointerUpHandler.bind(this);
+    this._cameraUpdatedHandler = this._cameraUpdatedHandler.bind(this);
+    this._pointerOverHandler = this._pointerOverHandler.bind(this);
+    this._pointerOutHandler = this._pointerOutHandler.bind(this);
+    this._nodeMovedEventHandler = this._nodeMovedEventHandler.bind(this);
+    this._graphSelectedHandler = this._graphSelectedHandler.bind(this);
+    this._spawnNodeEventHandler = this._spawnNodeEventHandler.bind(this);
     this._srcLoaded = this._srcLoaded.bind(this);
+    this._validTargetEventHandler = this._validTargetEventHandler.bind(this);
   }
 
   //#region Render Methods
@@ -631,7 +611,7 @@ export class Aleph {
         >
           <a-entity
             text={`
-              value: ${node.title};
+              value: ${node.text};
               side: double;
               align: center;
               baseline: bottom;
@@ -913,7 +893,6 @@ export class Aleph {
           width: this.width,
           height: this.height
         }}
-        ref={el => (this._container = el)}
       >
         <div id="lut-container">
           <div id="lut-min">0.0</div>
@@ -928,25 +907,6 @@ export class Aleph {
   //#endregion
 
   //#region Private Methods
-
-  private _restorePixelDensity() {
-    setTimeout(() => {
-      this._scene.renderer.setPixelRatio(window.devicePixelRatio);
-      this._scene.renderer.setSize(
-        this._container.offsetWidth,
-        this._container.offsetHeight
-      );
-    }, 100);
-  }
-
-  private _reducePixelDensity() {
-    this._scene.renderer.setPixelRatio(0.1 * window.devicePixelRatio);
-    this._scene.renderer.setSize(
-      this._container.offsetWidth,
-      this._container.offsetHeight
-    );
-  }
-
   private _createEdge(node1Id: string, node2Id: string): void {
     // check if there is already an edge connecting these two nodes
     const match: [string, AlEdge] | undefined = Array.from(this.edges).find(
@@ -1253,38 +1213,29 @@ export class Aleph {
     this._isShiftDown = false;
   }
 
-  private _graphEntryPointerUpHandler(_event: CustomEvent): void {
+  private _cameraUpdatedHandler(event: CustomEvent): void {
+    this.appSetCamera(event.detail.cameraSerial);
+  }
+
+  private _pointerUpHandler(_event: CustomEvent): void {
     this.appSetControlsEnabled(true);
     ThreeUtils.enableOrbitControls(this._camera, true);
   }
 
-  private _graphEntryPointerDownHandler(_event: CustomEvent): void {
+  private _pointerDownHandler(_event: CustomEvent): void {
     this.appSetControlsEnabled(false);
     ThreeUtils.enableOrbitControls(this._camera, false);
   }
 
-  private _controlsInteractionFinishedHandler(_event: MouseEvent): void {
-    if (this.displayMode === DisplayMode.VOLUME) {
-      this._restorePixelDensity();
-    }
-  }
-
-  private _controlsInteractionHandler(event: CustomEvent): void {
-    if (this.displayMode === DisplayMode.VOLUME) {
-      this._reducePixelDensity();
-    }
-    this.appSetCamera(event.detail.cameraState);
-  }
-
-  private _graphEntryPointerOutHandler(_event: CustomEvent): void {
+  private _pointerOutHandler(_event: CustomEvent): void {
     this._hovered = null;
   }
 
-  private _graphEntryPointerOverHandler(event: CustomEvent): void {
+  private _pointerOverHandler(event: CustomEvent): void {
     this._hovered = event.detail.id;
   }
 
-  private _spawnNodeHandler(event: CustomEvent): void {
+  private _spawnNodeEventHandler(event: CustomEvent): void {
     // IF creating a new node and NOT intersecting an existing node
     if (
       this.graphEnabled && // Nodes are enabled
@@ -1318,7 +1269,7 @@ export class Aleph {
           newNode = {
             position: ThreeUtils.vector3ToString(hitPosition),
             scale: this._boundingSphereRadius / Constants.nodeSizeRatio,
-            title: nodeId
+            text: nodeId
           };
         }
       } else if (intersection) {
@@ -1326,7 +1277,7 @@ export class Aleph {
           targetId: "0",
           position: ThreeUtils.vector3ToString(intersection.point),
           scale: this._boundingSphereRadius / Constants.nodeSizeRatio,
-          title: nodeId
+          text: nodeId
         };
       }
 
@@ -1345,17 +1296,17 @@ export class Aleph {
     }
   }
 
-  private _graphEntryValidTargetHandler(event: CustomEvent): void {
+  private _validTargetEventHandler(event: CustomEvent): void {
     this._validTarget = event.detail.valid;
   }
 
-  private _controlsAnimationFinishedHandler(_event: CustomEvent): void {
+  private _animationFinished(_event: CustomEvent): void {
     this.appSetCamera({
       animating: false
     });
   }
 
-  private _graphEntrySelectedHandler(event: CustomEvent): void {
+  private _graphSelectedHandler(event: CustomEvent): void {
     // todo: change to graphEnabled
     if (!this.graphEnabled) {
       return;
@@ -1399,7 +1350,7 @@ export class Aleph {
     }
   }
 
-  private _graphEntryDraggedHandler(event: CustomEvent): void {
+  private _nodeMovedEventHandler(event: CustomEvent): void {
     const nodeId: string = event.detail.id;
     const raycaster = this._camera.components.raycaster as any;
 
@@ -1453,63 +1404,53 @@ export class Aleph {
   private _addEventListeners(): void {
     document.addEventListener("keydown", this._keyDownHandler, false);
     document.addEventListener("keyup", this._keyUpHandler, false);
-    document.addEventListener(
-      "mouseup",
-      this._controlsInteractionFinishedHandler,
-      false
-    );
 
     this._scene.addEventListener(
       AlOrbitControlEvents.ANIMATION_FINISHED,
-      this._controlsAnimationFinishedHandler,
+      this._animationFinished,
       false
     );
 
+    // happens on mouseup and mousewheel passing camera state
     this._scene.addEventListener(
-      AlOrbitControlEvents.INTERACTION,
-      this._controlsInteractionHandler,
-      false
-    );
-
-    this._scene.addEventListener(
-      AlOrbitControlEvents.INTERACTION_FINISHED,
-      this._controlsInteractionFinishedHandler,
+      AlOrbitControlEvents.UPDATED,
+      this._cameraUpdatedHandler,
       false
     );
 
     this._scene.addEventListener(
       AlGraphEvents.POINTER_UP,
-      this._graphEntryPointerUpHandler,
+      this._pointerUpHandler,
       false
     );
 
     this._scene.addEventListener(
       AlGraphEvents.POINTER_DOWN,
-      this._graphEntryPointerDownHandler,
+      this._pointerDownHandler,
       false
     );
 
     this._scene.addEventListener(
-      AlGraphEvents.DRAGGED,
-      this._graphEntryDraggedHandler,
-      false
-    );
-
-    this._scene.addEventListener(
-      AlGraphEvents.SELECTED,
-      this._graphEntrySelectedHandler,
+      AlGraphEvents.DRAGGING,
+      this._nodeMovedEventHandler,
       false
     );
 
     this._scene.addEventListener(
       AlNodeSpawnerEvents.ADD_NODE,
-      this._spawnNodeHandler,
+      this._spawnNodeEventHandler,
+      false
+    );
+
+    this._scene.addEventListener(
+      AlGraphEvents.SELECTED,
+      this._graphSelectedHandler,
       false
     );
 
     this._scene.addEventListener(
       AlNodeSpawnerEvents.VALID_TARGET,
-      this._graphEntryValidTargetHandler,
+      this._validTargetEventHandler,
       false
     );
 
@@ -1523,13 +1464,13 @@ export class Aleph {
 
     this._scene.addEventListener(
       AlGraphEvents.POINTER_OVER,
-      this._graphEntryPointerOverHandler,
+      this._pointerOverHandler,
       false
     );
 
     this._scene.addEventListener(
       AlGraphEvents.POINTER_OUT,
-      this._graphEntryPointerOutHandler,
+      this._pointerOutHandler,
       false
     );
   }

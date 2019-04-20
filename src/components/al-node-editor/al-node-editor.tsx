@@ -19,19 +19,11 @@ export class AlNodeEditor {
       return (
         <form onSubmit={e => e.preventDefault()}>
           <ion-item>
-            <ion-input
-              value={node.title}
-              placeholder="title"
-              required
-              onIonChange={e => (node.title = e.detail.value)}
-            />
-          </ion-item>
-          <ion-item>
             <ion-textarea
-              value={node.description}
-              placeholder="description"
-              rows="10"
-              onIonChange={e => (node.description = e.detail.value)}
+              value={node.text}
+              rows="5"
+              required
+              onIonChange={e => (node.text = e.detail.value)}
             />
           </ion-item>
           <ion-button
@@ -47,7 +39,7 @@ export class AlNodeEditor {
             size="small"
             type="submit"
             onClick={() => {
-              if (node.title) {
+              if (node.text) {
                 this.save.emit([nodeId, node]);
               }
             }}

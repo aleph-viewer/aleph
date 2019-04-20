@@ -25,7 +25,14 @@ declare namespace AMI {
     children: any;
     textureLUT: THREE.Texture;
   }
-
+  class VolumeRenderHelper2 {
+    constructor(stack: any);
+    stack: any;
+    windowWidth: number;
+    windowCenter: number;
+    children: any;
+    textureLUT: THREE.Texture;
+  }
   class LutHelper {
     constructor(el: any);
     luts: any;

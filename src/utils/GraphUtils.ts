@@ -5,7 +5,7 @@ export class AlGraphEvents {
   static SELECTED: string = "al-graph-selected";
   static POINTER_OVER: string = "al-graph-pointer-over";
   static POINTER_OUT: string = "al-graph-pointer-out";
-  static DRAGGED: string = "al-graph-dragged";
+  static DRAGGING: string = "al-graph-dragging";
   static POINTER_DOWN: string = "al-graph-pointer-down";
   static POINTER_UP: string = "al-graph-pointer-up";
 }

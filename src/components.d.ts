@@ -58,7 +58,8 @@ export namespace Components {
     'slicesWindowCenter': number;
     'slicesWindowWidth': number;
     'stackhelper': AMI.StackHelper
-    | AMI.VolumeRenderHelper;
+    | AMI.VolumeRenderHelper
+    | AMI.VolumeRenderHelper2;
     'volumeSteps': number;
     'volumeWindowCenter': number;
     'volumeWindowWidth': number;
@@ -86,7 +87,8 @@ export namespace Components {
     'slicesWindowCenter'?: number;
     'slicesWindowWidth'?: number;
     'stackhelper'?: AMI.StackHelper
-    | AMI.VolumeRenderHelper;
+    | AMI.VolumeRenderHelper
+    | AMI.VolumeRenderHelper2;
     'volumeSteps'?: number;
     'volumeWindowCenter'?: number;
     'volumeWindowWidth'?: number;

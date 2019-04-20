@@ -22,7 +22,7 @@ export class AlNodeList {
                 class={this.selected === nodeId ? "selected" : null}
                 onClick={() => this.selectedChanged.emit(nodeId)}
               >
-                {node.title}
+                {node.text}
               </ion-item>
             );
           })}
