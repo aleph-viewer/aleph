@@ -30,7 +30,8 @@ export class AlVolumeComponent implements AframeRegistryEntry {
         volumeSteps: { type: "number" },
         volumeWindowWidth: { type: "number" },
         volumeWindowCenter: { type: "number" },
-        isWebGl2: { type: "boolean" }
+        isWebGl2: { type: "boolean" },
+        rendererEnabled: { type: "boolean", default: true }
       },
 
       bindMethods(): void {
@@ -53,6 +54,7 @@ export class AlVolumeComponent implements AframeRegistryEntry {
         const el = this.el;
 
         state.stack = stack;
+        this.renderFunc = el.sceneEl.render;
 
         switch (this.data.displayMode) {
           case DisplayMode.SLICES: {
@@ -112,14 +114,25 @@ export class AlVolumeComponent implements AframeRegistryEntry {
           this.handleStack(state.stack);
         }
 
-        if (
-          oldData &&
-          oldData.isWebGl2 &&
-          oldData.isWebGl2 !== this.data.isWebGl2
-        ) {
-          // IF webGL Env has changed, recreate the stackhelper
-          this.handleStack(state.stack);
+        if (oldData && oldData.rendererEnabled !== this.data.rendererEnabled) {
+          if (this.data.rendererEnabled) {
+            console.log("enable renderer");
+            this.el.sceneEl.renderer.setAnimationLoop(this.renderFunc);
+          } else {
+            console.log("disable renderer");
+            this.el.sceneEl.renderer.setAnimationLoop(null);
+          }
         }
+
+        // webgl env won't change at runtime
+        // if (
+        //   oldData &&
+        //   oldData.isWebGl2 &&
+        //   oldData.isWebGl2 !== this.data.isWebGl2
+        // ) {
+        //   // IF webGL Env has changed, recreate the stackhelper
+        //   this.handleStack(state.stack);
+        // }
       },
 
       tickFunction(): void {

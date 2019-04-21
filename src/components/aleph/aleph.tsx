@@ -575,6 +575,7 @@ export class Aleph {
               volumeWindowCenter: ${this.volumeWindowCenter};
               volumeWindowWidth: ${this.volumeWindowWidth};
               isWebGl2: ${this._isWebGl2};
+              rendererEnabled: ${this.boundingBoxVisible}
             `}
             position="0 0 0"
             ref={(el: Entity) => (this._targetEntity = el)}
@@ -1453,9 +1454,9 @@ export class Aleph {
   }
 
   private _addEventListeners(): void {
-    document.addEventListener("keydown", this._keyDownHandler, false);
-    document.addEventListener("keyup", this._keyUpHandler, false);
-    document.addEventListener(
+    window.addEventListener("keydown", this._keyDownHandler, false);
+    window.addEventListener("keyup", this._keyUpHandler, false);
+    window.addEventListener(
       "mouseup",
       this._controlsInteractionFinishedHandler,
       false
