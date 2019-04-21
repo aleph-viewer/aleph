@@ -1266,17 +1266,18 @@ export class Aleph {
     ThreeUtils.enableOrbitControls(this._camera, false);
   }
 
-  private _controlsInteractionFinishedHandler(_event: MouseEvent): void {
+  private _controlsInteractionFinishedHandler(event: CustomEvent): void {
     if (this.displayMode === DisplayMode.VOLUME) {
       this._restorePixelDensity();
     }
+    console.log("set camera");
+    this.appSetCamera(event.detail.cameraState);
   }
 
-  private _controlsInteractionHandler(event: CustomEvent): void {
+  private _controlsInteractionHandler(_event: CustomEvent): void {
     if (this.displayMode === DisplayMode.VOLUME) {
       this._reducePixelDensity();
     }
-    this.appSetCamera(event.detail.cameraState);
   }
 
   private _graphEntryPointerOutHandler(_event: CustomEvent): void {
