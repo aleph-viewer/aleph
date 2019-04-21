@@ -116,11 +116,17 @@ export class AlVolumeComponent implements AframeRegistryEntry {
 
         if (oldData && oldData.rendererEnabled !== this.data.rendererEnabled) {
           if (this.data.rendererEnabled) {
-            console.log("enable renderer");
-            this.el.sceneEl.renderer.setAnimationLoop(this.renderFunc);
+            setTimeout(() => {
+              console.log("enable renderer");
+              if (this.renderFunc) {
+                this.el.sceneEl.renderer.setAnimationLoop(this.renderFunc);
+              }
+            }, Constants.minFrameMS);
           } else {
-            console.log("disable renderer");
-            this.el.sceneEl.renderer.setAnimationLoop(null);
+            setTimeout(() => {
+              console.log("disable renderer");
+              this.el.sceneEl.renderer.setAnimationLoop(null);
+            }, Constants.minFrameMS);
           }
         }
 

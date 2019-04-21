@@ -92,6 +92,7 @@ export class Aleph {
   private _camera: Entity;
   private _container: HTMLElement;
   private _hovered: string | null = null;
+  private _interacting: boolean = false;
   private _isShiftDown: boolean = false;
   private _isWebGl2: boolean = true;
   private _mesh: THREE.Mesh;
@@ -575,7 +576,11 @@ export class Aleph {
               volumeWindowCenter: ${this.volumeWindowCenter};
               volumeWindowWidth: ${this.volumeWindowWidth};
               isWebGl2: ${this._isWebGl2};
-              rendererEnabled: ${this.boundingBoxVisible}
+              rendererEnabled: ${
+                this.displayMode === DisplayMode.VOLUME
+                  ? this._interacting
+                  : true
+              }
             `}
             position="0 0 0"
             ref={(el: Entity) => (this._targetEntity = el)}
@@ -1266,26 +1271,28 @@ export class Aleph {
     ThreeUtils.enableOrbitControls(this._camera, false);
   }
 
-  private _controlsInteractionFinishedHandler(event: CustomEvent): void {
-    if (this.displayMode === DisplayMode.VOLUME) {
-      this._restorePixelDensity();
-    }
-    console.log("set camera");
-    this.appSetCamera(event.detail.cameraState);
-  }
-
-  private _controlsInteractionHandler(_event: CustomEvent): void {
-    if (this.displayMode === DisplayMode.VOLUME) {
-      this._reducePixelDensity();
-    }
-  }
-
   private _graphEntryPointerOutHandler(_event: CustomEvent): void {
     this._hovered = null;
   }
 
   private _graphEntryPointerOverHandler(event: CustomEvent): void {
     this._hovered = event.detail.id;
+  }
+
+  private _controlsInteractionHandler(_event: CustomEvent): void {
+    if (this.displayMode === DisplayMode.VOLUME) {
+      this._interacting = true;
+      this._reducePixelDensity();
+      //this.appSetCamera(event.detail.cameraState);
+    }
+  }
+
+  private _controlsInteractionFinishedHandler(event: CustomEvent): void {
+    if (this.displayMode === DisplayMode.VOLUME) {
+      this._interacting = false;
+      this._restorePixelDensity();
+    }
+    this.appSetCamera(event.detail.cameraState);
   }
 
   private _spawnNodeHandler(event: CustomEvent): void {
