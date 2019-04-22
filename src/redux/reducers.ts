@@ -270,18 +270,21 @@ export const app = (
     case TypeKeys.APP_SET_VOLUME_STEPS: {
       return {
         ...state,
+        sceneNeedsUpdate: true,
         volumeSteps: action.payload
       };
     }
     case TypeKeys.APP_SET_VOLUME_WINDOW_WIDTH: {
       return {
         ...state,
+        sceneNeedsUpdate: true,
         volumeWindowWidth: action.payload
       };
     }
     case TypeKeys.APP_SET_VOLUME_WINDOW_CENTER: {
       return {
         ...state,
+        sceneNeedsUpdate: true,
         volumeWindowCenter: action.payload
       };
     }

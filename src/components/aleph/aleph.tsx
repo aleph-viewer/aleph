@@ -43,6 +43,7 @@ import {
   appSetGraphEnabled,
   appSetNode,
   appSetOrientation,
+  appSetSceneNeedsUpdate,
   appSetSlicesIndex,
   appSetSlicesWindowCenter,
   appSetSlicesWindowWidth,
@@ -123,6 +124,7 @@ export class Aleph {
   appSetGraphEnabled: Action;
   appSetNode: Action;
   appSetOrientation: Action;
+  appSetSceneNeedsUpdate: Action;
   appSetSlicesIndex: Action;
   appSetSlicesWindowCenter: Action;
   appSetSlicesWindowWidth: Action;
@@ -146,6 +148,7 @@ export class Aleph {
   @State() optionsEnabled: boolean;
   @State() optionsVisible: boolean;
   @State() orientation: Orientation;
+  @State() sceneNeedsUpdate: boolean;
   @State() selected: string;
   @State() slicesIndex: number;
   @State() slicesWindowCenter: number;
@@ -175,9 +178,7 @@ export class Aleph {
 
   @Method()
   async resize(): Promise<void> {
-    if (this._scene) {
-      (this._scene as any).resize();
-    }
+    this._resize();
   }
 
   //#endregion
@@ -354,6 +355,7 @@ export class Aleph {
           graphEnabled,
           nodes,
           orientation,
+          sceneNeedsUpdate,
           selected,
           slicesIndex,
           slicesWindowCenter,
@@ -376,6 +378,7 @@ export class Aleph {
         graphEnabled,
         nodes,
         orientation,
+        sceneNeedsUpdate,
         selected,
         slicesIndex,
         slicesWindowCenter,
@@ -407,6 +410,7 @@ export class Aleph {
       appSetGraphEnabled,
       appSetNode,
       appSetOrientation,
+      appSetSceneNeedsUpdate,
       appSetSlicesIndex,
       appSetSlicesWindowCenter,
       appSetSlicesWindowWidth,
@@ -451,30 +455,6 @@ export class Aleph {
     this._spawnNodeHandler = this._spawnNodeHandler.bind(this);
     this._srcLoaded = this._srcLoaded.bind(this);
   }
-
-  //#region Render Methods
-  // private _renderSpinner() {
-  //   if (!this.srcLoaded) {
-  //     return (
-  //       <a-entity
-  //         al-fixed-to-orbit-camera={`
-  //         distanceFromTarget: 20;
-  //         target: ${
-  //           this.camera ? this.camera.position : new THREE.Vector3(0, 0, 0)
-  //         };
-  //       `}
-  //       >
-  //         <a-entity
-  //           animation="property: rotation; to: 0 120 0; loop: true; dur: 1000; easing: easeInOutQuad"
-  //           geometry="primitive: al-spinner;"
-  //           material={`color: ${this.spinnerColor};`}
-  //         />
-  //       </a-entity>
-  //     );
-  //   }
-
-  //   return null;
-  // }
 
   private _renderSpinner() {
     if (this.src && !this.srcLoaded) {
@@ -569,7 +549,8 @@ export class Aleph {
                 this.displayMode === DisplayMode.VOLUME
                   ? this._interacting
                   : true
-              }
+              },
+              sceneNeedsUpdate: ${this.sceneNeedsUpdate};
             `}
             position="0 0 0"
             ref={(el: Entity) => (this._targetEntity = el)}
@@ -872,9 +853,7 @@ export class Aleph {
           }
         `}
         ref={el => (this._camera = el)}
-      >
-        {/* {this._renderSpinner()} */}
-      </a-camera>
+      />
     );
   }
 
@@ -923,17 +902,23 @@ export class Aleph {
 
   //#region Private Methods
 
+  private _resize(): void {
+    if (this._scene) {
+      (this._scene as any).resize();
+    }
+  }
+
   private _restorePixelDensity() {
     if (this._scene) {
       this._scene.renderer.setPixelRatio(window.devicePixelRatio);
-      (this._scene as any).resize();
+      this._resize();
     }
   }
 
   private _reducePixelDensity() {
     if (this._scene) {
       this._scene.renderer.setPixelRatio(0.1 * window.devicePixelRatio);
-      (this._scene as any).resize();
+      this._resize();
     }
   }
 
