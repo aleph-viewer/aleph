@@ -60,21 +60,8 @@ export class AlVolumeComponent implements AframeRegistryEntry {
           case DisplayMode.SLICES: {
             state.stackhelper = new AMI.StackHelper(state.stack);
 
-            // TODO: Why is this now breaking, bbox == null?
-            if (state.stackhelper.bbox) {
-              state.stackhelper.bbox.visible = false;
-            } else {
-              console.warn(
-                "AlVolume-handleStack: tried to set visibility of null bbox on StackHelper!"
-              );
-            }
-            if (state.stackhelper.border) {
-              state.stackhelper.border.color = Constants.colorValues.blue;
-            } else {
-              console.warn(
-                "AlVolume-handleStack: tried to set color of null border on StackHelper!"
-              );
-            }
+            state.stackhelper.bbox.visible = false;
+            state.stackhelper.border.color = Constants.colorValues.blue;
             break;
           }
           case DisplayMode.VOLUME: {
@@ -87,7 +74,6 @@ export class AlVolumeComponent implements AframeRegistryEntry {
             state.lutHelper.luts = AMI.LutHelper.presetLuts();
             state.lutHelper.lutsO = AMI.LutHelper.presetLutsO();
             state.stackhelper = new AMI.VolumeRenderHelper(state.stack);
-            // state.stackhelper = new AMI.VolumeRenderHelper2(state.stack);
             state.stackhelper.textureLUT = state.lutHelper.texture;
             break;
           }
@@ -118,27 +104,15 @@ export class AlVolumeComponent implements AframeRegistryEntry {
           if (this.data.rendererEnabled) {
             setTimeout(() => {
               console.log("enable renderer");
-              // if (this.renderFunc) {
-              //   this.el.sceneEl.renderer.setAnimationLoop(this.renderFunc);
-              // }
+              ((this.state as AlVolumeState).stackhelper as AMI.VolumeRenderHelper).isPaused = 0;
             }, Constants.minFrameMS);
           } else {
             setTimeout(() => {
               console.log("disable renderer");
-              //this.el.sceneEl.renderer.setAnimationLoop(null);
+              ((this.state as AlVolumeState).stackhelper as AMI.VolumeRenderHelper).isPaused = 1;
             }, Constants.minFrameMS);
           }
         }
-
-        // webgl env won't change at runtime
-        // if (
-        //   oldData &&
-        //   oldData.isWebGl2 &&
-        //   oldData.isWebGl2 !== this.data.isWebGl2
-        // ) {
-        //   // IF webGL Env has changed, recreate the stackhelper
-        //   this.handleStack(state.stack);
-        // }
       },
 
       tickFunction(): void {

@@ -24,6 +24,7 @@ declare namespace AMI {
     windowCenter: number;
     children: any;
     textureLUT: THREE.Texture;
+    isPaused: number;
   }
 
   class LutHelper {
