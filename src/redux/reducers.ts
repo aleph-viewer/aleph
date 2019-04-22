@@ -17,6 +17,7 @@ export const getInitialState = () => {
     nodes: new Map<string, AlNode>(),
     graphEnabled: false,
     orientation: Orientation.CORONAL,
+    sceneNeedsUpdate: false,
     selected: null,
     slicesIndex: 0,
     slicesWindowCenter: 0,
@@ -284,11 +285,19 @@ export const app = (
         volumeWindowCenter: action.payload
       };
     }
+    case TypeKeys.APP_SET_SCENE_NEEDS_UPDATE: {
+      console.log("scene needs update:", action.payload);
+      return {
+        ...state,
+        sceneNeedsUpdate: action.payload
+      };
+    }
     //#endregion
     //#region camera
     case TypeKeys.APP_SET_CAMERA: {
       return {
         ...state,
+        sceneNeedsUpdate: true,
         camera: {
           ...state.camera,
           ...action.payload
@@ -298,6 +307,7 @@ export const app = (
     case TypeKeys.APP_SET_CONTROLS_ENABLED: {
       return {
         ...state,
+        sceneNeedsUpdate: true,
         controlsEnabled: action.payload
       };
     }
