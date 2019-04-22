@@ -8,11 +8,17 @@ interface AlVolumeState {
   stack: any;
   stackhelper: AMI.StackHelper | AMI.VolumeRenderHelper;
   lutHelper: AMI.LutHelper;
+  bufferScene: THREE.Scene;
+  bufferTexture: THREE.WebGLRenderTarget;
+  rendering: boolean;
+  geometry: THREE.BoxGeometry;
+  material: THREE.MeshBasicMaterial;
+  mesh: THREE.Mesh;
 }
 
 interface AlVolumeDefinition extends ComponentDefinition {
   tickFunction(): void;
-  handleStack(stack: any): void;
+  handleStack(stack: any, liveChange: boolean): void;
   bindMethods(): void;
 }
 
@@ -45,16 +51,24 @@ export class AlVolumeComponent implements AframeRegistryEntry {
           this
         );
         this.loader = new VolumetricLoader();
-        this.state = {} as AlVolumeState;
+        this.state = {
+          bufferScene: new THREE.Scene(),
+          bufferTexture: new THREE.WebGLRenderTarget(
+            this.el.sceneEl.canvas.width,
+            this.el.sceneEl.canvas.height,
+            { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter }
+          ),
+          rendering: true
+        } as AlVolumeState;
+
         this.bindMethods();
       },
 
-      handleStack(stack: any): void {
+      handleStack(stack: any, liveChange: boolean): void {
         const state = this.state as AlVolumeState;
         const el = this.el;
 
         state.stack = stack;
-        this.renderFunc = el.sceneEl.render;
 
         switch (this.data.displayMode) {
           case DisplayMode.SLICES: {
@@ -79,6 +93,33 @@ export class AlVolumeComponent implements AframeRegistryEntry {
           }
         }
 
+        // If a hot reload of the display, reset the mesh
+        if (liveChange) {
+          this.el.removeObject3D("mesh");
+        }
+
+        // If not volumetric, display as normal
+        if (this.data.displayMode !== DisplayMode.VOLUME) {
+          this.el.setObject3D("mesh", this.state.stackhelper);
+        }
+        // Else place in buffer scene
+        else {
+          this.state.bufferScene.add(this.state.stackhelper);
+
+          let geometry = this.state.stackhelper.geometry.clone();
+          this.state.geometry = geometry;
+
+          let material = new THREE.MeshBasicMaterial({
+            map: this.state.bufferTexture
+          });
+          this.state.material = material;
+
+          let mesh = new THREE.Mesh(geometry, material);
+          this.state.mesh = mesh;
+
+          this.el.setObject3D("mesh", mesh);
+        }
+
         el.sceneEl.emit(AlVolumeEvents.LOADED, state.stackhelper, false);
       },
 
@@ -90,14 +131,14 @@ export class AlVolumeComponent implements AframeRegistryEntry {
           return;
         } else if (oldData && oldData.src !== this.data.src) {
           this.loader.load(this.data.src, el).then(stack => {
-            this.handleStack(stack);
+            this.handleStack(stack, false);
           });
         } else if (
           oldData &&
           oldData.displayMode !== this.data.displayMode &&
           state.stack
         ) {
-          this.handleStack(state.stack);
+          this.handleStack(state.stack, true);
         }
 
         if (
@@ -107,23 +148,45 @@ export class AlVolumeComponent implements AframeRegistryEntry {
         ) {
           if (this.data.rendererEnabled) {
             setTimeout(() => {
-              console.log("enable renderer");
-              ((this.state as AlVolumeState)
-                .stackhelper as AMI.VolumeRenderHelper).isPaused = 0;
+              if (
+                this.state.stackhelper &&
+                this.data.displayMode === DisplayMode.VOLUME
+              ) {
+                // this.state.stackhelper.isPaused = 0;
+                console.log("enable renderer");
+                this.state.rendering = true;
+              }
             }, Constants.minFrameMS);
           } else {
             setTimeout(() => {
-              console.log("disable renderer");
-              ((this.state as AlVolumeState)
-                .stackhelper as AMI.VolumeRenderHelper).isPaused = 1;
+              if (
+                this.state.stackhelper &&
+                this.data.displayMode === DisplayMode.VOLUME
+              ) {
+                // this.state.stackhelper.isPaused = 1;
+                console.log("disable renderer");
+                this.state.rendering = false;
+              }
             }, Constants.minFrameMS);
           }
         }
       },
 
       tickFunction(): void {
-        if (this.state.stackhelper) {
+        if (
+          this.state.stackhelper &&
+          this.data.displayMode !== DisplayMode.VOLUME
+        ) {
           this.el.setObject3D("mesh", this.state.stackhelper);
+        } else if (
+          this.state.rendering &&
+          this.data.displayMode === DisplayMode.VOLUME
+        ) {
+          this.el.sceneEl.renderer.render(
+            this.state.bufferScene,
+            this.el.sceneEl.camera,
+            this.state.bufferTexture
+          );
         }
       },
 

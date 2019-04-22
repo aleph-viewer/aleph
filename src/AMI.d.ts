@@ -25,6 +25,7 @@ declare namespace AMI {
     children: any;
     textureLUT: THREE.Texture;
     isPaused: number;
+    geometry: THREE.BoxGeometry;
   }
 
   class LutHelper {
