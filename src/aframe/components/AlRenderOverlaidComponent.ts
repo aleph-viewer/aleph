@@ -7,9 +7,18 @@ export class AlRenderOverlaidComponent implements AframeRegistryEntry {
       schema: {},
 
       init(_data?: any) {
-        let mesh = this.el.object3DMap.mesh as THREE.Mesh;
-        mesh.renderOrder = 999;
-        //(mesh.material as THREE.Material).depthTest = false;
+        this.setDepth(this.el.object3DMap.mesh);
+        this.setDepth(this.el.object3DMap.text);
+        //this.setDepth(this.el.object3DMap.line);
+      },
+
+      setDepth(mesh: THREE.Mesh) {
+        if (mesh) {
+          mesh.renderOrder = 999;
+          if (mesh.material) {
+            (mesh.material as THREE.Material).depthTest = false;
+          }
+        }
       }
     } as ComponentDefinition;
   }

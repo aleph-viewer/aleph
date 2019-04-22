@@ -18,8 +18,6 @@ import {
 } from "./components/AlOrbitControlComponent";
 import { AlRenderOrderComponent } from "./components/AlRenderOrderComponent";
 import { AlRenderOverlaidComponent } from "./components/AlRenderOverlaidComponent";
-import { AlRenderOverlaidLineComponent } from "./components/AlRenderOverlaidLineComponent";
-import { AlRenderOverlaidTextComponent } from "./components/AlRenderOverlaidTextComponent";
 import { AlSpinnerComponent } from "./components/AlSpinnerComponent";
 import { AlVolumeComponent } from "./components/AlVolumeComponent";
 
@@ -39,8 +37,6 @@ export {
   AlOrbitControlEvents,
   AlRenderOrderComponent,
   AlRenderOverlaidComponent,
-  AlRenderOverlaidLineComponent,
-  AlRenderOverlaidTextComponent,
   AlSpinnerComponent,
   AlVolumeComponent
 };
