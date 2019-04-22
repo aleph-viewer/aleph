@@ -26,18 +26,19 @@ export class AlVolumeComponent implements AframeRegistryEntry {
   public static get Object(): AlVolumeDefinition {
     return {
       schema: {
-        srcLoaded: { type: "boolean" },
-        src: { type: "string" },
         displayMode: { type: "string" },
+        isWebGl2: { type: "boolean" },
+        rendererEnabled: { type: "boolean", default: true },
+        sceneNeedsUpdate: { type: "boolean", default: false },
         slicesIndex: { type: "number" },
         slicesOrientation: { type: "string" },
-        slicesWindowWidth: { type: "number" },
         slicesWindowCenter: { type: "number" },
+        slicesWindowWidth: { type: "number" },
+        src: { type: "string" },
+        srcLoaded: { type: "boolean" },
         volumeSteps: { type: "number" },
-        volumeWindowWidth: { type: "number" },
         volumeWindowCenter: { type: "number" },
-        isWebGl2: { type: "boolean" },
-        rendererEnabled: { type: "boolean", default: true }
+        volumeWindowWidth: { type: "number" }
       },
 
       bindMethods(): void {

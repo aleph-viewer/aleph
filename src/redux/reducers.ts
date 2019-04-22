@@ -17,6 +17,7 @@ export const getInitialState = () => {
     nodes: new Map<string, AlNode>(),
     graphEnabled: false,
     orientation: Orientation.CORONAL,
+    sceneNeedsUpdate: false,
     selected: null,
     slicesIndex: 0,
     slicesWindowCenter: 0,
@@ -269,19 +270,29 @@ export const app = (
     case TypeKeys.APP_SET_VOLUME_STEPS: {
       return {
         ...state,
+        sceneNeedsUpdate: true,
         volumeSteps: action.payload
       };
     }
     case TypeKeys.APP_SET_VOLUME_WINDOW_WIDTH: {
       return {
         ...state,
+        sceneNeedsUpdate: true,
         volumeWindowWidth: action.payload
       };
     }
     case TypeKeys.APP_SET_VOLUME_WINDOW_CENTER: {
       return {
         ...state,
+        sceneNeedsUpdate: true,
         volumeWindowCenter: action.payload
+      };
+    }
+    case TypeKeys.APP_SET_SCENE_NEEDS_UPDATE: {
+      console.log("scene needs update:", action.payload);
+      return {
+        ...state,
+        sceneNeedsUpdate: action.payload
       };
     }
     //#endregion
@@ -289,6 +300,7 @@ export const app = (
     case TypeKeys.APP_SET_CAMERA: {
       return {
         ...state,
+        sceneNeedsUpdate: true,
         camera: {
           ...state.camera,
           ...action.payload
@@ -298,6 +310,7 @@ export const app = (
     case TypeKeys.APP_SET_CONTROLS_ENABLED: {
       return {
         ...state,
+        sceneNeedsUpdate: true,
         controlsEnabled: action.payload
       };
     }
