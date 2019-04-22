@@ -21,8 +21,6 @@ import {
   AlOrbitControlComponent,
   AlRenderOrderComponent,
   AlRenderOverlaidComponent,
-  AlRenderOverlaidLineComponent,
-  AlRenderOverlaidTextComponent,
   AlSpinnerComponent,
   AlVolumeComponent
 } from "../../aframe";
@@ -331,14 +329,6 @@ export class Aleph {
       AlRenderOverlaidComponent.Object
     );
     AframeUtils.registerComponent(
-      AlRenderOverlaidTextComponent.Tag,
-      AlRenderOverlaidTextComponent.Object
-    );
-    AframeUtils.registerComponent(
-      AlRenderOverlaidLineComponent.Tag,
-      AlRenderOverlaidLineComponent.Object
-    );
-    AframeUtils.registerComponent(
       AlRenderOrderComponent.Tag,
       AlRenderOrderComponent.Object
     );
@@ -644,7 +634,7 @@ export class Aleph {
               width: ${Constants.fontSizeMedium * this._boundingSphereRadius}
             `}
             al-look-to-camera
-            al-render-overlaid-text
+            al-render-overlaid
             visible={`${this.selected === nodeId}`}
             position={ThreeUtils.vector3ToString(textOffset)}
             id={`${nodeId}-label`}
@@ -702,7 +692,7 @@ export class Aleph {
               position={ThreeUtils.vector3ToString(textOffset)}
               visible={`${this.selected === edgeId}`}
               al-look-to-camera
-              al-render-overlaid-text
+              al-render-overlaid
             />
           </a-entity>
         );
@@ -825,7 +815,7 @@ export class Aleph {
               )}
               visible={`${this.selected === angleId}`}
               al-look-to-camera
-              al-render-overlaid-text
+              al-render-overlaid
             />
           </a-entity>
         );
@@ -1271,11 +1261,12 @@ export class Aleph {
     this._hovered = event.detail.id;
   }
 
-  private _controlsInteractionHandler(_event: CustomEvent): void {
+  private _controlsInteractionHandler(event: CustomEvent): void {
     if (this.displayMode === DisplayMode.VOLUME) {
       this._interacting = true;
       this._reducePixelDensity();
     }
+    this.appSetCamera(event.detail.cameraState);
   }
 
   private _controlsInteractionFinishedHandler(event: CustomEvent): void {
