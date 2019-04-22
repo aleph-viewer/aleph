@@ -42,6 +42,7 @@ export class AlVolumeComponent implements AframeRegistryEntry {
 
       bindMethods(): void {
         this.handleStack = this.handleStack.bind(this);
+        this.rendererResize = this.rendererResize.bind(this);
       },
 
       init(): void {
@@ -61,7 +62,17 @@ export class AlVolumeComponent implements AframeRegistryEntry {
           rendering: true
         } as AlVolumeState;
 
+        this.el.sceneEl.addEventListener(
+          "rendererresize",
+          this.rendererResize,
+          false
+        );
+
         this.bindMethods();
+      },
+
+      rendererResize(): void {
+        console.log("renderer resized");
       },
 
       handleStack(stack: any, liveChange: boolean): void {
