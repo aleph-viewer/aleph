@@ -21,8 +21,6 @@ import {
   AlOrbitControlComponent,
   AlRenderOrderComponent,
   AlRenderOverlaidComponent,
-  AlRenderOverlaidLineComponent,
-  AlRenderOverlaidTextComponent,
   AlSpinnerComponent,
   AlVolumeComponent
 } from "../../aframe";
@@ -90,8 +88,8 @@ export class Aleph {
   private _boundingBox: THREE.Box3;
   private _boundingSphereRadius: number;
   private _camera: Entity;
-  private _container: HTMLElement;
   private _hovered: string | null = null;
+  private _interacting: boolean = false;
   private _isShiftDown: boolean = false;
   private _isWebGl2: boolean = true;
   private _mesh: THREE.Mesh;
@@ -331,14 +329,6 @@ export class Aleph {
       AlRenderOverlaidComponent.Object
     );
     AframeUtils.registerComponent(
-      AlRenderOverlaidTextComponent.Tag,
-      AlRenderOverlaidTextComponent.Object
-    );
-    AframeUtils.registerComponent(
-      AlRenderOverlaidLineComponent.Tag,
-      AlRenderOverlaidLineComponent.Object
-    );
-    AframeUtils.registerComponent(
       AlRenderOrderComponent.Tag,
       AlRenderOrderComponent.Object
     );
@@ -575,6 +565,11 @@ export class Aleph {
               volumeWindowCenter: ${this.volumeWindowCenter};
               volumeWindowWidth: ${this.volumeWindowWidth};
               isWebGl2: ${this._isWebGl2};
+              rendererEnabled: ${
+                this.displayMode === DisplayMode.VOLUME
+                  ? this._interacting
+                  : true
+              }
             `}
             position="0 0 0"
             ref={(el: Entity) => (this._targetEntity = el)}
@@ -631,7 +626,7 @@ export class Aleph {
         >
           <a-entity
             text={`
-              value: ${node.text};
+              value: ${node.title};
               side: double;
               align: center;
               baseline: bottom;
@@ -639,7 +634,7 @@ export class Aleph {
               width: ${Constants.fontSizeMedium * this._boundingSphereRadius}
             `}
             al-look-to-camera
-            al-render-overlaid-text
+            al-render-overlaid
             visible={`${this.selected === nodeId}`}
             position={ThreeUtils.vector3ToString(textOffset)}
             id={`${nodeId}-label`}
@@ -697,7 +692,7 @@ export class Aleph {
               position={ThreeUtils.vector3ToString(textOffset)}
               visible={`${this.selected === edgeId}`}
               al-look-to-camera
-              al-render-overlaid-text
+              al-render-overlaid
             />
           </a-entity>
         );
@@ -820,7 +815,7 @@ export class Aleph {
               )}
               visible={`${this.selected === angleId}`}
               al-look-to-camera
-              al-render-overlaid-text
+              al-render-overlaid
             />
           </a-entity>
         );
@@ -913,7 +908,6 @@ export class Aleph {
           width: this.width,
           height: this.height
         }}
-        ref={el => (this._container = el)}
       >
         <div id="lut-container">
           <div id="lut-min">0.0</div>
@@ -930,21 +924,17 @@ export class Aleph {
   //#region Private Methods
 
   private _restorePixelDensity() {
-    setTimeout(() => {
+    if (this._scene) {
       this._scene.renderer.setPixelRatio(window.devicePixelRatio);
-      this._scene.renderer.setSize(
-        this._container.offsetWidth,
-        this._container.offsetHeight
-      );
-    }, 100);
+      (this._scene as any).resize();
+    }
   }
 
   private _reducePixelDensity() {
-    this._scene.renderer.setPixelRatio(0.1 * window.devicePixelRatio);
-    this._scene.renderer.setSize(
-      this._container.offsetWidth,
-      this._container.offsetHeight
-    );
+    if (this._scene) {
+      this._scene.renderer.setPixelRatio(0.1 * window.devicePixelRatio);
+      (this._scene as any).resize();
+    }
   }
 
   private _createEdge(node1Id: string, node2Id: string): void {
@@ -1263,25 +1253,28 @@ export class Aleph {
     ThreeUtils.enableOrbitControls(this._camera, false);
   }
 
-  private _controlsInteractionFinishedHandler(_event: MouseEvent): void {
-    if (this.displayMode === DisplayMode.VOLUME) {
-      this._restorePixelDensity();
-    }
-  }
-
-  private _controlsInteractionHandler(event: CustomEvent): void {
-    if (this.displayMode === DisplayMode.VOLUME) {
-      this._reducePixelDensity();
-    }
-    this.appSetCamera(event.detail.cameraState);
-  }
-
   private _graphEntryPointerOutHandler(_event: CustomEvent): void {
     this._hovered = null;
   }
 
   private _graphEntryPointerOverHandler(event: CustomEvent): void {
     this._hovered = event.detail.id;
+  }
+
+  private _controlsInteractionHandler(event: CustomEvent): void {
+    if (this.displayMode === DisplayMode.VOLUME) {
+      this._interacting = true;
+      this._reducePixelDensity();
+    }
+    this.appSetCamera(event.detail.cameraState);
+  }
+
+  private _controlsInteractionFinishedHandler(event: CustomEvent): void {
+    if (this.displayMode === DisplayMode.VOLUME) {
+      this._interacting = false;
+      this._restorePixelDensity();
+    }
+    this.appSetCamera(event.detail.cameraState);
   }
 
   private _spawnNodeHandler(event: CustomEvent): void {
@@ -1318,7 +1311,7 @@ export class Aleph {
           newNode = {
             position: ThreeUtils.vector3ToString(hitPosition),
             scale: this._boundingSphereRadius / Constants.nodeSizeRatio,
-            text: nodeId
+            title: nodeId
           };
         }
       } else if (intersection) {
@@ -1326,7 +1319,7 @@ export class Aleph {
           targetId: "0",
           position: ThreeUtils.vector3ToString(intersection.point),
           scale: this._boundingSphereRadius / Constants.nodeSizeRatio,
-          text: nodeId
+          title: nodeId
         };
       }
 
@@ -1451,9 +1444,9 @@ export class Aleph {
   }
 
   private _addEventListeners(): void {
-    document.addEventListener("keydown", this._keyDownHandler, false);
-    document.addEventListener("keyup", this._keyUpHandler, false);
-    document.addEventListener(
+    window.addEventListener("keydown", this._keyDownHandler, false);
+    window.addEventListener("keyup", this._keyUpHandler, false);
+    window.addEventListener(
       "mouseup",
       this._controlsInteractionFinishedHandler,
       false
