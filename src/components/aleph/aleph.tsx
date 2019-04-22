@@ -90,7 +90,6 @@ export class Aleph {
   private _boundingBox: THREE.Box3;
   private _boundingSphereRadius: number;
   private _camera: Entity;
-  private _container: HTMLElement;
   private _hovered: string | null = null;
   private _interacting: boolean = false;
   private _isShiftDown: boolean = false;
@@ -919,7 +918,6 @@ export class Aleph {
           width: this.width,
           height: this.height
         }}
-        ref={el => (this._container = el)}
       >
         <div id="lut-container">
           <div id="lut-min">0.0</div>
@@ -938,20 +936,14 @@ export class Aleph {
   private _restorePixelDensity() {
     if (this._scene) {
       this._scene.renderer.setPixelRatio(window.devicePixelRatio);
-      this._scene.renderer.setSize(
-        this._container.offsetWidth,
-        this._container.offsetHeight
-      );
+      (this._scene as any).resize();
     }
   }
 
   private _reducePixelDensity() {
     if (this._scene) {
       this._scene.renderer.setPixelRatio(0.1 * window.devicePixelRatio);
-      this._scene.renderer.setSize(
-        this._container.offsetWidth,
-        this._container.offsetHeight
-      );
+      (this._scene as any).resize();
     }
   }
 
@@ -1283,7 +1275,6 @@ export class Aleph {
     if (this.displayMode === DisplayMode.VOLUME) {
       this._interacting = true;
       this._reducePixelDensity();
-      //this.appSetCamera(event.detail.cameraState);
     }
   }
 
