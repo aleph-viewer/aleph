@@ -11,7 +11,7 @@ interface AlVolumeState {
   bufferScene: THREE.Scene;
   bufferTexture: THREE.WebGLRenderTarget;
   rendering: boolean;
-  geometry: THREE.BoxGeometry;
+  geometry: THREE.PlaneGeometry;
   material: THREE.MeshBasicMaterial;
   mesh: THREE.Mesh;
 }
@@ -106,7 +106,12 @@ export class AlVolumeComponent implements AframeRegistryEntry {
         else {
           this.state.bufferScene.add(this.state.stackhelper);
 
-          let geometry = this.state.stackhelper.geometry.clone();
+          let refGeometry: THREE.BoxGeometry = this.state.stackhelper.geometry.clone();
+          refGeometry.computeBoundingBox();
+          let size = new THREE.Vector3();
+          refGeometry.boundingBox.getSize(size);
+
+          let geometry = new THREE.PlaneGeometry(size.x, size.y);
           this.state.geometry = geometry;
 
           let material = new THREE.MeshBasicMaterial({
@@ -174,15 +179,15 @@ export class AlVolumeComponent implements AframeRegistryEntry {
           this.data.displayMode !== DisplayMode.VOLUME
         ) {
           this.el.setObject3D("mesh", this.state.stackhelper);
-        } else if (
-          this.state.rendering &&
-          this.data.displayMode === DisplayMode.VOLUME
-        ) {
-          this.el.sceneEl.renderer.render(
-            this.state.bufferScene,
-            this.el.sceneEl.camera,
-            this.state.bufferTexture
-          );
+        } else if (this.data.displayMode === DisplayMode.VOLUME) {
+          this.el.object3D.lookAt(this.el.sceneEl.camera.position);
+          if (this.state.rendering) {
+            this.el.sceneEl.renderer.render(
+              this.state.bufferScene,
+              this.el.sceneEl.camera,
+              this.state.bufferTexture
+            );
+          }
         }
       },
 
