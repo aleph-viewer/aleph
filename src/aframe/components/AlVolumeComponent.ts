@@ -100,16 +100,22 @@ export class AlVolumeComponent implements AframeRegistryEntry {
           this.handleStack(state.stack);
         }
 
-        if (oldData && oldData.rendererEnabled !== this.data.rendererEnabled) {
+        if (
+          oldData &&
+          this.state.stackhelper &&
+          oldData.rendererEnabled !== this.data.rendererEnabled
+        ) {
           if (this.data.rendererEnabled) {
             setTimeout(() => {
               console.log("enable renderer");
-              ((this.state as AlVolumeState).stackhelper as AMI.VolumeRenderHelper).isPaused = 0;
+              ((this.state as AlVolumeState)
+                .stackhelper as AMI.VolumeRenderHelper).isPaused = 0;
             }, Constants.minFrameMS);
           } else {
             setTimeout(() => {
               console.log("disable renderer");
-              ((this.state as AlVolumeState).stackhelper as AMI.VolumeRenderHelper).isPaused = 1;
+              ((this.state as AlVolumeState)
+                .stackhelper as AMI.VolumeRenderHelper).isPaused = 1;
             }, Constants.minFrameMS);
           }
         }
