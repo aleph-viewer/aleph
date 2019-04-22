@@ -11,15 +11,17 @@ interface AlVolumeState {
   bufferScene: THREE.Scene;
   bufferTexture: THREE.WebGLRenderTarget;
   rendering: boolean;
-  geometry: THREE.PlaneGeometry;
-  material: THREE.MeshBasicMaterial;
-  mesh: THREE.Mesh;
+  planeGeometry: THREE.PlaneGeometry;
+  planeMaterial: THREE.MeshBasicMaterial;
+  planeMesh: THREE.Mesh;
+  zoom: number;
 }
 
 interface AlVolumeDefinition extends ComponentDefinition {
   tickFunction(): void;
   handleStack(stack: any, liveChange: boolean): void;
   bindMethods(): void;
+  renderBuffer(): void;
 }
 
 export class AlVolumeComponent implements AframeRegistryEntry {
@@ -43,6 +45,7 @@ export class AlVolumeComponent implements AframeRegistryEntry {
       bindMethods(): void {
         this.handleStack = this.handleStack.bind(this);
         this.rendererResize = this.rendererResize.bind(this);
+        this.renderBuffer = this.renderBuffer.bind(this);
       },
 
       init(): void {
@@ -73,6 +76,42 @@ export class AlVolumeComponent implements AframeRegistryEntry {
 
       rendererResize(): void {
         console.log("renderer resized");
+
+        // this.state.bufferTexture = new THREE.WebGLRenderTarget(
+        //   this.el.sceneEl.canvas.width,
+        //   this.el.sceneEl.canvas.height,
+        //   { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter }
+        // );
+
+        // this.renderBuffer();
+      },
+
+      renderBuffer(): void {
+        // TODO: Put in state
+        // let cam: THREE.PerspectiveCamera = this.el.sceneEl.camera;
+        // let dumCamera = new THREE.PerspectiveCamera(
+        //   cam.fov,
+        //   cam.aspect,
+        //   cam.near,
+        //   cam.far
+        // );
+
+        // let targ = new THREE.Vector3(0, 0, 0);
+        // let eye: THREE.Vector3 = cam.position.clone();
+
+        // let dir: THREE.Vector3 = eye.clone().sub(targ.clone());
+
+        // // Normalize fake eye position to be a constant distance from the volume
+        // let fakeEye: THREE.Vector3 = targ
+        //   .clone()
+        //   .add(dir.clone().multiplyScalar(this.state.zoom));
+        // dumCamera.position.copy(fakeEye);
+
+        this.el.sceneEl.renderer.render(
+          this.state.bufferScene,
+          this.el.sceneEl.camera,
+          this.state.bufferTexture
+        );
       },
 
       handleStack(stack: any, liveChange: boolean): void {
@@ -122,18 +161,23 @@ export class AlVolumeComponent implements AframeRegistryEntry {
           let size = new THREE.Vector3();
           refGeometry.boundingBox.getSize(size);
 
-          let geometry = new THREE.PlaneGeometry(size.x, size.y);
-          this.state.geometry = geometry;
+          let largest = Math.max(size.x, Math.max(size.y, size.z));
+          let planeGeometry = new THREE.PlaneGeometry(largest, largest);
+          this.state.planeGeometry = planeGeometry;
+          this.state.zoom = largest * Constants.zoomFactor;
 
-          let material = new THREE.MeshBasicMaterial({
-            map: this.state.bufferTexture
+          let planeMaterial = new THREE.MeshBasicMaterial({
+            map: this.state.bufferTexture.texture
           });
-          this.state.material = material;
+          this.state.planeMaterial = planeMaterial;
 
-          let mesh = new THREE.Mesh(geometry, material);
-          this.state.mesh = mesh;
+          let planeMesh = new THREE.Mesh(planeGeometry, planeMaterial);
+          let center = new THREE.Vector3();
+          refGeometry.boundingBox.getCenter(center);
+          planeMesh.position.copy(center);
+          this.state.planeMesh = planeMesh;
 
-          this.el.setObject3D("mesh", mesh);
+          this.el.setObject3D("mesh", planeMesh);
         }
 
         el.sceneEl.emit(AlVolumeEvents.LOADED, state.stackhelper, false);
@@ -168,7 +212,6 @@ export class AlVolumeComponent implements AframeRegistryEntry {
                 this.state.stackhelper &&
                 this.data.displayMode === DisplayMode.VOLUME
               ) {
-                // this.state.stackhelper.isPaused = 0;
                 console.log("enable renderer");
                 this.state.rendering = true;
               }
@@ -179,7 +222,6 @@ export class AlVolumeComponent implements AframeRegistryEntry {
                 this.state.stackhelper &&
                 this.data.displayMode === DisplayMode.VOLUME
               ) {
-                // this.state.stackhelper.isPaused = 1;
                 console.log("disable renderer");
                 this.state.rendering = false;
               }
@@ -195,13 +237,10 @@ export class AlVolumeComponent implements AframeRegistryEntry {
         ) {
           this.el.setObject3D("mesh", this.state.stackhelper);
         } else if (this.data.displayMode === DisplayMode.VOLUME) {
-          this.el.object3D.lookAt(this.el.sceneEl.camera.position);
+          this.state.planeMesh.lookAt(this.el.sceneEl.camera.position);
+
           if (this.state.rendering) {
-            this.el.sceneEl.renderer.render(
-              this.state.bufferScene,
-              this.el.sceneEl.camera,
-              this.state.bufferTexture
-            );
+            this.renderBuffer();
           }
         }
       },
@@ -212,6 +251,10 @@ export class AlVolumeComponent implements AframeRegistryEntry {
 
       remove(): void {
         this.el.removeObject3D("mesh");
+
+        this.state.planeMesh.remove();
+        this.state.planeMaterial.remove();
+        this.state.planeGeometry.remove();
       }
     } as AlVolumeDefinition;
   }
