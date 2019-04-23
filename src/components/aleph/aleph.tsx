@@ -908,21 +908,21 @@ export class Aleph {
     }
   }
 
-  private _volumeInteraction() {
-    if (this._scene) {
-      this._scene.renderer.setPixelRatio(0.1 * window.devicePixelRatio);
-      this._resize();
-      this.appSetSceneNeedsUpdate(true);
-    }
-  }
+  // private _volumeInteraction() {
+  //   if (this._scene) {
+  //     this._scene.renderer.setPixelRatio(0.1 * window.devicePixelRatio);
+  //     this._resize();
+  //     this.appSetSceneNeedsUpdate(true);
+  //   }
+  // }
 
-  private _volumeInteractionFinished() {
-    if (this._scene) {
-      this._scene.renderer.setPixelRatio(window.devicePixelRatio);
-      this._resize();
-      this.appSetSceneNeedsUpdate(false);
-    }
-  }
+  // private _volumeInteractionFinished() {
+  //   if (this._scene) {
+  //     this._scene.renderer.setPixelRatio(window.devicePixelRatio);
+  //     this._resize();
+  //     this.appSetSceneNeedsUpdate(false);
+  //   }
+  // }
 
   private _createEdge(node1Id: string, node2Id: string): void {
     // check if there is already an edge connecting these two nodes
@@ -1249,15 +1249,15 @@ export class Aleph {
   }
 
   private _controlsInteractionHandler(_event: CustomEvent): void {
-    if (this.displayMode === DisplayMode.VOLUME) {
-      this._volumeInteraction();
-    }
+    // if (this.displayMode === DisplayMode.VOLUME && !this._hovered) {
+    //   this._volumeInteraction();
+    // }
   }
 
   private _controlsInteractionFinishedHandler(event: CustomEvent): void {
-    if (this.displayMode === DisplayMode.VOLUME) {
-      this._volumeInteractionFinished();
-    }
+    // if (this.displayMode === DisplayMode.VOLUME) {
+    //   this._volumeInteractionFinished();
+    // }
 
     this._debouncedAppSetCamera(event.detail.cameraState);
   }

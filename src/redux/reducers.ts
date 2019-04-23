@@ -289,7 +289,6 @@ export const app = (
       };
     }
     case TypeKeys.APP_SET_SCENE_NEEDS_UPDATE: {
-      console.log("scene needs update:", action.payload);
       return {
         ...state,
         sceneNeedsUpdate: action.payload
