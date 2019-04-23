@@ -3,7 +3,6 @@ import { VolumetricLoader } from "../../utils/VolumetricLoader";
 import { Constants } from "../../Constants";
 import { DisplayMode } from "../../enums";
 import { ComponentDefinition } from "aframe";
-import { EventUtils } from "../../utils";
 
 interface AlVolumeState {
   stack: any;
@@ -76,8 +75,6 @@ export class AlVolumeComponent implements AframeRegistryEntry {
           this.moved,
           false
         );
-
-        EventUtils.debounce(this.moved, Constants.minFrameMS);
       },
 
       removeListeners(): void {
