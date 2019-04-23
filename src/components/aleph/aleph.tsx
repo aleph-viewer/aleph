@@ -61,7 +61,8 @@ import {
   AframeUtils,
   GraphUtils,
   AlGraphEvents,
-  AMIUtils
+  AMIUtils,
+  EventUtils
 } from "../../utils";
 import { Constants } from "../../Constants";
 import { Orientation, DisplayMode } from "../../enums";
@@ -89,6 +90,7 @@ export class Aleph {
   private _boundingBox: THREE.Box3;
   private _boundingSphereRadius: number;
   private _camera: Entity;
+  private _debouncedAppSetCamera: (state: AlCamera) => void;
   private _hovered: string | null = null;
   private _interacting: boolean = false;
   private _isShiftDown: boolean = false;
@@ -420,6 +422,11 @@ export class Aleph {
       appSetVolumeWindowCenter,
       appSetVolumeWindowWidth
     });
+
+    this._debouncedAppSetCamera = EventUtils.debounce(
+      this.appSetCamera,
+      Constants.minFrameMS
+    );
 
     // set up event handlers
     this._controlsAnimationFinishedHandler = this._controlsAnimationFinishedHandler.bind(
@@ -908,17 +915,19 @@ export class Aleph {
     }
   }
 
-  private _restorePixelDensity() {
-    if (this._scene) {
-      this._scene.renderer.setPixelRatio(window.devicePixelRatio);
-      this._resize();
-    }
-  }
-
-  private _reducePixelDensity() {
+  private _volumeInteraction() {
     if (this._scene) {
       this._scene.renderer.setPixelRatio(0.1 * window.devicePixelRatio);
       this._resize();
+      this.appSetSceneNeedsUpdate(true);
+    }
+  }
+
+  private _volumeInteractionFinished() {
+    if (this._scene) {
+      this._scene.renderer.setPixelRatio(window.devicePixelRatio);
+      this._resize();
+      this.appSetSceneNeedsUpdate(false);
     }
   }
 
@@ -1246,20 +1255,18 @@ export class Aleph {
     this._hovered = event.detail.id;
   }
 
-  private _controlsInteractionHandler(event: CustomEvent): void {
+  private _controlsInteractionHandler(_event: CustomEvent): void {
     if (this.displayMode === DisplayMode.VOLUME) {
-      this._interacting = true;
-      this._reducePixelDensity();
+      this._volumeInteraction();
     }
-    this.appSetCamera(event.detail.cameraState);
   }
 
   private _controlsInteractionFinishedHandler(event: CustomEvent): void {
     if (this.displayMode === DisplayMode.VOLUME) {
-      this._interacting = false;
-      this._restorePixelDensity();
+      this._volumeInteractionFinished();
     }
-    this.appSetCamera(event.detail.cameraState);
+
+    this._debouncedAppSetCamera(event.detail.cameraState);
   }
 
   private _spawnNodeHandler(event: CustomEvent): void {

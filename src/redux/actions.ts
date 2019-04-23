@@ -471,6 +471,7 @@ export const appSetCamera = (payload: AlCamera) => async (
   dispatch,
   _getState
 ) => {
+  console.log("set camera");
   return dispatch({
     type: TypeKeys.APP_SET_CAMERA,
     payload: payload

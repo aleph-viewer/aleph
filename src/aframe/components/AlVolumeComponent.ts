@@ -253,9 +253,17 @@ export class AlVolumeComponent implements AframeRegistryEntry {
       remove(): void {
         this.el.removeObject3D("mesh");
 
-        this.state.planeMesh.remove();
-        this.state.planeMaterial.remove();
-        this.state.planeGeometry.remove();
+        if (this.state.planeMesh) {
+          this.state.planeMesh.remove();
+        }
+
+        if (this.state.planeMaterial) {
+          this.state.planeMaterial.remove();
+        }
+
+        if (this.state.planeGeometry) {
+          this.state.planeGeometry.remove();
+        }
       }
     } as AlVolumeDefinition;
   }

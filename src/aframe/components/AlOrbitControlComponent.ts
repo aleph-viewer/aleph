@@ -121,7 +121,7 @@ export class AlOrbitControlComponent implements AframeRegistryEntry {
 
         if (controls.enabled) {
           this.el.sceneEl.emit(
-            AlOrbitControlEvents.INTERACTION,
+            AlOrbitControlEvents.INTERACTION_FINISHED,
             { cameraState: this.getCameraState() },
             false
           );
