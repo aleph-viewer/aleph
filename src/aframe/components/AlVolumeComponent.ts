@@ -158,17 +158,6 @@ export class AlVolumeComponent implements AframeRegistryEntry {
         planeMesh.position.copy(center);
         state.planeMesh = planeMesh;
 
-        let geom = new THREE.PlaneGeometry(
-          state.textureWidth,
-          state.textureHeight
-        );
-        geom.scale(1.01, 1.01, 1.01);
-        let mat = new THREE.MeshBasicMaterial();
-        mat.wireframe = true;
-        let mesh = new THREE.Mesh(geom, mat);
-        planeMesh.add(mesh);
-        state.planeMesh = planeMesh;
-
         this.el.setObject3D("mesh", planeMesh);
       },
 
