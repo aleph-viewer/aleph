@@ -99,7 +99,7 @@ export class Aleph {
   private _scene: Scene;
   private _targetEntity: Entity;
   private _validTarget: boolean;
-  private _volumeHelper: AMI.VolumeRenderHelper;
+  private _stackhelper: AMI.VolumeRenderHelper;
 
   @Prop({ context: "store" }) store: Store;
   @Prop() dracoDecoderPath: string | null;
@@ -558,11 +558,6 @@ export class Aleph {
               volumeWindowCenter: ${this.volumeWindowCenter};
               volumeWindowWidth: ${this.volumeWindowWidth};
               isWebGl2: ${this._isWebGl2};
-              bboxPosition: ${
-                this._bboxPosition
-                  ? ThreeUtils.vector3ToString(this._bboxPosition)
-                  : new THREE.Vector3(0, 0, 0)
-              };
             `}
             position="0 0 0"
             ref={(el: Entity) => (this._targetEntity = el)}
@@ -572,22 +567,27 @@ export class Aleph {
     }
   }
 
-  private _bboxPosition: THREE.Vector3;
-
   private _renderBoundingBox() {
     if (this.srcLoaded && this.boundingBoxVisible) {
       let size: THREE.Vector3 = new THREE.Vector3();
       this._boundingBox.getSize(size);
 
       // if targetEntity is a gltf, use its position (center). if it's a volume, the origin is in the bottom left, so get the position sub the geometry center
-      const position: THREE.Vector3 =
-        this.displayMode === DisplayMode.MESH
-          ? this._targetEntity.object3D.position.clone()
-          : this._targetEntity.object3D.position
-              .clone()
-              .add(GetUtils.getGeometryCenter(this._mesh.geometry));
+      let position: THREE.Vector3;
 
-      this._bboxPosition = position;
+      switch (this.displayMode) {
+        case DisplayMode.MESH: {
+          position = this._targetEntity.object3D.position.clone();
+          break;
+        }
+        case DisplayMode.VOLUME:
+        case DisplayMode.SLICES: {
+          position = this._targetEntity.object3D.position
+            .clone()
+            .add(GetUtils.getGeometryCenter(this._mesh.geometry));
+          break;
+        }
+      }
 
       return (
         <a-entity
@@ -926,11 +926,7 @@ export class Aleph {
 
   private _volumeInteraction() {
     if (this._scene) {
-      this._scene.emit(
-        AlVolumeEvents.RENDER_LOW,
-        { cameraState: this.camera },
-        false
-      );
+      this._scene.emit(AlVolumeEvents.RENDER_LOW, {}, false);
     }
   }
 
@@ -1194,17 +1190,17 @@ export class Aleph {
     switch (this.displayMode) {
       case DisplayMode.MESH: {
         this._mesh = aframeMesh;
-        this._volumeHelper = null;
+        this._stackhelper = null;
         break;
       }
       case DisplayMode.SLICES: {
         this._mesh = ev.detail._bBox._mesh;
-        this._volumeHelper = null;
+        this._stackhelper = null;
         break;
       }
       case DisplayMode.VOLUME: {
         this._mesh = ev.detail._mesh;
-        this._volumeHelper = ev.detail;
+        this._stackhelper = ev.detail;
         break;
       }
     }
@@ -1300,7 +1296,7 @@ export class Aleph {
         let hitNormal = new THREE.Vector3();
 
         let rayResult = AMIUtils.volumeRay(
-          this._volumeHelper,
+          this._stackhelper,
           this._camera.object3D.children[0].position.clone(),
           this._camera.getAttribute("raycaster").direction,
           Constants.cameraValues.far,
@@ -1414,7 +1410,7 @@ export class Aleph {
       let hitNormal = new THREE.Vector3();
 
       let rayResult = AMIUtils.volumeRay(
-        this._volumeHelper,
+        this._stackhelper,
         this._camera.object3D.children[0].position.clone(),
         this._camera.getAttribute("raycaster").direction,
         Constants.cameraValues.far,

@@ -436,6 +436,7 @@ export class AlControlPanel {
                 onIonChange={e =>
                   this._volumeSteps((e.srcElement as any).value)
                 }
+                onMouseUp={e => this._volumeSteps((e.srcElement as any).value)}
               />
             </ion-item>
             {/* <ion-item>
@@ -459,6 +460,9 @@ export class AlControlPanel {
                 onIonChange={e =>
                   this._volumeWindowCenter((e.srcElement as any).value)
                 }
+                onMouseUp={e =>
+                  this._volumeWindowCenter((e.srcElement as any).value)
+                }
               />
             </ion-item>
             <ion-item>
@@ -470,6 +474,9 @@ export class AlControlPanel {
                 value={windowWidth}
                 debounce={this._debounceRangeMS}
                 onIonChange={e =>
+                  this._volumeWindowWidth((e.srcElement as any).value)
+                }
+                onMouseup={e =>
                   this._volumeWindowWidth((e.srcElement as any).value)
                 }
               />

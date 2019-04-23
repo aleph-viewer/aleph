@@ -3,7 +3,6 @@ import { VolumetricLoader } from "../../utils/VolumetricLoader";
 import { Constants } from "../../Constants";
 import { DisplayMode } from "../../enums";
 import { ComponentDefinition } from "aframe";
-import { ThreeUtils } from "../../utils";
 import { AlOrbitControlEvents } from "..";
 
 interface AlVolumeState {
@@ -27,10 +26,10 @@ interface AlVolumeDefinition extends ComponentDefinition {
   tickFunction(): void;
   handleStack(stack: any, liveChange: boolean): void;
   bindMethods(): void;
-  renderBuffer(): void;
+  renderBufferScene(): void;
   renderLow(event: CustomEvent): void;
   renderFull(): void;
-  createMesh(): void;
+  createVolumePlane(): void;
   updateCamera(event: CustomEvent): void;
 }
 
@@ -48,19 +47,18 @@ export class AlVolumeComponent implements AframeRegistryEntry {
         srcLoaded: { type: "boolean" },
         volumeSteps: { type: "number" },
         volumeWindowCenter: { type: "number" },
-        volumeWindowWidth: { type: "number" },
-        bboxPosition: { type: "vec3" }
+        volumeWindowWidth: { type: "number" }
       },
 
       bindMethods(): void {
         this.handleStack = this.handleStack.bind(this);
         this.rendererResize = this.rendererResize.bind(this);
-        this.renderBuffer = this.renderBuffer.bind(this);
+        this.renderBufferScene = this.renderBufferScene.bind(this);
         this.removeListeners = this.removeListeners.bind(this);
         this.addListeners = this.addListeners.bind(this);
         this.renderLow = this.renderLow.bind(this);
         this.renderFull = this.renderFull.bind(this);
-        this.createMesh = this.createMesh.bind(this);
+        this.createVolumePlane = this.createVolumePlane.bind(this);
         this.updateCamera = this.updateCamera.bind(this);
       },
 
@@ -137,7 +135,7 @@ export class AlVolumeComponent implements AframeRegistryEntry {
         this.state.localCamera = event.detail.cameraState;
       },
 
-      createMesh() {
+      createVolumePlane() {
         let state = this.state as AlVolumeState;
 
         let refGeometry: THREE.Geometry = (state.stackhelper as any).mesh.geometry.clone();
@@ -182,24 +180,24 @@ export class AlVolumeComponent implements AframeRegistryEntry {
             { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter }
           );
 
-          this.createMesh();
-          this.renderBuffer();
+          this.createVolumePlane();
+          this.renderBufferScene();
         }
       },
 
       renderLow(): void {
         //this.el.sceneEl.renderer.setPixelRatio(0.1 * window.devicePixelRatio);
         this.state.stackhelper.steps = 2;
-        this.renderBuffer();
+        this.renderBufferScene();
       },
 
       renderFull(): void {
         //this.el.sceneEl.renderer.setPixelRatio(window.devicePixelRatio);
         this.state.stackhelper.steps = this.data.volumeSteps;
-        this.renderBuffer();
+        this.renderBufferScene();
       },
 
-      renderBuffer(): void {
+      renderBufferScene(): void {
         if (
           this.state.localCamera &&
           this.data.displayMode === DisplayMode.VOLUME
@@ -221,12 +219,12 @@ export class AlVolumeComponent implements AframeRegistryEntry {
             .clone()
             // Offsets by -targ
             .sub(targ.clone());
-          // Offsets by -bboxPosition
-          // .add(ThreeUtils.objectToVector3(this.data.bboxPosition));
+
           let dumCam: THREE.PerspectiveCamera = this.el.sceneEl.camera.clone();
 
           // Dir S->E === End - Start
-          let dir = ThreeUtils.objectToVector3(this.data.bboxPosition)
+          let dir = this.state.stackhelper.stack
+            .worldCenter()
             .sub(dumPos.clone())
             .normalize()
             .negate();
@@ -284,7 +282,7 @@ export class AlVolumeComponent implements AframeRegistryEntry {
         // Else place in buffer scene
         else {
           this.state.bufferScene.add(this.state.stackhelper);
-          this.createMesh();
+          this.createVolumePlane();
         }
 
         el.sceneEl.emit(AlVolumeEvents.LOADED, state.stackhelper, false);
@@ -308,6 +306,10 @@ export class AlVolumeComponent implements AframeRegistryEntry {
           this.removeListeners();
           this.handleStack(state.stack, true);
           this.addListeners();
+
+          if (this.data.displayMode === DisplayMode.VOLUME) {
+            this.renderFull();
+          }
         }
       },
 
