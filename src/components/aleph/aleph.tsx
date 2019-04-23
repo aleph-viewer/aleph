@@ -1264,9 +1264,9 @@ export class Aleph {
   }
 
   private _controlsInteractionFinishedHandler(event: CustomEvent): void {
-    // if (this.displayMode === DisplayMode.VOLUME) {
-    //   this._volumeInteractionFinished();
-    // }
+    if (this.displayMode === DisplayMode.VOLUME) {
+      this._volumeInteractionFinished();
+    }
 
     this._debouncedAppSetCamera(event.detail.cameraState);
   }
