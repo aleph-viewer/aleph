@@ -15,6 +15,8 @@ interface AlVolumeState {
   planeMaterial: THREE.MeshBasicMaterial;
   planeMesh: THREE.Mesh;
   zoom: number;
+  textureWidth: number;
+  textureHeight: number;
 }
 
 interface AlVolumeDefinition extends ComponentDefinition {
@@ -32,8 +34,6 @@ export class AlVolumeComponent implements AframeRegistryEntry {
       schema: {
         displayMode: { type: "string" },
         isWebGl2: { type: "boolean" },
-        // rendererEnabled: { type: "boolean", default: true },
-        sceneNeedsUpdate: { type: "boolean", default: false },
         slicesIndex: { type: "number" },
         slicesOrientation: { type: "string" },
         slicesWindowCenter: { type: "number" },
@@ -87,19 +87,32 @@ export class AlVolumeComponent implements AframeRegistryEntry {
         this.loader = new VolumetricLoader();
         this.state = {
           bufferScene: new THREE.Scene(),
-          bufferTexture: new THREE.WebGLRenderTarget(
-            this.el.sceneEl.canvas.width,
-            this.el.sceneEl.canvas.height,
-            { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter }
-          )
+          textureHeight: this.el.sceneEl.canvas.height,
+          textureWidth: this.el.sceneEl.canvas.width
         } as AlVolumeState;
+
+        this.state.bufferTexture = new THREE.WebGLRenderTarget(
+          this.state.textureWidth,
+          this.state.textureHeight,
+          { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter }
+        );
 
         this.bindMethods();
         this.addListeners();
       },
 
       rendererResize(): void {
-        console.log("renderer resized");
+        let state = this.state as AlVolumeState;
+
+        let needsResize =
+          state.textureWidth !== this.el.sceneEl.canvas.width ||
+          state.textureHeight !== this.el.sceneEl.canvas.height;
+
+        if (needsResize) {
+          state.textureWidth = this.el.sceneEl.canvas.width;
+          state.textureHeight = this.el.sceneEl.canvas.height;
+          console.log("renderer resized");
+        }
 
         // this.state.bufferTexture = new THREE.WebGLRenderTarget(
         //   this.el.sceneEl.canvas.width,
@@ -111,34 +124,35 @@ export class AlVolumeComponent implements AframeRegistryEntry {
       },
 
       renderBuffer(event: CustomEvent): void {
-        let camState: AlCamera = event.detail.cameraState;
-        console.log("render-buffer camera-state: ", camState);
+        if (this.data.displayMode === DisplayMode.VOLUME) {
+          let camState: AlCamera = event.detail.cameraState;
 
-        // TODO: Put in state
-        // let cam: THREE.PerspectiveCamera = this.el.sceneEl.camera;
-        // let dumCamera = new THREE.PerspectiveCamera(
-        //   cam.fov,
-        //   cam.aspect,
-        //   cam.near,
-        //   cam.far
-        // );
+          let targ = camState.target.clone();
+          let eye = camState.position.clone();
 
-        // let targ = new THREE.Vector3(0, 0, 0);
-        // let eye: THREE.Vector3 = cam.position.clone();
+          // Target position is effectivly an offset from (0, 0, 0), where the stackhelper
+          // naturally falls. We need to move the dummy camera back in line with (0, 0, 0)
 
-        // let dir: THREE.Vector3 = eye.clone().sub(targ.clone());
+          // Direction is [end - start]
+          // let dir: THREE.Vector3 = targ.clone().sub(eye.clone());
 
-        // // Normalize fake eye position to be a constant distance from the volume
-        // let fakeEye: THREE.Vector3 = targ
-        //   .clone()
-        //   .add(dir.clone().multiplyScalar(this.state.zoom));
-        // dumCamera.position.copy(fakeEye);
+          let eyeLine = new THREE.Line3(eye.clone(), targ.clone());
 
-        this.el.sceneEl.renderer.render(
-          this.state.bufferScene,
-          this.el.sceneEl.camera,
-          this.state.bufferTexture
-        );
+          // Start at the camera, and move [zoom] intervals of [dir] away from the camera towards the target
+          let newPos = new THREE.Vector3();
+          eyeLine.at(0.2, newPos);
+          // Move the [stackhelper] within the [bufferscene] to be a constant distance from the real camera
+          (this.state.stackhelper as THREE.Object3D).position.copy(
+            newPos.negate()
+          );
+          console.log((this.state.stackhelper as THREE.Object3D).position);
+
+          this.el.sceneEl.renderer.render(
+            this.state.bufferScene,
+            this.el.sceneEl.camera,
+            this.state.bufferTexture
+          );
+        }
       },
 
       handleStack(stack: any, liveChange: boolean): void {
@@ -227,34 +241,6 @@ export class AlVolumeComponent implements AframeRegistryEntry {
         ) {
           this.handleStack(state.stack, true);
         }
-
-        // if (
-        //   oldData &&
-        //   this.state.stackhelper &&
-        //   oldData.rendererEnabled !== this.data.rendererEnabled
-        // ) {
-        //   if (this.data.rendererEnabled) {
-        //     setTimeout(() => {
-        //       if (
-        //         this.state.stackhelper &&
-        //         this.data.displayMode === DisplayMode.VOLUME
-        //       ) {
-        //         console.log("enable renderer");
-        //         this.state.rendering = true;
-        //       }
-        //     }, Constants.minFrameMS);
-        //   } else {
-        //     setTimeout(() => {
-        //       if (
-        //         this.state.stackhelper &&
-        //         this.data.displayMode === DisplayMode.VOLUME
-        //       ) {
-        //         console.log("disable renderer");
-        //         this.state.rendering = false;
-        //       }
-        //     }, Constants.minFrameMS);
-        //   }
-        // }
       },
 
       tickFunction(): void {
@@ -265,10 +251,6 @@ export class AlVolumeComponent implements AframeRegistryEntry {
           this.el.setObject3D("mesh", this.state.stackhelper);
         } else if (this.data.displayMode === DisplayMode.VOLUME) {
           this.state.planeMesh.lookAt(this.el.sceneEl.camera.position);
-
-          // if (this.state.rendering) {
-          //   this.renderBuffer(null);
-          // }
         }
       },
 
