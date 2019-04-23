@@ -1,8 +1,9 @@
-import { AframeRegistryEntry } from "../../interfaces";
+import { AframeRegistryEntry, AlCamera } from "../../interfaces";
 import { VolumetricLoader } from "../../utils/VolumetricLoader";
 import { Constants } from "../../Constants";
 import { DisplayMode } from "../../enums";
 import { ComponentDefinition } from "aframe";
+import { AlOrbitControlEvents } from "..";
 
 interface AlVolumeState {
   stack: any;
@@ -10,7 +11,6 @@ interface AlVolumeState {
   lutHelper: AMI.LutHelper;
   bufferScene: THREE.Scene;
   bufferTexture: THREE.WebGLRenderTarget;
-  rendering: boolean;
   planeGeometry: THREE.PlaneGeometry;
   planeMaterial: THREE.MeshBasicMaterial;
   planeMesh: THREE.Mesh;
@@ -18,10 +18,12 @@ interface AlVolumeState {
 }
 
 interface AlVolumeDefinition extends ComponentDefinition {
+  addListeners(): void;
+  removeListeners(): void;
   tickFunction(): void;
   handleStack(stack: any, liveChange: boolean): void;
   bindMethods(): void;
-  renderBuffer(): void;
+  renderBuffer(event: CustomEvent): void;
 }
 
 export class AlVolumeComponent implements AframeRegistryEntry {
@@ -30,7 +32,7 @@ export class AlVolumeComponent implements AframeRegistryEntry {
       schema: {
         displayMode: { type: "string" },
         isWebGl2: { type: "boolean" },
-        rendererEnabled: { type: "boolean", default: true },
+        // rendererEnabled: { type: "boolean", default: true },
         sceneNeedsUpdate: { type: "boolean", default: false },
         slicesIndex: { type: "number" },
         slicesOrientation: { type: "string" },
@@ -47,6 +49,33 @@ export class AlVolumeComponent implements AframeRegistryEntry {
         this.handleStack = this.handleStack.bind(this);
         this.rendererResize = this.rendererResize.bind(this);
         this.renderBuffer = this.renderBuffer.bind(this);
+        this.removeListeners = this.removeListeners.bind(this);
+        this.addListeners = this.addListeners.bind(this);
+      },
+
+      addListeners() {
+        this.el.sceneEl.addEventListener(
+          "rendererresize",
+          this.rendererResize,
+          false
+        );
+
+        this.el.sceneEl.addEventListener(
+          AlOrbitControlEvents.INTERACTION_FINISHED,
+          this.renderBuffer,
+          false
+        );
+      },
+
+      removeListeners(): void {
+        this.el.sceneEl.removeEventListener(
+          "rendererresize",
+          this.rendererResize
+        );
+        this.el.sceneEl.addEventListener(
+          AlOrbitControlEvents.INTERACTION_FINISHED,
+          this.renderBuffer
+        );
       },
 
       init(): void {
@@ -62,17 +91,11 @@ export class AlVolumeComponent implements AframeRegistryEntry {
             this.el.sceneEl.canvas.width,
             this.el.sceneEl.canvas.height,
             { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter }
-          ),
-          rendering: true
+          )
         } as AlVolumeState;
 
-        this.el.sceneEl.addEventListener(
-          "rendererresize",
-          this.rendererResize,
-          false
-        );
-
         this.bindMethods();
+        this.addListeners();
       },
 
       rendererResize(): void {
@@ -87,7 +110,10 @@ export class AlVolumeComponent implements AframeRegistryEntry {
         // this.renderBuffer();
       },
 
-      renderBuffer(): void {
+      renderBuffer(event: CustomEvent): void {
+        let camState: AlCamera = event.detail.cameraState;
+        console.log("render-buffer camera-state: ", camState);
+
         // TODO: Put in state
         // let cam: THREE.PerspectiveCamera = this.el.sceneEl.camera;
         // let dumCamera = new THREE.PerspectiveCamera(
@@ -202,33 +228,33 @@ export class AlVolumeComponent implements AframeRegistryEntry {
           this.handleStack(state.stack, true);
         }
 
-        if (
-          oldData &&
-          this.state.stackhelper &&
-          oldData.rendererEnabled !== this.data.rendererEnabled
-        ) {
-          if (this.data.rendererEnabled) {
-            setTimeout(() => {
-              if (
-                this.state.stackhelper &&
-                this.data.displayMode === DisplayMode.VOLUME
-              ) {
-                console.log("enable renderer");
-                this.state.rendering = true;
-              }
-            }, Constants.minFrameMS);
-          } else {
-            setTimeout(() => {
-              if (
-                this.state.stackhelper &&
-                this.data.displayMode === DisplayMode.VOLUME
-              ) {
-                console.log("disable renderer");
-                this.state.rendering = false;
-              }
-            }, Constants.minFrameMS);
-          }
-        }
+        // if (
+        //   oldData &&
+        //   this.state.stackhelper &&
+        //   oldData.rendererEnabled !== this.data.rendererEnabled
+        // ) {
+        //   if (this.data.rendererEnabled) {
+        //     setTimeout(() => {
+        //       if (
+        //         this.state.stackhelper &&
+        //         this.data.displayMode === DisplayMode.VOLUME
+        //       ) {
+        //         console.log("enable renderer");
+        //         this.state.rendering = true;
+        //       }
+        //     }, Constants.minFrameMS);
+        //   } else {
+        //     setTimeout(() => {
+        //       if (
+        //         this.state.stackhelper &&
+        //         this.data.displayMode === DisplayMode.VOLUME
+        //       ) {
+        //         console.log("disable renderer");
+        //         this.state.rendering = false;
+        //       }
+        //     }, Constants.minFrameMS);
+        //   }
+        // }
       },
 
       tickFunction(): void {
@@ -240,9 +266,9 @@ export class AlVolumeComponent implements AframeRegistryEntry {
         } else if (this.data.displayMode === DisplayMode.VOLUME) {
           this.state.planeMesh.lookAt(this.el.sceneEl.camera.position);
 
-          if (this.state.rendering) {
-            this.renderBuffer();
-          }
+          // if (this.state.rendering) {
+          //   this.renderBuffer(null);
+          // }
         }
       },
 
@@ -252,6 +278,7 @@ export class AlVolumeComponent implements AframeRegistryEntry {
 
       remove(): void {
         this.el.removeObject3D("mesh");
+        this.removeListeners();
 
         if (this.state.planeMesh) {
           this.state.planeMesh.remove();

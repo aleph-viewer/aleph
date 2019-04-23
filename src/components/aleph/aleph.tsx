@@ -92,7 +92,7 @@ export class Aleph {
   private _camera: Entity;
   private _debouncedAppSetCamera: (state: AlCamera) => void;
   private _hovered: string | null = null;
-  private _interacting: boolean = false;
+  //private _interacting: boolean = false;
   private _isShiftDown: boolean = false;
   private _isWebGl2: boolean = true;
   private _mesh: THREE.Mesh;
@@ -531,6 +531,13 @@ export class Aleph {
           />
         );
       }
+      /* 
+              rendererEnabled: ${
+                this.displayMode === DisplayMode.VOLUME
+                  ? this._interacting
+                  : true
+              },
+      */
       case DisplayMode.SLICES:
       case DisplayMode.VOLUME: {
         return (
@@ -552,11 +559,6 @@ export class Aleph {
               volumeWindowCenter: ${this.volumeWindowCenter};
               volumeWindowWidth: ${this.volumeWindowWidth};
               isWebGl2: ${this._isWebGl2};
-              rendererEnabled: ${
-                this.displayMode === DisplayMode.VOLUME
-                  ? this._interacting
-                  : true
-              },
               sceneNeedsUpdate: ${this.sceneNeedsUpdate};
             `}
             position="0 0 0"
