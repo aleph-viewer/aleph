@@ -28,8 +28,8 @@ interface AlVolumeDefinition extends ComponentDefinition {
   handleStack(stack: any, liveChange: boolean): void;
   bindMethods(): void;
   renderBuffer(): void;
-  moved(event: CustomEvent): void;
-  finishedMove(): void;
+  renderLow(event: CustomEvent): void;
+  renderFull(): void;
   createMesh(): void;
   updateCamera(event: CustomEvent): void;
 }
@@ -58,8 +58,8 @@ export class AlVolumeComponent implements AframeRegistryEntry {
         this.renderBuffer = this.renderBuffer.bind(this);
         this.removeListeners = this.removeListeners.bind(this);
         this.addListeners = this.addListeners.bind(this);
-        this.moved = this.moved.bind(this);
-        this.finishedMove = this.finishedMove.bind(this);
+        this.renderLow = this.renderLow.bind(this);
+        this.renderFull = this.renderFull.bind(this);
         this.createMesh = this.createMesh.bind(this);
         this.updateCamera = this.updateCamera.bind(this);
       },
@@ -73,13 +73,13 @@ export class AlVolumeComponent implements AframeRegistryEntry {
 
         this.el.sceneEl.addEventListener(
           AlVolumeEvents.RENDER_FULL,
-          this.finishedMove,
+          this.renderFull,
           false
         );
 
         this.el.sceneEl.addEventListener(
-          AlVolumeEvents.MOVED,
-          this.moved,
+          AlVolumeEvents.RENDER_LOW,
+          this.renderLow,
           false
         );
 
@@ -97,9 +97,12 @@ export class AlVolumeComponent implements AframeRegistryEntry {
         );
         this.el.sceneEl.removeEventListener(
           AlVolumeEvents.RENDER_FULL,
-          this.finishedMove
+          this.renderFull
         );
-        this.el.sceneEl.removeEventListener(AlVolumeEvents.MOVED, this.moved);
+        this.el.sceneEl.removeEventListener(
+          AlVolumeEvents.RENDER_LOW,
+          this.renderLow
+        );
 
         this.el.sceneEl.removeEventListener(
           AlOrbitControlEvents.INTERACTION,
@@ -195,20 +198,23 @@ export class AlVolumeComponent implements AframeRegistryEntry {
         }
       },
 
-      moved(): void {
+      renderLow(): void {
         //this.el.sceneEl.renderer.setPixelRatio(0.1 * window.devicePixelRatio);
-        this.state.stackhelper.steps = 1;
+        this.state.stackhelper.steps = 2;
         this.renderBuffer();
       },
 
-      finishedMove(): void {
+      renderFull(): void {
         //this.el.sceneEl.renderer.setPixelRatio(window.devicePixelRatio);
         this.state.stackhelper.steps = this.data.volumeSteps;
         this.renderBuffer();
       },
 
       renderBuffer(): void {
-        if (this.data.displayMode === DisplayMode.VOLUME) {
+        if (
+          this.state.localCamera &&
+          this.data.displayMode === DisplayMode.VOLUME
+        ) {
           let state = this.state as AlVolumeState;
 
           console.log(
@@ -358,6 +364,6 @@ export class AlVolumeComponent implements AframeRegistryEntry {
 export class AlVolumeEvents {
   static LOADED: string = "al-volume-loaded";
   static ERROR: string = "al-volume-error";
-  static MOVED: string = "al-volume-moved";
+  static RENDER_LOW: string = "al-volume-render-low";
   static RENDER_FULL: string = "al-volume-render-full";
 }

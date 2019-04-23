@@ -91,6 +91,7 @@ export class Aleph {
   private _boundingSphereRadius: number;
   private _camera: Entity;
   private _debouncedAppSetCamera: (state: AlCamera) => void;
+  private _debouncedVolumeInteractionFinished: () => void;
   private _hovered: string | null = null;
   private _isShiftDown: boolean = false;
   private _isWebGl2: boolean = true;
@@ -926,7 +927,7 @@ export class Aleph {
   private _volumeInteraction() {
     if (this._scene) {
       this._scene.emit(
-        AlVolumeEvents.MOVED,
+        AlVolumeEvents.RENDER_LOW,
         { cameraState: this.camera },
         false
       );
@@ -1271,7 +1272,7 @@ export class Aleph {
 
   private _controlsInteractionFinishedHandler(event: CustomEvent): void {
     if (this.displayMode === DisplayMode.VOLUME) {
-      this._volumeInteractionFinished();
+      this._debouncedVolumeInteractionFinished();
     }
 
     this._debouncedAppSetCamera(event.detail.cameraState);
