@@ -79,8 +79,6 @@ export class AlVolumeComponent implements AframeRegistryEntry {
           this.moved,
           false
         );
-
-        EventUtils.debounce(this.moved, Constants.minFrameMS);
       },
 
       removeListeners(): void {
@@ -212,11 +210,11 @@ export class AlVolumeComponent implements AframeRegistryEntry {
             // Offsets by -targ
             .sub(targ.clone())
             // Offsets by -bboxPosition
-            .add(ThreeUtils.objectToVector3(this.data.bboxPosition));
+            // .add(ThreeUtils.objectToVector3(this.data.bboxPosition));
           let dumCam: THREE.PerspectiveCamera = this.el.sceneEl.camera.clone();
 
           // Dir S->E === End - Start
-          let dir = new THREE.Vector3(0, 0, 0)
+          let dir = ThreeUtils.objectToVector3(this.data.bboxPosition)
             .sub(dumPos.clone())
             .normalize()
             .negate();
