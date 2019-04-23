@@ -29,7 +29,6 @@ export type ActionTypes =
   | AppSetGraphEnabledAction
   | AppSetNodeAction
   | AppSetOrientationAction
-  | AppSetSceneNeedsUpdateAction
   | AppSetSlicesIndexAction
   | AppSetSlicesWindowCenterAction
   | AppSetSlicesWindowWidthAction
@@ -60,7 +59,6 @@ export enum TypeKeys {
   APP_SET_NODE = "APP_SET_NODE",
   APP_SET_NODES_ENABLED = "APP_SET_NODES_ENABLED",
   APP_SET_ORIENTATION = "APP_SET_ORIENTATION",
-  APP_SET_SCENE_NEEDS_UPDATE = "APP_SET_SCENE_NEEDS_UPDATE",
   APP_SET_SLICES_INDEX = "APP_SET_SLICES_INDEX",
   APP_SET_SLICES_WINDOW_CENTER = "APP_SET_SLICES_WINDOW_CENTER",
   APP_SET_SLICES_WINDOW_WIDTH = "APP_SET_SLICES_WINDOW_WIDTH",
@@ -439,21 +437,6 @@ export const appSetVolumeWindowCenter = (payload: number) => async (
 ) => {
   return dispatch({
     type: TypeKeys.APP_SET_VOLUME_WINDOW_CENTER,
-    payload: payload
-  });
-};
-
-export interface AppSetSceneNeedsUpdateAction {
-  type: TypeKeys.APP_SET_SCENE_NEEDS_UPDATE;
-  payload: boolean;
-}
-
-export const appSetSceneNeedsUpdate = (payload: boolean) => async (
-  dispatch,
-  _getState
-) => {
-  return dispatch({
-    type: TypeKeys.APP_SET_SCENE_NEEDS_UPDATE,
     payload: payload
   });
 };

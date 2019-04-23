@@ -24,7 +24,7 @@ interface AlVolumeDefinition extends ComponentDefinition {
   addListeners(): void;
   removeListeners(): void;
   tickFunction(): void;
-  handleStack(stack: any, liveChange: boolean): void;
+  handleStack(stack: any): void;
   bindMethods(): void;
   renderBufferScene(): void;
   renderLow(event: CustomEvent): void;
@@ -241,7 +241,7 @@ export class AlVolumeComponent implements AframeRegistryEntry {
         }
       },
 
-      handleStack(stack: any, liveChange: boolean): void {
+      handleStack(stack: any): void {
         const state = this.state as AlVolumeState;
         const el = this.el;
 
@@ -271,13 +271,13 @@ export class AlVolumeComponent implements AframeRegistryEntry {
         }
 
         // If a hot reload of the display, reset the mesh
-        if (liveChange) {
-          this.el.removeObject3D("mesh");
+        if (el.object3DMap.mesh) {
+          el.removeObject3D("mesh");
         }
 
         // If not volumetric, display as normal
         if (this.data.displayMode !== DisplayMode.VOLUME) {
-          this.el.setObject3D("mesh", this.state.stackhelper);
+          el.setObject3D("mesh", this.state.stackhelper);
         }
         // Else place in buffer scene
         else {
@@ -296,7 +296,7 @@ export class AlVolumeComponent implements AframeRegistryEntry {
           return;
         } else if (oldData && oldData.src !== this.data.src) {
           this.loader.load(this.data.src, el).then(stack => {
-            this.handleStack(stack, false);
+            this.handleStack(stack);
           });
         } else if (
           oldData &&
@@ -304,10 +304,11 @@ export class AlVolumeComponent implements AframeRegistryEntry {
           state.stack
         ) {
           this.removeListeners();
-          this.handleStack(state.stack, true);
+          this.handleStack(state.stack);
           this.addListeners();
 
           if (this.data.displayMode === DisplayMode.VOLUME) {
+            console.log("initial renderFull");
             this.renderFull();
           }
         }

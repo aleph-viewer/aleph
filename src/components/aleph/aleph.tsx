@@ -43,7 +43,6 @@ import {
   appSetGraphEnabled,
   appSetNode,
   appSetOrientation,
-  appSetSceneNeedsUpdate,
   appSetSlicesIndex,
   appSetSlicesWindowCenter,
   appSetSlicesWindowWidth,
@@ -126,7 +125,6 @@ export class Aleph {
   appSetGraphEnabled: Action;
   appSetNode: Action;
   appSetOrientation: Action;
-  appSetSceneNeedsUpdate: Action;
   appSetSlicesIndex: Action;
   appSetSlicesWindowCenter: Action;
   appSetSlicesWindowWidth: Action;
@@ -150,7 +148,6 @@ export class Aleph {
   @State() optionsEnabled: boolean;
   @State() optionsVisible: boolean;
   @State() orientation: Orientation;
-  @State() sceneNeedsUpdate: boolean;
   @State() selected: string;
   @State() slicesIndex: number;
   @State() slicesWindowCenter: number;
@@ -357,7 +354,6 @@ export class Aleph {
           graphEnabled,
           nodes,
           orientation,
-          sceneNeedsUpdate,
           selected,
           slicesIndex,
           slicesWindowCenter,
@@ -380,7 +376,6 @@ export class Aleph {
         graphEnabled,
         nodes,
         orientation,
-        sceneNeedsUpdate,
         selected,
         slicesIndex,
         slicesWindowCenter,
@@ -412,7 +407,6 @@ export class Aleph {
       appSetGraphEnabled,
       appSetNode,
       appSetOrientation,
-      appSetSceneNeedsUpdate,
       appSetSlicesIndex,
       appSetSlicesWindowCenter,
       appSetSlicesWindowWidth,

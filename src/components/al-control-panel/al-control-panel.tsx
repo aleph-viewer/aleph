@@ -9,7 +9,7 @@ import { Orientation } from "../../enums/Orientation";
 })
 export class AlControlPanel {
   private _lastStackOrientationIndex: number;
-  private _debounceRangeMS: number = 250;
+  //private _debounceRangeMS: number = 250;
 
   @Event() boundingBoxVisibleChanged: EventEmitter;
   @Event() displayModeChanged: EventEmitter;
@@ -432,7 +432,6 @@ export class AlControlPanel {
                 min={stepsMin}
                 max={stepsMax}
                 value={steps}
-                debounce={this._debounceRangeMS}
                 onIonChange={e =>
                   this._volumeSteps((e.srcElement as any).value)
                 }
@@ -456,7 +455,6 @@ export class AlControlPanel {
                 min={windowCenterMin}
                 max={windowCenterMax}
                 value={windowCenter}
-                debounce={this._debounceRangeMS}
                 onIonChange={e =>
                   this._volumeWindowCenter((e.srcElement as any).value)
                 }
@@ -472,7 +470,6 @@ export class AlControlPanel {
                 min={windowWidthMin}
                 max={windowWidthMax}
                 value={windowWidth}
-                debounce={this._debounceRangeMS}
                 onIonChange={e =>
                   this._volumeWindowWidth((e.srcElement as any).value)
                 }
