@@ -1225,6 +1225,11 @@ export class Aleph {
   private _keyDownHandler(event: KeyboardEvent) {
     this._isShiftDown = event.shiftKey;
 
+    // check scene has focus
+    if (!document.activeElement.contains(this._scene)) {
+      return;
+    }
+
     if (event.keyCode === KeyDown.Delete) {
       if (this.selected) {
         if (this.nodes.has(this.selected)) {

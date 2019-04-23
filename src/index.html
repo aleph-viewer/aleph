@@ -151,6 +151,7 @@
       });
 
       urls = new Map([
+      ["https://nomad-project.co.uk/objects/collection/toy-lion/_toy-lion/toy-lion.gltf", "Lion (GLTF)"],
         ["https://iiif-3d-manifests.netlify.com/collection/gltf/woody/_woody/assets/woody.gltf", "Fisherman (GLTF)"],
         ["http://files.blokdust.io/test/bowl-draco.glb", "Bowl (DRACO)"],
         ["https://ami-test-manifests.netlify.com/collection/dicom/brain/_brain/brain.json", "Brain (DICOM)"],
@@ -178,7 +179,7 @@
 
         alAleph.componentOnReady().then(function() {
           //component.setDisplayMode("slices");
-          state.src = Array.from(urls)[1][0]; // load src when component ready
+          state.src = Array.from(urls)[0][0]; // load src when component ready
 
           alAleph.addEventListener(
             "changed",

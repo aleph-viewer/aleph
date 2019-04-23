@@ -115,19 +115,19 @@ export class AlVolumeComponent implements AframeRegistryEntry {
       rendererResize(): void {
         let state = this.state as AlVolumeState;
 
-        let needsResize =
-          state.textureWidth !== this.el.sceneEl.canvas.clientWidth ||
-          state.textureHeight !== this.el.sceneEl.canvas.clientHeight;
+        // let needsResize =
+        //   state.textureWidth !== this.el.sceneEl.canvas.clientWidth ||
+        //   state.textureHeight !== this.el.sceneEl.canvas.clientHeight;
 
-        if (needsResize) {
-          state.textureWidth = this.el.sceneEl.canvas.width;
-          state.textureHeight = this.el.sceneEl.canvas.height;
-          console.log("renderer resized");
-        }
+        // if (needsResize) {
+        state.textureWidth = this.el.sceneEl.canvas.clientWidth;
+        state.textureHeight = this.el.sceneEl.canvas.clientHeight;
+        console.log("renderer resized");
+        //}
 
         this.state.bufferTexture = new THREE.WebGLRenderTarget(
-          this.el.sceneEl.canvas.width,
-          this.el.sceneEl.canvas.height,
+          state.textureWidth,
+          state.textureHeight,
           { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter }
         );
 
@@ -136,13 +136,13 @@ export class AlVolumeComponent implements AframeRegistryEntry {
 
       moved(event: CustomEvent) {
         this.state.localCamera = event.detail.cameraState;
-        this.el.sceneEl.renderer.setPixelRatio(0.1 * window.devicePixelRatio);
+        //this.el.sceneEl.renderer.setPixelRatio(0.1 * window.devicePixelRatio);
         this.state.stackhelper.steps = 1;
         this.renderBuffer();
       },
 
       finishedMove() {
-        this.el.sceneEl.renderer.setPixelRatio(window.devicePixelRatio);
+        //this.el.sceneEl.renderer.setPixelRatio(window.devicePixelRatio);
         this.state.stackhelper.steps = this.data.volumeSteps;
         this.renderBuffer();
       },
