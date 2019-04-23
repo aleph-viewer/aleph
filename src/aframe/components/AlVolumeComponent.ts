@@ -4,6 +4,7 @@ import { Constants } from "../../Constants";
 import { DisplayMode } from "../../enums";
 import { ComponentDefinition } from "aframe";
 import { ThreeUtils } from "../../utils";
+import { AlOrbitControlEvents } from "..";
 
 interface AlVolumeState {
   stack: any;
@@ -30,6 +31,7 @@ interface AlVolumeDefinition extends ComponentDefinition {
   moved(event: CustomEvent): void;
   finishedMove(): void;
   createMesh(): void;
+  updateCamera(event: CustomEvent): void;
 }
 
 export class AlVolumeComponent implements AframeRegistryEntry {
@@ -59,6 +61,7 @@ export class AlVolumeComponent implements AframeRegistryEntry {
         this.moved = this.moved.bind(this);
         this.finishedMove = this.finishedMove.bind(this);
         this.createMesh = this.createMesh.bind(this);
+        this.updateCamera = this.updateCamera.bind(this);
       },
 
       addListeners() {
@@ -79,6 +82,12 @@ export class AlVolumeComponent implements AframeRegistryEntry {
           this.moved,
           false
         );
+
+        this.el.sceneEl.addEventListener(
+          AlOrbitControlEvents.INTERACTION,
+          this.updateCamera,
+          false
+        );
       },
 
       removeListeners(): void {
@@ -86,11 +95,16 @@ export class AlVolumeComponent implements AframeRegistryEntry {
           "rendererresize",
           this.rendererResize
         );
-        this.el.sceneEl.addEventListener(
+        this.el.sceneEl.removeEventListener(
           AlVolumeEvents.RENDER_FULL,
           this.finishedMove
         );
-        this.el.sceneEl.addEventListener(AlVolumeEvents.MOVED, this.moved);
+        this.el.sceneEl.removeEventListener(AlVolumeEvents.MOVED, this.moved);
+
+        this.el.sceneEl.removeEventListener(
+          AlOrbitControlEvents.INTERACTION,
+          this.updateCamera
+        );
       },
 
       init(): void {
@@ -114,6 +128,10 @@ export class AlVolumeComponent implements AframeRegistryEntry {
 
         this.bindMethods();
         this.addListeners();
+      },
+
+      updateCamera(event: CustomEvent): void {
+        this.state.localCamera = event.detail.cameraState;
       },
 
       createMesh() {
@@ -177,15 +195,14 @@ export class AlVolumeComponent implements AframeRegistryEntry {
         }
       },
 
-      moved(event: CustomEvent) {
-        this.state.localCamera = event.detail.cameraState;
-        this.el.sceneEl.renderer.setPixelRatio(0.1 * window.devicePixelRatio);
+      moved(): void {
+        //this.el.sceneEl.renderer.setPixelRatio(0.1 * window.devicePixelRatio);
         this.state.stackhelper.steps = 1;
         this.renderBuffer();
       },
 
-      finishedMove() {
-        this.el.sceneEl.renderer.setPixelRatio(window.devicePixelRatio);
+      finishedMove(): void {
+        //this.el.sceneEl.renderer.setPixelRatio(window.devicePixelRatio);
         this.state.stackhelper.steps = this.data.volumeSteps;
         this.renderBuffer();
       },
@@ -208,9 +225,9 @@ export class AlVolumeComponent implements AframeRegistryEntry {
           let dumPos = eye
             .clone()
             // Offsets by -targ
-            .sub(targ.clone())
-            // Offsets by -bboxPosition
-            // .add(ThreeUtils.objectToVector3(this.data.bboxPosition));
+            .sub(targ.clone());
+          // Offsets by -bboxPosition
+          // .add(ThreeUtils.objectToVector3(this.data.bboxPosition));
           let dumCam: THREE.PerspectiveCamera = this.el.sceneEl.camera.clone();
 
           // Dir S->E === End - Start
