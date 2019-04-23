@@ -3,7 +3,7 @@ import { VolumetricLoader } from "../../utils/VolumetricLoader";
 import { Constants } from "../../Constants";
 import { DisplayMode } from "../../enums";
 import { ComponentDefinition } from "aframe";
-import { ThreeUtils, EventUtils } from "../../utils";
+import { ThreeUtils } from "../../utils";
 
 interface AlVolumeState {
   stack: any;
