@@ -90,7 +90,6 @@ export class Aleph {
   private _boundingSphereRadius: number;
   private _camera: Entity;
   private _debouncedAppSetCamera: (state: AlCamera) => void;
-  private _debouncedVolumeInteractionFinished: () => void;
   private _hovered: string | null = null;
   private _isShiftDown: boolean = false;
   private _isWebGl2: boolean = true;
@@ -454,11 +453,6 @@ export class Aleph {
     // debounced event handlers
     this._debouncedAppSetCamera = EventUtils.debounce(
       this.appSetCamera,
-      Constants.minFrameMS
-    ).bind(this);
-
-    this._debouncedVolumeInteractionFinished = EventUtils.debounce(
-      this._volumeInteractionFinished,
       Constants.minFrameMS
     ).bind(this);
   }
@@ -918,18 +912,6 @@ export class Aleph {
     }
   }
 
-  private _volumeInteraction() {
-    if (this._scene) {
-      this._scene.emit(AlVolumeEvents.RENDER_LOW, {}, false);
-    }
-  }
-
-  private _volumeInteractionFinished() {
-    if (this._scene) {
-      this._scene.emit(AlVolumeEvents.RENDER_FULL, {}, false);
-    }
-  }
-
   private _createEdge(node1Id: string, node2Id: string): void {
     // check if there is already an edge connecting these two nodes
     const match: [string, AlEdge] | undefined = Array.from(this.edges).find(
@@ -1255,16 +1237,15 @@ export class Aleph {
   }
 
   private _controlsInteractionHandler(_event: CustomEvent): void {
-    if (this.displayMode === DisplayMode.VOLUME && !this._hovered) {
-      this._volumeInteraction();
-    }
+    // if (this.displayMode === DisplayMode.VOLUME && !this._hovered) {
+    //   this._volumeInteraction();
+    // }
   }
 
   private _controlsInteractionFinishedHandler(event: CustomEvent): void {
-    if (this.displayMode === DisplayMode.VOLUME) {
-      this._debouncedVolumeInteractionFinished();
-    }
-
+    // if (this.displayMode === DisplayMode.VOLUME) {
+    //   this._volumeInteractionFinishedHandler();
+    // }
     this._debouncedAppSetCamera(event.detail.cameraState);
   }
 
