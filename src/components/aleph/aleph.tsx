@@ -920,7 +920,7 @@ export class Aleph {
       // this._resize();
       // this.appSetSceneNeedsUpdate(true);
       this._scene.emit(
-        AlVolumeEvents.MOVED,
+        AlVolumeEvents.RENDER_LOW,
         { cameraState: this.camera },
         false
       );
