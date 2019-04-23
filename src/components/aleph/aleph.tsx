@@ -1255,15 +1255,15 @@ export class Aleph {
   }
 
   private _controlsInteractionHandler(_event: CustomEvent): void {
-    if (this.displayMode === DisplayMode.VOLUME) {
-      this._volumeInteraction();
-    }
+    // if (this.displayMode === DisplayMode.VOLUME && !this._hovered) {
+    //   this._volumeInteraction();
+    // }
   }
 
   private _controlsInteractionFinishedHandler(event: CustomEvent): void {
-    if (this.displayMode === DisplayMode.VOLUME) {
-      this._volumeInteractionFinished();
-    }
+    // if (this.displayMode === DisplayMode.VOLUME) {
+    //   this._volumeInteractionFinished();
+    // }
 
     this._debouncedAppSetCamera(event.detail.cameraState);
   }
