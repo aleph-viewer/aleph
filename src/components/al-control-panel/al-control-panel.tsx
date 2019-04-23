@@ -454,12 +454,19 @@ export class AlControlPanel {
                 slot="end"
                 min={windowCenterMin}
                 max={windowCenterMax}
-                value={windowCenter}
+                value={this._reverseNumber(
+                  windowCenter,
+                  windowCenterMin,
+                  windowCenterMax
+                )}
                 onIonChange={e =>
-                  this._volumeWindowCenter((e.srcElement as any).value)
-                }
-                onMouseUp={e =>
-                  this._volumeWindowCenter((e.srcElement as any).value)
+                  this._volumeWindowCenter(
+                    this._reverseNumber(
+                      (e.srcElement as any).value,
+                      windowCenterMin,
+                      windowCenterMax
+                    )
+                  )
                 }
               />
             </ion-item>
@@ -469,12 +476,19 @@ export class AlControlPanel {
                 slot="end"
                 min={windowWidthMin}
                 max={windowWidthMax}
-                value={windowWidth}
+                value={this._reverseNumber(
+                  windowWidth,
+                  windowWidthMin,
+                  windowWidthMax
+                )}
                 onIonChange={e =>
-                  this._volumeWindowWidth((e.srcElement as any).value)
-                }
-                onMouseup={e =>
-                  this._volumeWindowWidth((e.srcElement as any).value)
+                  this._volumeWindowWidth(
+                    this._reverseNumber(
+                      (e.srcElement as any).value,
+                      windowWidthMin,
+                      windowWidthMax
+                    )
+                  )
                 }
               />
             </ion-item>
