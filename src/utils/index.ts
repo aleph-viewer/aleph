@@ -1,20 +1,22 @@
-import { GetUtils } from "./GetUtils";
 import { AframeUtils } from "./AframeUtils";
-import { ThreeUtils } from "./ThreeUtils";
-import { RaycasterUtils } from "./RaycasterUtils";
+import { AMIUtils } from "./AMIUtils";
+import { EventUtils } from "./EventUtils";
+import { GetUtils } from "./GetUtils";
 import { GLTFUtils } from "./GLTFUtils";
 import { GraphUtils, AlGraphEvents } from "./GraphUtils";
+import { RaycasterUtils } from "./RaycasterUtils";
 import { ShaderUtils } from "./ShaderUtils";
-import { AMIUtils } from "./AMIUtils";
+import { ThreeUtils } from "./ThreeUtils";
 
 export {
-  GetUtils,
   AframeUtils,
-  ThreeUtils,
-  RaycasterUtils,
+  AlGraphEvents,
+  AMIUtils,
+  EventUtils,
+  GetUtils,
   GLTFUtils,
   GraphUtils,
-  AlGraphEvents,
+  RaycasterUtils,
   ShaderUtils,
-  AMIUtils
+  ThreeUtils
 };
