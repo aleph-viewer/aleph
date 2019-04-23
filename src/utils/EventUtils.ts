@@ -14,7 +14,7 @@ export class EventUtils {
     return function() {
       if (!fn.debouncing) {
         const args: any = Array.prototype.slice.apply(arguments);
-        fn.lastReturnVal = fn.apply(window, args);
+        fn.lastReturnVal = fn.apply(this, args);
         fn.debouncing = true;
       }
       clearTimeout(fn.debounceTimeout);

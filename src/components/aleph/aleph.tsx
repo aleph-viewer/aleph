@@ -423,16 +423,6 @@ export class Aleph {
       appSetVolumeWindowWidth
     });
 
-    this._debouncedAppSetCamera = EventUtils.debounce(
-      this.appSetCamera,
-      Constants.minFrameMS
-    );
-
-    this._debouncedVolumeInteractionFinished = EventUtils.debounce(
-      this._volumeInteractionFinished,
-      Constants.minFrameMS
-    );
-
     // set up event handlers
     this._controlsAnimationFinishedHandler = this._controlsAnimationFinishedHandler.bind(
       this
@@ -466,6 +456,17 @@ export class Aleph {
     );
     this._spawnNodeHandler = this._spawnNodeHandler.bind(this);
     this._srcLoaded = this._srcLoaded.bind(this);
+
+    // debounced event handlers
+    this._debouncedAppSetCamera = EventUtils.debounce(
+      this.appSetCamera,
+      Constants.minFrameMS
+    ).bind(this);
+
+    this._debouncedVolumeInteractionFinished = EventUtils.debounce(
+      this._volumeInteractionFinished,
+      Constants.minFrameMS
+    ).bind(this);
   }
 
   private _renderSpinner() {
