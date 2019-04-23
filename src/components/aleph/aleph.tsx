@@ -91,7 +91,6 @@ export class Aleph {
   private _boundingSphereRadius: number;
   private _camera: Entity;
   private _debouncedAppSetCamera: (state: AlCamera) => void;
-  private _debouncedVolumeInteractionFinished: () => void;
   private _hovered: string | null = null;
   private _isShiftDown: boolean = false;
   private _isWebGl2: boolean = true;
@@ -428,11 +427,6 @@ export class Aleph {
       Constants.minFrameMS
     );
 
-    this._debouncedVolumeInteractionFinished = EventUtils.debounce(
-      this._volumeInteractionFinished,
-      Constants.minFrameMS
-    );
-
     // set up event handlers
     this._controlsAnimationFinishedHandler = this._controlsAnimationFinishedHandler.bind(
       this
@@ -557,6 +551,11 @@ export class Aleph {
               volumeWindowCenter: ${this.volumeWindowCenter};
               volumeWindowWidth: ${this.volumeWindowWidth};
               isWebGl2: ${this._isWebGl2};
+              bboxPosition: ${
+                this._bboxPosition
+                  ? ThreeUtils.vector3ToString(this._bboxPosition)
+                  : new THREE.Vector3(0, 0, 0)
+              };
             `}
             position="0 0 0"
             ref={(el: Entity) => (this._targetEntity = el)}
@@ -565,6 +564,8 @@ export class Aleph {
       }
     }
   }
+
+  private _bboxPosition: THREE.Vector3;
 
   private _renderBoundingBox() {
     if (this.srcLoaded && this.boundingBoxVisible) {
@@ -578,6 +579,8 @@ export class Aleph {
           : this._targetEntity.object3D.position
               .clone()
               .add(GetUtils.getGeometryCenter(this._mesh.geometry));
+
+      this._bboxPosition = position;
 
       return (
         <a-entity
@@ -874,8 +877,8 @@ export class Aleph {
         ref={el => (this._scene = el)}
       >
         {this._renderBackboard()}
-        {this._renderSrc()}
         {this._renderBoundingBox()}
+        {this._renderSrc()}
         {this._renderNodes()}
         {this._renderEdges()}
         {this._renderAngles()}
@@ -916,11 +919,8 @@ export class Aleph {
 
   private _volumeInteraction() {
     if (this._scene) {
-      // this._scene.renderer.setPixelRatio(0.1 * window.devicePixelRatio);
-      // this._resize();
-      // this.appSetSceneNeedsUpdate(true);
       this._scene.emit(
-        AlVolumeEvents.RENDER_LOW,
+        AlVolumeEvents.MOVED,
         { cameraState: this.camera },
         false
       );
@@ -929,9 +929,6 @@ export class Aleph {
 
   private _volumeInteractionFinished() {
     if (this._scene) {
-      // this._scene.renderer.setPixelRatio(window.devicePixelRatio);
-      // this._resize();
-      // this.appSetSceneNeedsUpdate(false);
       this._scene.emit(AlVolumeEvents.RENDER_FULL, {}, false);
     }
   }
@@ -1225,11 +1222,6 @@ export class Aleph {
   private _keyDownHandler(event: KeyboardEvent) {
     this._isShiftDown = event.shiftKey;
 
-    // check scene has focus
-    if (!document.activeElement.contains(this._scene)) {
-      return;
-    }
-
     if (event.keyCode === KeyDown.Delete) {
       if (this.selected) {
         if (this.nodes.has(this.selected)) {
@@ -1266,15 +1258,15 @@ export class Aleph {
   }
 
   private _controlsInteractionHandler(_event: CustomEvent): void {
-    if (this.displayMode === DisplayMode.VOLUME) {
+    if (this.displayMode === DisplayMode.VOLUME && !this._hovered) {
       this._volumeInteraction();
     }
   }
 
   private _controlsInteractionFinishedHandler(event: CustomEvent): void {
-    if (this.displayMode === DisplayMode.VOLUME) {
-      this._debouncedVolumeInteractionFinished();
-    }
+    // if (this.displayMode === DisplayMode.VOLUME) {
+    //   this._volumeInteractionFinished();
+    // }
 
     this._debouncedAppSetCamera(event.detail.cameraState);
   }
