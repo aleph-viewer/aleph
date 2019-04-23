@@ -3,7 +3,7 @@ import { VolumetricLoader } from "../../utils/VolumetricLoader";
 import { Constants } from "../../Constants";
 import { DisplayMode } from "../../enums";
 import { ComponentDefinition } from "aframe";
-import { AlOrbitControlEvents } from "..";
+import { EventUtils } from "../../utils";
 
 interface AlVolumeState {
   stack: any;
@@ -17,6 +17,7 @@ interface AlVolumeState {
   zoom: number;
   textureWidth: number;
   textureHeight: number;
+  localCamera: AlCamera;
 }
 
 interface AlVolumeDefinition extends ComponentDefinition {
@@ -25,7 +26,9 @@ interface AlVolumeDefinition extends ComponentDefinition {
   tickFunction(): void;
   handleStack(stack: any, liveChange: boolean): void;
   bindMethods(): void;
-  renderBuffer(event: CustomEvent): void;
+  renderBuffer(): void;
+  moved(event: CustomEvent): void;
+  finishedMove(): void;
 }
 
 export class AlVolumeComponent implements AframeRegistryEntry {
@@ -51,6 +54,8 @@ export class AlVolumeComponent implements AframeRegistryEntry {
         this.renderBuffer = this.renderBuffer.bind(this);
         this.removeListeners = this.removeListeners.bind(this);
         this.addListeners = this.addListeners.bind(this);
+        this.moved = this.moved.bind(this);
+        this.finishedMove = this.finishedMove.bind(this);
       },
 
       addListeners() {
@@ -61,10 +66,18 @@ export class AlVolumeComponent implements AframeRegistryEntry {
         );
 
         this.el.sceneEl.addEventListener(
-          AlOrbitControlEvents.INTERACTION_FINISHED,
-          this.renderBuffer,
+          AlVolumeEvents.RENDER_FULL,
+          this.finishedMove,
           false
         );
+
+        this.el.sceneEl.addEventListener(
+          AlVolumeEvents.MOVED,
+          this.moved,
+          false
+        );
+
+        EventUtils.debounce(this.moved, Constants.minFrameMS);
       },
 
       removeListeners(): void {
@@ -73,9 +86,10 @@ export class AlVolumeComponent implements AframeRegistryEntry {
           this.rendererResize
         );
         this.el.sceneEl.addEventListener(
-          AlOrbitControlEvents.INTERACTION_FINISHED,
-          this.renderBuffer
+          AlVolumeEvents.RENDER_FULL,
+          this.finishedMove
         );
+        this.el.sceneEl.addEventListener(AlVolumeEvents.MOVED, this.moved);
       },
 
       init(): void {
@@ -87,8 +101,8 @@ export class AlVolumeComponent implements AframeRegistryEntry {
         this.loader = new VolumetricLoader();
         this.state = {
           bufferScene: new THREE.Scene(),
-          textureHeight: this.el.sceneEl.canvas.height,
-          textureWidth: this.el.sceneEl.canvas.width
+          textureHeight: this.el.sceneEl.canvas.clientHeight,
+          textureWidth: this.el.sceneEl.canvas.clientWidth
         } as AlVolumeState;
 
         this.state.bufferTexture = new THREE.WebGLRenderTarget(
@@ -105,8 +119,8 @@ export class AlVolumeComponent implements AframeRegistryEntry {
         let state = this.state as AlVolumeState;
 
         let needsResize =
-          state.textureWidth !== this.el.sceneEl.canvas.width ||
-          state.textureHeight !== this.el.sceneEl.canvas.height;
+          state.textureWidth !== this.el.sceneEl.canvas.clientWidth ||
+          state.textureHeight !== this.el.sceneEl.canvas.clientHeight;
 
         if (needsResize) {
           state.textureWidth = this.el.sceneEl.canvas.width;
@@ -114,18 +128,32 @@ export class AlVolumeComponent implements AframeRegistryEntry {
           console.log("renderer resized");
         }
 
-        // this.state.bufferTexture = new THREE.WebGLRenderTarget(
-        //   this.el.sceneEl.canvas.width,
-        //   this.el.sceneEl.canvas.height,
-        //   { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter }
-        // );
+        this.state.bufferTexture = new THREE.WebGLRenderTarget(
+          this.el.sceneEl.canvas.width,
+          this.el.sceneEl.canvas.height,
+          { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter }
+        );
 
-        // this.renderBuffer();
+        this.renderBuffer();
       },
 
-      renderBuffer(event: CustomEvent): void {
+      moved(event: CustomEvent) {
+        this.state.localCamera = event.detail.cameraState;
+        this.el.sceneEl.renderer.setPixelRatio(0.1 * window.devicePixelRatio);
+        this.state.stackhelper.steps = 1;
+        this.renderBuffer();
+      },
+
+      finishedMove() {
+        this.el.sceneEl.renderer.setPixelRatio(window.devicePixelRatio);
+        this.state.stackhelper.steps = this.data.volumeSteps;
+        this.renderBuffer();
+      },
+
+      renderBuffer(): void {
         if (this.data.displayMode === DisplayMode.VOLUME) {
-          let camState: AlCamera = event.detail.cameraState;
+          console.log(this.state.stackhelper.steps);
+          let camState: AlCamera = this.state.localCamera;
 
           let targ = camState.target.clone();
           let eye = camState.position.clone();
@@ -136,20 +164,16 @@ export class AlVolumeComponent implements AframeRegistryEntry {
           // Direction is [end - start]
           // let dir: THREE.Vector3 = targ.clone().sub(eye.clone());
 
-          let eyeLine = new THREE.Line3(eye.clone(), targ.clone());
+          // let eyeLine = new THREE.Line3(eye.clone(), targ.clone());
 
-          // Start at the camera, and move [zoom] intervals of [dir] away from the camera towards the target
-          let newPos = new THREE.Vector3();
-          eyeLine.at(0.2, newPos);
-          // Move the [stackhelper] within the [bufferscene] to be a constant distance from the real camera
-          (this.state.stackhelper as THREE.Object3D).position.copy(
-            newPos.negate()
-          );
-          console.log((this.state.stackhelper as THREE.Object3D).position);
+          // // Start at the camera, and move [zoom] intervals of [dir] away from the camera towards the target
+          let newPos = eye.clone().sub(targ.clone());
+          let dumCam: THREE.PerspectiveCamera = this.el.sceneEl.camera.clone();
+          dumCam.position.copy(newPos);
 
           this.el.sceneEl.renderer.render(
             this.state.bufferScene,
-            this.el.sceneEl.camera,
+            dumCam,
             this.state.bufferTexture
           );
         }
@@ -267,11 +291,11 @@ export class AlVolumeComponent implements AframeRegistryEntry {
         }
 
         if (this.state.planeMaterial) {
-          this.state.planeMaterial.remove();
+          this.state.planeMaterial.dispose();
         }
 
         if (this.state.planeGeometry) {
-          this.state.planeGeometry.remove();
+          this.state.planeGeometry.dispose();
         }
       }
     } as AlVolumeDefinition;
@@ -285,4 +309,6 @@ export class AlVolumeComponent implements AframeRegistryEntry {
 export class AlVolumeEvents {
   static LOADED: string = "al-volume-loaded";
   static ERROR: string = "al-volume-error";
+  static MOVED: string = "al-volume-moved";
+  static RENDER_FULL: string = "al-volume-render-full";
 }

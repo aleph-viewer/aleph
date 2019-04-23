@@ -910,17 +910,23 @@ export class Aleph {
 
   private _volumeInteraction() {
     if (this._scene) {
-      this._scene.renderer.setPixelRatio(0.1 * window.devicePixelRatio);
-      this._resize();
-      this.appSetSceneNeedsUpdate(true);
+      // this._scene.renderer.setPixelRatio(0.1 * window.devicePixelRatio);
+      // this._resize();
+      // this.appSetSceneNeedsUpdate(true);
+      this._scene.emit(
+        AlVolumeEvents.MOVED,
+        { cameraState: this.camera },
+        false
+      );
     }
   }
 
   private _volumeInteractionFinished() {
     if (this._scene) {
-      this._scene.renderer.setPixelRatio(window.devicePixelRatio);
-      this._resize();
-      this.appSetSceneNeedsUpdate(false);
+      // this._scene.renderer.setPixelRatio(window.devicePixelRatio);
+      // this._resize();
+      // this.appSetSceneNeedsUpdate(false);
+      this._scene.emit(AlVolumeEvents.RENDER_FULL, {}, false);
     }
   }
 
