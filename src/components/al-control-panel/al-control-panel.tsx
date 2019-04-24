@@ -459,15 +459,15 @@ export class AlControlPanel {
                   windowCenterMin,
                   windowCenterMax
                 )}
-                onIonChange={e =>
+                onIonChange={e => {
                   this._volumeWindowCenter(
                     this._reverseNumber(
-                      (e.srcElement as any).value,
+                      e.detail.value,
                       windowCenterMin,
                       windowCenterMax
                     )
-                  )
-                }
+                  );
+                }}
               />
             </ion-item>
             <ion-item>
@@ -484,7 +484,7 @@ export class AlControlPanel {
                 onIonChange={e =>
                   this._volumeWindowWidth(
                     this._reverseNumber(
-                      (e.srcElement as any).value,
+                      e.detail.value,
                       windowWidthMin,
                       windowWidthMax
                     )

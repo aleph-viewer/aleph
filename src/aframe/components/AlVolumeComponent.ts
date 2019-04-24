@@ -22,14 +22,14 @@ interface AlVolumeState {
 
 interface AlVolumeDefinition extends ComponentDefinition {
   addListeners(): void;
-  removeListeners(): void;
-  tickFunction(): void;
-  handleStack(stack: any): void;
   bindMethods(): void;
-  renderBufferScene(): void;
-  onInteractionFinished(): void;
   createVolumePlane(): void;
+  handleStack(stack: any): void;
   onInteraction(event: CustomEvent): void;
+  onInteractionFinished(event: CustomEvent): void;
+  removeListeners(): void;
+  renderBufferScene(): void;
+  tickFunction(): void;
 }
 
 export class AlVolumeComponent implements AframeRegistryEntry {
@@ -126,12 +126,13 @@ export class AlVolumeComponent implements AframeRegistryEntry {
         this.renderBufferScene();
       },
 
-      onInteractionFinished(): void {
+      onInteractionFinished(event: CustomEvent): void {
+        this.state.localCamera = event.detail.cameraState;
         this.state.stackhelper.steps = this.data.volumeSteps;
         this.renderBufferScene();
       },
 
-      createVolumePlane() {
+      createVolumePlane(): void {
         let state = this.state as AlVolumeState;
 
         let refGeometry: THREE.Geometry = (state.stackhelper as any).mesh.geometry.clone();
@@ -182,6 +183,8 @@ export class AlVolumeComponent implements AframeRegistryEntry {
       },
 
       renderBufferScene(): void {
+        console.log("local camera", this.state.localCamera);
+        console.log("display mode", this.data.displayMode);
         if (
           this.state.localCamera &&
           this.data.displayMode === DisplayMode.VOLUME
@@ -290,6 +293,10 @@ export class AlVolumeComponent implements AframeRegistryEntry {
           this.removeListeners();
           this.handleStack(state.stack);
           this.addListeners();
+
+          if (this.data.displayMode === DisplayMode.VOLUME) {
+            this.renderBufferScene();
+          }
         }
       },
 
