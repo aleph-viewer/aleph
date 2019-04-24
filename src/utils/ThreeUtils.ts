@@ -81,7 +81,6 @@ export class ThreeUtils {
     const p0 = start;
     const p1 = end;
     let theta = p0.angleTo(p1);
-    // todo: if NaN the resulting null target causes the animations to fail (I think)
     if (theta) {
       theta = THREE.Math.clamp(theta, -0.99, 0.99);
 

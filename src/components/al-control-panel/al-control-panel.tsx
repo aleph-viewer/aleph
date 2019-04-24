@@ -9,7 +9,7 @@ import { Orientation } from "../../enums/Orientation";
 })
 export class AlControlPanel {
   private _lastStackOrientationIndex: number;
-  private _debounceRangeMS: number = 250;
+  //private _debounceRangeMS: number = 250;
 
   @Event() boundingBoxVisibleChanged: EventEmitter;
   @Event() displayModeChanged: EventEmitter;
@@ -432,10 +432,10 @@ export class AlControlPanel {
                 min={stepsMin}
                 max={stepsMax}
                 value={steps}
-                debounce={this._debounceRangeMS}
                 onIonChange={e =>
                   this._volumeSteps((e.srcElement as any).value)
                 }
+                onMouseUp={e => this._volumeSteps((e.srcElement as any).value)}
               />
             </ion-item>
             {/* <ion-item>
@@ -454,11 +454,20 @@ export class AlControlPanel {
                 slot="end"
                 min={windowCenterMin}
                 max={windowCenterMax}
-                value={windowCenter}
-                debounce={this._debounceRangeMS}
-                onIonChange={e =>
-                  this._volumeWindowCenter((e.srcElement as any).value)
-                }
+                value={this._reverseNumber(
+                  windowCenter,
+                  windowCenterMin,
+                  windowCenterMax
+                )}
+                onIonChange={e => {
+                  this._volumeWindowCenter(
+                    this._reverseNumber(
+                      e.detail.value,
+                      windowCenterMin,
+                      windowCenterMax
+                    )
+                  );
+                }}
               />
             </ion-item>
             <ion-item>
@@ -467,10 +476,19 @@ export class AlControlPanel {
                 slot="end"
                 min={windowWidthMin}
                 max={windowWidthMax}
-                value={windowWidth}
-                debounce={this._debounceRangeMS}
+                value={this._reverseNumber(
+                  windowWidth,
+                  windowWidthMin,
+                  windowWidthMax
+                )}
                 onIonChange={e =>
-                  this._volumeWindowWidth((e.srcElement as any).value)
+                  this._volumeWindowWidth(
+                    this._reverseNumber(
+                      e.detail.value,
+                      windowWidthMin,
+                      windowWidthMax
+                    )
+                  )
                 }
               />
             </ion-item>
