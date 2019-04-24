@@ -6,18 +6,18 @@ import { ComponentDefinition } from "aframe";
 import { AlOrbitControlEvents } from "..";
 
 interface AlVolumeState {
+  bufferScene: THREE.Scene;
+  bufferSceneCamera: AlCamera;
+  bufferScenePlaneGeometry: THREE.PlaneGeometry;
+  bufferScenePlaneMaterial: THREE.MeshBasicMaterial;
+  bufferScenePlaneMesh: THREE.Mesh;
+  bufferSceneTexture: THREE.WebGLRenderTarget;
+  bufferSceneTextureHeight: number;
+  bufferSceneTextureWidth: number;
+  lutHelper: AMI.LutHelper;
   stack: any;
   stackhelper: AMI.StackHelper | AMI.VolumeRenderHelper;
-  lutHelper: AMI.LutHelper;
-  bufferScene: THREE.Scene;
-  bufferTexture: THREE.WebGLRenderTarget;
-  planeGeometry: THREE.PlaneGeometry;
-  planeMaterial: THREE.MeshBasicMaterial;
-  planeMesh: THREE.Mesh;
   zoom: number;
-  textureWidth: number;
-  textureHeight: number;
-  localCamera: AlCamera;
 }
 
 interface AlVolumeDefinition extends ComponentDefinition {
@@ -106,13 +106,13 @@ export class AlVolumeComponent implements AframeRegistryEntry {
         this.loader = new VolumetricLoader();
         this.state = {
           bufferScene: new THREE.Scene(),
-          textureHeight: this.el.sceneEl.canvas.clientHeight,
-          textureWidth: this.el.sceneEl.canvas.clientWidth
+          bufferSceneTextureHeight: this.el.sceneEl.canvas.clientHeight,
+          bufferSceneTextureWidth: this.el.sceneEl.canvas.clientWidth
         } as AlVolumeState;
 
-        this.state.bufferTexture = new THREE.WebGLRenderTarget(
-          this.state.textureWidth,
-          this.state.textureHeight,
+        this.state.bufferSceneTexture = new THREE.WebGLRenderTarget(
+          this.state.bufferSceneTextureWidth,
+          this.state.bufferSceneTextureHeight,
           { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter }
         );
 
@@ -121,13 +121,13 @@ export class AlVolumeComponent implements AframeRegistryEntry {
       },
 
       onInteraction(event: CustomEvent): void {
-        this.state.localCamera = event.detail.cameraState;
+        this.state.bufferSceneCamera = event.detail.cameraState;
         this.state.stackhelper.steps = 2;
         this.renderBufferScene();
       },
 
       onInteractionFinished(event: CustomEvent): void {
-        this.state.localCamera = event.detail.cameraState;
+        this.state.bufferSceneCamera = event.detail.cameraState;
         this.state.stackhelper.steps = this.data.volumeSteps;
         this.renderBufferScene();
       },
@@ -141,39 +141,44 @@ export class AlVolumeComponent implements AframeRegistryEntry {
         state.zoom = refGeometry.boundingSphere.radius * 5;
         let center = this.state.stackhelper.stack.worldCenter();
 
-        let planeGeometry = new THREE.PlaneGeometry(
-          state.textureWidth,
-          state.textureHeight
+        let bufferScenePlaneGeometry = new THREE.PlaneGeometry(
+          state.bufferSceneTextureWidth,
+          state.bufferSceneTextureHeight
         );
-        state.planeGeometry = planeGeometry;
+        state.bufferScenePlaneGeometry = bufferScenePlaneGeometry;
 
-        let planeMaterial = new THREE.MeshBasicMaterial({
-          map: state.bufferTexture.texture
+        let bufferScenePlaneMaterial = new THREE.MeshBasicMaterial({
+          map: state.bufferSceneTexture.texture
         });
-        state.planeMaterial = planeMaterial;
+        state.bufferScenePlaneMaterial = bufferScenePlaneMaterial;
 
-        let planeMesh = new THREE.Mesh(planeGeometry, planeMaterial);
-        planeMesh.position.copy(center);
-        state.planeMesh = planeMesh;
+        let bufferScenePlaneMesh = new THREE.Mesh(
+          bufferScenePlaneGeometry,
+          bufferScenePlaneMaterial
+        );
+        bufferScenePlaneMesh.position.copy(center);
+        state.bufferScenePlaneMesh = bufferScenePlaneMesh;
 
-        this.el.setObject3D("mesh", planeMesh);
+        this.el.setObject3D("mesh", bufferScenePlaneMesh);
       },
 
       rendererResize(): void {
         let state = this.state as AlVolumeState;
 
         let needsResize =
-          state.textureWidth !== this.el.sceneEl.canvas.clientWidth ||
-          state.textureHeight !== this.el.sceneEl.canvas.clientHeight;
+          state.bufferSceneTextureWidth !==
+            this.el.sceneEl.canvas.clientWidth ||
+          state.bufferSceneTextureHeight !==
+            this.el.sceneEl.canvas.clientHeight;
 
         if (needsResize && this.data.displayMode === DisplayMode.VOLUME) {
-          state.textureWidth = this.el.sceneEl.canvas.clientWidth;
-          state.textureHeight = this.el.sceneEl.canvas.clientHeight;
+          state.bufferSceneTextureWidth = this.el.sceneEl.canvas.clientWidth;
+          state.bufferSceneTextureHeight = this.el.sceneEl.canvas.clientHeight;
           console.log("renderer resized");
 
-          this.state.bufferTexture = new THREE.WebGLRenderTarget(
-            state.textureWidth,
-            state.textureHeight,
+          this.state.bufferSceneTexture = new THREE.WebGLRenderTarget(
+            state.bufferSceneTextureWidth,
+            state.bufferSceneTextureHeight,
             { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter }
           );
 
@@ -183,10 +188,10 @@ export class AlVolumeComponent implements AframeRegistryEntry {
       },
 
       renderBufferScene(): void {
-        console.log("local camera", this.state.localCamera);
+        console.log("local camera", this.state.bufferSceneCamera);
         console.log("display mode", this.data.displayMode);
         if (
-          this.state.localCamera &&
+          this.state.bufferSceneCamera &&
           this.data.displayMode === DisplayMode.VOLUME
         ) {
           let state = this.state as AlVolumeState;
@@ -195,7 +200,7 @@ export class AlVolumeComponent implements AframeRegistryEntry {
             "render-buffer steps: ",
             (state.stackhelper as any).steps
           );
-          let camState: AlCamera = state.localCamera;
+          let camState: AlCamera = state.bufferSceneCamera;
 
           let targ = camState.target.clone();
           let eye = camState.position.clone();
@@ -223,7 +228,7 @@ export class AlVolumeComponent implements AframeRegistryEntry {
           this.el.sceneEl.renderer.render(
             state.bufferScene,
             dumCam,
-            state.bufferTexture
+            state.bufferSceneTexture
           );
         }
       },
@@ -311,7 +316,9 @@ export class AlVolumeComponent implements AframeRegistryEntry {
             break;
           }
           case DisplayMode.VOLUME: {
-            this.state.planeMesh.lookAt(this.el.sceneEl.camera.position);
+            this.state.bufferScenePlaneMesh.lookAt(
+              this.el.sceneEl.camera.position
+            );
             break;
           }
         }
@@ -325,16 +332,16 @@ export class AlVolumeComponent implements AframeRegistryEntry {
         this.el.removeObject3D("mesh");
         this.removeListeners();
 
-        if (this.state.planeMesh) {
-          this.state.planeMesh.remove();
+        if (this.state.bufferScenePlaneMesh) {
+          this.state.bufferScenePlaneMesh.remove();
         }
 
-        if (this.state.planeMaterial) {
-          this.state.planeMaterial.dispose();
+        if (this.state.bufferScenePlaneMaterial) {
+          this.state.bufferScenePlaneMaterial.dispose();
         }
 
-        if (this.state.planeGeometry) {
-          this.state.planeGeometry.dispose();
+        if (this.state.bufferScenePlaneGeometry) {
+          this.state.bufferScenePlaneGeometry.dispose();
         }
       }
     } as AlVolumeDefinition;
