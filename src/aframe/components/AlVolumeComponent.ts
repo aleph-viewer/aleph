@@ -4,7 +4,7 @@ import { Constants } from "../../Constants";
 import { DisplayMode } from "../../enums";
 import { ComponentDefinition } from "aframe";
 import { AlOrbitControlEvents } from "..";
-import { EventUtils } from "../../utils";
+import { EventUtils, GetUtils } from "../../utils";
 
 interface AlVolumeState {
   bufferScene: THREE.Scene;
