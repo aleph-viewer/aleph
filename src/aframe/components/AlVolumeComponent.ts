@@ -30,7 +30,7 @@ interface AlVolumeDefinition extends ComponentDefinition {
   renderBuffer(): void;
   renderLow(event: CustomEvent): void;
   renderFull(): void;
-  createMesh(): void;
+  createVolumePlane(): void;
   updateCamera(event: CustomEvent): void;
 }
 
@@ -60,7 +60,7 @@ export class AlVolumeComponent implements AframeRegistryEntry {
         this.addListeners = this.addListeners.bind(this);
         this.renderLow = this.renderLow.bind(this);
         this.renderFull = this.renderFull.bind(this);
-        this.createMesh = this.createMesh.bind(this);
+        this.createVolumePlane = this.createVolumePlane.bind(this);
         this.updateCamera = this.updateCamera.bind(this);
       },
 
@@ -137,7 +137,7 @@ export class AlVolumeComponent implements AframeRegistryEntry {
         this.state.localCamera = event.detail.cameraState;
       },
 
-      createMesh() {
+      createVolumePlane() {
         let state = this.state as AlVolumeState;
 
         let refGeometry: THREE.Geometry = (state.stackhelper as any).mesh.geometry.clone();
@@ -182,7 +182,7 @@ export class AlVolumeComponent implements AframeRegistryEntry {
             { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter }
           );
 
-          this.createMesh();
+          this.createVolumePlane();
           this.renderBuffer();
         }
       },
@@ -284,7 +284,7 @@ export class AlVolumeComponent implements AframeRegistryEntry {
         // Else place in buffer scene
         else {
           this.state.bufferScene.add(this.state.stackhelper);
-          this.createMesh();
+          this.createVolumePlane();
         }
 
         el.sceneEl.emit(AlVolumeEvents.LOADED, state.stackhelper, false);
