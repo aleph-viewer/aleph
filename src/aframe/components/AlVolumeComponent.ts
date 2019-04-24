@@ -188,8 +188,6 @@ export class AlVolumeComponent implements AframeRegistryEntry {
       },
 
       renderBufferScene(): void {
-        console.log("local camera", this.state.bufferSceneCamera);
-        console.log("display mode", this.data.displayMode);
         if (
           this.state.bufferSceneCamera &&
           this.data.displayMode === DisplayMode.VOLUME
