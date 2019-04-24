@@ -568,7 +568,10 @@ export class Aleph {
           position = this._targetEntity.object3D.position.clone();
           break;
         }
-        case DisplayMode.VOLUME:
+        case DisplayMode.VOLUME: {
+          position = new THREE.Vector3(0, 0, 0);
+          break;
+        }
         case DisplayMode.SLICES: {
           position = this._targetEntity.object3D.position
             .clone()
@@ -865,9 +868,12 @@ export class Aleph {
     return (
       <a-scene
         embedded
-        renderer={`colorManagement: true; sortObjects: true; webgl2: ${
-          this._isWebGl2
-        };`}
+        renderer={`
+          colorManagement: true; 
+          sortObjects: true;
+          webgl2: ${this._isWebGl2};
+          antialias: true;
+        `}
         vr-mode-ui="enabled: false"
         ref={el => (this._scene = el)}
       >
