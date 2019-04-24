@@ -4,6 +4,7 @@ import { Constants } from "../../Constants";
 import { DisplayMode } from "../../enums";
 import { ComponentDefinition } from "aframe";
 import { AlOrbitControlEvents } from "..";
+import { EventUtils } from "../../utils";
 
 interface AlVolumeState {
   bufferScene: THREE.Scene;
@@ -118,6 +119,11 @@ export class AlVolumeComponent implements AframeRegistryEntry {
 
         this.bindMethods();
         this.addListeners();
+
+        this.debouncedRenderBufferScene = EventUtils.debounce(
+          this.renderBufferScene,
+          Constants.minFrameMS
+        ).bind(this);
       },
 
       onInteraction(event: CustomEvent): void {
@@ -129,7 +135,7 @@ export class AlVolumeComponent implements AframeRegistryEntry {
       onInteractionFinished(event: CustomEvent): void {
         this.state.bufferSceneCamera = event.detail.cameraState;
         this.state.stackhelper.steps = this.data.volumeSteps;
-        this.renderBufferScene();
+        this.debouncedRenderBufferScene();
       },
 
       createVolumePlane(): void {
