@@ -4,6 +4,7 @@ import { Constants } from "../../Constants";
 import { DisplayMode } from "../../enums";
 import { ComponentDefinition } from "aframe";
 import { AlOrbitControlEvents } from "..";
+import { GetUtils } from "../../utils";
 
 interface AlVolumeState {
   bufferScene: THREE.Scene;
@@ -138,8 +139,8 @@ export class AlVolumeComponent implements AframeRegistryEntry {
         let refGeometry: THREE.Geometry = (state.stackhelper as any).mesh.geometry.clone();
         refGeometry.computeBoundingBox();
         refGeometry.computeBoundingSphere();
-        state.zoom = refGeometry.boundingSphere.radius * 5;
-        let center = this.state.stackhelper.stack.worldCenter();
+        state.zoom = refGeometry.boundingSphere.radius * 4.75;
+        // let center = this.state.stackhelper.stack.worldCenter();
 
         let bufferScenePlaneGeometry = new THREE.PlaneGeometry(
           state.bufferSceneTextureWidth,
@@ -150,13 +151,14 @@ export class AlVolumeComponent implements AframeRegistryEntry {
         let bufferScenePlaneMaterial = new THREE.MeshBasicMaterial({
           map: state.bufferSceneTexture.texture
         });
+        //let bufferScenePlaneMaterial = new THREE.MeshBasicMaterial();
         state.bufferScenePlaneMaterial = bufferScenePlaneMaterial;
 
         let bufferScenePlaneMesh = new THREE.Mesh(
           bufferScenePlaneGeometry,
           bufferScenePlaneMaterial
         );
-        bufferScenePlaneMesh.position.copy(center);
+        // bufferScenePlaneMesh.position.copy(center);
         state.bufferScenePlaneMesh = bufferScenePlaneMesh;
 
         this.el.setObject3D("mesh", bufferScenePlaneMesh);
@@ -193,39 +195,39 @@ export class AlVolumeComponent implements AframeRegistryEntry {
           this.data.displayMode === DisplayMode.VOLUME
         ) {
           let state = this.state as AlVolumeState;
-
-          console.log(
-            "render-buffer steps: ",
-            (state.stackhelper as any).steps
+          let cameraState: AlCamera = state.bufferSceneCamera;
+          let initialState: AlCamera = GetUtils.getCameraStateFromMesh(
+            this.state.stackhelper.mesh
           );
-          let camState: AlCamera = state.bufferSceneCamera;
 
-          let targ = camState.target.clone();
-          let eye = camState.position.clone();
+          let inverseInitialTarget: THREE.Vector3 = initialState.target.negate();
 
-          // Target position is offset from (0, 0, 0), where the stackhelper
-          // naturally falls. We need to move the dummy camera back in line with (0, 0, 0)
-          let dumPos = eye
+          let bufferCamera: THREE.PerspectiveCamera = this.el.sceneEl.camera.clone();
+          let panAdjustedPosition = cameraState.position
             .clone()
-            // Offsets by -targ
-            .sub(targ.clone());
-
-          let dumCam: THREE.PerspectiveCamera = this.el.sceneEl.camera.clone();
+            .sub(cameraState.target.clone())
+            .sub(inverseInitialTarget.clone());
+          bufferCamera.position.copy(panAdjustedPosition);
 
           // Dir S->E === End - Start
-          let dir = this.state.stackhelper.stack
-            .worldCenter()
-            .sub(dumPos.clone())
+          // Start at the origin, and move [zoom] intervals of [dir] away from the target towards the camera
+          let dir = new THREE.Vector3(0, 0, 0)
+            .sub(panAdjustedPosition.clone())
             .normalize()
             .negate();
-
-          // Start at the target, and move [zoom] intervals of [dir] away from the target towards the camera
           let newPos = dir.clone().multiplyScalar(state.zoom);
-          dumCam.position.copy(newPos);
+          bufferCamera.position.copy(newPos);
+
+          // console.log(
+          //   "target-result: ",
+          //   ThreeUtils.vector3ToString(
+          //     initialState.target.clone().sub(inverseInitialTarget)
+          //   )
+          // );
 
           this.el.sceneEl.renderer.render(
             state.bufferScene,
-            dumCam,
+            bufferCamera,
             state.bufferSceneTexture
           );
         }
