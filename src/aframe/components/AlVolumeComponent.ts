@@ -265,13 +265,17 @@ export class AlVolumeComponent implements AframeRegistryEntry {
           el.removeObject3D("mesh");
         }
 
-        // If not volumetric, display as normal
-        if (this.data.displayMode !== DisplayMode.VOLUME) {
+        // If slices mode, set stackhelper as the mesh
+        if (this.data.displayMode === DisplayMode.SLICES) {
           el.setObject3D("mesh", this.state.stackhelper);
-        }
-        // Else place in buffer scene
-        else {
+        } else {
+          // Else place it in the buffer scene
+          if (this.state.bufferScene.children.length) {
+            this.state.bufferScene.remove(this.state.bufferScene.children[0]);
+          }
+
           this.state.bufferScene.add(this.state.stackhelper);
+
           this.createVolumePlane();
         }
 
