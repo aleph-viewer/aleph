@@ -301,13 +301,19 @@ export class AlVolumeComponent implements AframeRegistryEntry {
       },
 
       tickFunction(): void {
-        if (
-          this.state.stackhelper &&
-          this.data.displayMode !== DisplayMode.VOLUME
-        ) {
-          this.el.setObject3D("mesh", this.state.stackhelper);
-        } else if (this.data.displayMode === DisplayMode.VOLUME) {
-          this.state.planeMesh.lookAt(this.el.sceneEl.camera.position);
+        if (!this.state.stackhelper) {
+          return;
+        }
+
+        switch (this.data.displayMode) {
+          case DisplayMode.SLICES: {
+            this.el.setObject3D("mesh", this.state.stackhelper);
+            break;
+          }
+          case DisplayMode.VOLUME: {
+            this.state.planeMesh.lookAt(this.el.sceneEl.camera.position);
+            break;
+          }
         }
       },
 
