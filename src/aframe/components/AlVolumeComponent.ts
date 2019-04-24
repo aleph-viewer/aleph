@@ -218,12 +218,24 @@ export class AlVolumeComponent implements AframeRegistryEntry {
             .clone()
             .sub(cameraState.target.clone())
             .sub(inverseInitialTarget.clone());
-          bufferCamera.position.copy(panAdjustedPosition);
+          //bufferCamera.position.copy(panAdjustedPosition);
           // =================================================================
 
           // Adjust bufferCamera position to prevent drift while zooming
           // =================================================================
-          //let bufferSceneOrigin = 
+          let start: THREE.Vector3 = this.state.stackhelper.stack.worldCenter();
+          let end = panAdjustedPosition.clone();
+          let directionToStack = end
+            .clone()
+            .sub(start.clone())
+            .normalize();
+
+          let fixedPosition: THREE.Vector3 = start
+            .clone()
+            .add(directionToStack.multiplyScalar(state.zoom));
+          bufferCamera.position.copy(fixedPosition);
+
+          // let bufferSceneOrigin =
           // let cameraState: AlCamera = state.bufferSceneCamera;
           // let initialState: AlCamera = GetUtils.getCameraStateFromMesh(
           //   this.state.stackhelper.mesh
@@ -247,6 +259,17 @@ export class AlVolumeComponent implements AframeRegistryEntry {
           );
           sphereM.position.copy(this.state.stackhelper.position);
           state.bufferScene.add(sphereM);
+          // =================================================================
+
+          // Sphere showing center of the stackhelper in world space
+          // =================================================================
+          let sphere2 = new THREE.SphereGeometry(3, 8, 8);
+          let sphereM2 = new THREE.Mesh(
+            sphere2,
+            new THREE.MeshBasicMaterial({ color: new THREE.Color(0x00ff00) })
+          );
+          sphereM.position.copy(this.state.stackhelper.stack.worldCenter());
+          state.bufferScene.add(sphereM2);
           // =================================================================
 
           this.el.sceneEl.renderer.render(
