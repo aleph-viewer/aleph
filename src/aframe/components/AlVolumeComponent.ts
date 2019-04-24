@@ -139,34 +139,42 @@ export class AlVolumeComponent implements AframeRegistryEntry {
       },
 
       createVolumePlane(): void {
-        let state = this.state as AlVolumeState;
+        let targetEntity = this.el.sceneEl.querySelector("#target-entity");
 
-        let refGeometry: THREE.Geometry = (state.stackhelper as any).mesh.geometry.clone();
-        refGeometry.computeBoundingBox();
-        refGeometry.computeBoundingSphere();
-        state.zoom = refGeometry.boundingSphere.radius * 4.75;
-        // let center = this.state.stackhelper.stack.worldCenter();
+        if (targetEntity) {
+          let state = this.state as AlVolumeState;
 
-        let bufferScenePlaneGeometry = new THREE.PlaneGeometry(
-          state.bufferSceneTextureWidth,
-          state.bufferSceneTextureHeight
-        );
-        state.bufferScenePlaneGeometry = bufferScenePlaneGeometry;
+          let refGeometry: THREE.Geometry = (state.stackhelper as any).mesh.geometry.clone();
+          refGeometry.computeBoundingBox();
+          refGeometry.computeBoundingSphere();
 
-        let bufferScenePlaneMaterial = new THREE.MeshBasicMaterial({
-          map: state.bufferSceneTexture.texture
-        });
-        //let bufferScenePlaneMaterial = new THREE.MeshBasicMaterial();
-        state.bufferScenePlaneMaterial = bufferScenePlaneMaterial;
+          state.zoom = refGeometry.boundingSphere.radius * 4.870046858478149;
 
-        let bufferScenePlaneMesh = new THREE.Mesh(
-          bufferScenePlaneGeometry,
-          bufferScenePlaneMaterial
-        );
-        // bufferScenePlaneMesh.position.copy(center);
-        state.bufferScenePlaneMesh = bufferScenePlaneMesh;
+          let center = targetEntity.object3D.position
+            .clone()
+            .add(GetUtils.getGeometryCenter(refGeometry));
 
-        this.el.setObject3D("mesh", bufferScenePlaneMesh);
+          let bufferScenePlaneGeometry = new THREE.PlaneGeometry(
+            state.bufferSceneTextureWidth,
+            state.bufferSceneTextureHeight
+          );
+          state.bufferScenePlaneGeometry = bufferScenePlaneGeometry;
+
+          let bufferScenePlaneMaterial = new THREE.MeshBasicMaterial({
+            map: state.bufferSceneTexture.texture
+          });
+          // let bufferScenePlaneMaterial = new THREE.MeshBasicMaterial();
+          state.bufferScenePlaneMaterial = bufferScenePlaneMaterial;
+
+          let bufferScenePlaneMesh = new THREE.Mesh(
+            bufferScenePlaneGeometry,
+            bufferScenePlaneMaterial
+          );
+          bufferScenePlaneMesh.position.copy(center);
+          state.bufferScenePlaneMesh = bufferScenePlaneMesh;
+
+          this.el.setObject3D("mesh", bufferScenePlaneMesh);
+        }
       },
 
       rendererResize(): void {
@@ -200,6 +208,10 @@ export class AlVolumeComponent implements AframeRegistryEntry {
           this.data.displayMode === DisplayMode.VOLUME
         ) {
           let state = this.state as AlVolumeState;
+          let bufferCamera: THREE.PerspectiveCamera = this.el.sceneEl.camera.clone();
+
+          // Adjust bufferCamera position to prevent drift while panning
+          // =================================================================
           let cameraState: AlCamera = state.bufferSceneCamera;
           let initialState: AlCamera = GetUtils.getCameraStateFromMesh(
             this.state.stackhelper.mesh
@@ -207,28 +219,48 @@ export class AlVolumeComponent implements AframeRegistryEntry {
 
           let inverseInitialTarget: THREE.Vector3 = initialState.target.negate();
 
-          let bufferCamera: THREE.PerspectiveCamera = this.el.sceneEl.camera.clone();
           let panAdjustedPosition = cameraState.position
             .clone()
             .sub(cameraState.target.clone())
             .sub(inverseInitialTarget.clone());
-          bufferCamera.position.copy(panAdjustedPosition);
+          // =================================================================
 
-          // Dir S->E === End - Start
-          // Start at the origin, and move [zoom] intervals of [dir] away from the target towards the camera
-          let dir = new THREE.Vector3(0, 0, 0)
-            .sub(panAdjustedPosition.clone())
-            .normalize()
-            .negate();
-          let newPos = dir.clone().multiplyScalar(state.zoom);
-          bufferCamera.position.copy(newPos);
+          // Adjust bufferCamera position to prevent drift while zooming
+          // =================================================================
+          let start: THREE.Vector3 = this.state.stackhelper.stack.worldCenter();
+          let end = panAdjustedPosition.clone();
+          let directionToStack = end
+            .clone()
+            .sub(start.clone())
+            .normalize();
 
-          // console.log(
-          //   "target-result: ",
-          //   ThreeUtils.vector3ToString(
-          //     initialState.target.clone().sub(inverseInitialTarget)
-          //   )
+          let fixedPosition: THREE.Vector3 = start
+            .clone()
+            .add(directionToStack.multiplyScalar(state.zoom));
+          bufferCamera.position.copy(fixedPosition);
+          // =================================================================
+
+          // Sphere showing position of the stackhelper in world space
+          // =================================================================
+          // let sphere = new THREE.SphereGeometry(3, 8, 8);
+          // let sphereM = new THREE.Mesh(
+          //   sphere,
+          //   new THREE.MeshBasicMaterial({ color: new THREE.Color(0xff0000) })
           // );
+          // sphereM.position.copy(this.state.stackhelper.position);
+          // state.bufferScene.add(sphereM);
+          // =================================================================
+
+          // Sphere showing center of the stackhelper in world space
+          // =================================================================
+          // let sphere2 = new THREE.SphereGeometry(3, 8, 8);
+          // let sphereM2 = new THREE.Mesh(
+          //   sphere2,
+          //   new THREE.MeshBasicMaterial({ color: new THREE.Color(0x00ff00) })
+          // );
+          // sphereM.position.copy(this.state.stackhelper.stack.worldCenter());
+          // state.bufferScene.add(sphereM2);
+          // =================================================================
 
           this.el.sceneEl.renderer.render(
             state.bufferScene,

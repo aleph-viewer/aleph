@@ -568,10 +568,7 @@ export class Aleph {
           position = this._targetEntity.object3D.position.clone();
           break;
         }
-        case DisplayMode.VOLUME: {
-          position = new THREE.Vector3(0, 0, 0);
-          break;
-        }
+        case DisplayMode.VOLUME:
         case DisplayMode.SLICES: {
           position = this._targetEntity.object3D.position
             .clone()
