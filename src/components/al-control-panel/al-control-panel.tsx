@@ -432,10 +432,7 @@ export class AlControlPanel {
                 min={stepsMin}
                 max={stepsMax}
                 value={steps}
-                onIonChange={e =>
-                  this._volumeSteps((e.srcElement as any).value)
-                }
-                onMouseUp={e => this._volumeSteps((e.srcElement as any).value)}
+                onIonChange={e => this._volumeSteps(e.detail.value)}
               />
             </ion-item>
             {/* <ion-item>
