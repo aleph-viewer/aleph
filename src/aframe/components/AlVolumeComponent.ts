@@ -218,7 +218,6 @@ export class AlVolumeComponent implements AframeRegistryEntry {
             .clone()
             .sub(cameraState.target.clone())
             .sub(inverseInitialTarget.clone());
-          //bufferCamera.position.copy(panAdjustedPosition);
           // =================================================================
 
           // Adjust bufferCamera position to prevent drift while zooming
@@ -234,42 +233,28 @@ export class AlVolumeComponent implements AframeRegistryEntry {
             .clone()
             .add(directionToStack.multiplyScalar(state.zoom));
           bufferCamera.position.copy(fixedPosition);
-
-          // let bufferSceneOrigin =
-          // let cameraState: AlCamera = state.bufferSceneCamera;
-          // let initialState: AlCamera = GetUtils.getCameraStateFromMesh(
-          //   this.state.stackhelper.mesh
-          // );
-
-          // let inverseInitialTarget: THREE.Vector3 = initialState.target.negate();
-
-          // let panAdjustedPosition = cameraState.position
-          //   .clone()
-          //   .sub(cameraState.target.clone())
-          //   .sub(inverseInitialTarget.clone());
-          // bufferCamera.position.copy(panAdjustedPosition);
           // =================================================================
 
           // Sphere showing position of the stackhelper in world space
           // =================================================================
-          let sphere = new THREE.SphereGeometry(3, 8, 8);
-          let sphereM = new THREE.Mesh(
-            sphere,
-            new THREE.MeshBasicMaterial({ color: new THREE.Color(0xff0000) })
-          );
-          sphereM.position.copy(this.state.stackhelper.position);
-          state.bufferScene.add(sphereM);
+          // let sphere = new THREE.SphereGeometry(3, 8, 8);
+          // let sphereM = new THREE.Mesh(
+          //   sphere,
+          //   new THREE.MeshBasicMaterial({ color: new THREE.Color(0xff0000) })
+          // );
+          // sphereM.position.copy(this.state.stackhelper.position);
+          // state.bufferScene.add(sphereM);
           // =================================================================
 
           // Sphere showing center of the stackhelper in world space
           // =================================================================
-          let sphere2 = new THREE.SphereGeometry(3, 8, 8);
-          let sphereM2 = new THREE.Mesh(
-            sphere2,
-            new THREE.MeshBasicMaterial({ color: new THREE.Color(0x00ff00) })
-          );
-          sphereM.position.copy(this.state.stackhelper.stack.worldCenter());
-          state.bufferScene.add(sphereM2);
+          // let sphere2 = new THREE.SphereGeometry(3, 8, 8);
+          // let sphereM2 = new THREE.Mesh(
+          //   sphere2,
+          //   new THREE.MeshBasicMaterial({ color: new THREE.Color(0x00ff00) })
+          // );
+          // sphereM.position.copy(this.state.stackhelper.stack.worldCenter());
+          // state.bufferScene.add(sphereM2);
           // =================================================================
 
           this.el.sceneEl.renderer.render(
