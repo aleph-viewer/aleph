@@ -1,10 +1,14 @@
-# א
+<p align="center">
+<h1 style="fontsize: 5rem">
+א
+</h1>
+</p>
 
-Aleph is a 3D object viewer and annotation tool made with [A-Frame](https://aframe.io) and [Stenciljs](http://stenciljs.com).
+**Aleph** is a 3D object viewer and annotation tool made with [A-Frame](https://aframe.io) and [Stenciljs](http://stenciljs.com).
 
-Components
+## Components
 
-  - [aleph](/src/components/aleph/readme.md)
+  - [uv-aleph](/src/components/aleph/readme.md)
   - [al-angle-editor](/src/components/al-angle-editor/readme.md)
   - [al-console](/src/components/al-console/readme.md)
   - [al-control-panel](/src/components/al-control-panel/readme.md)
@@ -13,3 +17,9 @@ Components
   - [al-node-list](/src/components/al-node-list/readme.md)
   - [al-tabs](/src/components/al-tabs/readme.md)
   - [al-url-picker](/src/components/al-url-picker/readme.md)
+
+## Examples
+
+/src/index.html
+
+Will add examples to codesandbox.io when v1 of stenciljs is released
