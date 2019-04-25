@@ -20,6 +20,4 @@
 
 ## Examples
 
-/src/index.html
-
-Will add examples to codesandbox.io when v1 of stenciljs is released
+https://aleph-demo.netlify.com
