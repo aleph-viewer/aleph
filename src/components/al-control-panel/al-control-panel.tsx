@@ -44,9 +44,9 @@ export class AlControlPanel {
   @Prop({ mutable: true }) volumeWindowCenter: number;
   @Prop({ mutable: true }) volumeWindowWidth: number;
 
-  private _boundingBoxEnabled(visible: boolean) {
-    this.boundingBoxEnabled = visible;
-    this.boundingBoxEnabledChanged.emit(visible);
+  private _boundingBoxEnabled(enabled: boolean) {
+    this.boundingBoxEnabled = enabled;
+    this.boundingBoxEnabledChanged.emit(enabled);
   }
 
   private _displayMode(displayMode: DisplayMode) {
@@ -99,7 +99,7 @@ export class AlControlPanel {
       return (
         <ion-item
           style={{
-            visibility: "var(--display-mode-visible, visible)"
+            display: "var(--display-mode-display, block)"
           }}
         >
           <ion-icon name="eye" slot="start" />
@@ -134,7 +134,7 @@ export class AlControlPanel {
     return (
       <ion-item
         style={{
-          visibility: "var(--graph-enabled-visible, visible)"
+          display: "var(--graph-enabled-display, block)"
         }}
       >
         <ion-icon name="add-circle" slot="start" />
@@ -151,7 +151,7 @@ export class AlControlPanel {
     return (
       <ion-item
         style={{
-          visibility: "var(--bounding-box-enabled-visible, visible)"
+          display: "var(--bounding-box-enabled-display, block)"
         }}
       >
         <ion-icon name="cube" slot="start" />
@@ -263,7 +263,7 @@ export class AlControlPanel {
             {this.renderBoundingBoxEnabled()}
             <ion-item
               style={{
-                visibility: "var(--slices-index-visible, visible)"
+                display: "var(--slices-index-display, block)"
               }}
             >
               <ion-icon name="swap" slot="start" />
@@ -277,7 +277,7 @@ export class AlControlPanel {
             </ion-item>
             <ion-item
               style={{
-                visibility: "var(--slices-orientation-visible, visible)"
+                display: "var(--slices-orientation-display, block)"
               }}
             >
               <ion-icon name="compass" slot="start" />
@@ -310,7 +310,7 @@ export class AlControlPanel {
             </ion-item>
             <ion-item
               style={{
-                visibility: "var(--slices-window-center-visible, visible)"
+                display: "var(--slices-window-center-display, block)"
               }}
             >
               <ion-icon name="sunny" slot="start" />
@@ -336,7 +336,7 @@ export class AlControlPanel {
             </ion-item>
             <ion-item
               style={{
-                visibility: "var(--slices-window-width-visible, visible)"
+                display: "var(--slices-window-width-display, block)"
               }}
             >
               <ion-icon name="contrast" slot="start" />
@@ -415,7 +415,7 @@ export class AlControlPanel {
             {this.renderBoundingBoxEnabled()}
             <ion-item
               style={{
-                visibility: "var(--volume-steps-visible, visible)"
+                display: "var(--volume-steps-display, block)"
               }}
             >
               <ion-icon name="swap" slot="start" />
@@ -439,7 +439,7 @@ export class AlControlPanel {
               </ion-item> */}
             <ion-item
               style={{
-                visibility: "var(--volume-window-center-visible, visible)"
+                display: "var(--volume-window-center-display, block)"
               }}
             >
               <ion-icon name="sunny" slot="start" />
@@ -465,7 +465,7 @@ export class AlControlPanel {
             </ion-item>
             <ion-item
               style={{
-                visibility: "var(--volume-window-width-visible, visible)"
+                display: "var(--volume-window-width-display, block)"
               }}
             >
               <ion-icon name="contrast" slot="start" />

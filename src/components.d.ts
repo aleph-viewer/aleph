@@ -149,7 +149,6 @@ export namespace Components {
 
   interface UvAleph {
     'clearGraph': () => Promise<void>;
-    'debug': boolean;
     'deleteAngle': (angleId: string) => Promise<void>;
     'deleteEdge': (edgeId: string) => Promise<void>;
     'deleteNode': (nodeId: string) => Promise<void>;
@@ -159,7 +158,13 @@ export namespace Components {
     'resize': () => Promise<void>;
     'selectNode': (nodeId: string) => Promise<void>;
     'setBoundingBoxEnabled': (visible: boolean) => Promise<void>;
+    /**
+    * Sets the display mode
+    */
     'setDisplayMode': (displayMode: DisplayMode) => Promise<void>;
+    /**
+    * Creates or updates an edge in the graph
+    */
     'setEdge': (edge: [string, AlEdge]) => Promise<void>;
     'setGraph': (graph: AlGraph) => Promise<void>;
     'setGraphEnabled': (enabled: boolean) => Promise<void>;
@@ -174,10 +179,15 @@ export namespace Components {
     'width': string;
   }
   interface UvAlephAttributes extends StencilHTMLAttributes {
-    'debug'?: boolean;
     'dracoDecoderPath'?: string | null;
     'height'?: string;
+    /**
+    * Fires whenever the internal state changes passing an object describing the state.
+    */
     'onChanged'?: (event: CustomEvent) => void;
+    /**
+    * Fires when an object is loaded passing either the object or a stackhelper for volumetric data.
+    */
     'onLoaded'?: (event: CustomEvent) => void;
     'width'?: string;
   }

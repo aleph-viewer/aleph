@@ -4,6 +4,35 @@ import { ThreeUtils } from ".";
 import { Mesh } from "three";
 
 export class GetUtils {
+  static cssUnits: string[] = [
+    "%",
+    "ch",
+    "cm",
+    "em",
+    "ex",
+    "in",
+    "mm",
+    "pc",
+    "pt",
+    "px",
+    "rem",
+    "vh",
+    "vmax",
+    "vmin",
+    "vw"
+  ];
+
+  static addCssUnits(d: string): string {
+    if (
+      !this.cssUnits.some(u => {
+        return d.includes(u);
+      })
+    ) {
+      d += "px"; // default to px
+    }
+    return d;
+  }
+
   static getFileExtension(file: string): string {
     return file.substring(file.lastIndexOf(".") + 1);
   }

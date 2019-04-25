@@ -9,12 +9,9 @@
 
 | Property             | Attribute              | Description | Type                                                               | Default               |
 | -------------------- | ---------------------- | ----------- | ------------------------------------------------------------------ | --------------------- |
-| `boundingBoxEnabled` | `bounding-box-visible` |             | `boolean`                                                          | `false`               |
+| `boundingBoxEnabled` | `bounding-box-enabled` |             | `boolean`                                                          | `false`               |
 | `displayMode`        | `display-mode`         |             | `DisplayMode.MESH \| DisplayMode.SLICES \| DisplayMode.VOLUME`     | `DisplayMode.MESH`    |
 | `graphEnabled`       | `graph-enabled`        |             | `boolean`                                                          | `false`               |
-| `graphVisible`       | `graph-visible`        |             | `boolean`                                                          | `true`                |
-| `optionsEnabled`     | `options-enabled`      |             | `boolean`                                                          | `true`                |
-| `optionsVisible`     | `options-visible`      |             | `boolean`                                                          | `true`                |
 | `orientation`        | `orientation`          |             | `Orientation.AXIAL \| Orientation.CORONAL \| Orientation.SAGGITAL` | `Orientation.CORONAL` |
 | `slicesIndex`        | `slices-index`         |             | `number`                                                           | `undefined`           |
 | `slicesWindowCenter` | `slices-window-center` |             | `number`                                                           | `undefined`           |
@@ -32,7 +29,6 @@
 | `boundingBoxEnabledChanged` |             | `CustomEvent<void>` |
 | `displayModeChanged`        |             | `CustomEvent<void>` |
 | `graphEnabledChanged`       |             | `CustomEvent<void>` |
-| `optionsEnabledChanged`     |             | `CustomEvent<void>` |
 | `orientationChanged`        |             | `CustomEvent<void>` |
 | `slicesIndexChanged`        |             | `CustomEvent<void>` |
 | `slicesWindowCenterChanged` |             | `CustomEvent<void>` |
@@ -40,6 +36,22 @@
 | `volumeStepsChanged`        |             | `CustomEvent<void>` |
 | `volumeWindowCenterChanged` |             | `CustomEvent<void>` |
 | `volumeWindowWidthChanged`  |             | `CustomEvent<void>` |
+
+
+## CSS Custom Properties
+
+| Name                             | Description                         |
+| -------------------------------- | ----------------------------------- |
+| `--bounding-box-enabled-display` | Bounding Box Enabled Toggle Display |
+| `--display-mode-display`         | Display Mode Toggle Display         |
+| `--graph-enabled-display`        | Graph Enabled Toggle Display        |
+| `--slices-index-display`         | Slices Index Range Display          |
+| `--slices-orientation-display`   | Slices Orientation Select Display   |
+| `--slices-window-center-display` | Slices Window Center Range Display  |
+| `--slices-window-width-display`  | Slices Window Width Range Display   |
+| `--volume-steps-display`         | Volume Steps Range Display          |
+| `--volume-window-center-display` | Volume Window Center Range Display  |
+| `--volume-window-width-display`  | Volume Window Width Range Display   |
 
 
 ----------------------------------------------

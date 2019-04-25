@@ -101,9 +101,8 @@ export class Aleph {
 
   @Prop({ context: "store" }) store: Store;
   @Prop() dracoDecoderPath: string | null;
-  @Prop() width: string = "640px";
-  @Prop() height: string = "480px";
-  @Prop() debug: boolean = false;
+  @Prop() width: string = "640";
+  @Prop() height: string = "480";
 
   //#region actions
   appClearAngles: Action;
@@ -221,6 +220,8 @@ export class Aleph {
   //#endregion
 
   //#region Edge Methods
+
+  /** Creates or updates an edge in the graph */
   @Method()
   async setEdge(edge: [string, AlEdge]): Promise<void> {
     this._setEdge(edge);
@@ -281,7 +282,10 @@ export class Aleph {
 
   //#endregion
 
+  /** Fires whenever the internal state changes passing an object describing the state. */
   @Event() changed: EventEmitter;
+
+  /** Fires when an object is loaded passing either the object or a stackhelper for volumetric data. */
   @Event() loaded: EventEmitter;
 
   componentWillLoad() {
@@ -891,8 +895,8 @@ export class Aleph {
       <div
         id="al-container"
         style={{
-          width: this.width,
-          height: this.height
+          width: GetUtils.addCssUnits(this.width),
+          height: GetUtils.addCssUnits(this.height)
         }}
       >
         <div id="lut-container">
@@ -1196,7 +1200,7 @@ export class Aleph {
 
     this.appSetSrcLoaded(true);
     this._stateChanged();
-    this.loaded.emit(ev.detail);
+    //this.loaded.emit(ev.detail);
   }
   //#endregion
 
@@ -1511,15 +1515,14 @@ export class Aleph {
     }
 
     // Turns debug text inside the models invisible
-    // TODO: Wire to debug variable
-    if (this.debug) {
-      try {
-        const mat = (this._camera.object3DMap.text as THREE.Mesh)
-          .material as THREE.Material;
-        if (mat) {
-          mat.transparent = true;
-        }
-      } catch {}
-    }
+    // if (this.debug) {
+    //   try {
+    //     const mat = (this._camera.object3DMap.text as THREE.Mesh)
+    //       .material as THREE.Material;
+    //     if (mat) {
+    //       mat.transparent = true;
+    //     }
+    //   } catch {}
+    // }
   }
 }

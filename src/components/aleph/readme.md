@@ -7,20 +7,19 @@
 
 ## Properties
 
-| Property           | Attribute            | Description | Type      | Default     |
-| ------------------ | -------------------- | ----------- | --------- | ----------- |
-| `debug`            | `debug`              |             | `boolean` | `false`     |
-| `dracoDecoderPath` | `draco-decoder-path` |             | `string`  | `undefined` |
-| `height`           | `height`             |             | `string`  | `"480px"`   |
-| `width`            | `width`              |             | `string`  | `"640px"`   |
+| Property           | Attribute            | Description | Type     | Default     |
+| ------------------ | -------------------- | ----------- | -------- | ----------- |
+| `dracoDecoderPath` | `draco-decoder-path` |             | `string` | `undefined` |
+| `height`           | `height`             |             | `string` | `"480"`     |
+| `width`            | `width`              |             | `string` | `"640"`     |
 
 
 ## Events
 
-| Event     | Description | Type                |
-| --------- | ----------- | ------------------- |
-| `changed` |             | `CustomEvent<void>` |
-| `loaded`  |             | `CustomEvent<void>` |
+| Event     | Description                                                                                    | Type                |
+| --------- | ---------------------------------------------------------------------------------------------- | ------------------- |
+| `changed` | Fires whenever the internal state changes passing an object describing the state.              | `CustomEvent<void>` |
+| `loaded`  | Fires when an object is loaded passing either the object or a stackhelper for volumetric data. | `CustomEvent<void>` |
 
 
 ## Methods
@@ -143,7 +142,7 @@ Type: `Promise<void>`
 
 ### `setDisplayMode(displayMode: DisplayMode) => Promise<void>`
 
-
+Sets the display mode
 
 #### Parameters
 
@@ -159,7 +158,7 @@ Type: `Promise<void>`
 
 ### `setEdge(edge: [string, AlEdge]) => Promise<void>`
 
-
+Creates or updates an edge in the graph
 
 #### Parameters
 
