@@ -4,7 +4,7 @@
 </h1>
 </p>
 
-**Aleph** is a 3D object viewer and annotation tool made with [A-Frame](https://aframe.io) and [Stenciljs](http://stenciljs.com).
+**Aleph** is a 3D object viewer and annotation tool made with [A-Frame](https://aframe.io), [AMI](https://github.com/FNNDSC/ami), and [Stenciljs](http://stenciljs.com).
 
 ## Components
 
