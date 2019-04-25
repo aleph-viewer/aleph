@@ -142,7 +142,7 @@ Type: `Promise<void>`
 
 ### `setDisplayMode(displayMode: DisplayMode) => Promise<void>`
 
-Sets the display mode
+
 
 #### Parameters
 

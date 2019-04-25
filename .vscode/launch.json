@@ -7,15 +7,24 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Jest Tests",
-      "runtimeExecutable": "npm",
-      "windows": {
-          "runtimeExecutable": "npm.cmd"
-      },
-      "runtimeArgs": [
-          "run-script",
-          "test"
-      ]
+      "name": "E2E Test Current File",
+      "cwd": "${workspaceFolder}",
+      "program": "${workspaceFolder}/node_modules/.bin/stencil",
+      "args": ["test", "--e2e", "${relativeFile}"],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "disableOptimisticBPs": true
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Spec Test Current File",
+      "cwd": "${workspaceFolder}",
+      "program": "${workspaceFolder}/node_modules/.bin/stencil",
+      "args": ["test", "--spec", "${relativeFile}"],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "disableOptimisticBPs": true
     }
   ]
 }

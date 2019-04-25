@@ -158,9 +158,6 @@ export namespace Components {
     'resize': () => Promise<void>;
     'selectNode': (nodeId: string) => Promise<void>;
     'setBoundingBoxEnabled': (visible: boolean) => Promise<void>;
-    /**
-    * Sets the display mode
-    */
     'setDisplayMode': (displayMode: DisplayMode) => Promise<void>;
     /**
     * Creates or updates an edge in the graph

@@ -204,6 +204,7 @@
           alAleph.addEventListener(
             "loaded",
             function(ev) {
+              console.log("loaded", ev);
               if (state.displayMode !== "mesh") {
                 alControlPanel.stackhelper = ev.detail;
               }

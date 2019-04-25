@@ -1200,7 +1200,7 @@ export class Aleph {
 
     this.appSetSrcLoaded(true);
     this._stateChanged();
-    //this.loaded.emit(ev.detail);
+    this.loaded.emit(ev.detail);
   }
   //#endregion
 
