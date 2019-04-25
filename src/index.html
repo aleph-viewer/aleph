@@ -77,6 +77,10 @@
         position: static;
         width: auto;
       }
+
+      /* al-control-panel {
+        --bounding-box-enabled-visible: hidden;
+      } */
     </style>
   </head>
   <body>
@@ -290,8 +294,8 @@
             alAleph.setGraphEnabled(e.detail);
           }, false);
 
-          alControlPanel.addEventListener("boundingBoxVisibleChanged", function(e) {
-            alAleph.setBoundingBoxVisible(e.detail);
+          alControlPanel.addEventListener("boundingBoxEnabledChanged", function(e) {
+            alAleph.setBoundingBoxEnabled(e.detail);
           }, false);
 
           alControlPanel.addEventListener("slicesIndexChanged", function(e) {

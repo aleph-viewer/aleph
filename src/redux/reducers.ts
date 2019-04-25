@@ -9,7 +9,7 @@ import { MeshFileType } from "../enums";
 export const getInitialState = () => {
   return {
     angles: new Map<string, AlAngle>(),
-    boundingBoxVisible: false,
+    boundingBoxEnabled: false,
     camera: null,
     controlsEnabled: true,
     displayMode: DisplayMode.MESH,
@@ -243,7 +243,7 @@ export const app = (
     case TypeKeys.APP_SET_BOUNDINGBOX_VISIBLE: {
       return {
         ...state,
-        boundingBoxVisible: action.payload
+        boundingBoxEnabled: action.payload
       };
     }
     //#endregion

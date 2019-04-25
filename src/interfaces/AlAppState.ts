@@ -3,7 +3,7 @@ import { AlNode, AlAngle, AlEdge, AlCamera } from ".";
 
 export interface AlAppState {
   angles: Map<string, AlAngle>;
-  boundingBoxVisible: boolean;
+  boundingBoxEnabled: boolean;
   camera: AlCamera;
   controlsEnabled: boolean;
   displayMode: DisplayMode;

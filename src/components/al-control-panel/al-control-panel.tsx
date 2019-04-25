@@ -9,11 +9,9 @@ import { Orientation } from "../../enums/Orientation";
 })
 export class AlControlPanel {
   private _lastStackOrientationIndex: number;
-  //private _debounceRangeMS: number = 250;
 
-  @Event() boundingBoxVisibleChanged: EventEmitter;
+  @Event() boundingBoxEnabledChanged: EventEmitter;
   @Event() displayModeChanged: EventEmitter;
-  @Event() optionsEnabledChanged: EventEmitter;
   @Event() orientationChanged: EventEmitter;
   @Event() slicesIndexChanged: EventEmitter;
   @Event() slicesWindowCenterChanged: EventEmitter;
@@ -23,10 +21,8 @@ export class AlControlPanel {
   @Event() volumeWindowCenterChanged: EventEmitter;
   @Event() volumeWindowWidthChanged: EventEmitter;
 
-  @Prop({ mutable: true }) boundingBoxVisible: boolean = false;
+  @Prop({ mutable: true }) boundingBoxEnabled: boolean = false;
   @Prop({ mutable: true }) displayMode: DisplayMode = DisplayMode.MESH;
-  @Prop({ mutable: true }) optionsEnabled: boolean = true;
-  @Prop({ mutable: true }) optionsVisible: boolean = true;
   @Prop({ mutable: true }) orientation: Orientation = Orientation.CORONAL;
   @Prop({ mutable: true }) slicesIndex: number;
   @Prop({ mutable: true }) slicesWindowCenter: number;
@@ -44,29 +40,19 @@ export class AlControlPanel {
     this.volumeWindowWidth = undefined;
   }
   @Prop({ mutable: true }) graphEnabled: boolean = false;
-  @Prop({ mutable: true }) graphVisible: boolean = true;
   @Prop({ mutable: true }) volumeSteps: number;
   @Prop({ mutable: true }) volumeWindowCenter: number;
   @Prop({ mutable: true }) volumeWindowWidth: number;
 
-  private _boundingBoxVisible(visible: boolean) {
-    this.boundingBoxVisible = visible;
-    this.boundingBoxVisibleChanged.emit(visible);
+  private _boundingBoxEnabled(visible: boolean) {
+    this.boundingBoxEnabled = visible;
+    this.boundingBoxEnabledChanged.emit(visible);
   }
 
   private _displayMode(displayMode: DisplayMode) {
     this.displayMode = displayMode;
     this.displayModeChanged.emit(displayMode);
   }
-
-  // private _optionsEnabled(enabled: boolean) {
-  //   this.optionsEnabled = enabled;
-  //   this.optionsEnabledChanged.emit(enabled);
-  // }
-
-  // private _optionsVisible(visible: boolean) {
-  //   this.optionsVisible = visible;
-  // }
 
   private _graphEnabled(enabled: boolean) {
     this.graphEnabled = enabled;
@@ -111,7 +97,11 @@ export class AlControlPanel {
   renderDisplayModeToggle() {
     if (this.displayMode !== DisplayMode.MESH) {
       return (
-        <ion-item id="mode">
+        <ion-item
+          style={{
+            visibility: "var(--display-mode-visible, visible)"
+          }}
+        >
           <ion-icon name="eye" slot="start" />
           <select
             slot="end"
@@ -141,47 +131,34 @@ export class AlControlPanel {
   }
 
   renderNodesToggle() {
-    if (this.graphVisible) {
-      return (
-        <ion-item>
-          <ion-icon name="add-circle" slot="start" />
-          <ion-toggle
-            slot="end"
-            checked={this.graphEnabled}
-            onIonChange={e => this._graphEnabled(e.detail.checked)}
-          />
-        </ion-item>
-      );
-    }
-
-    return null;
+    return (
+      <ion-item
+        style={{
+          visibility: "var(--graph-enabled-visible, visible)"
+        }}
+      >
+        <ion-icon name="add-circle" slot="start" />
+        <ion-toggle
+          slot="end"
+          checked={this.graphEnabled}
+          onIonChange={e => this._graphEnabled(e.detail.checked)}
+        />
+      </ion-item>
+    );
   }
-
-  /*
-  renderOptionsToggle() {
-    if (this.optionsVisible) {
-      return (
-        <ion-item>
-          <ion-icon name="options" slot="start" />
-          <ion-toggle
-            slot="end"
-            checked={this.optionsEnabled}
-            onIonChange={e => this._optionsEnabled(e.detail.checked)}
-          />
-        </ion-item>
-      );
-    }
-  }
-  */
 
   renderBoundingBoxEnabled() {
     return (
-      <ion-item>
+      <ion-item
+        style={{
+          visibility: "var(--bounding-box-enabled-visible, visible)"
+        }}
+      >
         <ion-icon name="cube" slot="start" />
         <ion-toggle
           slot="end"
-          checked={this.boundingBoxVisible}
-          onIonChange={e => this._boundingBoxVisible(e.detail.checked)}
+          checked={this.boundingBoxEnabled}
+          onIonChange={e => this._boundingBoxEnabled(e.detail.checked)}
         />
       </ion-item>
     );
@@ -281,98 +258,110 @@ export class AlControlPanel {
         (this.stackhelper as AMI.StackHelper).slice.windowWidth = windowWidth;
         (this.stackhelper as AMI.StackHelper).slice.windowCenter = windowCenter;
 
-        if (this.optionsVisible && this.optionsEnabled) {
-          return (
-            <div>
-              {this.renderBoundingBoxEnabled()}
-              <ion-item>
-                <ion-icon name="swap" slot="start" />
-                <ion-range
-                  slot="end"
-                  min="0"
-                  max={indexMax}
-                  value={index}
-                  onIonChange={e => this._slicesIndex(e.detail.value)}
-                />
-              </ion-item>
-              <ion-item>
-                <ion-icon name="compass" slot="start" />
-                <select
-                  slot="end"
-                  onChange={e =>
-                    this._orientation((e.srcElement as HTMLSelectElement)
-                      .value as Orientation)
-                  }
+        return (
+          <div>
+            {this.renderBoundingBoxEnabled()}
+            <ion-item
+              style={{
+                visibility: "var(--slices-index-visible, visible)"
+              }}
+            >
+              <ion-icon name="swap" slot="start" />
+              <ion-range
+                slot="end"
+                min="0"
+                max={indexMax}
+                value={index}
+                onIonChange={e => this._slicesIndex(e.detail.value)}
+              />
+            </ion-item>
+            <ion-item
+              style={{
+                visibility: "var(--slices-orientation-visible, visible)"
+              }}
+            >
+              <ion-icon name="compass" slot="start" />
+              <select
+                slot="end"
+                onChange={e =>
+                  this._orientation((e.srcElement as HTMLSelectElement)
+                    .value as Orientation)
+                }
+              >
+                <option
+                  selected={this.orientation === Orientation.CORONAL}
+                  value={Orientation.CORONAL}
                 >
-                  <option
-                    selected={this.orientation === Orientation.CORONAL}
-                    value={Orientation.CORONAL}
-                  >
-                    Coronal
-                  </option>
-                  <option
-                    selected={this.orientation === Orientation.SAGGITAL}
-                    value={Orientation.SAGGITAL}
-                  >
-                    Saggital
-                  </option>
-                  <option
-                    selected={this.orientation === Orientation.AXIAL}
-                    value={Orientation.AXIAL}
-                  >
-                    Axial
-                  </option>
-                </select>
-              </ion-item>
-              <ion-item>
-                <ion-icon name="sunny" slot="start" />
-                <ion-range
-                  slot="end"
-                  min={windowCenterMin}
-                  max={windowCenterMax}
-                  value={this._reverseNumber(
-                    windowCenter,
-                    windowCenterMin,
-                    windowCenterMax
-                  )}
-                  onIonChange={e =>
-                    this._slicesWindowCenter(
-                      this._reverseNumber(
-                        e.detail.value,
-                        windowCenterMin,
-                        windowCenterMax
-                      )
+                  Coronal
+                </option>
+                <option
+                  selected={this.orientation === Orientation.SAGGITAL}
+                  value={Orientation.SAGGITAL}
+                >
+                  Saggital
+                </option>
+                <option
+                  selected={this.orientation === Orientation.AXIAL}
+                  value={Orientation.AXIAL}
+                >
+                  Axial
+                </option>
+              </select>
+            </ion-item>
+            <ion-item
+              style={{
+                visibility: "var(--slices-window-center-visible, visible)"
+              }}
+            >
+              <ion-icon name="sunny" slot="start" />
+              <ion-range
+                slot="end"
+                min={windowCenterMin}
+                max={windowCenterMax}
+                value={this._reverseNumber(
+                  windowCenter,
+                  windowCenterMin,
+                  windowCenterMax
+                )}
+                onIonChange={e =>
+                  this._slicesWindowCenter(
+                    this._reverseNumber(
+                      e.detail.value,
+                      windowCenterMin,
+                      windowCenterMax
                     )
-                  }
-                />
-              </ion-item>
-              <ion-item>
-                <ion-icon name="contrast" slot="start" />
-                <ion-range
-                  slot="end"
-                  min={windowWidthMin}
-                  max={windowWidthMax}
-                  value={this._reverseNumber(
-                    windowWidth,
-                    windowWidthMin,
-                    windowWidthMax
-                  )}
-                  onIonChange={e =>
-                    this._slicesWindowWidth(
-                      this._reverseNumber(
-                        e.detail.value,
-                        windowWidthMin,
-                        windowWidthMax
-                      )
+                  )
+                }
+              />
+            </ion-item>
+            <ion-item
+              style={{
+                visibility: "var(--slices-window-width-visible, visible)"
+              }}
+            >
+              <ion-icon name="contrast" slot="start" />
+              <ion-range
+                slot="end"
+                min={windowWidthMin}
+                max={windowWidthMax}
+                value={this._reverseNumber(
+                  windowWidth,
+                  windowWidthMin,
+                  windowWidthMax
+                )}
+                onIonChange={e =>
+                  this._slicesWindowWidth(
+                    this._reverseNumber(
+                      e.detail.value,
+                      windowWidthMin,
+                      windowWidthMax
                     )
-                  }
-                />
-              </ion-item>
-            </div>
-          );
-        } else {
-          return null;
-        }
+                  )
+                }
+              />
+            </ion-item>
+          </div>
+        );
       }
       case DisplayMode.VOLUME: {
         if (!this.stackhelper) {
@@ -421,11 +410,14 @@ export class AlControlPanel {
         (this
           .stackhelper as AMI.VolumeRenderHelper).windowCenter = windowCenter;
 
-        //if (this.optionsVisible && this.optionsEnabled) {
         return (
           <div>
             {this.renderBoundingBoxEnabled()}
-            <ion-item>
+            <ion-item
+              style={{
+                visibility: "var(--volume-steps-visible, visible)"
+              }}
+            >
               <ion-icon name="swap" slot="start" />
               <ion-range
                 slot="end"
@@ -445,7 +437,11 @@ export class AlControlPanel {
                 }
                 </ion-select>
               </ion-item> */}
-            <ion-item>
+            <ion-item
+              style={{
+                visibility: "var(--volume-window-center-visible, visible)"
+              }}
+            >
               <ion-icon name="sunny" slot="start" />
               <ion-range
                 slot="end"
@@ -467,7 +463,11 @@ export class AlControlPanel {
                 }}
               />
             </ion-item>
-            <ion-item>
+            <ion-item
+              style={{
+                visibility: "var(--volume-window-width-visible, visible)"
+              }}
+            >
               <ion-icon name="contrast" slot="start" />
               <ion-range
                 slot="end"
@@ -491,7 +491,6 @@ export class AlControlPanel {
             </ion-item>
           </div>
         );
-        //}
       }
       case DisplayMode.MESH: {
         return this.renderBoundingBoxEnabled();
@@ -505,7 +504,6 @@ export class AlControlPanel {
     return [
       this.renderDisplayModeToggle(),
       this.renderNodesToggle(),
-      //this.renderOptionsToggle(),
       this.renderOptions()
     ];
   }

@@ -9,7 +9,7 @@
 
 | Property             | Attribute              | Description | Type                                                               | Default               |
 | -------------------- | ---------------------- | ----------- | ------------------------------------------------------------------ | --------------------- |
-| `boundingBoxVisible` | `bounding-box-visible` |             | `boolean`                                                          | `false`               |
+| `boundingBoxEnabled` | `bounding-box-visible` |             | `boolean`                                                          | `false`               |
 | `displayMode`        | `display-mode`         |             | `DisplayMode.MESH \| DisplayMode.SLICES \| DisplayMode.VOLUME`     | `DisplayMode.MESH`    |
 | `graphEnabled`       | `graph-enabled`        |             | `boolean`                                                          | `false`               |
 | `graphVisible`       | `graph-visible`        |             | `boolean`                                                          | `true`                |
@@ -29,7 +29,7 @@
 
 | Event                       | Description | Type                |
 | --------------------------- | ----------- | ------------------- |
-| `boundingBoxVisibleChanged` |             | `CustomEvent<void>` |
+| `boundingBoxEnabledChanged` |             | `CustomEvent<void>` |
 | `displayModeChanged`        |             | `CustomEvent<void>` |
 | `graphEnabledChanged`       |             | `CustomEvent<void>` |
 | `optionsEnabledChanged`     |             | `CustomEvent<void>` |

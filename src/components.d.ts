@@ -47,12 +47,9 @@ export namespace Components {
   }
 
   interface AlControlPanel {
-    'boundingBoxVisible': boolean;
+    'boundingBoxEnabled': boolean;
     'displayMode': DisplayMode;
     'graphEnabled': boolean;
-    'graphVisible': boolean;
-    'optionsEnabled': boolean;
-    'optionsVisible': boolean;
     'orientation': Orientation;
     'slicesIndex': number;
     'slicesWindowCenter': number;
@@ -64,14 +61,12 @@ export namespace Components {
     'volumeWindowWidth': number;
   }
   interface AlControlPanelAttributes extends StencilHTMLAttributes {
-    'boundingBoxVisible'?: boolean;
+    'boundingBoxEnabled'?: boolean;
     'displayMode'?: DisplayMode;
     'graphEnabled'?: boolean;
-    'graphVisible'?: boolean;
-    'onBoundingBoxVisibleChanged'?: (event: CustomEvent) => void;
+    'onBoundingBoxEnabledChanged'?: (event: CustomEvent) => void;
     'onDisplayModeChanged'?: (event: CustomEvent) => void;
     'onGraphEnabledChanged'?: (event: CustomEvent) => void;
-    'onOptionsEnabledChanged'?: (event: CustomEvent) => void;
     'onOrientationChanged'?: (event: CustomEvent) => void;
     'onSlicesIndexChanged'?: (event: CustomEvent) => void;
     'onSlicesWindowCenterChanged'?: (event: CustomEvent) => void;
@@ -79,8 +74,6 @@ export namespace Components {
     'onVolumeStepsChanged'?: (event: CustomEvent) => void;
     'onVolumeWindowCenterChanged'?: (event: CustomEvent) => void;
     'onVolumeWindowWidthChanged'?: (event: CustomEvent) => void;
-    'optionsEnabled'?: boolean;
-    'optionsVisible'?: boolean;
     'orientation'?: Orientation;
     'slicesIndex'?: number;
     'slicesWindowCenter'?: number;
@@ -165,7 +158,7 @@ export namespace Components {
     'load': (src: string) => Promise<void>;
     'resize': () => Promise<void>;
     'selectNode': (nodeId: string) => Promise<void>;
-    'setBoundingBoxVisible': (visible: boolean) => Promise<void>;
+    'setBoundingBoxEnabled': (visible: boolean) => Promise<void>;
     'setDisplayMode': (displayMode: DisplayMode) => Promise<void>;
     'setEdge': (edge: [string, AlEdge]) => Promise<void>;
     'setGraph': (graph: AlGraph) => Promise<void>;

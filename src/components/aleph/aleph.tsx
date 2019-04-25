@@ -35,7 +35,7 @@ import {
   appSelectEdge,
   appSelectNode,
   appSetAngle,
-  appSetBoundingBoxVisible,
+  appSetBoundingBoxEnabled,
   appSetCamera,
   appSetControlsEnabled,
   appSetDisplayMode,
@@ -116,7 +116,7 @@ export class Aleph {
   appSelectEdge: Action;
   appSelectNode: Action;
   appSetAngle: Action;
-  appSetBoundingBoxVisible: Action;
+  appSetBoundingBoxEnabled: Action;
   appSetCamera: Action;
   appSetControlsEnabled: Action;
   appSetDisplayMode: Action;
@@ -136,7 +136,7 @@ export class Aleph {
 
   //#region state
   @State() angles: Map<string, AlAngle>;
-  @State() boundingBoxVisible: boolean;
+  @State() boundingBoxEnabled: boolean;
   @State() camera: AlCamera;
   @State() controlsEnabled: boolean;
   @State() displayMode: DisplayMode;
@@ -240,8 +240,8 @@ export class Aleph {
   }
 
   @Method()
-  async setBoundingBoxVisible(visible: boolean): Promise<void> {
-    this._setBoundingBoxVisible(visible);
+  async setBoundingBoxEnabled(visible: boolean): Promise<void> {
+    this._setBoundingBoxEnabled(visible);
   }
 
   @Method()
@@ -345,7 +345,7 @@ export class Aleph {
       const {
         app: {
           angles,
-          boundingBoxVisible,
+          boundingBoxEnabled,
           camera,
           controlsEnabled,
           displayMode,
@@ -367,7 +367,7 @@ export class Aleph {
 
       return {
         angles,
-        boundingBoxVisible,
+        boundingBoxEnabled,
         camera,
         controlsEnabled,
         displayMode,
@@ -398,7 +398,7 @@ export class Aleph {
       appSelectEdge,
       appSelectNode,
       appSetAngle,
-      appSetBoundingBoxVisible,
+      appSetBoundingBoxEnabled,
       appSetCamera,
       appSetControlsEnabled,
       appSetDisplayMode,
@@ -556,7 +556,7 @@ export class Aleph {
   }
 
   private _renderBoundingBox() {
-    if (this.srcLoaded && this.boundingBoxVisible) {
+    if (this.srcLoaded && this.boundingBoxEnabled) {
       let size: THREE.Vector3 = new THREE.Vector3();
       this._boundingBox.getSize(size);
 
@@ -866,7 +866,7 @@ export class Aleph {
       <a-scene
         embedded
         renderer={`
-          colorManagement: true; 
+          colorManagement: true;
           sortObjects: true;
           webgl2: ${this._isWebGl2};
           antialias: true;
@@ -1112,8 +1112,8 @@ export class Aleph {
     this._stateChanged();
   }
 
-  private _setBoundingBoxVisible(visible: boolean): void {
-    this.appSetBoundingBoxVisible(visible);
+  private _setBoundingBoxEnabled(visible: boolean): void {
+    this.appSetBoundingBoxEnabled(visible);
     this._stateChanged();
   }
 

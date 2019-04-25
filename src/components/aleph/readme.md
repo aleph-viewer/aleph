@@ -125,7 +125,7 @@ Type: `Promise<void>`
 
 
 
-### `setBoundingBoxVisible(visible: boolean) => Promise<void>`
+### `setBoundingBoxEnabled(visible: boolean) => Promise<void>`
 
 
 

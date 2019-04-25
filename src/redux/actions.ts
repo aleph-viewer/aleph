@@ -21,7 +21,7 @@ export type ActionTypes =
   | AppSelectEdgeAction
   | AppSelectNodeAction
   | AppSetAngleAction
-  | AppSetBoundingBoxVisibleAction
+  | AppSetBoundingBoxEnabledAction
   | AppSetCameraAction
   | AppSetControlsEnabledAction
   | AppSetDisplayModeAction
@@ -317,12 +317,12 @@ export const appSetGraphEnabled = (payload: boolean) => async (
   });
 };
 
-export interface AppSetBoundingBoxVisibleAction {
+export interface AppSetBoundingBoxEnabledAction {
   type: TypeKeys.APP_SET_BOUNDINGBOX_VISIBLE;
   payload: boolean;
 }
 
-export const appSetBoundingBoxVisible = (payload: boolean) => async (
+export const appSetBoundingBoxEnabled = (payload: boolean) => async (
   dispatch,
   _getState
 ) => {
