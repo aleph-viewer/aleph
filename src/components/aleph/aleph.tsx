@@ -1243,8 +1243,7 @@ export class Aleph {
     this._hovered = event.detail.id;
   }
 
-  private _controlsInteractionHandler(_event: CustomEvent): void {
-  }
+  private _controlsInteractionHandler(_event: CustomEvent): void {}
 
   private _controlsInteractionFinishedHandler(event: CustomEvent): void {
     this._debouncedAppSetCamera(event.detail.cameraState);
