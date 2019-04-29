@@ -1373,6 +1373,7 @@ export class Aleph {
     let intersection;
     let hitPosition = new THREE.Vector3();
     let validLocation = false;
+    let orbitPosition = this._camera.object3D.children[0].position;
 
     if (this.displayMode === DisplayMode.VOLUME) {
       // First try bounding box
@@ -1385,7 +1386,7 @@ export class Aleph {
 
         let rayResult = AMIUtils.volumeRay(
           this._stackhelper,
-          this._camera.object3D.children[0].position.clone(),
+          orbitPosition.clone(),
           raycasterAttribute.direction,
           Constants.cameraValues.far,
           hitPosition,
@@ -1410,11 +1411,13 @@ export class Aleph {
 
     // IF not a valid location, dangle in space
     if (!validLocation) {
-      hitPosition.copy(this._camera.object3D.children[0].position);
+      let distance = orbitPosition.distanceTo(
+        this._targetEntity.getAttribute("position")
+      );
+
+      hitPosition.copy(orbitPosition);
       hitPosition.add(
-        raycasterAttribute.direction
-          .clone()
-          .multiplyScalar(this._boundingSphereRadius * 1.5)
+        raycasterAttribute.direction.clone().multiplyScalar(distance * 1.5)
       );
     }
 
