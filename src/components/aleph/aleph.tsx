@@ -1466,11 +1466,6 @@ export class Aleph {
   private _addEventListeners(): void {
     window.addEventListener("keydown", this._keyDownHandler, false);
     window.addEventListener("keyup", this._keyUpHandler, false);
-    // window.addEventListener(
-    //   "mouseup",
-    //   this._controlsInteractionFinishedHandler,
-    //   false
-    // );
 
     this._scene.addEventListener(
       AlOrbitControlEvents.ANIMATION_FINISHED,
