@@ -84,8 +84,6 @@ type Scene = import("aframe").Scene;
 })
 export class Aleph {
   //#region Private variables
-  private _backboard: Entity;
-  private _backboardVisible: boolean = false;
   private _boundingBox: THREE.Box3;
   private _boundingSphereRadius: number;
   private _camera: Entity;
@@ -470,41 +468,6 @@ export class Aleph {
         </div>
       );
     }
-  }
-
-  private _renderBackboard() {
-    if (!this.src) {
-      return null;
-    }
-
-    let backscale: number = 0;
-
-    if (this._boundingSphereRadius) {
-      backscale = this._boundingSphereRadius * Constants.backboardSize;
-
-      return (
-        <a-entity
-          class="collidable"
-          id="backboard"
-          geometry={`primitive: plane; height: ${backscale}; width: ${backscale}`}
-          al-fixed-to-orbit-camera={`
-          distanceFromTarget: ${this._boundingSphereRadius * 2};
-          target: ${
-            this.camera ? this.camera.target : new THREE.Vector3(0, 0, 0)
-          };
-        `}
-          material={`
-          wireframe: ${this._backboardVisible};
-          transparent: true;
-          opacity: ${this._backboardVisible ? `1.0` : `0.0`};
-          side: double;
-        `}
-          ref={el => (this._backboard = el)}
-        />
-      );
-    }
-
-    return null;
   }
 
   private _renderSrc() {
@@ -918,7 +881,6 @@ export class Aleph {
         vr-mode-ui="enabled: false"
         ref={el => (this._scene = el)}
       >
-        {this._renderBackboard()}
         {this._renderBoundingBox()}
         {this._renderSrc()}
         {this._renderNodes()}
@@ -1407,60 +1369,71 @@ export class Aleph {
   private _graphEntryDraggedHandler(event: CustomEvent): void {
     const nodeId: string = event.detail.id;
     const raycaster = this._camera.components.raycaster as any;
+    const raycasterAttribute = this._camera.getAttribute("raycaster");
     let intersection;
+    let hitPosition = new THREE.Vector3();
+    let validLocation = false;
 
     if (this.displayMode === DisplayMode.VOLUME) {
       // First try bounding box
       intersection = raycaster.getIntersection(
         this._boundingEntity
       ) as THREE.Intersection;
+
+      if (intersection) {
+        let hitNormal = new THREE.Vector3();
+
+        let rayResult = AMIUtils.volumeRay(
+          this._stackhelper,
+          this._camera.object3D.children[0].position.clone(),
+          raycasterAttribute.direction,
+          Constants.cameraValues.far,
+          hitPosition,
+          hitNormal
+        );
+
+        if (rayResult) {
+          validLocation = true;
+        }
+      }
     } else {
       // First try target
       intersection = raycaster.getIntersection(
         this._targetEntity
       ) as THREE.Intersection;
-    }
 
-    // Try backboard
-    if (!intersection) {
-      intersection = raycaster.getIntersection(
-        this._backboard
-      ) as THREE.Intersection;
-    }
-
-    if (intersection && this.displayMode === DisplayMode.VOLUME) {
-      let hitPosition = new THREE.Vector3();
-      let hitNormal = new THREE.Vector3();
-
-      let rayResult = AMIUtils.volumeRay(
-        this._stackhelper,
-        this._camera.object3D.children[0].position.clone(),
-        this._camera.getAttribute("raycaster").direction,
-        Constants.cameraValues.far,
-        hitPosition,
-        hitNormal
-      );
-
-      if (rayResult && intersection) {
-        this._setNode([
-          nodeId,
-          {
-            position: ThreeUtils.vector3ToString(hitPosition)
-          }
-        ]);
-        const eventName = nodeId + Constants.movedEventString;
-        this._scene.emit(eventName, {}, true);
+      if (intersection) {
+        hitPosition.copy(intersection.point);
+        validLocation = true;
       }
-    } else if (intersection && this.displayMode !== DisplayMode.VOLUME) {
-      this._setNode([
-        nodeId,
-        {
-          position: ThreeUtils.vector3ToString(intersection.point)
-        }
-      ]);
-      const eventName = nodeId + Constants.movedEventString;
-      this._scene.emit(eventName, {}, true);
     }
+
+    // IF not a valid location, dangle in space
+    if (!validLocation) {
+      hitPosition.copy(this._camera.object3D.children[0].position);
+      hitPosition.add(
+        raycasterAttribute.direction
+          .clone()
+          .multiplyScalar(this._boundingSphereRadius * 1.5)
+      );
+    }
+
+    this._setNode([
+      nodeId,
+      {
+        position: ThreeUtils.vector3ToString(hitPosition)
+      }
+    ]);
+    const eventName = nodeId + Constants.movedEventString;
+    this._scene.emit(eventName, {}, true);
+
+    // let geom = new THREE.Geometry();
+    // geom.vertices.push(raycasterAttribute.origin);
+    // geom.vertices.push(raycasterAttribute.direction.multiplyScalar(100));
+
+    // (this._scene.object3D as THREE.Scene).add(
+    //   new THREE.Line(geom, new THREE.LineBasicMaterial())
+    // );
   }
 
   private _addEventListeners(): void {
