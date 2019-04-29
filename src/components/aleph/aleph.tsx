@@ -98,6 +98,7 @@ export class Aleph {
   private _targetEntity: Entity;
   private _validTarget: boolean;
   private _stackhelper: AMI.VolumeRenderHelper;
+  private _boundingEntity: Entity;
 
   @Prop({ context: "store" }) store: Store;
   @Prop() dracoDecoderPath: string | null;
@@ -529,8 +530,7 @@ export class Aleph {
           />
         );
       }
-      case DisplayMode.SLICES:
-      case DisplayMode.VOLUME: {
+      case DisplayMode.SLICES: {
         return (
           <a-entity
             id="target-entity"
@@ -538,6 +538,28 @@ export class Aleph {
             al-node-spawner={`
               graphEnabled: ${this.graphEnabled};
             `}
+            al-volume={`
+              srcLoaded: ${this.srcLoaded};
+              src: ${this.src};
+              displayMode: ${this.displayMode};
+              slicesIndex: ${this.slicesIndex};
+              slicesOrientation: ${this.orientation};
+              slicesWindowWidth: ${this.slicesWindowWidth};
+              slicesWindowCenter: ${this.slicesWindowCenter};
+              volumeSteps: ${this.volumeSteps};
+              volumeWindowCenter: ${this.volumeWindowCenter};
+              volumeWindowWidth: ${this.volumeWindowWidth};
+              isWebGl2: ${this._isWebGl2};
+            `}
+            position="0 0 0"
+            ref={(el: Entity) => (this._targetEntity = el)}
+          />
+        );
+      }
+      case DisplayMode.VOLUME: {
+        return (
+          <a-entity
+            id="target-entity"
             al-volume={`
               srcLoaded: ${this.srcLoaded};
               src: ${this.src};
@@ -581,15 +603,33 @@ export class Aleph {
         }
       }
 
-      return (
-        <a-entity
-          position={ThreeUtils.vector3ToString(position)}
-          al-bounding-box={`
-            scale: ${ThreeUtils.vector3ToString(size)};
-            color: ${Constants.colorValues.red};
-        `}
-        />
-      );
+      if (this.displayMode === DisplayMode.VOLUME) {
+        return (
+          <a-entity
+            position={ThreeUtils.vector3ToString(position)}
+            al-bounding-box={`
+              scale: ${ThreeUtils.vector3ToString(size)};
+              color: ${Constants.colorValues.red};
+            `}
+            al-node-spawner={`
+              graphEnabled: ${this.graphEnabled};
+            `}
+            class="collidable"
+            ref={el => (this._boundingEntity = el)}
+          />
+        );
+      } else {
+        return (
+          <a-entity
+            position={ThreeUtils.vector3ToString(position)}
+            al-bounding-box={`
+              scale: ${ThreeUtils.vector3ToString(size)};
+              color: ${Constants.colorValues.red};
+            `}
+            ref={el => (this._boundingEntity = el)}
+          />
+        );
+      }
     }
 
     return null;
@@ -1367,11 +1407,19 @@ export class Aleph {
   private _graphEntryDraggedHandler(event: CustomEvent): void {
     const nodeId: string = event.detail.id;
     const raycaster = this._camera.components.raycaster as any;
+    let intersection;
 
-    // First try target
-    let intersection = raycaster.getIntersection(
-      this._targetEntity
-    ) as THREE.Intersection;
+    if (this.displayMode === DisplayMode.VOLUME) {
+      // First try bounding box
+      intersection = raycaster.getIntersection(
+        this._boundingEntity
+      ) as THREE.Intersection;
+    } else {
+      // First try target
+      intersection = raycaster.getIntersection(
+        this._targetEntity
+      ) as THREE.Intersection;
+    }
 
     // Try backboard
     if (!intersection) {
