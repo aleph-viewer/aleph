@@ -188,7 +188,8 @@ export class AlVolumeComponent implements AframeRegistryEntry {
 
         if (needsResize && this.data.displayMode === DisplayMode.VOLUME) {
           state.bufferSceneTextureWidth = this.el.sceneEl.canvas.clientWidth;
-          state.bufferSceneTextureHeight = this.el.sceneEl.canvas.clientHeight;
+          state.bufferSceneTextureHeight =
+            (this.el.sceneEl.canvas.clientWidth / 16) * 9;
           console.log("renderer resized");
 
           this.state.bufferSceneTexture = new THREE.WebGLRenderTarget(
