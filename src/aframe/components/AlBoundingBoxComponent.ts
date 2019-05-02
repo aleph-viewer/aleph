@@ -1,6 +1,7 @@
 import { AframeRegistryEntry } from "../../interfaces";
 import { ThreeUtils } from "../../utils";
 import { ComponentDefinition } from "aframe";
+import { Constants } from "../../Constants";
 
 interface AlBoundingBoxState {
   box: THREE.Box3;
@@ -44,6 +45,7 @@ export class AlBoundingBoxDefinition implements AframeRegistryEntry {
           state.box as any,
           this.data.color
         );
+        state.boundingBox.renderOrder = Constants.topLayerRenderOrder - 5;
         el.setObject3D("mesh", state.boundingBox);
 
         state.geometry = geometry;
