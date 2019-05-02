@@ -6,6 +6,18 @@
 
 **Aleph** is a 3D object viewer and annotation tool made with [A-Frame](https://aframe.io), [AMI](https://github.com/FNNDSC/ami), and [Stenciljs](http://stenciljs.com).
 
+## Dev Builds
+
+  npm run build:dev
+
+## Production Builds
+
+  npm run build
+
+## View on localhost
+
+  npm start
+
 ## Components
 
   - [uv-aleph](/src/components/aleph/readme.md)
