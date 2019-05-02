@@ -1,6 +1,4 @@
-import * as _three from "three";
-
 declare global {
-  const THREE: typeof _three;
+  const THREE: typeof import("three");
 }
 export {};
