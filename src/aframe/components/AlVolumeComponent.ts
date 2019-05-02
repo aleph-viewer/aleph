@@ -1,4 +1,4 @@
-import { AframeRegistryEntry, AlCamera } from "../../interfaces";
+import { AframeRegistryEntry } from "../../interfaces";
 import { VolumetricLoader } from "../../utils/VolumetricLoader";
 import { Constants } from "../../Constants";
 import { DisplayMode } from "../../enums";
@@ -8,17 +8,15 @@ import { EventUtils, GetUtils } from "../../utils";
 
 interface AlVolumeState {
   bufferScene: THREE.Scene;
-  bufferSceneCamera: AlCamera;
   bufferScenePlaneGeometry: THREE.PlaneGeometry;
   bufferScenePlaneMaterial: THREE.MeshBasicMaterial;
   bufferScenePlaneMesh: THREE.Mesh;
   bufferSceneTexture: THREE.WebGLRenderTarget;
-  bufferSceneTextureHeight: number;
-  bufferSceneTextureWidth: number;
   lutHelper: AMI.LutHelper;
   stack: any;
+  bufferSceneTextureHeight: number;
+  bufferSceneTextureWidth: number;
   stackhelper: AMI.StackHelper | AMI.VolumeRenderHelper;
-  zoom: number;
 }
 
 interface AlVolumeDefinition extends ComponentDefinition {
@@ -31,6 +29,7 @@ interface AlVolumeDefinition extends ComponentDefinition {
   removeListeners(): void;
   renderBufferScene(): void;
   tickFunction(): void;
+  createBufferTexture(): void;
 }
 
 export class AlVolumeComponent implements AframeRegistryEntry {
@@ -59,6 +58,7 @@ export class AlVolumeComponent implements AframeRegistryEntry {
         this.removeListeners = this.removeListeners.bind(this);
         this.renderBufferScene = this.renderBufferScene.bind(this);
         this.rendererResize = this.rendererResize.bind(this);
+        this.createBufferTexture = this.createBufferTexture.bind(this);
       },
 
       addListeners() {
@@ -105,20 +105,17 @@ export class AlVolumeComponent implements AframeRegistryEntry {
           this
         );
         this.loader = new VolumetricLoader();
+
         this.state = {
           bufferScene: new THREE.Scene(),
           bufferSceneTextureHeight: this.el.sceneEl.canvas.clientHeight,
           bufferSceneTextureWidth: this.el.sceneEl.canvas.clientWidth
         } as AlVolumeState;
 
-        this.state.bufferSceneTexture = new THREE.WebGLRenderTarget(
-          this.state.bufferSceneTextureWidth,
-          this.state.bufferSceneTextureHeight,
-          { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter }
-        );
-
         this.bindMethods();
         this.addListeners();
+
+        this.createBufferTexture();
 
         this.debouncedRenderBufferScene = EventUtils.debounce(
           this.renderBufferScene,
@@ -126,14 +123,22 @@ export class AlVolumeComponent implements AframeRegistryEntry {
         ).bind(this);
       },
 
-      onInteraction(event: CustomEvent): void {
-        this.state.bufferSceneCamera = event.detail.cameraState;
+      createBufferTexture(): void {
+        this.state.bufferSceneTexture = new THREE.WebGLRenderTarget(
+          this.state.bufferSceneTextureWidth,
+          this.state.bufferSceneTextureHeight,
+          { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter }
+        );
+        (this.el.sceneEl
+          .object3D as THREE.Scene).background = this.state.bufferSceneTexture.texture;
+      },
+
+      onInteraction(_event: CustomEvent): void {
         this.state.stackhelper.steps = 2;
         this.renderBufferScene();
       },
 
-      onInteractionFinished(event: CustomEvent): void {
-        this.state.bufferSceneCamera = event.detail.cameraState;
+      onInteractionFinished(_event: CustomEvent): void {
         this.state.stackhelper.steps = this.data.volumeSteps;
         this.debouncedRenderBufferScene();
       },
@@ -148,22 +153,23 @@ export class AlVolumeComponent implements AframeRegistryEntry {
           refGeometry.computeBoundingBox();
           refGeometry.computeBoundingSphere();
 
-          state.zoom = refGeometry.boundingSphere.radius * 4.870046858478149;
-
           let center = targetEntity.object3D.position
             .clone()
             .add(GetUtils.getGeometryCenter(refGeometry));
 
-          let bufferScenePlaneGeometry = new THREE.PlaneGeometry(
-            state.bufferSceneTextureWidth,
-            state.bufferSceneTextureHeight
-          );
+          let x = this.state.stackhelper.stack.dimensionsIJK.x;
+          let y = this.state.stackhelper.stack.dimensionsIJK.y;
+          let z = this.state.stackhelper.stack.dimensionsIJK.z;
+
+          let size = Math.max(x, Math.max(y, z));
+
+          let bufferScenePlaneGeometry = new THREE.PlaneGeometry(size, size);
           state.bufferScenePlaneGeometry = bufferScenePlaneGeometry;
 
           let bufferScenePlaneMaterial = new THREE.MeshBasicMaterial({
-            map: state.bufferSceneTexture.texture
+            opacity: 0.0,
+            transparent: true
           });
-          // let bufferScenePlaneMaterial = new THREE.MeshBasicMaterial();
           state.bufferScenePlaneMaterial = bufferScenePlaneMaterial;
 
           let bufferScenePlaneMesh = new THREE.Mesh(
@@ -171,6 +177,7 @@ export class AlVolumeComponent implements AframeRegistryEntry {
             bufferScenePlaneMaterial
           );
           bufferScenePlaneMesh.position.copy(center);
+          bufferScenePlaneMesh.renderOrder = Constants.topLayerRenderOrder - 4;
           state.bufferScenePlaneMesh = bufferScenePlaneMesh;
 
           this.el.setObject3D("mesh", bufferScenePlaneMesh);
@@ -192,81 +199,17 @@ export class AlVolumeComponent implements AframeRegistryEntry {
             (this.el.sceneEl.canvas.clientWidth / 16) * 9;
           console.log("renderer resized");
 
-          this.state.bufferSceneTexture = new THREE.WebGLRenderTarget(
-            state.bufferSceneTextureWidth,
-            state.bufferSceneTextureHeight,
-            { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter }
-          );
-
-          this.createVolumePlane();
+          this.createBufferTexture();
           this.renderBufferScene();
         }
       },
 
       renderBufferScene(): void {
-        if (
-          this.state.bufferSceneCamera &&
-          this.data.displayMode === DisplayMode.VOLUME
-        ) {
-          let state = this.state as AlVolumeState;
-          let bufferCamera: THREE.PerspectiveCamera = this.el.sceneEl.camera.clone();
-
-          // Adjust bufferCamera position to prevent drift while panning
-          // =================================================================
-          let cameraState: AlCamera = state.bufferSceneCamera;
-          let initialState: AlCamera = GetUtils.getCameraStateFromMesh(
-            this.state.stackhelper.mesh
-          );
-
-          let inverseInitialTarget: THREE.Vector3 = initialState.target.negate();
-
-          let panAdjustedPosition = cameraState.position
-            .clone()
-            .sub(cameraState.target.clone())
-            .sub(inverseInitialTarget.clone());
-          // =================================================================
-
-          // Adjust bufferCamera position to prevent drift while zooming
-          // =================================================================
-          let start: THREE.Vector3 = this.state.stackhelper.stack.worldCenter();
-          let end = panAdjustedPosition.clone();
-          let directionToStack = end
-            .clone()
-            .sub(start.clone())
-            .normalize();
-
-          let fixedPosition: THREE.Vector3 = start
-            .clone()
-            .add(directionToStack.multiplyScalar(state.zoom));
-          bufferCamera.position.copy(fixedPosition);
-          // =================================================================
-
-          // Sphere showing position of the stackhelper in world space
-          // =================================================================
-          // let sphere = new THREE.SphereGeometry(3, 8, 8);
-          // let sphereM = new THREE.Mesh(
-          //   sphere,
-          //   new THREE.MeshBasicMaterial({ color: new THREE.Color(0xff0000) })
-          // );
-          // sphereM.position.copy(this.state.stackhelper.position);
-          // state.bufferScene.add(sphereM);
-          // =================================================================
-
-          // Sphere showing center of the stackhelper in world space
-          // =================================================================
-          // let sphere2 = new THREE.SphereGeometry(3, 8, 8);
-          // let sphereM2 = new THREE.Mesh(
-          //   sphere2,
-          //   new THREE.MeshBasicMaterial({ color: new THREE.Color(0x00ff00) })
-          // );
-          // sphereM.position.copy(this.state.stackhelper.stack.worldCenter());
-          // state.bufferScene.add(sphereM2);
-          // =================================================================
-
-          this.el.sceneEl.renderer.render(
-            state.bufferScene,
-            bufferCamera,
-            state.bufferSceneTexture
+        if (this.data.displayMode === DisplayMode.VOLUME) {
+          (this.el.sceneEl.renderer as THREE.WebGLRenderer).render(
+            this.state.bufferScene,
+            this.el.sceneEl.camera,
+            this.state.bufferSceneTexture
           );
         }
       },
@@ -343,6 +286,8 @@ export class AlVolumeComponent implements AframeRegistryEntry {
 
           if (this.data.displayMode === DisplayMode.VOLUME) {
             this.renderBufferScene();
+          } else {
+            (this.el.sceneEl.object3D as THREE.Scene).background = null;
           }
         }
       },

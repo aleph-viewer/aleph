@@ -162,7 +162,8 @@ export class AlAngleComponent implements AframeRegistryEntry {
         mesh.add(outlineMesh);
 
         this.el.setObject3D("mesh", mesh);
-        (this.el.object3D as THREE.Object3D).renderOrder = 996;
+        (this.el.object3D as THREE.Object3D).renderOrder =
+          Constants.topLayerRenderOrder - 3;
       },
 
       init(): void {

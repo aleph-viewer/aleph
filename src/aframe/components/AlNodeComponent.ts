@@ -153,7 +153,8 @@ export class AlNodeComponent implements AframeRegistryEntry {
         mesh.add(outlineMesh);
 
         el.setObject3D("mesh", mesh);
-        (el.object3D as THREE.Object3D).renderOrder = 998;
+        (el.object3D as THREE.Object3D).renderOrder =
+          Constants.topLayerRenderOrder - 1;
 
         this.state = {
           selected: true,
