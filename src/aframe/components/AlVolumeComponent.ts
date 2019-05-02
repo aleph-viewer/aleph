@@ -167,8 +167,9 @@ export class AlVolumeComponent implements AframeRegistryEntry {
           state.bufferScenePlaneGeometry = bufferScenePlaneGeometry;
 
           let bufferScenePlaneMaterial = new THREE.MeshBasicMaterial({
-            opacity: 0.0,
-            transparent: true
+            // opacity: 0.1,
+            // transparent: true
+            visible: false
           });
           state.bufferScenePlaneMaterial = bufferScenePlaneMaterial;
 
@@ -284,6 +285,7 @@ export class AlVolumeComponent implements AframeRegistryEntry {
           this.addListeners();
 
           if (this.data.displayMode === DisplayMode.VOLUME) {
+            this.createBufferTexture();
             this.renderBufferScene();
           } else {
             (this.el.sceneEl.object3D as THREE.Scene).background = null;
