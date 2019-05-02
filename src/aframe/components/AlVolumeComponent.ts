@@ -134,13 +134,17 @@ export class AlVolumeComponent implements AframeRegistryEntry {
       },
 
       onInteraction(_event: CustomEvent): void {
-        this.state.stackhelper.steps = 2;
-        this.renderBufferScene();
+        if (this.state.stackhelper) {
+          this.state.stackhelper.steps = 2;
+          this.renderBufferScene();
+        }
       },
 
       onInteractionFinished(_event: CustomEvent): void {
-        this.state.stackhelper.steps = this.data.volumeSteps;
-        this.debouncedRenderBufferScene();
+        if (this.state.stackhelper) {
+          this.state.stackhelper.steps = this.data.volumeSteps;
+          this.debouncedRenderBufferScene();
+        }
       },
 
       createVolumePlane(): void {
