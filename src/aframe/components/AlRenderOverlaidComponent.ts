@@ -1,5 +1,6 @@
 import { AframeRegistryEntry } from "../../interfaces";
 import { ComponentDefinition } from "aframe";
+import { Constants } from "../../Constants";
 
 export class AlRenderOverlaidComponent implements AframeRegistryEntry {
   public static get Object(): ComponentDefinition {
@@ -14,7 +15,7 @@ export class AlRenderOverlaidComponent implements AframeRegistryEntry {
 
       setDepth(mesh: THREE.Mesh) {
         if (mesh) {
-          mesh.renderOrder = 999;
+          mesh.renderOrder = Constants.topLayerRenderOrder;
           if (mesh.material) {
             (mesh.material as THREE.Material).depthTest = false;
           }
