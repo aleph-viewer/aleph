@@ -2,10 +2,10 @@ export class Constants {
   static fontSizeSmall = 0.75;
   static fontSizeMedium = 1.5;
   static fontSizeLarge = 2.5;
-  static movedEventString = "-moved";
-  static titleIdString = "-title";
-  static controllerString = "-controller";
-  static nodeSizeRatio = 50;
+  static movedEventName = "-moved";
+  static titleIdName = "-title";
+  static controllerName = "-controller";
+  static nodeSizeRatio = 75;
   static backboardSize = 10;
   static zoomFactor = 2.5;
   static minLoadingMS = 500;

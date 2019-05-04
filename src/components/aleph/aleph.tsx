@@ -1427,7 +1427,7 @@ export class Aleph {
         position: ThreeUtils.vector3ToString(hitPosition)
       }
     ]);
-    const eventName = nodeId + Constants.movedEventString;
+    const eventName = nodeId + Constants.movedEventName;
     this._scene.emit(eventName, {}, true);
 
     // let geom = new THREE.Geometry();

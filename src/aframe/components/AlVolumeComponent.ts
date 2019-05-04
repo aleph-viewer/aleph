@@ -289,7 +289,9 @@ export class AlVolumeComponent implements AframeRegistryEntry {
 
           if (this.data.displayMode === DisplayMode.VOLUME) {
             this.createBufferTexture();
-            this.renderBufferScene();
+            setTimeout(() => {
+              this.renderBufferScene();
+            }, 250); // allow some time for the stackhelper to reorient itself
           } else {
             (this.el.sceneEl.object3D as THREE.Scene).background = null;
           }
