@@ -674,7 +674,7 @@ export class Aleph {
               id={`${edgeId}-title`}
               text={`
                 value: ${dist.toFixed(Constants.angleUnitsDecimalPlaces) +
-                  " m"};
+                  (this.displayMode === DisplayMode.MESH ? "m" : "mm")};
                 side: double;
                 align: center;
                 baseline: bottom;
