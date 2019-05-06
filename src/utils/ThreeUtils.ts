@@ -101,7 +101,7 @@ export class ThreeUtils {
     }
   }
 
-  static easeInOutCubic(t) {
+  static easeInOutCubic(t: number) {
     return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
   }
 
@@ -119,7 +119,7 @@ export class ThreeUtils {
     const ep: THREE.Vector3 = end.position.clone().addScalar(Number.EPSILON);
     const et: THREE.Vector3 = end.target.clone().addScalar(Number.EPSILON);
 
-    for (let frame = 1; frame <= Constants.maxAnimationSteps; frame++) {
+    for (let frame = 0; frame <= Constants.maxAnimationSteps; frame++) {
       let percent = this.easeInOutCubic(frame / Constants.maxAnimationSteps);
       path.push({
         position: positionChange
