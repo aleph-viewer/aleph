@@ -1,6 +1,6 @@
 import { Component, Prop } from "@stencil/core";
 import { DisplayMode, Orientation } from "../../enums";
-type Entity = import("aframe").Entity;
+import { Entity } from "aframe";
 
 @Component({
   tag: "al-src",

@@ -11,11 +11,11 @@ export class AlSpinner {
 
   render() {
     if (this.src && !this.srcLoaded) {
-        return (
-            <div id="spinner">
-                <div class="square" />
-            </div>
-        );
+      return (
+        <div id="spinner">
+          <div class="square" />
+        </div>
+      );
     }
 
     return null;

@@ -15,6 +15,13 @@ import {
 } from './interfaces';
 import {
   DisplayMode,
+  Orientation as Orientation2,
+} from './enums';
+import {
+  Entity,
+} from 'aframe';
+import {
+  DisplayMode as DisplayMode2,
 } from './enums/DisplayMode';
 import {
   Orientation,
@@ -22,10 +29,6 @@ import {
 import {
   AlGraph,
 } from './interfaces/AlGraph';
-import {
-  DisplayMode as DisplayMode2,
-  Orientation as Orientation2,
-} from './enums';
 
 
 export namespace Components {
@@ -36,6 +39,27 @@ export namespace Components {
   interface AlAngleEditorAttributes extends StencilHTMLAttributes {
     'angle'?: [string, AlAngle];
     'onDelete'?: (event: CustomEvent) => void;
+  }
+
+  interface AlBoundingBox {
+    'boundingBox': THREE.Box3;
+    'boundingBoxEnabled': boolean;
+    'boundingEntity': Entity;
+    'displayMode': DisplayMode;
+    'graphEnabled': boolean;
+    'mesh': THREE.Mesh;
+    'srcLoaded': boolean;
+    'targetEntity': Entity;
+  }
+  interface AlBoundingBoxAttributes extends StencilHTMLAttributes {
+    'boundingBox'?: THREE.Box3;
+    'boundingBoxEnabled'?: boolean;
+    'boundingEntity'?: Entity;
+    'displayMode'?: DisplayMode;
+    'graphEnabled'?: boolean;
+    'mesh'?: THREE.Mesh;
+    'srcLoaded'?: boolean;
+    'targetEntity'?: Entity;
   }
 
   interface AlConsole {
@@ -110,6 +134,48 @@ export namespace Components {
     'nodes'?: Map<string, AlNode> | null;
     'onSelectedChanged'?: (event: CustomEvent) => void;
     'selected'?: string | null;
+  }
+
+  interface AlSpinner {
+    'src': string | null;
+    'srcLoaded': boolean;
+  }
+  interface AlSpinnerAttributes extends StencilHTMLAttributes {
+    'src'?: string | null;
+    'srcLoaded'?: boolean;
+  }
+
+  interface AlSrc {
+    'displayMode': DisplayMode;
+    'dracoDecoderPath': string;
+    'graphEnabled': boolean;
+    'isWebGl2': boolean;
+    'orientation': Orientation;
+    'slicesIndex': number;
+    'slicesWindowCenter': number;
+    'slicesWindowWidth': number;
+    'src': string | null;
+    'srcLoaded': boolean;
+    'targetEntity': Entity;
+    'volumeSteps': number;
+    'volumeWindowCenter': number;
+    'volumeWindowWidth': number;
+  }
+  interface AlSrcAttributes extends StencilHTMLAttributes {
+    'displayMode'?: DisplayMode;
+    'dracoDecoderPath'?: string;
+    'graphEnabled'?: boolean;
+    'isWebGl2'?: boolean;
+    'orientation'?: Orientation;
+    'slicesIndex'?: number;
+    'slicesWindowCenter'?: number;
+    'slicesWindowWidth'?: number;
+    'src'?: string | null;
+    'srcLoaded'?: boolean;
+    'targetEntity'?: Entity;
+    'volumeSteps'?: number;
+    'volumeWindowCenter'?: number;
+    'volumeWindowWidth'?: number;
   }
 
   interface AlTabs {
@@ -193,11 +259,14 @@ export namespace Components {
 declare global {
   interface StencilElementInterfaces {
     'AlAngleEditor': Components.AlAngleEditor;
+    'AlBoundingBox': Components.AlBoundingBox;
     'AlConsole': Components.AlConsole;
     'AlControlPanel': Components.AlControlPanel;
     'AlEdgeEditor': Components.AlEdgeEditor;
     'AlNodeEditor': Components.AlNodeEditor;
     'AlNodeList': Components.AlNodeList;
+    'AlSpinner': Components.AlSpinner;
+    'AlSrc': Components.AlSrc;
     'AlTabs': Components.AlTabs;
     'AlUrlPicker': Components.AlUrlPicker;
     'UvAleph': Components.UvAleph;
@@ -205,11 +274,14 @@ declare global {
 
   interface StencilIntrinsicElements {
     'al-angle-editor': Components.AlAngleEditorAttributes;
+    'al-bounding-box': Components.AlBoundingBoxAttributes;
     'al-console': Components.AlConsoleAttributes;
     'al-control-panel': Components.AlControlPanelAttributes;
     'al-edge-editor': Components.AlEdgeEditorAttributes;
     'al-node-editor': Components.AlNodeEditorAttributes;
     'al-node-list': Components.AlNodeListAttributes;
+    'al-spinner': Components.AlSpinnerAttributes;
+    'al-src': Components.AlSrcAttributes;
     'al-tabs': Components.AlTabsAttributes;
     'al-url-picker': Components.AlUrlPickerAttributes;
     'uv-aleph': Components.UvAlephAttributes;
@@ -220,6 +292,12 @@ declare global {
   var HTMLAlAngleEditorElement: {
     prototype: HTMLAlAngleEditorElement;
     new (): HTMLAlAngleEditorElement;
+  };
+
+  interface HTMLAlBoundingBoxElement extends Components.AlBoundingBox, HTMLStencilElement {}
+  var HTMLAlBoundingBoxElement: {
+    prototype: HTMLAlBoundingBoxElement;
+    new (): HTMLAlBoundingBoxElement;
   };
 
   interface HTMLAlConsoleElement extends Components.AlConsole, HTMLStencilElement {}
@@ -252,6 +330,18 @@ declare global {
     new (): HTMLAlNodeListElement;
   };
 
+  interface HTMLAlSpinnerElement extends Components.AlSpinner, HTMLStencilElement {}
+  var HTMLAlSpinnerElement: {
+    prototype: HTMLAlSpinnerElement;
+    new (): HTMLAlSpinnerElement;
+  };
+
+  interface HTMLAlSrcElement extends Components.AlSrc, HTMLStencilElement {}
+  var HTMLAlSrcElement: {
+    prototype: HTMLAlSrcElement;
+    new (): HTMLAlSrcElement;
+  };
+
   interface HTMLAlTabsElement extends Components.AlTabs, HTMLStencilElement {}
   var HTMLAlTabsElement: {
     prototype: HTMLAlTabsElement;
@@ -272,11 +362,14 @@ declare global {
 
   interface HTMLElementTagNameMap {
     'al-angle-editor': HTMLAlAngleEditorElement
+    'al-bounding-box': HTMLAlBoundingBoxElement
     'al-console': HTMLAlConsoleElement
     'al-control-panel': HTMLAlControlPanelElement
     'al-edge-editor': HTMLAlEdgeEditorElement
     'al-node-editor': HTMLAlNodeEditorElement
     'al-node-list': HTMLAlNodeListElement
+    'al-spinner': HTMLAlSpinnerElement
+    'al-src': HTMLAlSrcElement
     'al-tabs': HTMLAlTabsElement
     'al-url-picker': HTMLAlUrlPickerElement
     'uv-aleph': HTMLUvAlephElement
@@ -284,11 +377,14 @@ declare global {
 
   interface ElementTagNameMap {
     'al-angle-editor': HTMLAlAngleEditorElement;
+    'al-bounding-box': HTMLAlBoundingBoxElement;
     'al-console': HTMLAlConsoleElement;
     'al-control-panel': HTMLAlControlPanelElement;
     'al-edge-editor': HTMLAlEdgeEditorElement;
     'al-node-editor': HTMLAlNodeEditorElement;
     'al-node-list': HTMLAlNodeListElement;
+    'al-spinner': HTMLAlSpinnerElement;
+    'al-src': HTMLAlSrcElement;
     'al-tabs': HTMLAlTabsElement;
     'al-url-picker': HTMLAlUrlPickerElement;
     'uv-aleph': HTMLUvAlephElement;

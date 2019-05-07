@@ -859,10 +859,7 @@ export class Aleph {
           {this._renderCamera()}
         </a-scene>
 
-        <al-spinner 
-          src={this.src}
-          srcLoaded={this.srcLoaded}
-        />
+        <al-spinner src={this.src} srcLoaded={this.srcLoaded} />
       </div>
     );
   }
