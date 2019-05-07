@@ -18,5 +18,5 @@ export {
   GraphUtils,
   RaycasterUtils,
   ShaderUtils,
-  ThreeUtils
+  ThreeUtils,
 };

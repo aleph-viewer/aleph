@@ -10,21 +10,6 @@ import {
 import { Store, Action } from "@stencil/redux";
 import { KeyDown } from "@edsilv/key-codes";
 import {
-  AlAngleComponent,
-  AlBoundingBoxComponent,
-  AlEdgeComponent,
-  AlFixedToOrbitCameraComponent,
-  AlGltfModelComponent,
-  AlLookToCameraComponent,
-  AlNodeComponent,
-  AlNodeSpawnerComponent,
-  AlOrbitControlComponent,
-  AlRenderOrderComponent,
-  AlRenderOverlaidComponent,
-  AlSpinnerComponent,
-  AlVolumeComponent
-} from "../../aframe";
-import {
   appClearAngles,
   appClearEdges,
   appClearNodes,
@@ -84,19 +69,27 @@ type Scene = import("aframe").Scene;
 })
 export class Aleph {
   //#region Private variables
-  private _boundingBox: THREE.Box3;
-  private _boundingSphereRadius: number;
-  private _camera: Entity;
+  private _mesh: THREE.Mesh;
+  private _scene: Scene;
+
   private _debouncedAppSetCamera: (state: AlCamera) => void;
+
+  private _camera: Entity;
+  private _targetEntity: Entity;
+
+  private _validTarget: boolean;
   private _hovered: string | null = null;
   private _isShiftDown: boolean = false;
   private _isWebGl2: boolean = true;
-  private _mesh: THREE.Mesh;
-  private _scene: Scene;
-  private _targetEntity: Entity;
-  private _validTarget: boolean;
-  private _stackhelper: AMI.VolumeRenderHelper;
+
+  private _boundingBox: THREE.Box3;
+  private _boundingSphereRadius: number;
   private _boundingEntity: Entity;
+  //#endregion
+
+  //#region AMI Extension content
+  private _stackhelper: AMI.VolumeRenderHelper;
+  //#endregion
 
   @Prop({ context: "store" }) store: Store;
   @Prop() dracoDecoderPath: string | null;
@@ -157,7 +150,6 @@ export class Aleph {
   //#endregion
 
   //#region general methods
-
   @Method()
   async load(src: string): Promise<void> {
     // validate
@@ -289,56 +281,7 @@ export class Aleph {
 
   componentWillLoad() {
     this._isWebGl2 = ThreeUtils.isWebGL2Available();
-
-    // aframe geometries
-    AframeUtils.registerGeometry(
-      AlSpinnerComponent.Tag,
-      AlSpinnerComponent.Object
-    );
-
-    // aframe components
-    AframeUtils.registerComponent(AlNodeComponent.Tag, AlNodeComponent.Object);
-    AframeUtils.registerComponent(
-      AlBoundingBoxComponent.Tag,
-      AlBoundingBoxComponent.Object
-    );
-    AframeUtils.registerComponent(
-      AlGltfModelComponent.Tag,
-      AlGltfModelComponent.Object
-    );
-    AframeUtils.registerComponent(
-      AlVolumeComponent.Tag,
-      AlVolumeComponent.Object
-    );
-    AframeUtils.registerComponent(
-      AlNodeSpawnerComponent.Tag,
-      AlNodeSpawnerComponent.Object
-    );
-    AframeUtils.registerComponent(
-      AlOrbitControlComponent.Tag,
-      AlOrbitControlComponent.Object
-    );
-    AframeUtils.registerComponent(
-      AlFixedToOrbitCameraComponent.Tag,
-      AlFixedToOrbitCameraComponent.Object
-    );
-    AframeUtils.registerComponent(
-      AlLookToCameraComponent.Tag,
-      AlLookToCameraComponent.Object
-    );
-    AframeUtils.registerComponent(
-      AlRenderOverlaidComponent.Tag,
-      AlRenderOverlaidComponent.Object
-    );
-    AframeUtils.registerComponent(
-      AlRenderOrderComponent.Tag,
-      AlRenderOrderComponent.Object
-    );
-    AframeUtils.registerComponent(AlEdgeComponent.Tag, AlEdgeComponent.Object);
-    AframeUtils.registerComponent(
-      AlAngleComponent.Tag,
-      AlAngleComponent.Object
-    );
+    AframeUtils.registerAll();
 
     // redux
 
@@ -460,143 +403,133 @@ export class Aleph {
     ).bind(this);
   }
 
-  private _renderSpinner() {
-    if (this.src && !this.srcLoaded) {
-      return (
-        <div id="spinner">
-          <div class="square" />
-        </div>
-      );
-    }
-  }
+  // private _renderSrc() {
+  //   if (!this.src) {
+  //     return null;
+  //   }
 
-  private _renderSrc() {
-    if (!this.src) {
-      return null;
-    }
+  //   switch (this.displayMode) {
+  //     case DisplayMode.MESH: {
+  //       return (
+  //         <a-entity
+  //           class="collidable"
+  //           al-node-spawner={`
+  //             graphEnabled: ${this.graphEnabled};
+  //           `}
+  //           al-gltf-model={`
+  //             src: url(${this.src});
+  //             dracoDecoderPath: ${this.dracoDecoderPath};
+  //           `}
+  //           position="0 0 0"
+  //           scale="1 1 1"
+  //           ref={(el: Entity) => (this._targetEntity = el)}
+  //         />
+  //       );
+  //     }
+  //     case DisplayMode.SLICES: {
+  //       return (
+  //         <a-entity
+  //           id="target-entity"
+  //           class="collidable"
+  //           al-node-spawner={`
+  //             graphEnabled: ${this.graphEnabled};
+  //           `}
+  //           al-volume={`
+  //             srcLoaded: ${this.srcLoaded};
+  //             src: ${this.src};
+  //             displayMode: ${this.displayMode};
+  //             slicesIndex: ${this.slicesIndex};
+  //             slicesOrientation: ${this.orientation};
+  //             slicesWindowWidth: ${this.slicesWindowWidth};
+  //             slicesWindowCenter: ${this.slicesWindowCenter};
+  //             volumeSteps: ${this.volumeSteps};
+  //             volumeWindowCenter: ${this.volumeWindowCenter};
+  //             volumeWindowWidth: ${this.volumeWindowWidth};
+  //             isWebGl2: ${this._isWebGl2};
+  //           `}
+  //           position="0 0 0"
+  //           ref={(el: Entity) => (this._targetEntity = el)}
+  //         />
+  //       );
+  //     }
+  //     case DisplayMode.VOLUME: {
+  //       return (
+  //         <a-entity
+  //           id="target-entity"
+  //           al-volume={`
+  //             srcLoaded: ${this.srcLoaded};
+  //             src: ${this.src};
+  //             displayMode: ${this.displayMode};
+  //             slicesIndex: ${this.slicesIndex};
+  //             slicesOrientation: ${this.orientation};
+  //             slicesWindowWidth: ${this.slicesWindowWidth};
+  //             slicesWindowCenter: ${this.slicesWindowCenter};
+  //             volumeSteps: ${this.volumeSteps};
+  //             volumeWindowCenter: ${this.volumeWindowCenter};
+  //             volumeWindowWidth: ${this.volumeWindowWidth};
+  //             isWebGl2: ${this._isWebGl2};
+  //           `}
+  //           position="0 0 0"
+  //           ref={(el: Entity) => (this._targetEntity = el)}
+  //         />
+  //       );
+  //     }
+  //   }
+  // }
 
-    switch (this.displayMode) {
-      case DisplayMode.MESH: {
-        return (
-          <a-entity
-            class="collidable"
-            al-node-spawner={`
-              graphEnabled: ${this.graphEnabled};
-            `}
-            al-gltf-model={`
-              src: url(${this.src});
-              dracoDecoderPath: ${this.dracoDecoderPath};
-            `}
-            position="0 0 0"
-            scale="1 1 1"
-            ref={(el: Entity) => (this._targetEntity = el)}
-          />
-        );
-      }
-      case DisplayMode.SLICES: {
-        return (
-          <a-entity
-            id="target-entity"
-            class="collidable"
-            al-node-spawner={`
-              graphEnabled: ${this.graphEnabled};
-            `}
-            al-volume={`
-              srcLoaded: ${this.srcLoaded};
-              src: ${this.src};
-              displayMode: ${this.displayMode};
-              slicesIndex: ${this.slicesIndex};
-              slicesOrientation: ${this.orientation};
-              slicesWindowWidth: ${this.slicesWindowWidth};
-              slicesWindowCenter: ${this.slicesWindowCenter};
-              volumeSteps: ${this.volumeSteps};
-              volumeWindowCenter: ${this.volumeWindowCenter};
-              volumeWindowWidth: ${this.volumeWindowWidth};
-              isWebGl2: ${this._isWebGl2};
-            `}
-            position="0 0 0"
-            ref={(el: Entity) => (this._targetEntity = el)}
-          />
-        );
-      }
-      case DisplayMode.VOLUME: {
-        return (
-          <a-entity
-            id="target-entity"
-            al-volume={`
-              srcLoaded: ${this.srcLoaded};
-              src: ${this.src};
-              displayMode: ${this.displayMode};
-              slicesIndex: ${this.slicesIndex};
-              slicesOrientation: ${this.orientation};
-              slicesWindowWidth: ${this.slicesWindowWidth};
-              slicesWindowCenter: ${this.slicesWindowCenter};
-              volumeSteps: ${this.volumeSteps};
-              volumeWindowCenter: ${this.volumeWindowCenter};
-              volumeWindowWidth: ${this.volumeWindowWidth};
-              isWebGl2: ${this._isWebGl2};
-            `}
-            position="0 0 0"
-            ref={(el: Entity) => (this._targetEntity = el)}
-          />
-        );
-      }
-    }
-  }
+  // private _renderBoundingBox() {
+  //   if (this.srcLoaded && this.boundingBoxEnabled) {
+  //     let size: THREE.Vector3 = new THREE.Vector3();
+  //     this._boundingBox.getSize(size);
 
-  private _renderBoundingBox() {
-    if (this.srcLoaded && this.boundingBoxEnabled) {
-      let size: THREE.Vector3 = new THREE.Vector3();
-      this._boundingBox.getSize(size);
+  //     // if targetEntity is a gltf, use its position (center). if it's a volume, the origin is in the bottom left, so get the position sub the geometry center
+  //     let position: THREE.Vector3;
 
-      // if targetEntity is a gltf, use its position (center). if it's a volume, the origin is in the bottom left, so get the position sub the geometry center
-      let position: THREE.Vector3;
+  //     switch (this.displayMode) {
+  //       case DisplayMode.MESH: {
+  //         position = this._targetEntity.object3D.position.clone();
+  //         break;
+  //       }
+  //       case DisplayMode.VOLUME:
+  //       case DisplayMode.SLICES: {
+  //         position = this._targetEntity.object3D.position
+  //           .clone()
+  //           .add(GetUtils.getGeometryCenter(this._mesh.geometry));
+  //         break;
+  //       }
+  //     }
 
-      switch (this.displayMode) {
-        case DisplayMode.MESH: {
-          position = this._targetEntity.object3D.position.clone();
-          break;
-        }
-        case DisplayMode.VOLUME:
-        case DisplayMode.SLICES: {
-          position = this._targetEntity.object3D.position
-            .clone()
-            .add(GetUtils.getGeometryCenter(this._mesh.geometry));
-          break;
-        }
-      }
+  //     if (this.displayMode === DisplayMode.VOLUME) {
+  //       return (
+  //         <a-entity
+  //           position={ThreeUtils.vector3ToString(position)}
+  //           al-bounding-box={`
+  //             scale: ${ThreeUtils.vector3ToString(size)};
+  //             color: ${Constants.colorValues.red};
+  //           `}
+  //           al-node-spawner={`
+  //             graphEnabled: ${this.graphEnabled};
+  //           `}
+  //           class="collidable"
+  //           ref={el => (this._boundingEntity = el)}
+  //         />
+  //       );
+  //     } else {
+  //       return (
+  //         <a-entity
+  //           position={ThreeUtils.vector3ToString(position)}
+  //           al-bounding-box={`
+  //             scale: ${ThreeUtils.vector3ToString(size)};
+  //             color: ${Constants.colorValues.red};
+  //           `}
+  //           ref={el => (this._boundingEntity = el)}
+  //         />
+  //       );
+  //     }
+  //   }
 
-      if (this.displayMode === DisplayMode.VOLUME) {
-        return (
-          <a-entity
-            position={ThreeUtils.vector3ToString(position)}
-            al-bounding-box={`
-              scale: ${ThreeUtils.vector3ToString(size)};
-              color: ${Constants.colorValues.red};
-            `}
-            al-node-spawner={`
-              graphEnabled: ${this.graphEnabled};
-            `}
-            class="collidable"
-            ref={el => (this._boundingEntity = el)}
-          />
-        );
-      } else {
-        return (
-          <a-entity
-            position={ThreeUtils.vector3ToString(position)}
-            al-bounding-box={`
-              scale: ${ThreeUtils.vector3ToString(size)};
-              color: ${Constants.colorValues.red};
-            `}
-            ref={el => (this._boundingEntity = el)}
-          />
-        );
-      }
-    }
-
-    return null;
-  }
+  //   return null;
+  // }
 
   private _renderNodes() {
     return Array.from(this.nodes).map((n: [string, AlNode]) => {
@@ -867,31 +800,6 @@ export class Aleph {
       />
     );
   }
-
-  private _renderScene() {
-    return (
-      <a-scene
-        embedded
-        renderer={`
-          colorManagement: true;
-          sortObjects: true;
-          webgl2: ${this._isWebGl2};
-          antialias: true;
-        `}
-        vr-mode-ui="enabled: false"
-        ref={el => (this._scene = el)}
-      >
-        {this._renderBoundingBox()}
-        {this._renderSrc()}
-        {this._renderNodes()}
-        {this._renderEdges()}
-        {this._renderAngles()}
-        {this._renderLights()}
-        {this._renderCamera()}
-      </a-scene>
-    );
-  }
-
   render() {
     return (
       <div
@@ -906,8 +814,55 @@ export class Aleph {
           <div id="lut-canvases" />
           <div id="lut-max">1.0</div>
         </div>
-        {this._renderScene()}
-        {this._renderSpinner()}
+
+        <a-scene
+          embedded
+          renderer={`
+            colorManagement: true;
+            sortObjects: true;
+            webgl2: ${this._isWebGl2};
+            antialias: true;
+          `}
+          vr-mode-ui="enabled: false"
+          ref={el => (this._scene = el)}
+        >
+          <al-bounding-box
+            srcLoaded={this.srcLoaded}
+            boundingBoxEnabled={this.boundingBoxEnabled}
+            boundingBox={this._boundingBox}
+            displayMode={this.displayMode}
+            targetEntity={this._targetEntity}
+            graphEnabled={this.graphEnabled}
+            boundingEntity={this._boundingEntity}
+            mesh={this._mesh}
+          />
+          <al-src
+            src={this.src}
+            srcLoaded={this.srcLoaded}
+            displayMode={this.displayMode}
+            graphEnabled={this.graphEnabled}
+            dracoDecoderPath={this.dracoDecoderPath}
+            targetEntity={this._targetEntity}
+            slicesIndex={this.slicesIndex}
+            orientation={this.orientation}
+            slicesWindowWidth={this.slicesWindowWidth}
+            slicesWindowCenter={this.slicesWindowCenter}
+            volumeSteps={this.volumeSteps}
+            volumeWindowCenter={this.volumeWindowCenter}
+            volumeWindowWidth={this.volumeWindowWidth}
+            isWebGl2={this._isWebGl2}
+          />
+          {this._renderNodes()}
+          {this._renderEdges()}
+          {this._renderAngles()}
+          {this._renderLights()}
+          {this._renderCamera()}
+        </a-scene>
+
+        <al-spinner 
+          src={this.src}
+          srcLoaded={this.srcLoaded}
+        />
       </div>
     );
   }

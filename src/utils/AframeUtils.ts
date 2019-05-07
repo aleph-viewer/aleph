@@ -3,6 +3,21 @@ import {
   GeometryDefinition,
   ComponentDefinition
 } from "aframe";
+import {
+  AlSpinnerComponent,
+  AlNodeComponent,
+  AlBoundingBoxComponent,
+  AlGltfModelComponent,
+  AlVolumeComponent,
+  AlNodeSpawnerComponent,
+  AlOrbitControlComponent,
+  AlFixedToOrbitCameraComponent,
+  AlLookToCameraComponent,
+  AlRenderOverlaidComponent,
+  AlRenderOrderComponent,
+  AlEdgeComponent,
+  AlAngleComponent
+} from "../aframe";
 
 export class AframeUtils {
   static primitiveExists(tag: string): boolean {
@@ -33,5 +48,57 @@ export class AframeUtils {
     if (!this.componentExists(tag)) {
       AFRAME.registerComponent(tag, obj);
     }
+  }
+
+  static registerAll() {
+    // aframe geometries
+    AframeUtils.registerGeometry(
+      AlSpinnerComponent.Tag,
+      AlSpinnerComponent.Object
+    );
+
+    // aframe components
+    AframeUtils.registerComponent(AlNodeComponent.Tag, AlNodeComponent.Object);
+    AframeUtils.registerComponent(
+      AlBoundingBoxComponent.Tag,
+      AlBoundingBoxComponent.Object
+    );
+    AframeUtils.registerComponent(
+      AlGltfModelComponent.Tag,
+      AlGltfModelComponent.Object
+    );
+    AframeUtils.registerComponent(
+      AlVolumeComponent.Tag,
+      AlVolumeComponent.Object
+    );
+    AframeUtils.registerComponent(
+      AlNodeSpawnerComponent.Tag,
+      AlNodeSpawnerComponent.Object
+    );
+    AframeUtils.registerComponent(
+      AlOrbitControlComponent.Tag,
+      AlOrbitControlComponent.Object
+    );
+    AframeUtils.registerComponent(
+      AlFixedToOrbitCameraComponent.Tag,
+      AlFixedToOrbitCameraComponent.Object
+    );
+    AframeUtils.registerComponent(
+      AlLookToCameraComponent.Tag,
+      AlLookToCameraComponent.Object
+    );
+    AframeUtils.registerComponent(
+      AlRenderOverlaidComponent.Tag,
+      AlRenderOverlaidComponent.Object
+    );
+    AframeUtils.registerComponent(
+      AlRenderOrderComponent.Tag,
+      AlRenderOrderComponent.Object
+    );
+    AframeUtils.registerComponent(AlEdgeComponent.Tag, AlEdgeComponent.Object);
+    AframeUtils.registerComponent(
+      AlAngleComponent.Tag,
+      AlAngleComponent.Object
+    );
   }
 }
