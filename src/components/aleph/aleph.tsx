@@ -91,11 +91,10 @@ export class Aleph {
   private _hovered: string | null = null;
   private _isShiftDown: boolean = false;
   private _isWebGl2: boolean = true;
-  private _mesh: THREE.Mesh;
+  private _loadedObject: any;
   private _scene: Scene;
   private _targetEntity: Entity;
   private _validTarget: boolean;
-  private _stackhelper: AMI.VolumeRenderHelper;
   private _boundingEntity: Entity;
 
   @Prop({ context: "store" }) store: Store;
@@ -561,7 +560,7 @@ export class Aleph {
         case DisplayMode.SLICES: {
           position = this._targetEntity.object3D.position
             .clone()
-            .add(GetUtils.getGeometryCenter(this._mesh.geometry));
+            .add(GetUtils.getGeometryCenter(this._getMesh().geometry));
           break;
         }
       }
@@ -1168,41 +1167,62 @@ export class Aleph {
     this._stateChanged();
   }
 
+  private _getStackHelper(): AMI.VolumeRenderHelper | null {
+    let stackhelper: AMI.VolumeRenderHelper | null = null;
+
+    if (this.displayMode === DisplayMode.VOLUME) {
+      stackhelper = this._loadedObject;
+    }
+
+    return stackhelper;
+  }
+
+  private _getMesh(): THREE.Mesh | null {
+    let mesh: THREE.Mesh | null = null;
+
+    if (this.displayMode == DisplayMode.MESH) {
+      const model = this._targetEntity.object3DMap.mesh;
+
+      if (model instanceof THREE.Mesh) {
+        mesh = model;
+      } else {
+        model.traverse(child => {
+          if (child instanceof THREE.Mesh && mesh === null) {
+            mesh = child;
+          }
+        });
+      }
+    } else if (this._loadedObject._bBox) {
+      mesh = this._loadedObject._bBox._mesh;
+    } else {
+      mesh = this._loadedObject._mesh;
+    }
+
+    return mesh;
+  }
+
   private _srcLoaded(ev: any): void {
-    const aframeMesh: THREE.Mesh = this._targetEntity.object3DMap
-      .mesh as THREE.Mesh;
+    this._loadedObject = ev.detail;
 
-    switch (this.displayMode) {
-      case DisplayMode.MESH: {
-        this._mesh = aframeMesh;
-        this._stackhelper = null;
-        break;
+    let mesh: THREE.Mesh | null = this._getMesh();
+
+    if (mesh) {
+      mesh.geometry.computeBoundingSphere();
+      this._boundingSphereRadius = mesh.geometry.boundingSphere.radius;
+      this._boundingBox = GetUtils.getBoundingBox(mesh);
+
+      let cameraState: AlCamera = GetUtils.getCameraStateFromMesh(mesh);
+
+      if (cameraState) {
+        this.appSetCamera(cameraState);
       }
-      case DisplayMode.SLICES: {
-        this._mesh = ev.detail._bBox._mesh;
-        this._stackhelper = null;
-        break;
-      }
-      case DisplayMode.VOLUME: {
-        this._mesh = ev.detail._mesh;
-        this._stackhelper = ev.detail;
-        break;
-      }
+
+      this.appSetSrcLoaded(true);
+      this._stateChanged();
+      this.loaded.emit(ev.detail);
+    } else {
+      throw new Error("Unable to find a mesh in loaded object");
     }
-
-    this._mesh.geometry.computeBoundingSphere();
-    this._boundingSphereRadius = this._mesh.geometry.boundingSphere.radius;
-    this._boundingBox = GetUtils.getBoundingBox(this._mesh);
-
-    let cameraState: AlCamera = GetUtils.getCameraStateFromMesh(this._mesh);
-
-    if (cameraState) {
-      this.appSetCamera(cameraState);
-    }
-
-    this.appSetSrcLoaded(true);
-    this._stateChanged();
-    this.loaded.emit(ev.detail);
   }
   //#endregion
 
@@ -1273,7 +1293,7 @@ export class Aleph {
         let hitNormal = new THREE.Vector3();
 
         let rayResult = AMIUtils.volumeRay(
-          this._stackhelper,
+          this._getStackHelper(),
           this._camera.object3D.children[0].position.clone(),
           this._camera.getAttribute("raycaster").direction,
           Constants.cameraValues.far,
@@ -1385,7 +1405,7 @@ export class Aleph {
         let hitNormal = new THREE.Vector3();
 
         let rayResult = AMIUtils.volumeRay(
-          this._stackhelper,
+          this._getStackHelper(),
           orbitPosition.clone(),
           raycasterAttribute.direction,
           Constants.cameraValues.far,

@@ -1,5 +1,4 @@
 import { AframeRegistryEntry } from "../../interfaces";
-import { GLTFUtils } from "../../utils";
 import { ComponentDefinition } from "aframe";
 
 interface AlGltfModelDefinition extends ComponentDefinition {}
@@ -30,9 +29,10 @@ export class AlGltfModelComponent implements AframeRegistryEntry {
           this.loader.load(
             src,
             function gltfLoaded(gltfModel) {
-              let res = GLTFUtils.setup(gltfModel);
-              self.model = res.mesh;
+              self.model = gltfModel.scene || gltfModel.scenes[0];
+              self.model.animations = gltfModel.animations;
               el.setObject3D("mesh", self.model);
+
               el.sceneEl.emit(
                 AlGltfModelEvents.LOADED,
                 {
