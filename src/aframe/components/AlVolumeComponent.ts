@@ -325,6 +325,8 @@ export class AlVolumeComponent implements AframeRegistryEntry {
         this.el.removeObject3D("mesh");
         this.removeListeners();
 
+        (this.el.sceneEl.object3D as THREE.Scene).background = null;
+
         if (this.state.bufferScenePlaneMesh) {
           this.state.bufferScenePlaneMesh.remove();
         }
