@@ -1,34 +1,39 @@
-import { AframeRegistryEntry } from "../../interfaces";
 import { Constants } from "../../Constants";
-import { ComponentDefinition } from "aframe";
+import { BaseComponent } from "./BaseComponent";
 
-interface AlRenderOrderDefinition extends ComponentDefinition {}
+interface AlRenderOrderDefinition extends BaseComponent {}
 
-export class AlRenderOrderComponent implements AframeRegistryEntry {
-  public static get Object(): AlRenderOrderDefinition {
-    return {
-      schema: {
-        order: { type: "number", default: Constants.topLayerRenderOrder }
-      },
+export default AFRAME.registerComponent("al-render-order", {
+  schema: {
+    order: { type: "number", default: Constants.topLayerRenderOrder }
+  },
 
-      init(_data?: any) {
-        Object.keys(this.el.object3DMap).forEach(key => {
-          (this.el.object3DMap[
-            key
-          ] as THREE.Object3D).renderOrder = this.data.order;
-        });
-      },
+  init() {
+    this.bindMethods();
+    this.addEventListeners();
 
-      update() {
-        Object.keys(this.el.object3DMap).forEach(key => {
-          (this.el.object3DMap[
-            key
-          ] as THREE.Object3D).renderOrder = this.data.order;
-        });
-      }
-    } as AlRenderOrderDefinition;
+    Object.keys(this.el.object3DMap).forEach(key => {
+      (this.el.object3DMap[
+        key
+      ] as THREE.Object3D).renderOrder = this.data.order;
+    });
+  },
+
+  bindMethods(): void {},
+
+  addEventListeners(): void {},
+
+  removeEventListeners(): void {},
+
+  update() {
+    Object.keys(this.el.object3DMap).forEach(key => {
+      (this.el.object3DMap[
+        key
+      ] as THREE.Object3D).renderOrder = this.data.order;
+    });
+  },
+
+  remove(): void {
+    this.removeEventListeners();
   }
-  public static get Tag(): string {
-    return "al-render-order";
-  }
-}
+} as AlRenderOrderDefinition);

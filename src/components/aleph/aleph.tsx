@@ -9,20 +9,11 @@ import {
 } from "@stencil/core";
 import { Store, Action } from "@stencil/redux";
 import { KeyDown } from "@edsilv/key-codes";
+import "../../aframe";
 import {
-  AlAngleComponent,
-  AlBoundingBoxComponent,
-  AlEdgeComponent,
-  AlFixedToOrbitCameraComponent,
-  AlGltfModelComponent,
-  AlLookToCameraComponent,
-  AlNodeComponent,
-  AlNodeSpawnerComponent,
-  AlOrbitControlComponent,
-  AlRenderOrderComponent,
-  AlRenderOverlaidComponent,
-  AlSpinnerComponent,
-  AlVolumeComponent
+  AlGltfModelEvents,
+  AlNodeSpawnerEvents,
+  AlOrbitControlEvents
 } from "../../aframe";
 import {
   appClearAngles,
@@ -57,7 +48,6 @@ import { AlNode, AlCamera, AlEdge, AlAngle } from "../../interfaces";
 import {
   GetUtils,
   ThreeUtils,
-  AframeUtils,
   GraphUtils,
   AlGraphEvents,
   AMIUtils,
@@ -65,11 +55,6 @@ import {
 } from "../../utils";
 import { Constants } from "../../Constants";
 import { Orientation, DisplayMode } from "../../enums";
-import {
-  AlGltfModelEvents,
-  AlNodeSpawnerEvents,
-  AlOrbitControlEvents
-} from "../../aframe";
 import { AlGraphEntryType } from "../../enums";
 import { AlGraph } from "../../interfaces/AlGraph";
 import { AlVolumeEvents } from "../../aframe/components/AlVolumeComponent";
@@ -288,56 +273,6 @@ export class Aleph {
 
   componentWillLoad() {
     this._isWebGl2 = ThreeUtils.isWebGL2Available();
-
-    // aframe geometries
-    AframeUtils.registerGeometry(
-      AlSpinnerComponent.Tag,
-      AlSpinnerComponent.Object
-    );
-
-    // aframe components
-    AframeUtils.registerComponent(AlNodeComponent.Tag, AlNodeComponent.Object);
-    AframeUtils.registerComponent(
-      AlBoundingBoxComponent.Tag,
-      AlBoundingBoxComponent.Object
-    );
-    AframeUtils.registerComponent(
-      AlGltfModelComponent.Tag,
-      AlGltfModelComponent.Object
-    );
-    AframeUtils.registerComponent(
-      AlVolumeComponent.Tag,
-      AlVolumeComponent.Object
-    );
-    AframeUtils.registerComponent(
-      AlNodeSpawnerComponent.Tag,
-      AlNodeSpawnerComponent.Object
-    );
-    AframeUtils.registerComponent(
-      AlOrbitControlComponent.Tag,
-      AlOrbitControlComponent.Object
-    );
-    AframeUtils.registerComponent(
-      AlFixedToOrbitCameraComponent.Tag,
-      AlFixedToOrbitCameraComponent.Object
-    );
-    AframeUtils.registerComponent(
-      AlLookToCameraComponent.Tag,
-      AlLookToCameraComponent.Object
-    );
-    AframeUtils.registerComponent(
-      AlRenderOverlaidComponent.Tag,
-      AlRenderOverlaidComponent.Object
-    );
-    AframeUtils.registerComponent(
-      AlRenderOrderComponent.Tag,
-      AlRenderOrderComponent.Object
-    );
-    AframeUtils.registerComponent(AlEdgeComponent.Tag, AlEdgeComponent.Object);
-    AframeUtils.registerComponent(
-      AlAngleComponent.Tag,
-      AlAngleComponent.Object
-    );
 
     // redux
 

@@ -1,7 +1,6 @@
-import { AframeRegistryEntry } from "../../interfaces";
 import { ThreeUtils } from "../../utils";
-import { ComponentDefinition } from "aframe";
 import { Constants } from "../../Constants";
+import { BaseComponent } from "./BaseComponent";
 
 interface AlBoundingBoxState {
   box: THREE.Box3;
@@ -11,56 +10,60 @@ interface AlBoundingBoxState {
   mesh: THREE.Mesh;
 }
 
-export class AlBoundingBoxDefinition implements AframeRegistryEntry {
-  public static get Object(): ComponentDefinition {
-    return {
-      schema: {
-        color: { type: "string", default: "#f50057" },
-        scale: { type: "string" }
-      },
+interface AlBoundingBoxComponent extends BaseComponent {}
 
-      init(_data): void {
-        this.state = {
-          box: new THREE.Box3()
-        } as AlBoundingBoxState;
-      },
+export default AFRAME.registerComponent("al-bounding-box", {
+  schema: {
+    color: { type: "string", default: "#f50057" },
+    scale: { type: "string" }
+  },
 
-      update(): void {
-        const el = this.el;
-        let state = this.state as AlBoundingBoxState;
-        let scale = ThreeUtils.stringToVector3(this.data.scale);
+  init(): void {
+    this.bindMethods();
+    this.addEventListeners();
 
-        state.box.setFromCenterAndSize(new THREE.Vector3(0, 0, 0), scale);
+    this.state = {
+      box: new THREE.Box3()
+    } as AlBoundingBoxState;
+  },
 
-        // Add a second mesh for raycasting in volume mode
-        let geometry = new THREE.BoxGeometry(scale.x, scale.y, scale.z);
-        let material = new THREE.MeshBasicMaterial({
-          color: this.data.color,
-          visible: false
-        });
-        let mesh = new THREE.Mesh(geometry, material);
-        el.setObject3D("mesh2", mesh);
+  bindMethods(): void {},
 
-        state.boundingBox = new (THREE as any).Box3Helper(
-          state.box as any,
-          this.data.color
-        );
-        state.boundingBox.renderOrder = Constants.topLayerRenderOrder - 5;
-        el.setObject3D("mesh", state.boundingBox);
+  addEventListeners(): void {},
 
-        state.geometry = geometry;
-        state.material = material;
-        state.mesh = mesh;
-      },
+  removeEventListeners(): void {},
 
-      remove(): void {
-        this.el.removeObject3D("mesh");
-        this.el.removeObject3D("mesh2");
-      }
-    } as ComponentDefinition;
+  update(): void {
+    const el = this.el;
+    let state = this.state as AlBoundingBoxState;
+    let scale = ThreeUtils.stringToVector3(this.data.scale);
+
+    state.box.setFromCenterAndSize(new THREE.Vector3(0, 0, 0), scale);
+
+    // Add a second mesh for raycasting in volume mode
+    let geometry = new THREE.BoxGeometry(scale.x, scale.y, scale.z);
+    let material = new THREE.MeshBasicMaterial({
+      color: this.data.color,
+      visible: false
+    });
+    let mesh = new THREE.Mesh(geometry, material);
+    el.setObject3D("mesh2", mesh);
+
+    state.boundingBox = new (THREE as any).Box3Helper(
+      state.box as any,
+      this.data.color
+    );
+    state.boundingBox.renderOrder = Constants.topLayerRenderOrder - 5;
+    el.setObject3D("mesh", state.boundingBox);
+
+    state.geometry = geometry;
+    state.material = material;
+    state.mesh = mesh;
+  },
+
+  remove(): void {
+    this.removeEventListeners();
+    this.el.removeObject3D("mesh");
+    this.el.removeObject3D("mesh2");
   }
-
-  public static get Tag(): string {
-    return "al-bounding-box";
-  }
-}
+} as AlBoundingBoxComponent);

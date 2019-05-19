@@ -1,35 +1,38 @@
-import { AframeRegistryEntry } from "../../interfaces";
 import { Constants } from "../../Constants";
-import { ComponentDefinition } from "aframe";
+import { BaseComponent } from "./BaseComponent";
 
-interface AlLookToCameraDefinition extends ComponentDefinition {
+interface AlLookToCameraComponent extends BaseComponent {
   tickFunction(): void;
 }
 
-export class AlLookToCameraComponent implements AframeRegistryEntry {
-  public static get Object(): AlLookToCameraDefinition {
-    return {
-      schema: {},
+export default AFRAME.registerComponent("al-look-to-camera", {
+  schema: {},
 
-      init() {
-        this.tickFunction = AFRAME.utils.throttle(
-          this.tickFunction,
-          Constants.minFrameMS,
-          this
-        );
-      },
+  init() {
+    this.bindMethods();
+    this.addEventListeners();
+    this.tickFunction = AFRAME.utils.throttle(
+      this.tickFunction,
+      Constants.minFrameMS,
+      this
+    );
+  },
 
-      tickFunction() {
-        this.el.object3D.lookAt(this.el.sceneEl.camera.position);
-      },
+  bindMethods(): void {},
 
-      tick() {
-        this.tickFunction();
-      }
-    } as AlLookToCameraDefinition;
+  addEventListeners(): void {},
+
+  removeEventListeners(): void {},
+
+  tickFunction() {
+    this.el.object3D.lookAt(this.el.sceneEl.camera.position);
+  },
+
+  tick() {
+    this.tickFunction();
+  },
+
+  remove(): void {
+    this.removeEventListeners();
   }
-
-  public static get Tag(): string {
-    return "al-look-to-camera";
-  }
-}
+} as AlLookToCameraComponent);
