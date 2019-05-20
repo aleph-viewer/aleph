@@ -143,16 +143,15 @@ export class Aleph {
   //#region general methods
 
   @Method()
-  async load(src: string): Promise<void> {
+  async load(src: string, displayMode?: DisplayMode): Promise<void> {
     // validate
-
     if (this.src) {
       this._setSrc(null); // shows loading spinner and resets gltf-model
       setTimeout(() => {
-        this._setSrc(src);
+        this._setSrc(src, displayMode);
       }, Constants.minLoadingMS);
     } else {
-      this._setSrc(src);
+      this._setSrc(src, displayMode);
     }
   }
 
@@ -1097,8 +1096,8 @@ export class Aleph {
     this._stateChanged();
   }
 
-  private _setSrc(src: string): void {
-    this.appSetSrc(src);
+  private _setSrc(src: string, displayMode?: DisplayMode): void {
+    this.appSetSrc([src, displayMode]);
     this._stateChanged();
   }
 
