@@ -20,12 +20,12 @@ import {
   Orientation,
 } from './enums/Orientation';
 import {
-  AlGraph,
-} from './interfaces/AlGraph';
-import {
   DisplayMode as DisplayMode2,
   Orientation as Orientation2,
 } from './enums';
+import {
+  AlGraph,
+} from './interfaces/AlGraph';
 
 
 export namespace Components {
@@ -154,7 +154,7 @@ export namespace Components {
     'deleteNode': (nodeId: string) => Promise<void>;
     'dracoDecoderPath': string | null;
     'height': string;
-    'load': (src: string) => Promise<void>;
+    'load': (src: string, displayMode?: DisplayMode) => Promise<void>;
     'resize': () => Promise<void>;
     'selectNode': (nodeId: string) => Promise<void>;
     'setBoundingBoxEnabled': (visible: boolean) => Promise<void>;

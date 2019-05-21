@@ -36,13 +36,20 @@ export const app = (
   switch (action.type) {
     //#region src
     case TypeKeys.APP_SET_SRC: {
-      let displayMode: DisplayMode = DisplayMode.MESH;
+      const [src, plDisplayMode] = action.payload;
+      let displayMode: DisplayMode;
 
-      if (action.payload) {
-        const fileExtension: string = GetUtils.getFileExtension(action.payload);
-        if (!Object.values(MeshFileType).includes(fileExtension)) {
+      if (plDisplayMode) {
+        displayMode = plDisplayMode;
+      } else if (src) {
+        const fileExtension: string = GetUtils.getFileExtension(src);
+        if (Object.values(MeshFileType).includes(fileExtension)) {
+          displayMode = DisplayMode.MESH;
+        } else {
           displayMode = DisplayMode.SLICES; // if not a mesh, default to slices
         }
+      } else {
+        displayMode = DisplayMode.MESH;
       }
 
       return {
@@ -57,7 +64,7 @@ export const app = (
         slicesIndex: 0,
         slicesWindowCenter: 0,
         slicesWindowWidth: 0,
-        src: action.payload,
+        src: src,
         srcLoaded: false,
         volumeSteps: 16,
         volumeWindowCenter: 0,

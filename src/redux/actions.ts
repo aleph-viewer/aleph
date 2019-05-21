@@ -73,10 +73,13 @@ export enum TypeKeys {
 
 export interface AppSetSrcAction {
   type: TypeKeys.APP_SET_SRC;
-  payload: string;
+  payload: [string, DisplayMode | undefined];
 }
 
-export const appSetSrc = (payload: string) => async (dispatch, _getState) => {
+export const appSetSrc = (payload: [string, DisplayMode | undefined]) => async (
+  dispatch,
+  _getState
+) => {
   return dispatch({
     type: TypeKeys.APP_SET_SRC,
     payload: payload

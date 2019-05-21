@@ -82,15 +82,16 @@ Type: `Promise<void>`
 
 
 
-### `load(src: string) => Promise<void>`
+### `load(src: string, displayMode?: DisplayMode) => Promise<void>`
 
 
 
 #### Parameters
 
-| Name  | Type     | Description |
-| ----- | -------- | ----------- |
-| `src` | `string` |             |
+| Name          | Type                                                           | Description |
+| ------------- | -------------------------------------------------------------- | ----------- |
+| `src`         | `string`                                                       |             |
+| `displayMode` | `DisplayMode.MESH \| DisplayMode.SLICES \| DisplayMode.VOLUME` |             |
 
 #### Returns
 
