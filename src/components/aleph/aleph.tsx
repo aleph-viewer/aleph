@@ -486,23 +486,21 @@ export class Aleph {
     ) {
       let display = AFRAME.utils.device.getVRDisplay();
       console.log((display as any).displayName);
-
-      //if (isHTCVive) {
+      444;
       return (
-        <a-entity id="vive-controllers">
-          <a-entity vive-controls="hand: left" id="left_hand" />
-          <a-entity vive-controls="hand: right" id="right_hand" />
+        <a-entity id="controllers">
+          <a-entity
+            laser-controls="hand: left"
+            raycaster="objects: .collidable;"
+            id="left_hand"
+          />
+          <a-entity
+            laser-touch-controls="hand: right"
+            raycaster="objects: .collidable;"
+            id="right_hand"
+          />
         </a-entity>
       );
-      // }
-      // else if (isOcculusTouch) {
-      //   return (
-      //     <a-entity id="vive-controllers">
-      //       <a-entity oculus-touch-controls="hand: left" id="left_hand"></a-entity>
-      //       <a-entity oculus-touch-controls="hand: right" id="right_hand"></a-entity>
-      //     </a-entity>
-      //   );
-      // }
     }
   }
 
