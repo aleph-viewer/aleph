@@ -76,6 +76,7 @@ export class Aleph {
   private _hovered: string | null = null;
   private _isShiftDown: boolean = false;
   private _isWebGl2: boolean = true;
+  private _vrModeEnabled: boolean = true; // todo: make this a prop
   private _loadedObject: any;
   private _scene: Scene;
   private _targetEntity: Entity;
@@ -477,6 +478,34 @@ export class Aleph {
     }
   }
 
+  private _renderVRControls() {
+    if (
+      this._vrModeEnabled &&
+      !AFRAME.utils.device.isMobile() &&
+      AFRAME.utils.device.checkHeadsetConnected()
+    ) {
+      let display = AFRAME.utils.device.getVRDisplay();
+      console.log((display as any).displayName);
+
+      //if (isHTCVive) {
+      return (
+        <a-entity id="vive-controllers">
+          <a-entity vive-controls="hand: left" id="left_hand" />
+          <a-entity vive-controls="hand: right" id="right_hand" />
+        </a-entity>
+      );
+      // }
+      // else if (isOcculusTouch) {
+      //   return (
+      //     <a-entity id="vive-controllers">
+      //       <a-entity oculus-touch-controls="hand: left" id="left_hand"></a-entity>
+      //       <a-entity oculus-touch-controls="hand: right" id="right_hand"></a-entity>
+      //     </a-entity>
+      //   );
+      // }
+    }
+  }
+
   private _renderBoundingBox() {
     if (this.srcLoaded && this.boundingBoxEnabled) {
       let size: THREE.Vector3 = new THREE.Vector3();
@@ -775,7 +804,7 @@ export class Aleph {
         look-controls="enabled: false"
         far={Constants.cameraValues.far}
         id="mainCamera"
-        cursor="rayOrigin: mouse"
+        cursor="rayOrigin: mouse; downEvents: [triggerdown];"
         raycaster="objects: .collidable;"
         al-orbit-control={`
           maxPolarAngle: ${Constants.cameraValues.maxPolarAngle};
@@ -811,9 +840,10 @@ export class Aleph {
           webgl2: ${this._isWebGl2};
           antialias: true;
         `}
-        vr-mode-ui="enabled: false"
+        vr-mode-ui={`enabled: ${this._vrModeEnabled};`}
         ref={el => (this._scene = el)}
       >
+        {this._renderVRControls()}
         {this._renderBoundingBox()}
         {this._renderSrc()}
         {this._renderNodes()}
