@@ -416,6 +416,7 @@ export class Aleph {
             class="collidable"
             al-node-spawner={`
               graphEnabled: ${this.graphEnabled};
+              vrMode: ${this._vrModeEnabled};
             `}
             al-gltf-model={`
               src: url(${this.src});
@@ -434,6 +435,7 @@ export class Aleph {
             class="collidable"
             al-node-spawner={`
               graphEnabled: ${this.graphEnabled};
+              vrMode: ${this._vrModeEnabled};
             `}
             al-volume={`
               srcLoaded: ${this.srcLoaded};
