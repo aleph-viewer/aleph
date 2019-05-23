@@ -29,20 +29,20 @@
     "redux-thunk": "2.3.0"
   },
   "devDependencies": {
-    "@stencil/core": "0.18.0",
-    "@types/aframe": "^0.8.2",
-    "@types/jest": "23.3.14",
-    "@types/puppeteer": "1.12.3",
+    "@stencil/core": "0.18.1",
+    "@types/aframe": "^0.8.3",
+    "@types/jest": "24.0.13",
+    "@types/puppeteer": "1.12.4",
     "@types/redux": "3.6.0",
-    "@types/three": "0.93.30",
+    "@types/three": "0.103.2",
     "copyfiles": "2.1.0",
     "cross-env": "^5.2.0",
-    "jest": "23.6.0",
-    "jest-cli": "^23.6.0",
-    "prettier": "^1.16.4",
+    "jest": "24.8.0",
+    "jest-cli": "^24.8.0",
+    "prettier": "^1.17.1",
     "prettier-check": "^2.0.0",
-    "puppeteer": "1.11.0",
-    "typescript-tslint-plugin": "^0.3.1"
+    "puppeteer": "^1.16.0",
+    "typescript-tslint-plugin": "^0.4.0"
   },
   "license": "MIT"
 }

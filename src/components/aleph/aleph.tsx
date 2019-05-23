@@ -397,6 +397,7 @@ export class Aleph {
     this._srcLoaded = this._srcLoaded.bind(this);
 
     this._vrModeEnabledHandler = this._vrModeEnabledHandler.bind(this);
+    this._vrModeDisabledHandler = this._vrModeDisabledHandler.bind(this);
 
     // debounced event handlers
     this._debouncedAppSetCamera = EventUtils.debounce(
@@ -499,7 +500,7 @@ export class Aleph {
     ) {
       let display = AFRAME.utils.device.getVRDisplay();
       console.log((display as any).displayName);
-      444;
+
       return (
         <a-entity id="controllers">
           <a-entity
@@ -1251,8 +1252,12 @@ export class Aleph {
     this._debouncedAppSetCamera(event.detail.cameraState);
   }
 
-  private _vrModeEnabledHandler(event: CustomEvent): void {
-    this._setVRModeEnabled(event.detail.enabled);
+  private _vrModeEnabledHandler(_event: CustomEvent): void {
+    this._setVRModeEnabled(true);
+  }
+
+  private _vrModeDisabledHandler(_event: CustomEvent): void {
+    this._setVRModeEnabled(false);
   }
 
   private _spawnNodeHandler(event: CustomEvent): void {
@@ -1455,8 +1460,8 @@ export class Aleph {
     window.addEventListener("keydown", this._keyDownHandler, false);
     window.addEventListener("keyup", this._keyUpHandler, false);
 
-    window.addEventListener("gripDown", this._gripDownHandler, false);
-    window.addEventListener("gripDown", this._gripUpHandler, false);
+    window.addEventListener("gripdown", this._gripDownHandler, false);
+    window.addEventListener("gripup", this._gripUpHandler, false);
 
     this._scene.addEventListener(
       AlOrbitControlEvents.ANIMATION_FINISHED,
@@ -1534,7 +1539,7 @@ export class Aleph {
 
     this._scene.addEventListener("enter-vr", this._vrModeEnabledHandler, false);
 
-    this._scene.addEventListener("exit-vr", this._vrModeEnabledHandler, false);
+    this._scene.addEventListener("exit-vr", this._vrModeDisabledHandler, false);
   }
   //#endregion
 
