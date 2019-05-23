@@ -20,7 +20,7 @@ interface AlNodeSpawnerComponent extends BaseComponent {
 export default AFRAME.registerComponent("al-node-spawner", {
   schema: {
     graphEnabled: { type: "boolean" },
-    vrMode: {type: "boolean" }
+    vrMode: { type: "boolean" }
   },
 
   init(): void {

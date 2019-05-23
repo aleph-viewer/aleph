@@ -1432,7 +1432,7 @@ export class Aleph {
   private _gripDownHandler() {
     this._isChainingEnabled = true;
   }
-  
+
   private _gripUpHandler() {
     this._isChainingEnabled = false;
   }
