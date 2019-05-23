@@ -75,7 +75,7 @@ export class Aleph {
   private _camera: Entity;
   private _debouncedAppSetCamera: (state: AlCamera) => void;
   private _hovered: string | null = null;
-  private _isShiftDown: boolean = false;
+  private _isChainingEnabled: boolean = false;
   private _isWebGl2: boolean = true;
   private _loadedObject: any;
   private _scene: Scene;
@@ -383,6 +383,10 @@ export class Aleph {
     );
     this._keyDownHandler = this._keyDownHandler.bind(this);
     this._keyUpHandler = this._keyUpHandler.bind(this);
+
+    this._gripDownHandler = this._gripDownHandler.bind(this);
+    this._gripUpHandler = this._gripUpHandler.bind(this);
+
     this._controlsInteractionFinishedHandler = this._controlsInteractionFinishedHandler.bind(
       this
     );
@@ -418,6 +422,7 @@ export class Aleph {
             class="collidable"
             al-node-spawner={`
               graphEnabled: ${this.graphEnabled};
+              vrMode: ${this._vrModeEnabled};
             `}
             al-gltf-model={`
               src: url(${this.src});
@@ -436,6 +441,7 @@ export class Aleph {
             class="collidable"
             al-node-spawner={`
               graphEnabled: ${this.graphEnabled};
+              vrMode: ${this._vrModeEnabled};
             `}
             al-volume={`
               srcLoaded: ${this.srcLoaded};
@@ -1192,7 +1198,7 @@ export class Aleph {
 
   //#region Event Handlers
   private _keyDownHandler(event: KeyboardEvent) {
-    this._isShiftDown = event.shiftKey;
+    this._isChainingEnabled = event.shiftKey;
 
     if (event.keyCode === KeyDown.Delete) {
       if (this.selected) {
@@ -1208,7 +1214,7 @@ export class Aleph {
   }
 
   private _keyUpHandler(_event: KeyboardEvent) {
-    this._isShiftDown = false;
+    this._isChainingEnabled = false;
   }
 
   private _graphEntryPointerUpHandler(_event: CustomEvent): void {
@@ -1286,7 +1292,7 @@ export class Aleph {
         this._setNode([nodeId, newNode]);
 
         if (
-          this._isShiftDown && // Shift is down
+          this._isChainingEnabled && // Shift is down
           this.nodes.has(previousSelected) // A Node is already selected
         ) {
           this._createEdge(previousSelected, nodeId);
@@ -1322,7 +1328,7 @@ export class Aleph {
           this.nodes.has(this._hovered) && // We're intersecting a node
           (this.selected !== null && this.nodes.has(this.selected)) && // We have a node already selected
           this.selected !== this._hovered && // The selected & intersecting elements are not the same
-          this._isShiftDown // The shift key is down
+          this._isChainingEnabled // The shift key is down
         ) {
           this._createEdge(this.selected, this._hovered);
         }
@@ -1335,7 +1341,7 @@ export class Aleph {
           this.edges.has(this._hovered) && // We're intersecting an edge
           (this.selected !== null && this.edges.has(this.selected)) && // We have an edge already selected
           this.selected !== this._hovered && // The selected & intersecting elements are not the same
-          this._isShiftDown // The shift key is down
+          this._isChainingEnabled // The shift key is down
         ) {
           // We're intersecting an edge
           this._createAngle(this.selected, this._hovered);
@@ -1423,9 +1429,20 @@ export class Aleph {
     // );
   }
 
+  private _gripDownHandler() {
+    this._isChainingEnabled = true;
+  }
+  
+  private _gripUpHandler() {
+    this._isChainingEnabled = false;
+  }
+
   private _addEventListeners(): void {
     window.addEventListener("keydown", this._keyDownHandler, false);
     window.addEventListener("keyup", this._keyUpHandler, false);
+
+    window.addEventListener("gripDown", this._gripDownHandler, false);
+    window.addEventListener("gripDown", this._gripUpHandler, false);
 
     this._scene.addEventListener(
       AlOrbitControlEvents.ANIMATION_FINISHED,
