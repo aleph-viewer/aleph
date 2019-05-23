@@ -41,7 +41,8 @@ import {
   appSetSrcLoaded,
   appSetVolumeSteps,
   appSetVolumeWindowCenter,
-  appSetVolumeWindowWidth
+  appSetVolumeWindowWidth,
+  appSetVRModeEnabled
 } from "../../redux/actions";
 import { configureStore } from "../../redux/store";
 import { AlNode, AlCamera, AlEdge, AlAngle } from "../../interfaces";
@@ -76,7 +77,6 @@ export class Aleph {
   private _hovered: string | null = null;
   private _isShiftDown: boolean = false;
   private _isWebGl2: boolean = true;
-  private _vrModeEnabled: boolean = true; // todo: make this a prop
   private _loadedObject: any;
   private _scene: Scene;
   private _targetEntity: Entity;
@@ -115,6 +115,7 @@ export class Aleph {
   appSetVolumeSteps: Action;
   appSetVolumeWindowCenter: Action;
   appSetVolumeWindowWidth: Action;
+  appSetVRModeEnabled: Action;
   //#endregion
 
   //#region state
@@ -139,6 +140,7 @@ export class Aleph {
   @State() volumeSteps: number;
   @State() volumeWindowCenter: number;
   @State() volumeWindowWidth: number;
+  @State() vrModeEnabled: boolean;
   //#endregion
 
   //#region general methods
@@ -480,7 +482,7 @@ export class Aleph {
 
   private _renderVRControls() {
     if (
-      this._vrModeEnabled &&
+      this.vrModeEnabled &&
       !AFRAME.utils.device.isMobile() &&
       AFRAME.utils.device.checkHeadsetConnected()
     ) {
@@ -1496,6 +1498,18 @@ export class Aleph {
     this._scene.addEventListener(
       AlGraphEvents.POINTER_OUT,
       this._graphEntryPointerOutHandler,
+      false
+    );
+
+    this._scene.addEventListener(
+      "enter-vr",
+      this.appSetVRModeEnabled(true),
+      false
+    );
+
+    this._scene.addEventListener(
+      "exit-vr",
+      this.appSetVRModeEnabled(false),
       false
     );
   }

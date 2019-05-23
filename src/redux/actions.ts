@@ -36,7 +36,8 @@ export type ActionTypes =
   | AppSetSrcLoadedAction
   | AppSetVolumeStepsAction
   | AppSetVolumeWindowCenterAction
-  | AppSetVolumeWindowWidthAction;
+  | AppSetVolumeWindowWidthAction
+  | AppSetVRModeEnabledAction;
 
 export enum TypeKeys {
   NULL = "NULL",
@@ -66,7 +67,8 @@ export enum TypeKeys {
   APP_SET_SRC_LOADED = "APP_SET_SRC_LOADED",
   APP_SET_VOLUME_STEPS = "APP_SET_VOLUME_STEPS",
   APP_SET_VOLUME_WINDOW_CENTER = "APP_SET_VOLUME_WINDOW_CENTER",
-  APP_SET_VOLUME_WINDOW_WIDTH = "APP_SET_VOLUME_WINDOW_WIDTH"
+  APP_SET_VOLUME_WINDOW_WIDTH = "APP_SET_VOLUME_WINDOW_WIDTH",
+  APP_SET_VR_MODE_ENABLED = "APP_SET_VR_MODE_ENABLED"
 }
 
 //#region src
@@ -474,6 +476,21 @@ export const appSetControlsEnabled = (payload: boolean) => async (
 ) => {
   return dispatch({
     type: TypeKeys.APP_SET_CONTROLS_ENABLED,
+    payload: payload
+  });
+};
+
+export interface AppSetVRModeEnabledAction {
+  type: TypeKeys.APP_SET_VR_MODE_ENABLED;
+  payload: boolean;
+}
+
+export const appSetVRModeEnabled = (payload: boolean) => async (
+  dispatch,
+  _getState
+) => {
+  return dispatch({
+    type: TypeKeys.APP_SET_VR_MODE_ENABLED,
     payload: payload
   });
 };

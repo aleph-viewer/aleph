@@ -20,4 +20,5 @@ export interface AlAppState {
   volumeSteps: number;
   volumeWindowCenter: number;
   volumeWindowWidth: number;
+  vrModeEnabled: boolean;
 }

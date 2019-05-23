@@ -25,7 +25,8 @@ export const getInitialState = () => {
     srcLoaded: false,
     volumeSteps: 16,
     volumeWindowCenter: 0,
-    volumeWindowWidth: 0
+    volumeWindowWidth: 0,
+    vrModeEnabled: false
   };
 };
 
@@ -306,6 +307,12 @@ export const app = (
       return {
         ...state,
         controlsEnabled: action.payload
+      };
+    }
+    case TypeKeys.APP_SET_VR_MODE_ENABLED: {
+      return {
+        ...state,
+        vrModeEnabled: action.payload
       };
     }
     //#endregion
