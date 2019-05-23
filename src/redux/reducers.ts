@@ -26,7 +26,7 @@ export const getInitialState = () => {
     volumeSteps: 16,
     volumeWindowCenter: 0,
     volumeWindowWidth: 0,
-    vrModeEnabled: false
+    vrModeEnabled: true
   };
 };
 

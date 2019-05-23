@@ -300,7 +300,8 @@ export class Aleph {
           srcLoaded,
           volumeSteps,
           volumeWindowCenter,
-          volumeWindowWidth
+          volumeWindowWidth,
+          vrModeEnabled
         }
       } = state;
 
@@ -322,7 +323,8 @@ export class Aleph {
         srcLoaded,
         volumeSteps,
         volumeWindowCenter,
-        volumeWindowWidth
+        volumeWindowWidth,
+        vrModeEnabled
       };
     });
 
@@ -352,7 +354,8 @@ export class Aleph {
       appSetSrcLoaded,
       appSetVolumeSteps,
       appSetVolumeWindowCenter,
-      appSetVolumeWindowWidth
+      appSetVolumeWindowWidth,
+      appSetVRModeEnabled
     });
 
     // set up event handlers
@@ -393,6 +396,8 @@ export class Aleph {
     this._spawnNodeHandler = this._spawnNodeHandler.bind(this);
     this._srcLoaded = this._srcLoaded.bind(this);
 
+    this._vrModeEnabledHandler = this._vrModeEnabledHandler.bind(this);
+
     // debounced event handlers
     this._debouncedAppSetCamera = EventUtils.debounce(
       this.appSetCamera,
@@ -422,7 +427,7 @@ export class Aleph {
             class="collidable"
             al-node-spawner={`
               graphEnabled: ${this.graphEnabled};
-              vrMode: ${this._vrModeEnabled};
+              vrMode: ${this.vrModeEnabled};
             `}
             al-gltf-model={`
               src: url(${this.src});
@@ -441,7 +446,7 @@ export class Aleph {
             class="collidable"
             al-node-spawner={`
               graphEnabled: ${this.graphEnabled};
-              vrMode: ${this._vrModeEnabled};
+              vrMode: ${this.vrModeEnabled};
             `}
             al-volume={`
               srcLoaded: ${this.srcLoaded};
@@ -846,7 +851,7 @@ export class Aleph {
           webgl2: ${this._isWebGl2};
           antialias: true;
         `}
-        vr-mode-ui={`enabled: ${this._vrModeEnabled};`}
+        vr-mode-ui={`enabled: ${this.vrModeEnabled};`}
         ref={el => (this._scene = el)}
       >
         {this._renderVRControls()}
@@ -1137,6 +1142,11 @@ export class Aleph {
     this._stateChanged();
   }
 
+  private _setVRModeEnabled(enabled: boolean): void {
+    this.appSetVRModeEnabled(enabled);
+    this._stateChanged();
+  }
+
   private _getStackHelper(): AMI.VolumeRenderHelper | null {
     let stackhelper: AMI.VolumeRenderHelper | null = null;
 
@@ -1239,6 +1249,10 @@ export class Aleph {
 
   private _controlsInteractionFinishedHandler(event: CustomEvent): void {
     this._debouncedAppSetCamera(event.detail.cameraState);
+  }
+
+  private _vrModeEnabledHandler(event: CustomEvent): void {
+    this._setVRModeEnabled(event.detail.enabled);
   }
 
   private _spawnNodeHandler(event: CustomEvent): void {
@@ -1518,17 +1532,9 @@ export class Aleph {
       false
     );
 
-    this._scene.addEventListener(
-      "enter-vr",
-      this.appSetVRModeEnabled(true),
-      false
-    );
+    this._scene.addEventListener("enter-vr", this._vrModeEnabledHandler, false);
 
-    this._scene.addEventListener(
-      "exit-vr",
-      this.appSetVRModeEnabled(false),
-      false
-    );
+    this._scene.addEventListener("exit-vr", this._vrModeEnabledHandler, false);
   }
   //#endregion
 
