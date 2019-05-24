@@ -82,6 +82,7 @@ export class Aleph {
   private _targetEntity: Entity;
   private _validTarget: boolean;
   private _boundingEntity: Entity;
+  private _vrToggleEnabled: boolean = true; // todo: make this a prop
 
   @Prop({ context: "store" }) store: Store;
   @Prop() dracoDecoderPath: string | null;
@@ -428,7 +429,7 @@ export class Aleph {
             class="collidable"
             al-node-spawner={`
               graphEnabled: ${this.graphEnabled};
-              vrMode: ${this.vrModeEnabled};
+              vrMode: ${this._vrToggleEnabled};
             `}
             al-gltf-model={`
               src: url(${this.src});
