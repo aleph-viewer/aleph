@@ -192,12 +192,14 @@
           alAleph.addEventListener(
             "changed",
             function(e) {
-              state.displayMode = e.detail.displayMode;
-              state.srcLoaded = e.detail.srcLoaded;
-              state.nodes = e.detail.nodes;
-              state.edges = e.detail.edges;
               state.angles = e.detail.angles;
+              state.boundingBoxEnabled = e.detail.boundingBoxEnabled;
+              state.displayMode = e.detail.displayMode;
+              state.edges = e.detail.edges;
+              state.graphEnabled = e.detail.graphEnabled;
+              state.nodes = e.detail.nodes;
               state.selected = e.detail.selected;
+              state.srcLoaded = e.detail.srcLoaded;
             },
             false
           );
@@ -365,6 +367,8 @@
         alEdgeEditor.edge = getSelectedEdge();
         alAngleEditor.angle = getSelectedAngle();
         alControlPanel.displayMode = state.displayMode;
+        alControlPanel.graphEnabled = state.graphEnabled;
+        alControlPanel.boundingBoxEnabled = state.boundingBoxEnabled;
 
         lastState = Object.assign({}, state);
       }
