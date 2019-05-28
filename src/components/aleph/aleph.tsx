@@ -429,7 +429,7 @@ export class Aleph {
             class="collidable"
             al-node-spawner={`
               graphEnabled: ${this.graphEnabled};
-              vrMode: ${this._vrToggleEnabled};
+              vrMode: ${this.vrModeEnabled};
             `}
             al-gltf-model={`
               src: url(${this.src});
@@ -495,7 +495,7 @@ export class Aleph {
 
   private _renderVRControls() {
     if (
-      this.vrModeEnabled &&
+      this._vrToggleEnabled &&
       !AFRAME.utils.device.isMobile() &&
       AFRAME.utils.device.checkHeadsetConnected()
     ) {
@@ -853,7 +853,7 @@ export class Aleph {
           webgl2: ${this._isWebGl2};
           antialias: true;
         `}
-        vr-mode-ui={`enabled: ${this.vrModeEnabled};`}
+        vr-mode-ui={`enabled: ${this._vrToggleEnabled};`}
         ref={el => (this._scene = el)}
       >
         {this._renderVRControls()}
