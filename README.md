@@ -20,6 +20,8 @@
 
 ## Components
 
+Aleph is comprised of several [web components](https://developer.mozilla.org/en-US/docs/Web/Web_Components):
+
   - [uv-aleph](/src/components/aleph/readme.md)
   - [al-angle-editor](/src/components/al-angle-editor/readme.md)
   - [al-console](/src/components/al-console/readme.md)
