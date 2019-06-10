@@ -752,12 +752,12 @@ export class Aleph {
     return [
       <a-entity
         id="light-1"
-        light="type: directional; color: #ffffff; intensity: 0.75"
+        light="type: directional; color: #ffffff; intensity: 2.0"
         position="1 1 1"
       />,
       <a-entity
         id="light-2"
-        light="type: directional; color: #002958; intensity: 0.5"
+        light="type: directional; color: #ffffff; intensity: 2.0"
         position="-1 -1 -1"
       />,
       <a-entity
