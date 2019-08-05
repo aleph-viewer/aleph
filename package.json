@@ -15,6 +15,7 @@
     "build:dev": "npm run lint:all && stencil build --dev",
     "build": "npm run lint:all && stencil build --docs",
     "start": "stencil build --dev --serve",
+    "start:prod": "stencil build --serve",
     "test": "stencil test --spec --e2e",
     "test.watch": "stencil test --spec --e2e --watchAll",
     "netlify": "netlify deploy --dir=www --prod",

@@ -58,6 +58,7 @@ import { Orientation, DisplayMode } from "../../enums";
 import { AlGraphEntryType } from "../../enums";
 import { AlGraph } from "../../interfaces/AlGraph";
 import { AlVolumeEvents } from "../../aframe/components/AlVolumeComponent";
+
 type Entity = import("aframe").Entity;
 type Scene = import("aframe").Scene;
 //#endregion
@@ -81,6 +82,7 @@ export class Aleph {
   private _targetEntity: Entity;
   private _validTarget: boolean;
   private _boundingEntity: Entity;
+  private _lights: Entity[];
 
   @Prop({ context: "store" }) store: Store;
   @Prop() dracoDecoderPath: string | null;
@@ -391,6 +393,8 @@ export class Aleph {
       this.appSetCamera,
       Constants.minFrameMS
     ).bind(this);
+
+    this._lights = [];
   }
 
   private _renderSpinner() {
@@ -752,13 +756,15 @@ export class Aleph {
     return [
       <a-entity
         id="light-1"
-        light="type: directional; color: #ffffff; intensity: 2.0"
+        light="type: directional; color: #ffffff; intensity: 0.5"
         position="1 1 1"
+        ref={el => (this._lights[0] = el)}
       />,
       <a-entity
         id="light-2"
-        light="type: directional; color: #ffffff; intensity: 2.0"
+        light="type: directional; color: #ffffff; intensity: 0.5"
         position="-1 -1 -1"
+        ref={el => (this._lights[1] = el)}
       />,
       <a-entity
         id="light-3"
@@ -797,11 +803,8 @@ export class Aleph {
           }
         `}
         ref={el => (this._camera = el)}
-      >
-        {/* TODO: Add VRMode check here */}
-        {this.displayMode === DisplayMode.MESH ? this._renderLights() : null}
-      </a-camera>,
-      this.displayMode !== DisplayMode.MESH ? this._renderLights() : null
+      />,
+      this._renderLights()
     ];
   }
 
@@ -1202,10 +1205,27 @@ export class Aleph {
     this._hovered = event.detail.id;
   }
 
-  private _controlsInteractionHandler(_event: CustomEvent): void {}
+  private _controlsInteractionHandler(event: CustomEvent): void {
+    let cameraState = event.detail.cameraState as AlCamera;
+    this._updateLights(cameraState);
+  }
+
+  private _updateLights(cameraState: AlCamera) {
+    if (this.displayMode === DisplayMode.MESH) {
+      this._lights.forEach(light => {
+        let direction = cameraState.position.clone().normalize();
+        light.object3D.position.copy(direction);
+      });
+    }
+  }
 
   private _controlsInteractionFinishedHandler(event: CustomEvent): void {
-    this._debouncedAppSetCamera(event.detail.cameraState);
+    let cameraState = event.detail.cameraState as AlCamera;
+    this._debouncedAppSetCamera(cameraState);
+    // this._lightController.setAttribute(
+    //   "position",
+    //   ThreeUtils.vector3ToString(cameraState.position)
+    // );
   }
 
   private _spawnNodeHandler(event: CustomEvent): void {
@@ -1482,16 +1502,5 @@ export class Aleph {
     if (this._scene) {
       this._addEventListeners();
     }
-
-    // Turns debug text inside the models invisible
-    // if (this.debug) {
-    //   try {
-    //     const mat = (this._camera.object3DMap.text as THREE.Mesh)
-    //       .material as THREE.Material;
-    //     if (mat) {
-    //       mat.transparent = true;
-    //     }
-    //   } catch {}
-    // }
   }
 }
