@@ -272,12 +272,22 @@ export default AFRAME.registerComponent("al-orbit-control", {
         controls.object.position.copy(nextFrame.position);
         this.el.getObject3D("camera").position.copy(nextFrame.position);
         controls.target.copy(nextFrame.target);
+        this.el.sceneEl.emit(
+          AlOrbitControlEvents.INTERACTION,
+          { cameraState: this.getCameraState() },
+          false
+        );
       }
 
       if (this.state.animationCache.length === 0) {
         this.el.sceneEl.emit(
           AlOrbitControlEvents.ANIMATION_FINISHED,
           {},
+          false
+        );
+        this.el.sceneEl.emit(
+          AlOrbitControlEvents.INTERACTION_FINISHED,
+          { cameraState: this.getCameraState() },
           false
         );
       }

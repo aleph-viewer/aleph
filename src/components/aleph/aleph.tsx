@@ -1277,7 +1277,6 @@ export class Aleph {
   }
 
   private _graphEntrySelectedHandler(event: CustomEvent): void {
-    // todo: change to graphEnabled
     if (!this.graphEnabled) {
       return;
     }
