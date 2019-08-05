@@ -768,7 +768,7 @@ export class Aleph {
   }
 
   private _renderCamera() {
-    return (
+    return [
       <a-camera
         fov={Constants.cameraValues.fov}
         near={Constants.cameraValues.near}
@@ -797,8 +797,12 @@ export class Aleph {
           }
         `}
         ref={el => (this._camera = el)}
-      />
-    );
+      >
+        {/* TODO: Add VRMode check here */}
+        {this.displayMode === DisplayMode.MESH ? this._renderLights() : null}
+      </a-camera>,
+      this.displayMode !== DisplayMode.MESH ? this._renderLights() : null
+    ];
   }
 
   private _renderScene() {
@@ -819,7 +823,6 @@ export class Aleph {
         {this._renderNodes()}
         {this._renderEdges()}
         {this._renderAngles()}
-        {this._renderLights()}
         {this._renderCamera()}
       </a-scene>
     );
