@@ -14,6 +14,9 @@ export class Constants {
   static edgeSize = 0.005;
   static stackSpaceMultiplier = { x: 10, y: 10, z: 10 };
   static maxAnimationSteps = 50;
+  static stepsMin: number = 1;
+  static stepsMax: number = 512;
+  static stepsIncrement = 8;
 
   static minFrameMS = 15; // Should never be higher than the returned frame time
   static minTimeForThrottle = Constants.minFrameMS * 5;
@@ -47,7 +50,7 @@ export class Constants {
     near: 0.05,
     far: 10000,
     fov: 45,
-    maxPolarAngle: 165,
+    maxPolarAngle: 360,
     rotateSpeed: 0.5,
     zoomSpeed: 1,
     dampingFactor: 0.25,

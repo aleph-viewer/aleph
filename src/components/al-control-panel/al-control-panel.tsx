@@ -1,6 +1,7 @@
 import { Component, Prop, Event, EventEmitter, Watch } from "@stencil/core";
 import { DisplayMode } from "../../enums/DisplayMode";
 import { Orientation } from "../../enums/Orientation";
+import { Constants } from "../../Constants";
 
 @Component({
   tag: "al-control-panel",
@@ -272,6 +273,7 @@ export class AlControlPanel {
                 min="0"
                 max={indexMax}
                 value={index}
+                pin={true}
                 onIonChange={e => this._slicesIndex(e.detail.value)}
               />
             </ion-item>
@@ -368,8 +370,6 @@ export class AlControlPanel {
           break;
         }
 
-        const stepsMin: number = 1;
-        const stepsMax: number = 128;
         let steps: number;
 
         if (this.volumeSteps === undefined) {
@@ -421,9 +421,11 @@ export class AlControlPanel {
               <ion-icon name="swap" slot="start" />
               <ion-range
                 slot="end"
-                min={stepsMin}
-                max={stepsMax}
+                min={Constants.stepsMin}
+                max={Constants.stepsMax}
                 value={steps}
+                step={Constants.stepsIncrement}
+                pin={true}
                 onIonChange={e => this._volumeSteps(e.detail.value)}
               />
             </ion-item>
