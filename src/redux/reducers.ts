@@ -29,6 +29,7 @@ export const getInitialState = () => {
   };
 };
 
+// todo: split app reducer into src, nodes, edges, etc reducers and combine them
 export const app = (
   state: AlAppState = getInitialState(),
   action: ActionTypes
