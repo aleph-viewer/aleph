@@ -213,6 +213,11 @@ export class Aleph {
   //#region control panel methods
 
   @Method()
+  async recenter(): Promise<void> {
+    this._recenter();
+  }
+
+  @Method()
   async setDisplayMode(displayMode: DisplayMode): Promise<void> {
     this._setDisplayMode(displayMode);
   }
@@ -965,51 +970,58 @@ export class Aleph {
     this._stateChanged();
   }
 
-  private _selectNode(nodeId: string, animate: boolean = false): void {
+  private _animateBetween(
+    animationStart: AlCamera,
+    animationEndVec3: THREE.Vector3
+  ): void {
+    let animationEnd = {
+      position: animationEndVec3,
+      target: this.camera.target.clone()
+    } as AlCamera;
+
+    if (animationEndVec3) {
+      const diffPos: number = animationEndVec3.distanceTo(this.camera.position);
+
+      if (diffPos > 0) {
+        animationEnd.position.copy(animationEndVec3.clone());
+
+        const slerpPath: number[] = ThreeUtils.getSlerpPath(
+          animationStart,
+          animationEnd,
+          diffPos > 0,
+          false
+        );
+
+        this._scene.emit(
+          AlOrbitControlEvents.ANIMATION_STARTED,
+          { slerpPath },
+          false
+        );
+
+        this.appSetCamera({
+          animating: true
+        });
+
+        this._stateChanged();
+      }
+    }
+  }
+
+  private _selectNode(nodeId: string | null, animate: boolean = false): void {
     if (animate && nodeId !== this.selected) {
       let animationStart = {
         position: this.camera.position.clone(),
         target: this.camera.target.clone()
       } as AlCamera;
 
-      let animationEnd = {
-        position: new THREE.Vector3(-1, -1, -1),
-        target: this.camera.target.clone()
-      } as AlCamera;
-
-      let result: THREE.Vector3 = GetUtils.getCameraPositionFromNode(
+      let animationEndVec3: THREE.Vector3 = GetUtils.getCameraPositionFromNode(
         this.nodes.get(nodeId),
         this._boundingSphereRadius,
         this.camera.target
       );
 
-      if (result) {
-        const diffPos: number = result.distanceTo(this.camera.position);
-
-        if (diffPos > 0) {
-          animationEnd.position.copy(result.clone());
-
-          const slerpPath: number[] = ThreeUtils.getSlerpPath(
-            animationStart,
-            animationEnd,
-            diffPos > 0,
-            false
-          );
-
-          this._scene.emit(
-            AlOrbitControlEvents.ANIMATION_STARTED,
-            { slerpPath },
-            false
-          );
-
-          this.appSetCamera({
-            animating: true
-          });
-
-          this.appSelectNode(nodeId);
-          this._stateChanged();
-        }
-      }
+      this.appSelectNode(nodeId);
+      this._animateBetween(animationStart, animationEndVec3);
     } else {
       this.appSelectNode(nodeId);
       this._stateChanged();
@@ -1024,6 +1036,24 @@ export class Aleph {
   private _deleteEdge(edgeId: string): void {
     this.appDeleteEdge(edgeId);
     this._stateChanged();
+  }
+
+  private _recenter(): void {
+    let cameraState: AlCamera = GetUtils.getCameraStateFromMesh(
+      this._getMesh()
+    );
+
+    let animationStart = {
+      position: this.camera.position.clone(),
+      target: this.camera.target.clone()
+    } as AlCamera;
+
+    // deselect current node
+    this._selectNode(null);
+    // todo: this also applies to edges and angles because it's setting state.selected to null.
+    // think about whether this should be generic
+
+    this._animateBetween(animationStart, cameraState.position);
   }
 
   private _selectEdge(edgeId: string): void {
@@ -1403,13 +1433,13 @@ export class Aleph {
     );
 
     this._scene.addEventListener(
-      AlOrbitControlEvents.INTERACTION,
+      AlOrbitControlEvents.INTERACTION, // todo: make this a more generic event
       this._controlsInteractionHandler,
       false
     );
 
     this._scene.addEventListener(
-      AlOrbitControlEvents.INTERACTION_FINISHED,
+      AlOrbitControlEvents.INTERACTION_FINISHED, //todo: make this a more generic event
       this._controlsInteractionFinishedHandler,
       false
     );

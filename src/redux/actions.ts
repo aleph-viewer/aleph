@@ -140,7 +140,7 @@ export interface AppSelectNodeAction {
   payload: string;
 }
 
-export const appSelectNode = (payload: string) => async (
+export const appSelectNode = (payload: string | null) => async (
   dispatch,
   _getState
 ) => {
@@ -201,7 +201,7 @@ export interface AppSelectEdgeAction {
   payload: string;
 }
 
-export const appSelectEdge = (payload: string) => async (
+export const appSelectEdge = (payload: string | null) => async (
   dispatch,
   _getState
 ) => {
@@ -262,7 +262,7 @@ export interface AppSelectAngleAction {
   payload: string;
 }
 
-export const appSelectAngle = (payload: string) => async (
+export const appSelectAngle = (payload: string | null) => async (
   dispatch,
   _getState
 ) => {

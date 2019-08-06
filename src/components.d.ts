@@ -68,6 +68,7 @@ export namespace Components {
     'onDisplayModeChanged'?: (event: CustomEvent) => void;
     'onGraphEnabledChanged'?: (event: CustomEvent) => void;
     'onOrientationChanged'?: (event: CustomEvent) => void;
+    'onRecenter'?: (event: CustomEvent) => void;
     'onSlicesIndexChanged'?: (event: CustomEvent) => void;
     'onSlicesWindowCenterChanged'?: (event: CustomEvent) => void;
     'onSlicesWindowWidthChanged'?: (event: CustomEvent) => void;
@@ -155,6 +156,7 @@ export namespace Components {
     'dracoDecoderPath': string | null;
     'height': string;
     'load': (src: string, displayMode?: DisplayMode) => Promise<void>;
+    'recenter': () => Promise<void>;
     'resize': () => Promise<void>;
     'selectNode': (nodeId: string) => Promise<void>;
     'setBoundingBoxEnabled': (visible: boolean) => Promise<void>;
