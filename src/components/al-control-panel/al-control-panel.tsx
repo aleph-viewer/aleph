@@ -180,7 +180,7 @@ export class AlControlPanel {
             this.recenter.emit();
           }}
         >
-          <ion-icon name="log-in" />
+          <ion-icon name="checkmark" />
         </ion-button>
       </ion-item>
     );
