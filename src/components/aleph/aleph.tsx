@@ -494,20 +494,27 @@ export class Aleph {
     if (this.srcLoaded && this.boundingBoxEnabled) {
       const size: THREE.Vector3 = new THREE.Vector3();
       this._boundingBox.getSize(size);
+      const meshGeom = this._getMesh().geometry;
 
       // if targetEntity is a gltf, use its position (center). if it's a volume, the origin is in the bottom left, so get the position sub the geometry center
       let position: THREE.Vector3;
 
       switch (this.displayMode) {
         case DisplayMode.MESH: {
-          position = this._targetEntity.object3D.position.clone();
+          if (this._boundingBox.intersectsBox(meshGeom.boundingBox)) {
+            // Check if mesh intersects bounding box; if it does apply the offset
+            const offset = meshGeom.boundingSphere.center.clone();
+            position = this._targetEntity.object3D.position.clone().add(offset);
+          } else {
+            position = this._targetEntity.object3D.position.clone();
+          }
           break;
         }
         case DisplayMode.VOLUME:
         case DisplayMode.SLICES: {
           position = this._targetEntity.object3D.position
             .clone()
-            .add(GetUtils.getGeometryCenter(this._getMesh().geometry));
+            .add(GetUtils.getGeometryCenter(meshGeom));
           break;
         }
         default: {
@@ -1190,11 +1197,9 @@ export class Aleph {
     if (mesh) {
       // Compute the bounding sphere of the mesh
       mesh.geometry.computeBoundingSphere();
-      // console.log('bounding center: ', mesh.geometry.boundingSphere.center);
+      mesh.geometry.computeBoundingBox();
       this._boundingSphereRadius = mesh.geometry.boundingSphere.radius;
       this._boundingBox = GetUtils.getBoundingBox(mesh);
-      this._boundingBox.translate(mesh.geometry.boundingSphere.center);
-
       const cameraState: AlCamera = GetUtils.getCameraStateFromMesh(mesh);
 
       if (cameraState) {
