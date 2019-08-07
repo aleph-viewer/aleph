@@ -363,6 +363,7 @@ export const appSetSlicesIndex = (payload: number) => async (
   dispatch,
   _getState
 ) => {
+  console.log(payload);
   return dispatch({
     type: TypeKeys.APP_SET_SLICES_INDEX,
     payload: payload
