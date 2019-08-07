@@ -1,4 +1,5 @@
 export class EventUtils {
+  // the A-Frame debounce util doesn't work with ionic
   static debounce(fn: any, debounceDuration: number): any {
     // summary:
     //      Returns a debounced function that will make sure the given
