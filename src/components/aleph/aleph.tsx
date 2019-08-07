@@ -1129,6 +1129,7 @@ export class Aleph {
         model.traverse(child => {
           if (child instanceof THREE.Mesh && mesh === null) {
             mesh = child;
+            return mesh;
           }
         });
       }
