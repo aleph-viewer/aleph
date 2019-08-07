@@ -18,10 +18,13 @@ export default AFRAME.registerComponent("al-look-to-camera", {
     );
   },
 
+  // tslint:disable-next-line: no-empty
   bindMethods(): void {},
 
+  // tslint:disable-next-line: no-empty
   addEventListeners(): void {},
 
+  // tslint:disable-next-line: no-empty
   removeEventListeners(): void {},
 
   tickFunction() {

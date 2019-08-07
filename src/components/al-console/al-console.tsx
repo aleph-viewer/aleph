@@ -1,4 +1,4 @@
-import { Component, Prop, Event, EventEmitter } from "@stencil/core";
+import { Component, Event, EventEmitter, Prop } from "@stencil/core";
 
 @Component({
   tag: "al-console",
@@ -8,11 +8,11 @@ import { Component, Prop, Event, EventEmitter } from "@stencil/core";
 export class AlConsole {
   private _cmd: HTMLTextAreaElement;
 
-  @Event() command: EventEmitter;
+  @Event() public command: EventEmitter;
 
-  @Prop({ mutable: true }) cmd: string;
+  @Prop({ mutable: true }) public cmd: string;
 
-  render() {
+  public render() {
     return (
       <form onSubmit={e => e.preventDefault()}>
         <ion-item>

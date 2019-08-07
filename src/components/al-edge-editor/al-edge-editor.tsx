@@ -1,4 +1,4 @@
-import { Component, Prop, Event, EventEmitter } from "@stencil/core";
+import { Component, Event, EventEmitter, Prop } from "@stencil/core";
 import { AlEdge } from "../../interfaces";
 
 @Component({
@@ -7,11 +7,11 @@ import { AlEdge } from "../../interfaces";
   shadow: true
 })
 export class AlEdgeEditor {
-  @Event() delete: EventEmitter;
+  @Event() public delete: EventEmitter;
 
-  @Prop({ mutable: true }) edge: [string, AlEdge];
+  @Prop({ mutable: true }) public edge: [string, AlEdge];
 
-  render() {
+  public render() {
     if (this.edge) {
       const [edgeId] = this.edge;
 

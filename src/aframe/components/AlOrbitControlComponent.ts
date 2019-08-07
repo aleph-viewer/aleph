@@ -1,16 +1,27 @@
-import { Constants } from "../../Constants";
-import { ThreeUtils } from "../../utils";
 import { ComponentDefinition } from "aframe";
+import { Constants } from "../../Constants";
 import { AlCamera } from "../../interfaces";
+import { ThreeUtils } from "../../utils";
 
 interface AlOrbitControlState {
   animationCache: AlCamera[];
-  controls: any; //THREE.OrbitControls;
+  // tslint:disable-next-line: no-any
+  controls: any; // THREE.OrbitControls;
   mouseDown: boolean;
   wheelCounter1: number;
   wheelCounter2: number;
   wheelInterval: number;
   wheelMarker: boolean;
+}
+
+export class AlOrbitControlEvents {
+  public static INTERACTION: string = "al-orbit-interaction";
+  public static INTERACTION_FINISHED: string =
+    "al-orbit-controls-interaction-finished";
+  public static ANIMATION_STARTED: string =
+    "al-orbit-controls-animation-started";
+  public static ANIMATION_FINISHED: string =
+    "al-orbit-controls-animation-finished";
 }
 
 interface AlOrbitControlComponent extends ComponentDefinition {
@@ -110,7 +121,7 @@ export default AFRAME.registerComponent("al-orbit-control", {
   mouseUp(_event: MouseEvent) {
     this.state.mouseDown = false;
     document.body.style.cursor = "grab";
-    let controls = this.state.controls;
+    const controls = this.state.controls;
 
     if (controls.enabled) {
       this.el.sceneEl.emit(
@@ -175,8 +186,8 @@ export default AFRAME.registerComponent("al-orbit-control", {
   },
 
   init() {
-    let el = this.el;
-    let data = this.data;
+    const el = this.el;
+    const data = this.data;
     document.body.style.cursor = "grab";
 
     this.tickFunction = AFRAME.utils.throttle(
@@ -185,20 +196,21 @@ export default AFRAME.registerComponent("al-orbit-control", {
       this
     );
 
-    let controls = new (THREE as any).OrbitControls(
+    // tslint:disable-next-line: no-any
+    const controls = new (THREE as any).OrbitControls(
       el.getObject3D("camera"),
       el.sceneEl.renderer.domElement
     );
 
     // Convert the controlPosition & controlTarget Objects into THREE.Vector3
-    let controlPosition = ThreeUtils.objectToVector3(data.controlPosition);
-    let controlTarget = ThreeUtils.objectToVector3(data.controlTarget);
+    const controlPosition = ThreeUtils.objectToVector3(data.controlPosition);
+    const controlTarget = ThreeUtils.objectToVector3(data.controlTarget);
 
     controls.object.position.copy(controlPosition);
     el.getObject3D("camera").position.copy(controlPosition);
     controls.target.copy(controlTarget);
 
-    let animationCache = [];
+    const animationCache = [];
 
     (this.state as AlOrbitControlState) = {
       animationCache,
@@ -230,8 +242,9 @@ export default AFRAME.registerComponent("al-orbit-control", {
     } as AlCamera;
   },
 
-  update(_oldData) {
-    let controls = this.state.controls;
+  // tslint:disable-next-line: no-any
+  update(_oldData: any) {
+    const controls = this.state.controls;
     const data = this.data;
 
     controls.target = ThreeUtils.objectToVector3(data.controlTarget);
@@ -260,13 +273,13 @@ export default AFRAME.registerComponent("al-orbit-control", {
   },
 
   tickFunction() {
-    let controls = this.state.controls;
+    const controls = this.state.controls;
     if (!controls.enabled) {
       return;
     }
 
     if (this.data.animating) {
-      let nextFrame: AlCamera = this.state.animationCache.shift();
+      const nextFrame: AlCamera = this.state.animationCache.shift();
 
       if (nextFrame && nextFrame.position && nextFrame.target) {
         controls.object.position.copy(nextFrame.position);
@@ -309,11 +322,3 @@ export default AFRAME.registerComponent("al-orbit-control", {
     state = null;
   }
 } as AlOrbitControlComponent);
-
-export class AlOrbitControlEvents {
-  static INTERACTION: string = "al-orbit-interaction";
-  static INTERACTION_FINISHED: string =
-    "al-orbit-controls-interaction-finished";
-  static ANIMATION_STARTED: string = "al-orbit-controls-animation-started";
-  static ANIMATION_FINISHED: string = "al-orbit-controls-animation-finished";
-}

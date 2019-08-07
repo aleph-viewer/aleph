@@ -1,4 +1,4 @@
-import { Component, Prop, Event, EventEmitter } from "@stencil/core";
+import { Component, Event, EventEmitter, Prop } from "@stencil/core";
 import { AlNode } from "../../interfaces";
 
 @Component({
@@ -7,12 +7,12 @@ import { AlNode } from "../../interfaces";
   shadow: true
 })
 export class AlNodeList {
-  @Event() selectedChanged: EventEmitter;
+  @Event() public selectedChanged: EventEmitter;
 
-  @Prop({ mutable: true }) nodes: Map<string, AlNode> | null = null;
-  @Prop({ mutable: true }) selected: string | null = null;
+  @Prop({ mutable: true }) public nodes: Map<string, AlNode> | null = null;
+  @Prop({ mutable: true }) public selected: string | null = null;
 
-  render() {
+  public render() {
     if (this.nodes && this.nodes.size) {
       return (
         <ion-list>
@@ -80,5 +80,5 @@ export class AlNodeList {
   //     </ul>
   //   </div>
   // );
-  //}
+  // }
 }

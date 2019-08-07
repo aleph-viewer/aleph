@@ -1,4 +1,4 @@
-import { Component, Prop, Event, EventEmitter } from "@stencil/core";
+import { Component, Event, EventEmitter, Prop } from "@stencil/core";
 import { AlAngle } from "../../interfaces";
 
 @Component({
@@ -7,11 +7,11 @@ import { AlAngle } from "../../interfaces";
   shadow: true
 })
 export class AlAngleEditor {
-  @Event() delete: EventEmitter;
+  @Event() public delete: EventEmitter;
 
-  @Prop({ mutable: true }) angle: [string, AlAngle];
+  @Prop({ mutable: true }) public angle: [string, AlAngle];
 
-  render() {
+  public render() {
     if (this.angle) {
       const [angleId] = this.angle;
 

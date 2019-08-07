@@ -1,4 +1,4 @@
-import { Component, Prop, Event, EventEmitter } from "@stencil/core";
+import { Component, Event, EventEmitter, Prop } from "@stencil/core";
 import { AlNode } from "../../interfaces";
 
 @Component({
@@ -7,12 +7,12 @@ import { AlNode } from "../../interfaces";
   shadow: true
 })
 export class AlNodeEditor {
-  @Event() delete: EventEmitter;
-  @Event() save: EventEmitter;
+  @Event() public delete: EventEmitter;
+  @Event() public save: EventEmitter;
 
-  @Prop({ mutable: true }) node: [string, AlNode];
+  @Prop({ mutable: true }) public node: [string, AlNode];
 
-  render() {
+  public render() {
     if (this.node) {
       const [nodeId, node] = this.node;
 

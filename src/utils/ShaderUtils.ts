@@ -1,5 +1,5 @@
 export class ShaderUtils {
-  static haloVertex: string = `
+  public static haloVertex: string = `
     varying vec3 vNormal;
 
     void main()
@@ -9,7 +9,7 @@ export class ShaderUtils {
     }
   `;
 
-  static haloFragment: string = `
+  public static haloFragment: string = `
     varying vec3 vNormal;
     uniform float r;
     uniform float g;
@@ -24,9 +24,9 @@ export class ShaderUtils {
     }
   `;
 
-  static getHaloMaterial(
-    red: Number = 0.5,
-    green: Number = 0.5,
+  public static getHaloMaterial(
+    red: number = 0.5,
+    green: number = 0.5,
     blue: number = 0.5,
     alpha: number = 0.1,
     chrominace: number = 0.5

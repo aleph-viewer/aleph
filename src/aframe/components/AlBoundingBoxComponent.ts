@@ -1,16 +1,14 @@
-import { ThreeUtils } from "../../utils";
 import { Constants } from "../../Constants";
-import { BaseComponent } from "./BaseComponent";
+import { ThreeUtils } from "../../utils";
 
 interface AlBoundingBoxState {
   box: THREE.Box3;
+  // tslint:disable-next-line: no-any
   boundingBox: any;
   geometry: THREE.BoxGeometry;
   material: THREE.MeshBasicMaterial;
   mesh: THREE.Mesh;
 }
-
-interface AlBoundingBoxComponent extends BaseComponent {}
 
 export default AFRAME.registerComponent("al-bounding-box", {
   schema: {
@@ -35,18 +33,18 @@ export default AFRAME.registerComponent("al-bounding-box", {
 
   update(): void {
     const el = this.el;
-    let state = this.state as AlBoundingBoxState;
-    let scale = ThreeUtils.stringToVector3(this.data.scale);
+    const state = this.state as AlBoundingBoxState;
+    const scale = ThreeUtils.stringToVector3(this.data.scale);
 
     state.box.setFromCenterAndSize(new THREE.Vector3(0, 0, 0), scale);
 
     // Add a second mesh for raycasting in volume mode
-    let geometry = new THREE.BoxGeometry(scale.x, scale.y, scale.z);
-    let material = new THREE.MeshBasicMaterial({
+    const geometry = new THREE.BoxGeometry(scale.x, scale.y, scale.z);
+    const material = new THREE.MeshBasicMaterial({
       color: this.data.color,
       visible: false
     });
-    let mesh = new THREE.Mesh(geometry, material);
+    const mesh = new THREE.Mesh(geometry, material);
     el.setObject3D("mesh2", mesh);
 
     state.boundingBox = new (THREE as any).Box3Helper(
@@ -66,4 +64,4 @@ export default AFRAME.registerComponent("al-bounding-box", {
     this.el.removeObject3D("mesh");
     this.el.removeObject3D("mesh2");
   }
-} as AlBoundingBoxComponent);
+});

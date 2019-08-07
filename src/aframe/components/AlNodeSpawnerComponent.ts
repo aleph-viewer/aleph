@@ -7,6 +7,11 @@ interface AlNodeSpawnerState {
   intersecting: boolean;
 }
 
+export class AlNodeSpawnerEvents {
+  public static VALID_TARGET: string = "al-valid-target";
+  public static ADD_NODE: string = "al-add-node";
+}
+
 interface AlNodeSpawnerComponent extends BaseComponent {
   canvasMouseDown(event: MouseEvent): void;
   canvasMouseUp(event: MouseEvent): void;
@@ -150,8 +155,3 @@ export default AFRAME.registerComponent("al-node-spawner", {
     this.removeEventListeners();
   }
 } as AlNodeSpawnerComponent);
-
-export class AlNodeSpawnerEvents {
-  static VALID_TARGET: string = "al-valid-target";
-  static ADD_NODE: string = "al-add-node";
-}

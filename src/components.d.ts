@@ -131,11 +131,15 @@ export namespace Components {
     /**
     * Emitted when the navigation has finished transitioning to a new component.
     */
-    'onIonTabsDidChange'?: (event: CustomEvent<{ tab: string }>) => void;
+    'onIonTabsDidChange'?: (event: CustomEvent<{
+      tab: string;
+    }>) => void;
     /**
     * Emitted when the navigation is about to transition to a new component.
     */
-    'onIonTabsWillChange'?: (event: CustomEvent<{ tab: string }>) => void;
+    'onIonTabsWillChange'?: (event: CustomEvent<{
+      tab: string;
+    }>) => void;
   }
 
   interface AlUrlPicker {

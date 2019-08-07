@@ -1,10 +1,10 @@
-import { AlNode, AlCamera } from "../interfaces";
-import { Constants } from "../Constants";
-import { ThreeUtils } from ".";
 import { Mesh } from "three";
+import { ThreeUtils } from ".";
+import { Constants } from "../Constants";
+import { AlCamera, AlNode } from "../interfaces";
 
 export class GetUtils {
-  static cssUnits: string[] = [
+  public static cssUnits: string[] = [
     "%",
     "ch",
     "cm",
@@ -22,7 +22,7 @@ export class GetUtils {
     "vw"
   ];
 
-  static addCssUnits(d: string): string {
+  public static addCssUnits(d: string): string {
     if (
       !this.cssUnits.some(u => {
         return d.includes(u);
@@ -33,11 +33,11 @@ export class GetUtils {
     return d;
   }
 
-  static getFileExtension(file: string): string {
+  public static getFileExtension(file: string): string {
     return file.substring(file.lastIndexOf(".") + 1);
   }
 
-  static getGeometryCenter(
+  public static getGeometryCenter(
     geometry: THREE.Geometry | THREE.BufferGeometry
   ): THREE.Vector3 {
     let geom: THREE.Geometry | THREE.BufferGeometry;
@@ -50,7 +50,7 @@ export class GetUtils {
     return geom.boundingSphere.center;
   }
 
-  static getCameraStateFromMesh(mesh: Mesh): AlCamera {
+  public static getCameraStateFromMesh(mesh: Mesh): AlCamera {
     let meshCenter: THREE.Vector3;
     let initialPosition: THREE.Vector3;
     let sceneDistance: number;
@@ -75,7 +75,7 @@ export class GetUtils {
     return null;
   }
 
-  static getCameraPositionFromNode(
+  public static getCameraPositionFromNode(
     node: AlNode,
     radius: number,
     cameraTarget: THREE.Vector3
@@ -84,15 +84,15 @@ export class GetUtils {
       return null;
     }
 
-    let pos: THREE.Vector3 = new THREE.Vector3();
+    const pos: THREE.Vector3 = new THREE.Vector3();
     pos.copy(ThreeUtils.stringToVector3(node.position));
 
     // (Position -> Target)
-    let dir: THREE.Vector3 = pos
+    const dir: THREE.Vector3 = pos
       .clone()
       .sub(cameraTarget.clone())
       .normalize();
-    let camPos = new THREE.Vector3();
+    const camPos = new THREE.Vector3();
     camPos.copy(pos);
 
     // Add {defaultZoom} intervals of dir to camPos
@@ -101,7 +101,7 @@ export class GetUtils {
     return camPos;
   }
 
-  static getBoundingBox(obj: THREE.Object3D): THREE.Box3 {
+  public static getBoundingBox(obj: THREE.Object3D): THREE.Box3 {
     return new THREE.Box3().setFromObject(obj);
   }
 
