@@ -1,10 +1,10 @@
 export class VolumetricLoader {
-  constructor() {}
-
+  // tslint:disable-next-line: no-any
   public load(src: string, container: HTMLElement): Promise<any> {
+    // tslint:disable-next-line: no-any
     return new Promise<any>((resolve, reject) => {
       const xhr: XMLHttpRequest = new XMLHttpRequest();
-      xhr.open("GET", src, true);
+      xhr.open('GET', src, true);
       xhr.onload = () => {
         let data = JSON.parse(xhr.responseText);
         data = this._mapfiles(data.baseurl, data.series);
@@ -13,13 +13,14 @@ export class VolumetricLoader {
         loader
           .load(data)
           .then(() => {
-            const src = loader.data[0].mergeSeries(loader.data);
-            const stack = src[0].stack[0];
+            const sr = loader.data[0].mergeSeries(loader.data);
+            const stack = sr[0].stack[0];
             loader.free();
             resolve(stack);
           })
           .catch(error => {
-            console.log("Volume load error");
+            // tslint:disable-next-line: no-console
+            console.log('Volume load error');
             reject(error);
           });
       };
@@ -32,8 +33,8 @@ export class VolumetricLoader {
 
   private _mapfiles(baseurl: string, files: string[]): string[] {
     return files.map(filename => {
-      if (!baseurl.endsWith("/")) {
-        baseurl += "/";
+      if (!baseurl.endsWith('/')) {
+        baseurl += '/';
       }
       return `${baseurl}${filename}`;
     });

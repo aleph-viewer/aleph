@@ -7,9 +7,11 @@ import {
   Method,
   Prop,
   State
-} from "@stencil/core";
+} from '@stencil/core';
 
+// tslint:disable-next-line: no-any
 type HTMLIonTabElement = any;
+// tslint:disable-next-line: no-any
 type TabButtonClickEventDetail = any;
 
 /**
@@ -18,61 +20,66 @@ type TabButtonClickEventDetail = any;
  * @slot bottom - Content is placed at the bottom of the screen.
  */
 @Component({
-  tag: "al-tabs",
-  styleUrl: "al-tabs.css",
+  tag: 'al-tabs',
+  styleUrl: 'al-tabs.css',
   shadow: true
 })
 export class Tabs {
   private transitioning = false;
   private leavingTab?: HTMLIonTabElement;
 
-  @Element() el!: Element;
+  @Element() public el!: Element;
 
-  @State() tabs: HTMLIonTabElement[] = [];
-  @State() selectedTab?: HTMLIonTabElement;
+  @State() public tabs: HTMLIonTabElement[] = [];
+  @State() public selectedTab?: HTMLIonTabElement;
 
-  @Prop({ context: "document" }) doc!: Document;
+  @Prop({ context: 'document' }) public doc!: Document;
 
   /**
    * Emitted when the navigation will load a component.
    * @internal
    */
-  @Event() ionNavWillLoad!: EventEmitter<void>;
+  @Event() public ionNavWillLoad!: EventEmitter<void>;
 
   /**
    * Emitted when the navigation is about to transition to a new component.
    */
-  @Event({ bubbles: false }) ionTabsWillChange!: EventEmitter<{ tab: string }>;
+  @Event({ bubbles: false }) public ionTabsWillChange!: EventEmitter<{
+    tab: string;
+  }>;
 
   /**
    * Emitted when the navigation has finished transitioning to a new component.
    */
-  @Event({ bubbles: false }) ionTabsDidChange!: EventEmitter<{ tab: string }>;
+  @Event({ bubbles: false }) public ionTabsDidChange!: EventEmitter<{
+    tab: string;
+  }>;
 
-  async componentWillLoad() {
-    this.tabs = Array.from(this.el.querySelectorAll("ion-tab"));
+  public async componentWillLoad() {
+    this.tabs = Array.from(this.el.querySelectorAll('ion-tab'));
     this.ionNavWillLoad.emit();
     this.componentWillUpdate();
   }
 
-  componentDidLoad() {
+  public componentDidLoad() {
     this.initSelect();
   }
 
-  componentDidUnload() {
+  public componentDidUnload() {
     this.tabs.length = 0;
     this.selectedTab = this.leavingTab = undefined;
   }
 
-  componentWillUpdate() {
-    const tabBar: any = this.el.querySelector("ion-tab-bar");
+  public componentWillUpdate() {
+    // tslint:disable-next-line: no-any
+    const tabBar: any = this.el.querySelector('ion-tab-bar');
     if (tabBar) {
       const tab = this.selectedTab ? this.selectedTab.tab : undefined;
       tabBar.selectedTab = tab;
     }
   }
 
-  @Listen("ionTabButtonClick")
+  @Listen('ionTabButtonClick')
   protected onTabClicked(ev: CustomEvent<TabButtonClickEventDetail>) {
     const { tab } = ev.detail;
     const selectedTab = this.tabs.find(t => t.tab === tab);
@@ -85,7 +92,7 @@ export class Tabs {
    * Index or the Tab instance, of the tab to select.
    */
   @Method()
-  async select(tab: string | HTMLIonTabElement): Promise<boolean> {
+  public async select(tab: string | HTMLIonTabElement): Promise<boolean> {
     const selectedTab = await this.getTab(tab);
     if (!this.shouldSwitch(selectedTab)) {
       return false;
@@ -100,13 +107,14 @@ export class Tabs {
    * Get the tab element given the tab name
    */
   @Method()
-  async getTab(
+  public async getTab(
     tab: string | HTMLIonTabElement
   ): Promise<HTMLIonTabElement | undefined> {
     const tabEl =
-      typeof tab === "string" ? this.tabs.find(t => t.tab === tab) : tab;
+      typeof tab === 'string' ? this.tabs.find(t => t.tab === tab) : tab;
 
     if (!tabEl) {
+      // tslint:disable-next-line: no-console
       console.error(`tab with id: "${tabEl}" does not exist`);
     }
     return tabEl;
@@ -116,7 +124,7 @@ export class Tabs {
    * Get the currently selected tab
    */
   @Method()
-  getSelected(): Promise<string | undefined> {
+  public getSelected(): Promise<string | undefined> {
     return Promise.resolve(this.selectedTab ? this.selectedTab.tab : undefined);
   }
 
@@ -128,7 +136,7 @@ export class Tabs {
 
   private setActive(selectedTab: HTMLIonTabElement): Promise<void> {
     if (this.transitioning) {
-      return Promise.reject("transitioning already happening");
+      return Promise.reject('transitioning already happening');
     }
 
     this.transitioning = true;
@@ -167,13 +175,13 @@ export class Tabs {
     );
   }
 
-  render() {
+  public render() {
     return [
-      <slot name="top" />,
-      <div class="tabs-inner">
+      <slot name='top' />,
+      <div class='tabs-inner'>
         <slot />
       </div>,
-      <slot name="bottom" />
+      <slot name='bottom' />
     ];
   }
 }

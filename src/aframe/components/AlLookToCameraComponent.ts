@@ -1,11 +1,11 @@
-import { Constants } from "../../Constants";
-import { BaseComponent } from "./BaseComponent";
+import { Constants } from '../../Constants';
+import { BaseComponent } from './BaseComponent';
 
 interface AlLookToCameraComponent extends BaseComponent {
   tickFunction(): void;
 }
 
-export default AFRAME.registerComponent("al-look-to-camera", {
+export default AFRAME.registerComponent('al-look-to-camera', {
   schema: {},
 
   init() {
@@ -18,10 +18,13 @@ export default AFRAME.registerComponent("al-look-to-camera", {
     );
   },
 
+  // tslint:disable-next-line: no-empty
   bindMethods(): void {},
 
+  // tslint:disable-next-line: no-empty
   addEventListeners(): void {},
 
+  // tslint:disable-next-line: no-empty
   removeEventListeners(): void {},
 
   tickFunction() {

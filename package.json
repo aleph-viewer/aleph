@@ -36,11 +36,12 @@
     "@types/redux": "3.6.0",
     "@types/three": "0.93.30",
     "copyfiles": "2.1.0",
-    "jest": "23.6.0",
-    "jest-cli": "^23.6.0",
+    "jest": "^24.8.0",
+    "jest-cli": "^24.8.0",
     "prettier": "^1.16.4",
     "prettier-check": "^2.0.0",
-    "puppeteer": "1.11.0",
+    "puppeteer": "^1.19.0",
+    "tslint-config-prettier": "^1.18.0",
     "typescript-tslint-plugin": "^0.3.1"
   },
   "license": "MIT"

@@ -1,39 +1,40 @@
-import { Component, Prop, Event, EventEmitter, Watch } from "@stencil/core";
-import { DisplayMode } from "../../enums/DisplayMode";
-import { Orientation } from "../../enums/Orientation";
-import { Constants } from "../../Constants";
+import { Component, Event, EventEmitter, Prop, Watch } from '@stencil/core';
+import { Constants } from '../../Constants';
+import { DisplayMode } from '../../enums/DisplayMode';
+import { Orientation } from '../../enums/Orientation';
 
 @Component({
-  tag: "al-control-panel",
-  styleUrl: "al-control-panel.css",
+  tag: 'al-control-panel',
+  styleUrl: 'al-control-panel.css',
   shadow: true
 })
 export class AlControlPanel {
   private _lastStackOrientationIndex: number;
 
-  @Event() boundingBoxEnabledChanged: EventEmitter;
-  @Event() displayModeChanged: EventEmitter;
-  @Event() orientationChanged: EventEmitter;
-  @Event() recenter: EventEmitter;
-  @Event() slicesIndexChanged: EventEmitter;
-  @Event() slicesWindowCenterChanged: EventEmitter;
-  @Event() slicesWindowWidthChanged: EventEmitter;
-  @Event() graphEnabledChanged: EventEmitter;
-  @Event() volumeStepsChanged: EventEmitter;
-  @Event() volumeWindowCenterChanged: EventEmitter;
-  @Event() volumeWindowWidthChanged: EventEmitter;
+  @Event() public boundingBoxEnabledChanged: EventEmitter;
+  @Event() public displayModeChanged: EventEmitter;
+  @Event() public orientationChanged: EventEmitter;
+  @Event() public recenter: EventEmitter;
+  @Event() public slicesIndexChanged: EventEmitter;
+  @Event() public slicesWindowCenterChanged: EventEmitter;
+  @Event() public slicesWindowWidthChanged: EventEmitter;
+  @Event() public graphEnabledChanged: EventEmitter;
+  @Event() public volumeStepsChanged: EventEmitter;
+  @Event() public volumeWindowCenterChanged: EventEmitter;
+  @Event() public volumeWindowWidthChanged: EventEmitter;
 
-  @Prop({ mutable: true }) boundingBoxEnabled: boolean = false;
-  @Prop({ mutable: true }) displayMode: DisplayMode = DisplayMode.MESH;
-  @Prop({ mutable: true }) orientation: Orientation = Orientation.CORONAL;
-  @Prop({ mutable: true }) slicesIndex: number;
-  @Prop({ mutable: true }) slicesWindowCenter: number;
-  @Prop({ mutable: true }) slicesWindowWidth: number;
-  @Prop({ mutable: true }) stackhelper:
+  @Prop({ mutable: true }) public boundingBoxEnabled: boolean = false;
+  @Prop({ mutable: true }) public displayMode: DisplayMode = DisplayMode.MESH;
+  @Prop({ mutable: true }) public orientation: Orientation =
+    Orientation.CORONAL;
+  @Prop({ mutable: true }) public slicesIndex: number;
+  @Prop({ mutable: true }) public slicesWindowCenter: number;
+  @Prop({ mutable: true }) public slicesWindowWidth: number;
+  @Prop({ mutable: true }) public stackhelper:
     | AMI.StackHelper
     | AMI.VolumeRenderHelper;
-  @Watch("stackhelper")
-  watchStackhelper() {
+  @Watch('stackhelper')
+  public watchStackhelper() {
     this.slicesIndex = undefined;
     this.slicesWindowCenter = undefined;
     this.slicesWindowWidth = undefined;
@@ -41,10 +42,10 @@ export class AlControlPanel {
     this.volumeWindowCenter = undefined;
     this.volumeWindowWidth = undefined;
   }
-  @Prop({ mutable: true }) graphEnabled: boolean = false;
-  @Prop({ mutable: true }) volumeSteps: number;
-  @Prop({ mutable: true }) volumeWindowCenter: number;
-  @Prop({ mutable: true }) volumeWindowWidth: number;
+  @Prop({ mutable: true }) public graphEnabled: boolean = false;
+  @Prop({ mutable: true }) public volumeSteps: number;
+  @Prop({ mutable: true }) public volumeWindowCenter: number;
+  @Prop({ mutable: true }) public volumeWindowWidth: number;
 
   private _boundingBoxEnabled(enabled: boolean) {
     this.boundingBoxEnabled = enabled;
@@ -96,17 +97,17 @@ export class AlControlPanel {
     this.volumeWindowWidthChanged.emit(width);
   }
 
-  renderDisplayModeToggle() {
+  public renderDisplayModeToggle() {
     if (this.displayMode !== DisplayMode.MESH) {
       return (
         <ion-item
           style={{
-            display: "var(--display-mode-display, block)"
+            display: 'var(--display-mode-display, block)'
           }}
         >
-          <ion-icon name="eye" slot="start" />
+          <ion-icon name='eye' slot='start' />
           <select
-            slot="end"
+            slot='end'
             onChange={e =>
               this._displayMode((e.srcElement as HTMLSelectElement)
                 .value as DisplayMode)
@@ -132,16 +133,16 @@ export class AlControlPanel {
     return null;
   }
 
-  renderNodesToggle() {
+  public renderNodesToggle() {
     return (
       <ion-item
         style={{
-          display: "var(--graph-enabled-display, block)"
+          display: 'var(--graph-enabled-display, block)'
         }}
       >
-        <ion-icon name="add-circle" slot="start" />
+        <ion-icon name='add-circle' slot='start' />
         <ion-toggle
-          slot="end"
+          slot='end'
           checked={this.graphEnabled}
           onIonChange={e => this._graphEnabled(e.detail.checked)}
         />
@@ -149,16 +150,16 @@ export class AlControlPanel {
     );
   }
 
-  renderBoundingBoxEnabled() {
+  public renderBoundingBoxEnabled() {
     return (
       <ion-item
         style={{
-          display: "var(--bounding-box-enabled-display, block)"
+          display: 'var(--bounding-box-enabled-display, block)'
         }}
       >
-        <ion-icon name="cube" slot="start" />
+        <ion-icon name='cube' slot='start' />
         <ion-toggle
-          slot="end"
+          slot='end'
           checked={this.boundingBoxEnabled}
           onIonChange={e => this._boundingBoxEnabled(e.detail.checked)}
         />
@@ -166,28 +167,28 @@ export class AlControlPanel {
     );
   }
 
-  renderRecenterButton() {
+  public renderRecenterButton() {
     return (
       <ion-item
         style={{
-          display: "var(--recenter-display, block)"
+          display: 'var(--recenter-display, block)'
         }}
       >
-        <ion-icon name="log-in" slot="start" />
+        <ion-icon name='log-in' slot='start' />
         <ion-button
-          slot="end"
-          size="small"
+          slot='end'
+          size='small'
           onClick={() => {
             this.recenter.emit();
           }}
         >
-          <ion-icon name="checkmark" />
+          <ion-icon name='checkmark' />
         </ion-button>
       </ion-item>
     );
   }
 
-  renderGenericOptions() {
+  public renderGenericOptions() {
     return [this.renderBoundingBoxEnabled(), this.renderRecenterButton()];
   }
 
@@ -195,7 +196,7 @@ export class AlControlPanel {
     return max + min - num;
   }
 
-  renderOptions() {
+  public renderOptions() {
     switch (this.displayMode) {
       case DisplayMode.SLICES: {
         if (
@@ -290,13 +291,13 @@ export class AlControlPanel {
             {this.renderGenericOptions()}
             <ion-item
               style={{
-                display: "var(--slices-index-display, block)"
+                display: 'var(--slices-index-display, block)'
               }}
             >
-              <ion-icon name="swap" slot="start" />
+              <ion-icon name='swap' slot='start' />
               <ion-range
-                slot="end"
-                min="0"
+                slot='end'
+                min='0'
                 max={indexMax}
                 value={index}
                 pin={true}
@@ -305,12 +306,12 @@ export class AlControlPanel {
             </ion-item>
             <ion-item
               style={{
-                display: "var(--slices-orientation-display, block)"
+                display: 'var(--slices-orientation-display, block)'
               }}
             >
-              <ion-icon name="compass" slot="start" />
+              <ion-icon name='compass' slot='start' />
               <select
-                slot="end"
+                slot='end'
                 onChange={e =>
                   this._orientation((e.srcElement as HTMLSelectElement)
                     .value as Orientation)
@@ -338,12 +339,12 @@ export class AlControlPanel {
             </ion-item>
             <ion-item
               style={{
-                display: "var(--slices-window-center-display, block)"
+                display: 'var(--slices-window-center-display, block)'
               }}
             >
-              <ion-icon name="sunny" slot="start" />
+              <ion-icon name='sunny' slot='start' />
               <ion-range
-                slot="end"
+                slot='end'
                 min={windowCenterMin}
                 max={windowCenterMax}
                 value={this._reverseNumber(
@@ -364,12 +365,12 @@ export class AlControlPanel {
             </ion-item>
             <ion-item
               style={{
-                display: "var(--slices-window-width-display, block)"
+                display: 'var(--slices-window-width-display, block)'
               }}
             >
-              <ion-icon name="contrast" slot="start" />
+              <ion-icon name='contrast' slot='start' />
               <ion-range
-                slot="end"
+                slot='end'
                 min={windowWidthMin}
                 max={windowWidthMax}
                 value={this._reverseNumber(
@@ -428,7 +429,7 @@ export class AlControlPanel {
           windowCenter = this.volumeWindowCenter;
         }
 
-        //const volumeLuts: string = this._lut.lutsAvailable().join(',');
+        // const volumeLuts: string = this._lut.lutsAvailable().join(',');
 
         // update the stackhelper
         (this.stackhelper as AMI.VolumeRenderHelper).steps = steps;
@@ -441,12 +442,12 @@ export class AlControlPanel {
             {this.renderGenericOptions()}
             <ion-item
               style={{
-                display: "var(--volume-steps-display, block)"
+                display: 'var(--volume-steps-display, block)'
               }}
             >
-              <ion-icon name="swap" slot="start" />
+              <ion-icon name='swap' slot='start' />
               <ion-range
-                slot="end"
+                slot='end'
                 min={Constants.stepsMin}
                 max={Constants.stepsMax}
                 value={steps}
@@ -467,12 +468,12 @@ export class AlControlPanel {
               </ion-item> */}
             <ion-item
               style={{
-                display: "var(--volume-window-center-display, block)"
+                display: 'var(--volume-window-center-display, block)'
               }}
             >
-              <ion-icon name="sunny" slot="start" />
+              <ion-icon name='sunny' slot='start' />
               <ion-range
-                slot="end"
+                slot='end'
                 min={windowCenterMin}
                 max={windowCenterMax}
                 value={this._reverseNumber(
@@ -493,12 +494,12 @@ export class AlControlPanel {
             </ion-item>
             <ion-item
               style={{
-                display: "var(--volume-window-width-display, block)"
+                display: 'var(--volume-window-width-display, block)'
               }}
             >
-              <ion-icon name="contrast" slot="start" />
+              <ion-icon name='contrast' slot='start' />
               <ion-range
-                slot="end"
+                slot='end'
                 min={windowWidthMin}
                 max={windowWidthMax}
                 value={this._reverseNumber(
@@ -523,12 +524,15 @@ export class AlControlPanel {
       case DisplayMode.MESH: {
         return this.renderGenericOptions();
       }
+      default: {
+        return;
+      }
     }
 
     return null;
   }
 
-  render() {
+  public render() {
     return [
       this.renderDisplayModeToggle(),
       this.renderNodesToggle(),

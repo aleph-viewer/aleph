@@ -1,11 +1,8 @@
-import { Constants } from "../../Constants";
-import { BaseComponent } from "./BaseComponent";
+import { Constants } from '../../Constants';
 
-interface AlRenderOrderDefinition extends BaseComponent {}
-
-export default AFRAME.registerComponent("al-render-order", {
+export default AFRAME.registerComponent('al-render-order', {
   schema: {
-    order: { type: "number", default: Constants.topLayerRenderOrder }
+    order: { type: 'number', default: Constants.topLayerRenderOrder }
   },
 
   init() {
@@ -19,10 +16,13 @@ export default AFRAME.registerComponent("al-render-order", {
     });
   },
 
+  // tslint:disable-next-line: no-empty
   bindMethods(): void {},
 
+  // tslint:disable-next-line: no-empty
   addEventListeners(): void {},
 
+  // tslint:disable-next-line: no-empty
   removeEventListeners(): void {},
 
   update() {
@@ -36,4 +36,4 @@ export default AFRAME.registerComponent("al-render-order", {
   remove(): void {
     this.removeEventListeners();
   }
-} as AlRenderOrderDefinition);
+});

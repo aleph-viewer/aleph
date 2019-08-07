@@ -1,5 +1,6 @@
 export class EventUtils {
-  static debounce(fn: any, debounceDuration: number): any {
+  // tslint:disable-next-line: no-any
+  public static debounce(fn: any, debounceDuration: number): any {
     // summary:
     //      Returns a debounced function that will make sure the given
     //      function is not triggered too much.
@@ -13,12 +14,13 @@ export class EventUtils {
 
     return function() {
       if (!fn.debouncing) {
+        // tslint:disable-next-line: no-any
         const args: any = Array.prototype.slice.apply(arguments);
         fn.lastReturnVal = fn.apply(this, args);
         fn.debouncing = true;
       }
       clearTimeout(fn.debounceTimeout);
-      fn.debounceTimeout = setTimeout(function() {
+      fn.debounceTimeout = setTimeout(() => {
         fn.debouncing = false;
       }, debounceDuration);
 

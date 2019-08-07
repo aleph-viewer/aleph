@@ -1,47 +1,48 @@
-import { AlCamera } from "../interfaces";
-import { Constants } from "../Constants";
+import { Constants } from '../Constants';
+import { AlCamera } from '../interfaces';
 
-type Entity = import("aframe").Entity;
+type Entity = import('aframe').Entity;
 
 export class ThreeUtils {
-  static isWebGL2Available() {
+  public static isWebGL2Available() {
     try {
-      const canvas: any = document.createElement("canvas");
-      return !!(
-        (window as any).WebGL2RenderingContext && canvas.getContext("webgl2")
-      );
+      // tslint:disable-next-line: no-any
+      const canvas: any = document.createElement('canvas');
+      return !!// tslint:disable-next-line: no-any
+      ((window as any).WebGL2RenderingContext && canvas.getContext('webgl2'));
     } catch (e) {
       return false;
     }
   }
 
   // Must use setAttribute, otherwise THREE.OrbitControls onMouseUp doesn't always pick up the change :-(
-  static enableOrbitControls(camEntity: Entity, enabled: boolean) {
-    camEntity.setAttribute("al-orbit-control", `enabled: ${enabled}`);
+  public static enableOrbitControls(camEntity: Entity, enabled: boolean) {
+    camEntity.setAttribute('al-orbit-control', `enabled: ${enabled}`);
   }
 
-  static waitOneFrame(func: () => void) {
+  public static waitOneFrame(func: () => void) {
     window.setTimeout(() => {
       func();
     }, Constants.minFrameMS);
   }
 
-  static objectToVector3(vec: {
+  public static objectToVector3(vec: {
     x: number;
     y: number;
     z: number;
   }): THREE.Vector3 {
-    let res = new THREE.Vector3();
+    const res = new THREE.Vector3();
     res.x = vec.x;
     res.y = vec.y;
     res.z = vec.z;
     return res;
   }
 
-  static worldToScreen(
+  public static worldToScreen(
     worldCoordinate: THREE.Vector3,
     camera: THREE.Camera,
-    container
+    // tslint:disable-next-line: no-any
+    container: any
   ): THREE.Vector3 {
     const screenCoordinates = worldCoordinate.clone();
     screenCoordinates.project(camera);
@@ -57,13 +58,13 @@ export class ThreeUtils {
     return screenCoordinates;
   }
 
-  static vector3ToString(vec: THREE.Vector3): string {
-    return vec.toArray().join(" ");
+  public static vector3ToString(vec: THREE.Vector3): string {
+    return vec.toArray().join(' ');
   }
 
-  static stringToVector3(vec: string): THREE.Vector3 {
-    let res = vec.split(" ");
-    let vect = new THREE.Vector3();
+  public static stringToVector3(vec: string): THREE.Vector3 {
+    const res = vec.split(' ');
+    const vect = new THREE.Vector3();
     vect.x = Number(res[0]);
     vect.y = Number(res[1]);
     vect.z = Number(res[2]);
@@ -72,7 +73,7 @@ export class ThreeUtils {
   }
 
   // https://en.wikipedia.org/wiki/Slerp
-  static slerp(
+  public static slerp(
     start: THREE.Vector3,
     end: THREE.Vector3,
     percent: number
@@ -101,17 +102,17 @@ export class ThreeUtils {
     }
   }
 
-  static easeInOutCubic(t: number) {
+  public static easeInOutCubic(t: number) {
     return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
   }
 
-  static getSlerpPath(
+  public static getSlerpPath(
     start: AlCamera,
     end: AlCamera,
     positionChange: boolean,
     targetChange: boolean
   ): number[] {
-    let path = [];
+    const path = [];
 
     // add epsilon to avoid NaN due to divide by 0 in the atan in angleTo
     const sp: THREE.Vector3 = start.position.clone().addScalar(Number.EPSILON);
@@ -120,7 +121,7 @@ export class ThreeUtils {
     const et: THREE.Vector3 = end.target.clone().addScalar(Number.EPSILON);
 
     for (let frame = 0; frame <= Constants.maxAnimationSteps; frame++) {
-      let percent = this.easeInOutCubic(frame / Constants.maxAnimationSteps);
+      const percent = this.easeInOutCubic(frame / Constants.maxAnimationSteps);
       path.push({
         position: positionChange
           ? ThreeUtils.slerp(sp.clone(), ep.clone(), percent)

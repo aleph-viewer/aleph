@@ -1,6 +1,6 @@
-import { ThreeUtils } from "../../utils";
-import { Constants } from "../../Constants";
-import { BaseComponent } from "./BaseComponent";
+import { Constants } from '../../Constants';
+import { ThreeUtils } from '../../utils';
+import { BaseComponent } from './BaseComponent';
 interface AlFixedToOrbitCameraState {
   distanceFromTarget: number;
   target: THREE.Vector3;
@@ -10,10 +10,10 @@ interface AlFixedToOrbitCameraComponent extends BaseComponent {
   tickFunction(): void;
 }
 
-export default AFRAME.registerComponent("al-fixed-to-orbit-camera", {
+export default AFRAME.registerComponent('al-fixed-to-orbit-camera', {
   schema: {
-    distanceFromTarget: { type: "number", default: 0.1 },
-    target: { type: "vec3" }
+    distanceFromTarget: { type: 'number', default: 0.1 },
+    target: { type: 'vec3' }
   },
 
   init() {
@@ -24,7 +24,7 @@ export default AFRAME.registerComponent("al-fixed-to-orbit-camera", {
     );
 
     if (this.data.target) {
-      let targ = ThreeUtils.objectToVector3(this.data.target);
+      const targ = ThreeUtils.objectToVector3(this.data.target);
 
       this.state = {
         distanceFromTarget: this.data.distanceFromTarget,
@@ -41,14 +41,17 @@ export default AFRAME.registerComponent("al-fixed-to-orbit-camera", {
     this.addEventListeners();
   },
 
+  // tslint:disable-next-line: no-empty
   bindMethods(): void {},
 
+  // tslint:disable-next-line: no-empty
   addEventListeners(): void {},
 
+  // tslint:disable-next-line: no-empty
   removeEventListeners(): void {},
 
   update() {
-    let targ = ThreeUtils.objectToVector3(this.data.target);
+    const targ = ThreeUtils.objectToVector3(this.data.target);
 
     this.state = {
       distanceFromTarget: this.data.distanceFromTarget,
@@ -57,8 +60,8 @@ export default AFRAME.registerComponent("al-fixed-to-orbit-camera", {
   },
 
   tickFunction() {
-    let el = this.el;
-    let state = this.state;
+    const el = this.el;
+    const state = this.state;
 
     const camPos = el.sceneEl.camera.position;
     const dir = (state.target

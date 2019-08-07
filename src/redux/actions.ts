@@ -1,8 +1,8 @@
-import { AlNode } from "../interfaces/AlNode";
-import { DisplayMode } from "../enums/DisplayMode";
-import { Orientation } from "../enums/Orientation";
-import { AlEdge, AlCamera } from "../interfaces";
-import { AlAngle } from "../interfaces/AlAngle";
+import { DisplayMode } from '../enums/DisplayMode';
+import { Orientation } from '../enums/Orientation';
+import { AlCamera, AlEdge } from '../interfaces';
+import { AlAngle } from '../interfaces/AlAngle';
+import { AlNode } from '../interfaces/AlNode';
 
 export interface NullAction {
   type: TypeKeys.NULL;
@@ -39,34 +39,34 @@ export type ActionTypes =
   | AppSetVolumeWindowWidthAction;
 
 export enum TypeKeys {
-  NULL = "NULL",
-  ERROR = "ERROR",
-  APP_CLEAR_ANGLES = "APP_LOAD_ANGLES",
-  APP_CLEAR_EDGES = "APP_LOAD_EDGES",
-  APP_CLEAR_NODES = "APP_LOAD_NODES",
-  APP_DELETE_ANGLE = "APP_DELETE_ANGLE",
-  APP_DELETE_EDGE = "APP_DELETE_EDGE",
-  APP_DELETE_NODE = "APP_DELETE_NODE",
-  APP_SELECT_ANGLE = "APP_SELECT_ANGLE",
-  APP_SELECT_EDGE = "APP_SELECT_EDGE",
-  APP_SELECT_NODE = "APP_SELECT_NODE",
-  APP_SET_ANGLE = "APP_SET_ANGLE",
-  APP_SET_BOUNDINGBOX_VISIBLE = "APP_SET_BOUNDINGBOX_VISIBLE",
-  APP_SET_CAMERA = "APP_SET_CAMERA",
-  APP_SET_CONTROLS_ENABLED = "APP_SET_CONTROLS_ENABLED",
-  APP_SET_DISPLAY_MODE = "APP_SET_DISPLAY_MODE",
-  APP_SET_EDGE = "APP_SET_EDGE",
-  APP_SET_NODE = "APP_SET_NODE",
-  APP_SET_NODES_ENABLED = "APP_SET_NODES_ENABLED",
-  APP_SET_ORIENTATION = "APP_SET_ORIENTATION",
-  APP_SET_SLICES_INDEX = "APP_SET_SLICES_INDEX",
-  APP_SET_SLICES_WINDOW_CENTER = "APP_SET_SLICES_WINDOW_CENTER",
-  APP_SET_SLICES_WINDOW_WIDTH = "APP_SET_SLICES_WINDOW_WIDTH",
-  APP_SET_SRC = "APP_SET_SRC",
-  APP_SET_SRC_LOADED = "APP_SET_SRC_LOADED",
-  APP_SET_VOLUME_STEPS = "APP_SET_VOLUME_STEPS",
-  APP_SET_VOLUME_WINDOW_CENTER = "APP_SET_VOLUME_WINDOW_CENTER",
-  APP_SET_VOLUME_WINDOW_WIDTH = "APP_SET_VOLUME_WINDOW_WIDTH"
+  NULL = 'NULL',
+  ERROR = 'ERROR',
+  APP_CLEAR_ANGLES = 'APP_LOAD_ANGLES',
+  APP_CLEAR_EDGES = 'APP_LOAD_EDGES',
+  APP_CLEAR_NODES = 'APP_LOAD_NODES',
+  APP_DELETE_ANGLE = 'APP_DELETE_ANGLE',
+  APP_DELETE_EDGE = 'APP_DELETE_EDGE',
+  APP_DELETE_NODE = 'APP_DELETE_NODE',
+  APP_SELECT_ANGLE = 'APP_SELECT_ANGLE',
+  APP_SELECT_EDGE = 'APP_SELECT_EDGE',
+  APP_SELECT_NODE = 'APP_SELECT_NODE',
+  APP_SET_ANGLE = 'APP_SET_ANGLE',
+  APP_SET_BOUNDINGBOX_VISIBLE = 'APP_SET_BOUNDINGBOX_VISIBLE',
+  APP_SET_CAMERA = 'APP_SET_CAMERA',
+  APP_SET_CONTROLS_ENABLED = 'APP_SET_CONTROLS_ENABLED',
+  APP_SET_DISPLAY_MODE = 'APP_SET_DISPLAY_MODE',
+  APP_SET_EDGE = 'APP_SET_EDGE',
+  APP_SET_NODE = 'APP_SET_NODE',
+  APP_SET_NODES_ENABLED = 'APP_SET_NODES_ENABLED',
+  APP_SET_ORIENTATION = 'APP_SET_ORIENTATION',
+  APP_SET_SLICES_INDEX = 'APP_SET_SLICES_INDEX',
+  APP_SET_SLICES_WINDOW_CENTER = 'APP_SET_SLICES_WINDOW_CENTER',
+  APP_SET_SLICES_WINDOW_WIDTH = 'APP_SET_SLICES_WINDOW_WIDTH',
+  APP_SET_SRC = 'APP_SET_SRC',
+  APP_SET_SRC_LOADED = 'APP_SET_SRC_LOADED',
+  APP_SET_VOLUME_STEPS = 'APP_SET_VOLUME_STEPS',
+  APP_SET_VOLUME_WINDOW_CENTER = 'APP_SET_VOLUME_WINDOW_CENTER',
+  APP_SET_VOLUME_WINDOW_WIDTH = 'APP_SET_VOLUME_WINDOW_WIDTH'
 }
 
 //#region src
@@ -82,7 +82,7 @@ export const appSetSrc = (payload: [string, DisplayMode | undefined]) => async (
 ) => {
   return dispatch({
     type: TypeKeys.APP_SET_SRC,
-    payload: payload
+    payload
   });
 };
 
@@ -97,7 +97,7 @@ export const appSetSrcLoaded = (payload: boolean) => async (
 ) => {
   return dispatch({
     type: TypeKeys.APP_SET_SRC_LOADED,
-    payload: payload
+    payload
   });
 };
 
@@ -116,7 +116,7 @@ export const appSetNode = (payload: [string, AlNode]) => async (
 ) => {
   return dispatch({
     type: TypeKeys.APP_SET_NODE,
-    payload: payload
+    payload
   });
 };
 
@@ -131,7 +131,7 @@ export const appDeleteNode = (payload: string) => async (
 ) => {
   return dispatch({
     type: TypeKeys.APP_DELETE_NODE,
-    payload: payload
+    payload
   });
 };
 
@@ -146,7 +146,7 @@ export const appSelectNode = (payload: string | null) => async (
 ) => {
   return dispatch({
     type: TypeKeys.APP_SELECT_NODE,
-    payload: payload
+    payload
   });
 };
 
@@ -158,7 +158,7 @@ export interface AppClearNodesAction {
 export const appClearNodes = (payload: void) => async (dispatch, _getState) => {
   return dispatch({
     type: TypeKeys.APP_CLEAR_NODES,
-    payload: payload
+    payload
   });
 };
 
@@ -177,7 +177,7 @@ export const appSetEdge = (payload: [string, AlEdge]) => async (
 ) => {
   return dispatch({
     type: TypeKeys.APP_SET_EDGE,
-    payload: payload
+    payload
   });
 };
 
@@ -192,7 +192,7 @@ export const appDeleteEdge = (payload: string) => async (
 ) => {
   return dispatch({
     type: TypeKeys.APP_DELETE_EDGE,
-    payload: payload
+    payload
   });
 };
 
@@ -207,7 +207,7 @@ export const appSelectEdge = (payload: string | null) => async (
 ) => {
   return dispatch({
     type: TypeKeys.APP_SELECT_EDGE,
-    payload: payload
+    payload
   });
 };
 
@@ -219,7 +219,7 @@ export interface AppClearEdgesAction {
 export const appClearEdges = (payload: void) => async (dispatch, _getState) => {
   return dispatch({
     type: TypeKeys.APP_CLEAR_EDGES,
-    payload: payload
+    payload
   });
 };
 
@@ -238,7 +238,7 @@ export const appSetAngle = (payload: [string, AlAngle]) => async (
 ) => {
   return dispatch({
     type: TypeKeys.APP_SET_ANGLE,
-    payload: payload
+    payload
   });
 };
 
@@ -253,7 +253,7 @@ export const appDeleteAngle = (payload: string) => async (
 ) => {
   return dispatch({
     type: TypeKeys.APP_DELETE_ANGLE,
-    payload: payload
+    payload
   });
 };
 
@@ -268,7 +268,7 @@ export const appSelectAngle = (payload: string | null) => async (
 ) => {
   return dispatch({
     type: TypeKeys.APP_SELECT_ANGLE,
-    payload: payload
+    payload
   });
 };
 
@@ -283,7 +283,7 @@ export const appClearAngles = (payload: void) => async (
 ) => {
   return dispatch({
     type: TypeKeys.APP_CLEAR_ANGLES,
-    payload: payload
+    payload
   });
 };
 
@@ -301,7 +301,7 @@ export const appSetDisplayMode = (payload: DisplayMode) => async (
 ) => {
   return dispatch({
     type: TypeKeys.APP_SET_DISPLAY_MODE,
-    payload: payload
+    payload
   });
 };
 
@@ -316,7 +316,7 @@ export const appSetGraphEnabled = (payload: boolean) => async (
 ) => {
   return dispatch({
     type: TypeKeys.APP_SET_NODES_ENABLED,
-    payload: payload
+    payload
   });
 };
 
@@ -331,7 +331,7 @@ export const appSetBoundingBoxEnabled = (payload: boolean) => async (
 ) => {
   return dispatch({
     type: TypeKeys.APP_SET_BOUNDINGBOX_VISIBLE,
-    payload: payload
+    payload
   });
 };
 
@@ -350,7 +350,7 @@ export const appSetOrientation = (payload: Orientation) => async (
 ) => {
   return dispatch({
     type: TypeKeys.APP_SET_ORIENTATION,
-    payload: payload
+    payload
   });
 };
 
@@ -365,7 +365,7 @@ export const appSetSlicesIndex = (payload: number) => async (
 ) => {
   return dispatch({
     type: TypeKeys.APP_SET_SLICES_INDEX,
-    payload: payload
+    payload
   });
 };
 
@@ -380,7 +380,7 @@ export const appSetSlicesWindowWidth = (payload: number) => async (
 ) => {
   return dispatch({
     type: TypeKeys.APP_SET_SLICES_WINDOW_WIDTH,
-    payload: payload
+    payload
   });
 };
 
@@ -395,7 +395,7 @@ export const appSetSlicesWindowCenter = (payload: number) => async (
 ) => {
   return dispatch({
     type: TypeKeys.APP_SET_SLICES_WINDOW_CENTER,
-    payload: payload
+    payload
   });
 };
 
@@ -410,7 +410,7 @@ export const appSetVolumeSteps = (payload: number) => async (
 ) => {
   return dispatch({
     type: TypeKeys.APP_SET_VOLUME_STEPS,
-    payload: payload
+    payload
   });
 };
 
@@ -425,7 +425,7 @@ export const appSetVolumeWindowWidth = (payload: number) => async (
 ) => {
   return dispatch({
     type: TypeKeys.APP_SET_VOLUME_WINDOW_WIDTH,
-    payload: payload
+    payload
   });
 };
 
@@ -440,7 +440,7 @@ export const appSetVolumeWindowCenter = (payload: number) => async (
 ) => {
   return dispatch({
     type: TypeKeys.APP_SET_VOLUME_WINDOW_CENTER,
-    payload: payload
+    payload
   });
 };
 
@@ -459,7 +459,7 @@ export const appSetCamera = (payload: AlCamera) => async (
 ) => {
   return dispatch({
     type: TypeKeys.APP_SET_CAMERA,
-    payload: payload
+    payload
   });
 };
 
@@ -474,7 +474,7 @@ export const appSetControlsEnabled = (payload: boolean) => async (
 ) => {
   return dispatch({
     type: TypeKeys.APP_SET_CONTROLS_ENABLED,
-    payload: payload
+    payload
   });
 };
 

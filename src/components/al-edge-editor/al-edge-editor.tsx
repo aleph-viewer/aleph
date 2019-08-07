@@ -1,30 +1,30 @@
-import { Component, Prop, Event, EventEmitter } from "@stencil/core";
-import { AlEdge } from "../../interfaces";
+import { Component, Event, EventEmitter, Prop } from '@stencil/core';
+import { AlEdge } from '../../interfaces';
 
 @Component({
-  tag: "al-edge-editor",
-  styleUrl: "al-edge-editor.css",
+  tag: 'al-edge-editor',
+  styleUrl: 'al-edge-editor.css',
   shadow: true
 })
 export class AlEdgeEditor {
-  @Event() delete: EventEmitter;
+  @Event() public delete: EventEmitter;
 
-  @Prop({ mutable: true }) edge: [string, AlEdge];
+  @Prop({ mutable: true }) public edge: [string, AlEdge];
 
-  render() {
+  public render() {
     if (this.edge) {
       const [edgeId] = this.edge;
 
       return (
         <form onSubmit={e => e.preventDefault()}>
           <ion-button
-            size="small"
+            size='small'
             onClick={() => {
               this.delete.emit(edgeId);
               this.edge = null;
             }}
           >
-            <ion-icon name="remove" />
+            <ion-icon name='remove' />
           </ion-button>
         </form>
       );

@@ -1,9 +1,9 @@
-import { Constants } from "../../Constants";
-import { ShaderUtils } from "../../utils";
-import { AlGraphEvents } from "../../utils";
-import { AlGraphEntryType } from "../../enums";
-import { BaseComponent } from "./BaseComponent";
-import { Entity } from "aframe";
+import { Entity } from 'aframe';
+import { Constants } from '../../Constants';
+import { AlGraphEntryType } from '../../enums';
+import { ShaderUtils } from '../../utils';
+import { AlGraphEvents } from '../../utils';
+import { BaseComponent } from './BaseComponent';
 
 interface AlNodeState {
   camera: THREE.Camera;
@@ -27,11 +27,11 @@ interface AlNodeComponent extends BaseComponent {
   pointerOut(_event: CustomEvent): void;
 }
 
-export default AFRAME.registerComponent("al-node", {
+export default AFRAME.registerComponent('al-node', {
   schema: {
-    scale: { type: "number", default: 1 },
-    selected: { type: "boolean" },
-    graphEnabled: { type: "boolean" }
+    scale: { type: 'number', default: 1 },
+    selected: { type: 'boolean' },
+    graphEnabled: { type: 'boolean' }
   },
 
   init(): void {
@@ -44,19 +44,19 @@ export default AFRAME.registerComponent("al-node", {
     this.addEventListeners();
 
     const data = this.data;
-    let el = this.el;
+    const el = this.el;
 
     const camera = el.sceneEl.camera.el.object3DMap.camera;
     const geometry = new THREE.SphereGeometry(data.scale, 16, 16);
-    let material = new THREE.MeshBasicMaterial();
+    const material = new THREE.MeshBasicMaterial();
     const mesh = new THREE.Mesh(geometry, material);
 
-    let outlineGeometry = new THREE.SphereGeometry(data.scale, 16, 16);
-    let outlineMaterial = ShaderUtils.getHaloMaterial();
+    const outlineGeometry = new THREE.SphereGeometry(data.scale, 16, 16);
+    const outlineMaterial = ShaderUtils.getHaloMaterial();
     const outlineMesh = new THREE.Mesh(outlineGeometry, outlineMaterial);
     mesh.add(outlineMesh);
 
-    el.setObject3D("mesh", mesh);
+    el.setObject3D('mesh', mesh);
     (el.object3D as THREE.Object3D).renderOrder =
       Constants.topLayerRenderOrder - 1;
 
@@ -82,27 +82,27 @@ export default AFRAME.registerComponent("al-node", {
   },
 
   addEventListeners(): void {
-    this.el.sceneEl.addEventListener("mousedown", this.pointerDown, {
+    this.el.sceneEl.addEventListener('mousedown', this.pointerDown, {
       capture: false,
       once: false,
       passive: true
     });
-    this.el.addEventListener("mouseup", this.pointerUp, {
+    this.el.addEventListener('mouseup', this.pointerUp, {
       capture: false,
       once: false,
       passive: true
     });
-    this.el.sceneEl.addEventListener("mouseup", this.pointerUp, {
+    this.el.sceneEl.addEventListener('mouseup', this.pointerUp, {
       capture: false,
       once: false,
       passive: true
     });
-    this.el.addEventListener("raycaster-intersected", this.pointerOver, {
+    this.el.addEventListener('raycaster-intersected', this.pointerOver, {
       capture: false,
       once: false,
       passive: true
     });
-    this.el.addEventListener("raycaster-intersected-cleared", this.pointerOut, {
+    this.el.addEventListener('raycaster-intersected-cleared', this.pointerOut, {
       capture: false,
       once: false,
       passive: true
@@ -110,18 +110,18 @@ export default AFRAME.registerComponent("al-node", {
   },
 
   removeEventListeners(): void {
-    this.el.sceneEl.removeEventListener("mousedown", this.pointerDown);
-    this.el.sceneEl.removeEventListener("mouseup", this.pointerUp);
-    this.el.removeEventListener("mouseup", this.pointerUp);
-    this.el.removeEventListener("raycaster-intersected", this.pointerOver);
+    this.el.sceneEl.removeEventListener('mousedown', this.pointerDown);
+    this.el.sceneEl.removeEventListener('mouseup', this.pointerUp);
+    this.el.removeEventListener('mouseup', this.pointerUp);
+    this.el.removeEventListener('raycaster-intersected', this.pointerOver);
     this.el.removeEventListener(
-      "raycaster-intersected-cleared",
+      'raycaster-intersected-cleared',
       this.pointerOut
     );
   },
 
   pointerDown(_event: CustomEvent): void {
-    let state = this.state as AlNodeState;
+    const state = this.state as AlNodeState;
     if (state.hovered) {
       this.el.sceneEl.emit(
         AlGraphEvents.SELECTED,
@@ -130,15 +130,15 @@ export default AFRAME.registerComponent("al-node", {
       );
 
       if (this.data.graphEnabled) {
-        let state = this.state as AlNodeState;
-        state.mouseDown = true;
+        const stat = this.state as AlNodeState;
+        stat.mouseDown = true;
         this.el.sceneEl.emit(AlGraphEvents.POINTER_DOWN, {}, true);
       }
     }
   },
 
   pointerUp(_event: MouseEvent): void {
-    let state = this.state as AlNodeState;
+    const state = this.state as AlNodeState;
     if (this.data.graphEnabled) {
       state.dragging = false;
       state.mouseDown = false;
@@ -147,13 +147,13 @@ export default AFRAME.registerComponent("al-node", {
   },
 
   pointerOver(_event: CustomEvent): void {
-    let state = this.state as AlNodeState;
+    const state = this.state as AlNodeState;
     state.hovered = true;
     this.el.sceneEl.emit(AlGraphEvents.POINTER_OVER, { id: this.el.id }, true);
   },
 
   pointerOut(_event: CustomEvent): void {
-    let state = this.state as AlNodeState;
+    const state = this.state as AlNodeState;
     state.hovered = false;
     if (state.mouseDown && state.selected) {
       state.dragging = true;
@@ -162,13 +162,13 @@ export default AFRAME.registerComponent("al-node", {
   },
 
   update(): void {
-    let state = this.state as AlNodeState;
+    const state = this.state as AlNodeState;
     state.selected = this.data.selected;
   },
 
   tickFunction(): void {
     const el = this.el;
-    let state = this.state as AlNodeState;
+    const state = this.state as AlNodeState;
 
     if (this.data.graphEnabled && state.dragging) {
       this.el.sceneEl.emit(AlGraphEvents.DRAGGED, { id: this.el.id }, true);
@@ -203,10 +203,10 @@ export default AFRAME.registerComponent("al-node", {
 
   remove(): void {
     this.removeEventListeners();
-    this.el.removeObject3D("mesh");
+    this.el.removeObject3D('mesh');
   }
 } as AlNodeComponent);
 
 export class AlNodeEvents {
-  static ANIMATION_STARTED: string = "al-animation-started";
+  public static ANIMATION_STARTED: string = 'al-animation-started';
 }
