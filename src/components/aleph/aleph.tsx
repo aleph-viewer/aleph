@@ -464,13 +464,12 @@ export class Aleph {
       }
       // This is seperate from the slice entity as it will store the volume render,
       // preventing long load times when switching mode
+      // Node spawner is on the bounding box in
+      // volume mode; as the "volume" is in a different scene
       case DisplayMode.VOLUME: {
         return (
           <a-entity
             id="target-entity"
-            al-node-spawner={`
-              graphEnabled: ${this.graphEnabled};
-            `}
             al-volume={`
               srcLoaded: ${this.srcLoaded};
               src: ${this.src};
@@ -496,44 +495,30 @@ export class Aleph {
   }
 
   private _renderBoundingBox() {
-    if (this.srcLoaded && this.boundingBoxEnabled) {
+    if (this.srcLoaded) {
       const size: THREE.Vector3 = new THREE.Vector3();
       this._boundingBox.getSize(size);
       const meshGeom = this._getMesh().geometry;
-
-      // if targetEntity is a gltf, use its position (center). if it's a volume, the origin is in the bottom left, so get the position sub the geometry center
       let position: THREE.Vector3;
 
-      switch (this.displayMode) {
-        case DisplayMode.MESH: {
-          if (this._boundingBox.intersectsBox(meshGeom.boundingBox)) {
-            // Check if mesh intersects bounding box; if it does apply the offset
-            const offset = meshGeom.boundingSphere.center.clone();
-            position = this._targetEntity.object3D.position.clone().add(offset);
-          } else {
-            position = this._targetEntity.object3D.position.clone();
-          }
-          break;
-        }
-        case DisplayMode.VOLUME:
-        case DisplayMode.SLICES: {
-          position = this._targetEntity.object3D.position
-            .clone()
-            .add(GetUtils.getGeometryCenter(meshGeom));
-          break;
-        }
-        default: {
-          break;
-        }
-      }
-
       if (this.displayMode === DisplayMode.VOLUME) {
+        let opacity;
+        position = this._targetEntity.object3D.position
+          .clone()
+          .add(GetUtils.getGeometryCenter(meshGeom));
+
+        if (this.boundingBoxEnabled) {
+          opacity = 1;
+        } else {
+          opacity = 0;
+        }
         return (
           <a-entity
             position={ThreeUtils.vector3ToString(position)}
             al-bounding-box={`
               scale: ${ThreeUtils.vector3ToString(size)};
               color: ${Constants.colorValues.red};
+              opacity: ${opacity};
             `}
             al-node-spawner={`
               graphEnabled: ${this.graphEnabled};
@@ -542,22 +527,46 @@ export class Aleph {
             ref={el => (this._boundingEntity = el)}
           />
         );
-      } else {
+      } else if (this.boundingBoxEnabled) {
+        switch (this.displayMode) {
+          case DisplayMode.MESH: {
+            if (this._boundingBox.intersectsBox(meshGeom.boundingBox)) {
+              // Check if mesh intersects bounding box; if it does apply the offset
+              const offset = meshGeom.boundingSphere.center.clone();
+              position = this._targetEntity.object3D.position
+                .clone()
+                .add(offset);
+            } else {
+              position = this._targetEntity.object3D.position.clone();
+            }
+            break;
+          }
+          case DisplayMode.SLICES: {
+            position = this._targetEntity.object3D.position
+              .clone()
+              .add(GetUtils.getGeometryCenter(meshGeom));
+            break;
+          }
+          default: {
+            break;
+          }
+        }
+
         return (
           <a-entity
             position={ThreeUtils.vector3ToString(position)}
             al-bounding-box={`
-              scale: ${ThreeUtils.vector3ToString(size)};
-              color: ${Constants.colorValues.red};
-            `}
+                scale: ${ThreeUtils.vector3ToString(size)};
+                color: ${Constants.colorValues.red};
+                opacity: 1;
+              `}
             ref={el => (this._boundingEntity = el)}
           />
         );
       }
     }
-
-    return null;
   }
+
   private _renderNodes() {
     return Array.from(this.nodes).map((n: [string, AlNode]) => {
       const [nodeId, node] = n;

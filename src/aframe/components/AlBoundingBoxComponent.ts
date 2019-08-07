@@ -13,7 +13,8 @@ interface AlBoundingBoxState {
 export default AFRAME.registerComponent("al-bounding-box", {
   schema: {
     color: { type: "string", default: "#f50057" },
-    scale: { type: "string" }
+    scale: { type: "string" },
+    opacity: { type: "number", default: 1 }
   },
 
   init(): void {
@@ -25,10 +26,13 @@ export default AFRAME.registerComponent("al-bounding-box", {
     } as AlBoundingBoxState;
   },
 
+  // tslint:disable-next-line: no-empty
   bindMethods(): void {},
 
+  // tslint:disable-next-line: no-empty
   addEventListeners(): void {},
 
+  // tslint:disable-next-line: no-empty
   removeEventListeners(): void {},
 
   update(): void {
@@ -47,10 +51,19 @@ export default AFRAME.registerComponent("al-bounding-box", {
     const mesh = new THREE.Mesh(geometry, material);
     el.setObject3D("mesh2", mesh);
 
+    // tslint:disable-next-line: no-any
     state.boundingBox = new (THREE as any).Box3Helper(
+      // tslint:disable-next-line: no-any
       state.box as any,
       this.data.color
     );
+
+    const bmaterial = (state.boundingBox as THREE.Line)
+      .material as THREE.Material;
+    bmaterial.opacity = this.data.opactiy;
+    bmaterial.transparent = this.data.opacity === 0;
+    bmaterial.depthWrite = this.data.opacity === 0;
+
     state.boundingBox.renderOrder = Constants.topLayerRenderOrder - 5;
     el.setObject3D("mesh", state.boundingBox);
 

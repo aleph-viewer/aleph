@@ -1,10 +1,10 @@
-import { combineReducers } from "redux";
-import { MeshFileType } from "../enums";
-import { DisplayMode } from "../enums/DisplayMode";
-import { Orientation } from "../enums/Orientation";
-import { AlAngle, AlAppState, AlEdge, AlNode } from "../interfaces";
-import { GetUtils } from "../utils";
-import { ActionTypes, TypeKeys } from "./actions";
+import { combineReducers } from 'redux';
+import { MeshFileType } from '../enums';
+import { DisplayMode } from '../enums/DisplayMode';
+import { Orientation } from '../enums/Orientation';
+import { AlAngle, AlAppState, AlEdge, AlNode } from '../interfaces';
+import { GetUtils } from '../utils';
+import { ActionTypes, TypeKeys } from './actions';
 
 export const getInitialState = () => {
   return {
@@ -232,7 +232,11 @@ export const app = (
     case TypeKeys.APP_SET_DISPLAY_MODE: {
       return {
         ...state,
-        displayMode: action.payload
+        displayMode: action.payload,
+        boundingBoxEnabled:
+          action.payload === DisplayMode.VOLUME
+            ? true
+            : state.boundingBoxEnabled
       };
     }
     case TypeKeys.APP_SET_ORIENTATION: {
