@@ -1,5 +1,6 @@
 import "./components/AlAngleComponent";
 import "./components/AlBoundingBoxComponent";
+import "./components/AlCursorComponent";
 import "./components/AlEdgeComponent";
 import "./components/AlFixedToOrbitCameraComponent";
 import "./components/AlGltfModelComponent";

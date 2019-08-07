@@ -1,4 +1,5 @@
 export class EventUtils {
+  // todo: use AFRAME.utils.debounce?
   // tslint:disable-next-line: no-any
   public static debounce(fn: any, debounceDuration: number): any {
     // summary:

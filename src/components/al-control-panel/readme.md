@@ -30,6 +30,7 @@
 | `displayModeChanged`        |             | `CustomEvent<void>` |
 | `graphEnabledChanged`       |             | `CustomEvent<void>` |
 | `orientationChanged`        |             | `CustomEvent<void>` |
+| `recenter`                  |             | `CustomEvent<void>` |
 | `slicesIndexChanged`        |             | `CustomEvent<void>` |
 | `slicesWindowCenterChanged` |             | `CustomEvent<void>` |
 | `slicesWindowWidthChanged`  |             | `CustomEvent<void>` |
