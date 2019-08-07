@@ -182,7 +182,7 @@ export class AlControlPanel {
             this.recenter.emit();
           }}
         >
-          <ion-icon name='checkmark' />
+          Recenter
         </ion-button>
       </ion-item>
     );
