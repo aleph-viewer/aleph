@@ -1,9 +1,9 @@
 export class RaycasterUtils {
-  static castMeshRay(
+  public static castMeshRay(
     raycaster: THREE.Raycaster,
     targetObject: THREE.Object3D
   ): THREE.Vector3 {
-    let intersects: THREE.Intersection[] = raycaster.intersectObjects(
+    const intersects: THREE.Intersection[] = raycaster.intersectObjects(
       targetObject.children
     );
 

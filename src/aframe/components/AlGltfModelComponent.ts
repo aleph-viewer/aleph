@@ -1,6 +1,7 @@
-import { BaseComponent } from "./BaseComponent";
-
-interface AlGltfModelComponent extends BaseComponent {}
+export class AlGltfModelEvents {
+  public static LOADED: string = "al-model-loaded";
+  public static ERROR: string = "al-model-error";
+}
 
 export default AFRAME.registerComponent("al-gltf-model", {
   schema: {
@@ -12,30 +13,40 @@ export default AFRAME.registerComponent("al-gltf-model", {
     this.bindMethods();
     this.addEventListeners();
     this.model = null;
-    this.loader = new (THREE as any).GLTFLoader();
-    (THREE as any).DRACOLoader.setDecoderPath(this.data.dracoDecoderPath);
-    this.loader.setDRACOLoader(new (THREE as any).DRACOLoader());
+
+    // tslint:disable-next-line: no-any
+    const threeAny = THREE as any;
+
+    this.loader = new threeAny.GLTFLoader();
+    threeAny.DRACOLoader.setDecoderPath(this.data.dracoDecoderPath);
+    this.loader.setDRACOLoader(new threeAny.DRACOLoader());
   },
 
+  // tslint:disable-next-line: no-empty
   bindMethods(): void {},
 
+  // tslint:disable-next-line: no-empty
   addEventListeners(): void {},
 
+  // tslint:disable-next-line: no-empty
   removeEventListeners(): void {},
 
-  update(oldData): void {
-    let self = this;
-    let el = this.el;
-    let src = this.data.src;
+  // tslint:disable-next-line: no-any
+  update(oldData: any): void {
+    const self = this;
+    const el = this.el;
+    const src = this.data.src;
 
     if (oldData && oldData.src !== src) {
       this.remove();
 
       this.loader.load(
         src,
+        // tslint:disable-next-line: typedef
         function gltfLoaded(gltfModel) {
           self.model = gltfModel.scene || gltfModel.scenes[0];
           self.model.animations = gltfModel.animations;
+          // The "mesh" is actually a whole GLTF scene
           el.setObject3D("mesh", self.model);
 
           el.sceneEl.emit(
@@ -48,8 +59,9 @@ export default AFRAME.registerComponent("al-gltf-model", {
           );
         },
         undefined /* onProgress */,
+        // tslint:disable-next-line: typedef
         function gltfFailed(error) {
-          let message =
+          const message =
             error && error.message
               ? error.message
               : "Failed to load glTF model";
@@ -58,7 +70,7 @@ export default AFRAME.registerComponent("al-gltf-model", {
             AlGltfModelEvents.ERROR,
             {
               format: "gltf",
-              src: src
+              src
             },
             false
           );
@@ -74,9 +86,4 @@ export default AFRAME.registerComponent("al-gltf-model", {
     this.removeEventListeners();
     this.el.removeObject3D("mesh");
   }
-} as AlGltfModelComponent);
-
-export class AlGltfModelEvents {
-  static LOADED: string = "al-model-loaded";
-  static ERROR: string = "al-model-error";
-}
+});

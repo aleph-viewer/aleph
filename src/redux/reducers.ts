@@ -1,10 +1,10 @@
 import { combineReducers } from "redux";
-import { ActionTypes, TypeKeys } from "./actions";
+import { MeshFileType } from "../enums";
 import { DisplayMode } from "../enums/DisplayMode";
 import { Orientation } from "../enums/Orientation";
-import { AlAppState, AlNode, AlEdge, AlAngle } from "../interfaces";
+import { AlAngle, AlAppState, AlEdge, AlNode } from "../interfaces";
 import { GetUtils } from "../utils";
-import { MeshFileType } from "../enums";
+import { ActionTypes, TypeKeys } from "./actions";
 
 export const getInitialState = () => {
   return {
@@ -57,7 +57,7 @@ export const app = (
         ...state,
         angles: new Map<string, AlAngle>(),
         controlsEnabled: false,
-        displayMode: displayMode,
+        displayMode,
         edges: new Map<string, AlEdge>(),
         nodes: new Map<string, AlNode>(),
         orientation: Orientation.CORONAL,
@@ -65,7 +65,7 @@ export const app = (
         slicesIndex: 0,
         slicesWindowCenter: 0,
         slicesWindowWidth: 0,
-        src: src,
+        src,
         srcLoaded: false,
         volumeSteps: 16,
         volumeWindowCenter: 0,
@@ -90,7 +90,7 @@ export const app = (
 
       // merge with the current value (if any)
       const currentValue: AlNode | undefined = state.nodes.get(key);
-      let nextValue: AlNode = {
+      const nextValue: AlNode = {
         ...currentValue,
         ...sanitisedValue
       };
@@ -141,7 +141,7 @@ export const app = (
 
       // merge with the current value (if any)
       const currentValue: AlEdge | undefined = state.edges.get(key);
-      let nextValue: AlEdge = {
+      const nextValue: AlEdge = {
         ...currentValue,
         ...sanitisedValue
       };
@@ -193,7 +193,7 @@ export const app = (
 
       // merge with the current value (if any)
       const currentValue: AlAngle | undefined = state.angles.get(key);
-      let nextValue: AlAngle = {
+      const nextValue: AlAngle = {
         ...currentValue,
         ...sanitisedValue
       };
@@ -309,12 +309,16 @@ export const app = (
         controlsEnabled: action.payload
       };
     }
+    default: {
+      return {
+        ...state
+      };
+    }
     //#endregion
   }
-
-  return state;
 };
 
+// tslint:disable-next-line: no-any
 export const rootReducer = (combineReducers as any)({
   app
 });

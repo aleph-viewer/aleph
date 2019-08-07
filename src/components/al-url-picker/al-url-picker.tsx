@@ -1,4 +1,4 @@
-import { Component, Prop, Event, EventEmitter } from "@stencil/core";
+import { Component, Event, EventEmitter, Prop } from "@stencil/core";
 
 @Component({
   tag: "al-url-picker",
@@ -6,14 +6,14 @@ import { Component, Prop, Event, EventEmitter } from "@stencil/core";
   shadow: true
 })
 export class AlUrlPicker {
-  @Event() urlChanged: EventEmitter;
+  @Event() public urlChanged: EventEmitter;
 
-  @Prop({ mutable: true }) urls: Map<string, string> | null = null;
-  @Prop({ mutable: true }) url: string | null = null;
+  @Prop({ mutable: true }) public urls: Map<string, string> | null = null;
+  @Prop({ mutable: true }) public url: string | null = null;
 
   private _input: HTMLInputElement;
 
-  render() {
+  public render() {
     if (this.urls) {
       return (
         <form onSubmit={e => e.preventDefault()}>

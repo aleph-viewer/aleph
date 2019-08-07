@@ -1,4 +1,5 @@
-import { Component, Prop, Event, EventEmitter, Watch } from "@stencil/core";
+import { Component, Event, EventEmitter, Prop, Watch } from "@stencil/core";
+import { Constants } from "../../Constants";
 import { DisplayMode } from "../../enums/DisplayMode";
 import { Orientation } from "../../enums/Orientation";
 
@@ -10,29 +11,30 @@ import { Orientation } from "../../enums/Orientation";
 export class AlControlPanel {
   private _lastStackOrientationIndex: number;
 
-  @Event() boundingBoxEnabledChanged: EventEmitter;
-  @Event() displayModeChanged: EventEmitter;
-  @Event() orientationChanged: EventEmitter;
-  @Event() recenter: EventEmitter;
-  @Event() slicesIndexChanged: EventEmitter;
-  @Event() slicesWindowCenterChanged: EventEmitter;
-  @Event() slicesWindowWidthChanged: EventEmitter;
-  @Event() graphEnabledChanged: EventEmitter;
-  @Event() volumeStepsChanged: EventEmitter;
-  @Event() volumeWindowCenterChanged: EventEmitter;
-  @Event() volumeWindowWidthChanged: EventEmitter;
+  @Event() public boundingBoxEnabledChanged: EventEmitter;
+  @Event() public displayModeChanged: EventEmitter;
+  @Event() public orientationChanged: EventEmitter;
+  @Event() public recenter: EventEmitter;
+  @Event() public slicesIndexChanged: EventEmitter;
+  @Event() public slicesWindowCenterChanged: EventEmitter;
+  @Event() public slicesWindowWidthChanged: EventEmitter;
+  @Event() public graphEnabledChanged: EventEmitter;
+  @Event() public volumeStepsChanged: EventEmitter;
+  @Event() public volumeWindowCenterChanged: EventEmitter;
+  @Event() public volumeWindowWidthChanged: EventEmitter;
 
-  @Prop({ mutable: true }) boundingBoxEnabled: boolean = false;
-  @Prop({ mutable: true }) displayMode: DisplayMode = DisplayMode.MESH;
-  @Prop({ mutable: true }) orientation: Orientation = Orientation.CORONAL;
-  @Prop({ mutable: true }) slicesIndex: number;
-  @Prop({ mutable: true }) slicesWindowCenter: number;
-  @Prop({ mutable: true }) slicesWindowWidth: number;
-  @Prop({ mutable: true }) stackhelper:
+  @Prop({ mutable: true }) public boundingBoxEnabled: boolean = false;
+  @Prop({ mutable: true }) public displayMode: DisplayMode = DisplayMode.MESH;
+  @Prop({ mutable: true }) public orientation: Orientation =
+    Orientation.CORONAL;
+  @Prop({ mutable: true }) public slicesIndex: number;
+  @Prop({ mutable: true }) public slicesWindowCenter: number;
+  @Prop({ mutable: true }) public slicesWindowWidth: number;
+  @Prop({ mutable: true }) public stackhelper:
     | AMI.StackHelper
     | AMI.VolumeRenderHelper;
   @Watch("stackhelper")
-  watchStackhelper() {
+  public watchStackhelper() {
     this.slicesIndex = undefined;
     this.slicesWindowCenter = undefined;
     this.slicesWindowWidth = undefined;
@@ -40,10 +42,10 @@ export class AlControlPanel {
     this.volumeWindowCenter = undefined;
     this.volumeWindowWidth = undefined;
   }
-  @Prop({ mutable: true }) graphEnabled: boolean = false;
-  @Prop({ mutable: true }) volumeSteps: number;
-  @Prop({ mutable: true }) volumeWindowCenter: number;
-  @Prop({ mutable: true }) volumeWindowWidth: number;
+  @Prop({ mutable: true }) public graphEnabled: boolean = false;
+  @Prop({ mutable: true }) public volumeSteps: number;
+  @Prop({ mutable: true }) public volumeWindowCenter: number;
+  @Prop({ mutable: true }) public volumeWindowWidth: number;
 
   private _boundingBoxEnabled(enabled: boolean) {
     this.boundingBoxEnabled = enabled;
@@ -95,7 +97,7 @@ export class AlControlPanel {
     this.volumeWindowWidthChanged.emit(width);
   }
 
-  renderDisplayModeToggle() {
+  public renderDisplayModeToggle() {
     if (this.displayMode !== DisplayMode.MESH) {
       return (
         <ion-item
@@ -131,7 +133,7 @@ export class AlControlPanel {
     return null;
   }
 
-  renderNodesToggle() {
+  public renderNodesToggle() {
     return (
       <ion-item
         style={{
@@ -148,7 +150,7 @@ export class AlControlPanel {
     );
   }
 
-  renderBoundingBoxEnabled() {
+  public renderBoundingBoxEnabled() {
     return (
       <ion-item
         style={{
@@ -165,7 +167,7 @@ export class AlControlPanel {
     );
   }
 
-  renderRecenterButton() {
+  public renderRecenterButton() {
     return (
       <ion-item
         style={{
@@ -186,7 +188,7 @@ export class AlControlPanel {
     );
   }
 
-  renderGenericOptions() {
+  public renderGenericOptions() {
     return [this.renderBoundingBoxEnabled(), this.renderRecenterButton()];
   }
 
@@ -194,7 +196,7 @@ export class AlControlPanel {
     return max + min - num;
   }
 
-  renderOptions() {
+  public renderOptions() {
     switch (this.displayMode) {
       case DisplayMode.SLICES: {
         if (
@@ -298,6 +300,7 @@ export class AlControlPanel {
                 min="0"
                 max={indexMax}
                 value={index}
+                pin={true}
                 onIonChange={e => this._slicesIndex(e.detail.value)}
               />
             </ion-item>
@@ -394,8 +397,6 @@ export class AlControlPanel {
           break;
         }
 
-        const stepsMin: number = 1;
-        const stepsMax: number = 128;
         let steps: number;
 
         if (this.volumeSteps === undefined) {
@@ -428,7 +429,7 @@ export class AlControlPanel {
           windowCenter = this.volumeWindowCenter;
         }
 
-        //const volumeLuts: string = this._lut.lutsAvailable().join(',');
+        // const volumeLuts: string = this._lut.lutsAvailable().join(',');
 
         // update the stackhelper
         (this.stackhelper as AMI.VolumeRenderHelper).steps = steps;
@@ -447,9 +448,11 @@ export class AlControlPanel {
               <ion-icon name="swap" slot="start" />
               <ion-range
                 slot="end"
-                min={stepsMin}
-                max={stepsMax}
+                min={Constants.stepsMin}
+                max={Constants.stepsMax}
                 value={steps}
+                step={Constants.stepsIncrement}
+                pin={true}
                 onIonChange={e => this._volumeSteps(e.detail.value)}
               />
             </ion-item>
@@ -521,12 +524,15 @@ export class AlControlPanel {
       case DisplayMode.MESH: {
         return this.renderGenericOptions();
       }
+      default: {
+        return;
+      }
     }
 
     return null;
   }
 
-  render() {
+  public render() {
     return [
       this.renderDisplayModeToggle(),
       this.renderNodesToggle(),

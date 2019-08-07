@@ -1,20 +1,26 @@
 //#region Imports
+import { KeyDown } from "@edsilv/key-codes";
 import {
   Component,
-  Prop,
-  State,
-  Method,
   Event,
-  EventEmitter
+  EventEmitter,
+  Method,
+  Prop,
+  State
 } from "@stencil/core";
-import { Store, Action } from "@stencil/redux";
-import { KeyDown } from "@edsilv/key-codes";
+import { Action, Store } from "@stencil/redux";
 import "../../aframe";
 import {
   AlGltfModelEvents,
   AlNodeSpawnerEvents,
   AlOrbitControlEvents
 } from "../../aframe";
+import { AlVolumeEvents } from "../../aframe/components/AlVolumeComponent";
+import { Constants } from "../../Constants";
+import { DisplayMode, Orientation } from "../../enums";
+import { AlGraphEntryType } from "../../enums";
+import { AlAngle, AlCamera, AlEdge, AlNode } from "../../interfaces";
+import { AlGraph } from "../../interfaces/AlGraph";
 import {
   appClearAngles,
   appClearEdges,
@@ -44,20 +50,15 @@ import {
   appSetVolumeWindowWidth
 } from "../../redux/actions";
 import { configureStore } from "../../redux/store";
-import { AlNode, AlCamera, AlEdge, AlAngle } from "../../interfaces";
 import {
-  GetUtils,
-  ThreeUtils,
-  GraphUtils,
   AlGraphEvents,
   AMIUtils,
-  EventUtils
+  EventUtils,
+  GetUtils,
+  GraphUtils,
+  ThreeUtils
 } from "../../utils";
-import { Constants } from "../../Constants";
-import { Orientation, DisplayMode } from "../../enums";
-import { AlGraphEntryType } from "../../enums";
-import { AlGraph } from "../../interfaces/AlGraph";
-import { AlVolumeEvents } from "../../aframe/components/AlVolumeComponent";
+
 type Entity = import("aframe").Entity;
 type Scene = import("aframe").Scene;
 //#endregion
@@ -76,74 +77,76 @@ export class Aleph {
   private _hovered: string | null = null;
   private _isShiftDown: boolean = false;
   private _isWebGl2: boolean = true;
+  // tslint:disable-next-line: no-any
   private _loadedObject: any;
   private _scene: Scene;
   private _targetEntity: Entity;
   private _validTarget: boolean;
   private _boundingEntity: Entity;
+  private _lights: Entity[];
 
-  @Prop({ context: "store" }) store: Store;
-  @Prop() dracoDecoderPath: string | null;
-  @Prop() width: string = "640";
-  @Prop() height: string = "480";
+  @Prop({ context: "store" }) public store: Store;
+  @Prop() public dracoDecoderPath: string | null;
+  @Prop() public width: string = "640";
+  @Prop() public height: string = "480";
 
   //#region actions
-  appClearAngles: Action;
-  appClearEdges: Action;
-  appClearNodes: Action;
-  appDeleteAngle: Action;
-  appDeleteEdge: Action;
-  appDeleteNode: Action;
-  appSelectAngle: Action;
-  appSelectEdge: Action;
-  appSelectNode: Action;
-  appSetAngle: Action;
-  appSetBoundingBoxEnabled: Action;
-  appSetCamera: Action;
-  appSetControlsEnabled: Action;
-  appSetDisplayMode: Action;
-  appSetEdge: Action;
-  appSetGraphEnabled: Action;
-  appSetNode: Action;
-  appSetOrientation: Action;
-  appSetSlicesIndex: Action;
-  appSetSlicesWindowCenter: Action;
-  appSetSlicesWindowWidth: Action;
-  appSetSrc: Action;
-  appSetSrcLoaded: Action;
-  appSetVolumeSteps: Action;
-  appSetVolumeWindowCenter: Action;
-  appSetVolumeWindowWidth: Action;
+  public appClearAngles: Action;
+  public appClearEdges: Action;
+  public appClearNodes: Action;
+  public appDeleteAngle: Action;
+  public appDeleteEdge: Action;
+  public appDeleteNode: Action;
+  public appSelectAngle: Action;
+  public appSelectEdge: Action;
+  public appSelectNode: Action;
+  public appSetAngle: Action;
+  public appSetBoundingBoxEnabled: Action;
+  public appSetCamera: Action;
+  public appSetControlsEnabled: Action;
+  public appSetDisplayMode: Action;
+  public appSetEdge: Action;
+  public appSetGraphEnabled: Action;
+  public appSetNode: Action;
+  public appSetOrientation: Action;
+  public appSetSlicesIndex: Action;
+  public appSetSlicesWindowCenter: Action;
+  public appSetSlicesWindowWidth: Action;
+  public appSetSrc: Action;
+  public appSetSrcLoaded: Action;
+  public appSetVolumeSteps: Action;
+  public appSetVolumeWindowCenter: Action;
+  public appSetVolumeWindowWidth: Action;
   //#endregion
 
   //#region state
-  @State() angles: Map<string, AlAngle>;
-  @State() boundingBoxEnabled: boolean;
-  @State() camera: AlCamera;
-  @State() controlsEnabled: boolean;
-  @State() displayMode: DisplayMode;
-  @State() edges: Map<string, AlEdge>;
-  @State() graphEnabled: boolean;
-  @State() nodes: Map<string, AlNode>;
-  @State() nodesVisible: boolean;
-  @State() optionsEnabled: boolean;
-  @State() optionsVisible: boolean;
-  @State() orientation: Orientation;
-  @State() selected: string;
-  @State() slicesIndex: number;
-  @State() slicesWindowCenter: number;
-  @State() slicesWindowWidth: number;
-  @State() src: string | null;
-  @State() srcLoaded: boolean;
-  @State() volumeSteps: number;
-  @State() volumeWindowCenter: number;
-  @State() volumeWindowWidth: number;
+  @State() public angles: Map<string, AlAngle>;
+  @State() public boundingBoxEnabled: boolean;
+  @State() public camera: AlCamera;
+  @State() public controlsEnabled: boolean;
+  @State() public displayMode: DisplayMode;
+  @State() public edges: Map<string, AlEdge>;
+  @State() public graphEnabled: boolean;
+  @State() public nodes: Map<string, AlNode>;
+  @State() public nodesVisible: boolean;
+  @State() public optionsEnabled: boolean;
+  @State() public optionsVisible: boolean;
+  @State() public orientation: Orientation;
+  @State() public selected: string;
+  @State() public slicesIndex: number;
+  @State() public slicesWindowCenter: number;
+  @State() public slicesWindowWidth: number;
+  @State() public src: string | null;
+  @State() public srcLoaded: boolean;
+  @State() public volumeSteps: number;
+  @State() public volumeWindowCenter: number;
+  @State() public volumeWindowWidth: number;
   //#endregion
 
   //#region general methods
 
   @Method()
-  async load(src: string, displayMode?: DisplayMode): Promise<void> {
+  public async load(src: string, displayMode?: DisplayMode): Promise<void> {
     // validate
     if (this.src) {
       this._setSrc(null); // shows loading spinner and resets gltf-model
@@ -156,7 +159,7 @@ export class Aleph {
   }
 
   @Method()
-  async resize(): Promise<void> {
+  public async resize(): Promise<void> {
     this._resize();
   }
 
@@ -165,37 +168,37 @@ export class Aleph {
   //#region node methods
 
   @Method()
-  async setNode(node: [string, AlNode]): Promise<void> {
+  public async setNode(node: [string, AlNode]): Promise<void> {
     this._setNode(node);
   }
 
   @Method()
-  async setGraph(graph: AlGraph): Promise<void> {
+  public async setGraph(graph: AlGraph): Promise<void> {
     this._setGraph(graph);
   }
 
   @Method()
-  async deleteNode(nodeId: string): Promise<void> {
+  public async deleteNode(nodeId: string): Promise<void> {
     this._deleteNode(nodeId);
   }
 
   @Method()
-  async clearGraph(): Promise<void> {
+  public async clearGraph(): Promise<void> {
     this._clearGraph();
   }
 
   @Method()
-  async selectNode(nodeId: string): Promise<void> {
+  public async selectNode(nodeId: string): Promise<void> {
     this._selectNode(nodeId, true);
   }
 
   @Method()
-  async deleteEdge(edgeId: string): Promise<void> {
+  public async deleteEdge(edgeId: string): Promise<void> {
     this._deleteEdge(edgeId);
   }
 
   @Method()
-  async deleteAngle(angleId: string): Promise<void> {
+  public async deleteAngle(angleId: string): Promise<void> {
     this._deleteAngle(angleId);
   }
 
@@ -205,7 +208,7 @@ export class Aleph {
 
   /** Creates or updates an edge in the graph */
   @Method()
-  async setEdge(edge: [string, AlEdge]): Promise<void> {
+  public async setEdge(edge: [string, AlEdge]): Promise<void> {
     this._setEdge(edge);
   }
   //#endregion
@@ -213,69 +216,69 @@ export class Aleph {
   //#region control panel methods
 
   @Method()
-  async recenter(): Promise<void> {
+  public async recenter(): Promise<void> {
     this._recenter();
   }
 
   @Method()
-  async setDisplayMode(displayMode: DisplayMode): Promise<void> {
+  public async setDisplayMode(displayMode: DisplayMode): Promise<void> {
     this._setDisplayMode(displayMode);
   }
 
   @Method()
-  async setGraphEnabled(enabled: boolean): Promise<void> {
+  public async setGraphEnabled(enabled: boolean): Promise<void> {
     this._setGraphEnabled(enabled);
   }
 
   @Method()
-  async setBoundingBoxEnabled(visible: boolean): Promise<void> {
+  public async setBoundingBoxEnabled(visible: boolean): Promise<void> {
     this._setBoundingBoxEnabled(visible);
   }
 
   @Method()
-  async setSlicesIndex(index: number): Promise<void> {
+  public async setSlicesIndex(index: number): Promise<void> {
     this._setSlicesIndex(index);
   }
 
   @Method()
-  async setOrientation(orientation: Orientation): Promise<void> {
+  public async setOrientation(orientation: Orientation): Promise<void> {
     this._setOrientation(orientation);
   }
 
   @Method()
-  async setSlicesWindowCenter(center: number): Promise<void> {
+  public async setSlicesWindowCenter(center: number): Promise<void> {
     this._setSlicesWindowCenter(center);
   }
 
   @Method()
-  async setSlicesWindowWidth(width: number): Promise<void> {
+  public async setSlicesWindowWidth(width: number): Promise<void> {
     this._setSlicesWindowWidth(width);
   }
 
   @Method()
-  async setVolumeSteps(steps: number): Promise<void> {
+  public async setVolumeSteps(steps: number): Promise<void> {
     this._setVolumeSteps(steps);
   }
 
   @Method()
-  async setVolumeWindowCenter(center: number): Promise<void> {
+  public async setVolumeWindowCenter(center: number): Promise<void> {
     this._setVolumeWindowCenter(center);
   }
 
   @Method()
-  async setVolumeWindowWidth(width: number): Promise<void> {
+  public async setVolumeWindowWidth(width: number): Promise<void> {
     this._setVolumeWindowWidth(width);
   }
 
   //#endregion
 
   /** Fires whenever the internal state changes passing an object describing the state. */
-  @Event() changed: EventEmitter;
+  @Event() public changed: EventEmitter;
 
   /** Fires when an object is loaded passing either the object or a stackhelper for volumetric data. */
-  @Event() loaded: EventEmitter;
+  @Event() public loaded: EventEmitter;
 
-  componentWillLoad() {
+  public componentWillLoad() {
     this._isWebGl2 = ThreeUtils.isWebGL2Available();
 
     // redux
@@ -396,6 +399,8 @@ export class Aleph {
       this.appSetCamera,
       Constants.minFrameMS
     ).bind(this);
+
+    this._lights = [];
   }
 
   private _renderSpinner() {
@@ -479,12 +484,15 @@ export class Aleph {
           />
         );
       }
+      default: {
+        return;
+      }
     }
   }
 
   private _renderBoundingBox() {
     if (this.srcLoaded && this.boundingBoxEnabled) {
-      let size: THREE.Vector3 = new THREE.Vector3();
+      const size: THREE.Vector3 = new THREE.Vector3();
       this._boundingBox.getSize(size);
 
       // if targetEntity is a gltf, use its position (center). if it's a volume, the origin is in the bottom left, so get the position sub the geometry center
@@ -500,6 +508,9 @@ export class Aleph {
           position = this._targetEntity.object3D.position
             .clone()
             .add(GetUtils.getGeometryCenter(this._getMesh().geometry));
+          break;
+        }
+        default: {
           break;
         }
       }
@@ -540,7 +551,7 @@ export class Aleph {
     return Array.from(this.nodes).map((n: [string, AlNode]) => {
       const [nodeId, node] = n;
 
-      let textOffset: THREE.Vector3 = new THREE.Vector3(0, 2.5, 0);
+      const textOffset: THREE.Vector3 = new THREE.Vector3(0, 2.5, 0);
       textOffset.multiplyScalar(node.scale);
 
       return (
@@ -585,13 +596,13 @@ export class Aleph {
         const ev = ThreeUtils.stringToVector3(node2.position);
 
         let dir = ev.clone().sub(sv);
-        let dist = dir.length();
+        const dist = dir.length();
         dir = dir.normalize().multiplyScalar(dist * 0.5);
-        let centoid = sv.clone().add(dir);
+        const centoid = sv.clone().add(dir);
 
-        let textOffset: THREE.Vector3 = new THREE.Vector3(0, 2.5, 0);
-        let scale = (node1.scale + node2.scale) / 2;
-        let radius = this._boundingSphereRadius * Constants.edgeSize;
+        const textOffset: THREE.Vector3 = new THREE.Vector3(0, 2.5, 0);
+        const scale = (node1.scale + node2.scale) / 2;
+        const radius = this._boundingSphereRadius * Constants.edgeSize;
         textOffset.multiplyScalar(scale);
 
         return (
@@ -637,7 +648,7 @@ export class Aleph {
       const edge2 = this.edges.get(angle.edge2Id);
 
       if (edge1 && edge2) {
-        let radius = this._boundingSphereRadius * Constants.edgeSize;
+        const radius = this._boundingSphereRadius * Constants.edgeSize;
         let centralNode;
         let node1;
         let node2;
@@ -670,15 +681,15 @@ export class Aleph {
         const node2Pos = ThreeUtils.stringToVector3(node2.position);
         const centralPos = ThreeUtils.stringToVector3(centralNode.position);
 
-        let dir1: THREE.Vector3 = node1Pos
+        const dir1: THREE.Vector3 = node1Pos
           .clone()
           .sub(centralPos)
           .normalize();
-        let dir2: THREE.Vector3 = node2Pos
+        const dir2: THREE.Vector3 = node2Pos
           .clone()
           .sub(centralPos)
           .normalize();
-        let angle = dir2.angleTo(dir1);
+        const angl = dir2.angleTo(dir1);
 
         // get the edge with the smallest length
         // set the distance from the connecting node to be 20% of the smallest length, unless it exceeds a max
@@ -697,20 +708,20 @@ export class Aleph {
           radius * 10
         );
 
-        let edge1Pos: THREE.Vector3 = dir1
+        const edge1Pos: THREE.Vector3 = dir1
           .clone()
           .multiplyScalar(distanceFromCentralNode);
-        let edge2Pos: THREE.Vector3 = dir2
+        const edge2Pos: THREE.Vector3 = dir2
           .clone()
           .multiplyScalar(distanceFromCentralNode);
-        let length = edge1Pos.clone().distanceTo(edge2Pos.clone());
-        let position: THREE.Vector3 = edge1Pos
+        const length = edge1Pos.clone().distanceTo(edge2Pos.clone());
+        const position: THREE.Vector3 = edge1Pos
           .clone()
           .add(edge2Pos.clone())
           .divideScalar(2);
 
-        let textOffset: THREE.Vector3 = new THREE.Vector3(0, 2.5, 0);
-        let scale = (node1.scale + node2.scale + centralNode.scale) / 3;
+        const textOffset: THREE.Vector3 = new THREE.Vector3(0, 2.5, 0);
+        const scale = (node1.scale + node2.scale + centralNode.scale) / 3;
         textOffset.multiplyScalar(scale);
 
         return (
@@ -731,7 +742,7 @@ export class Aleph {
             <a-entity
               id={`${angleId}-title`}
               text={`
-                value: ${THREE.Math.radToDeg(angle).toFixed(
+                value: ${THREE.Math.radToDeg(angl).toFixed(
                   Constants.angleUnitsDecimalPlaces
                 ) + " deg"};
                 side: double;
@@ -757,13 +768,15 @@ export class Aleph {
     return [
       <a-entity
         id="light-1"
-        light="type: directional; color: #ffffff; intensity: 2.0"
+        light="type: directional; color: #ffffff; intensity: 0.5"
         position="1 1 1"
+        ref={el => (this._lights[0] = el)}
       />,
       <a-entity
         id="light-2"
-        light="type: directional; color: #ffffff; intensity: 2.0"
+        light="type: directional; color: #ffffff; intensity: 0.5"
         position="-1 -1 -1"
+        ref={el => (this._lights[1] = el)}
       />,
       <a-entity
         id="light-3"
@@ -773,7 +786,7 @@ export class Aleph {
   }
 
   private _renderCamera() {
-    return (
+    return [
       <a-camera
         fov={Constants.cameraValues.fov}
         near={Constants.cameraValues.near}
@@ -802,8 +815,9 @@ export class Aleph {
           }
         `}
         ref={el => (this._camera = el)}
-      />
-    );
+      />,
+      this._renderLights()
+    ];
   }
 
   private _renderScene() {
@@ -824,13 +838,12 @@ export class Aleph {
         {this._renderNodes()}
         {this._renderEdges()}
         {this._renderAngles()}
-        {this._renderLights()}
         {this._renderCamera()}
       </a-scene>
     );
   }
 
-  render() {
+  public render() {
     return (
       <div
         id="al-container"
@@ -855,6 +868,7 @@ export class Aleph {
 
   private _resize(): void {
     if (this._scene) {
+      // tslint:disable-next-line: no-any
       (this._scene as any).resize();
     }
   }
@@ -872,8 +886,8 @@ export class Aleph {
 
     if (!match) {
       const newEdge: AlEdge = {
-        node1Id: node1Id,
-        node2Id: node2Id
+        node1Id,
+        node2Id
       };
       const edgeId: string = GraphUtils.getNextId(
         AlGraphEntryType.EDGE,
@@ -882,6 +896,7 @@ export class Aleph {
 
       this._setEdge([edgeId, newEdge]);
     } else {
+      // tslint:disable-next-line: no-console
       console.log("edge already exists");
     }
   }
@@ -897,18 +912,18 @@ export class Aleph {
       }
     );
     if (!match) {
-      let edge1 = this.edges.get(edge1Id);
-      let edge2 = this.edges.get(edge2Id);
+      const edge1 = this.edges.get(edge1Id);
+      const edge2 = this.edges.get(edge2Id);
 
       if (
         edge1.node1Id === edge2.node1Id ||
-        edge1.node1Id == edge2.node2Id ||
-        edge1.node2Id == edge2.node1Id ||
+        edge1.node1Id === edge2.node2Id ||
+        edge1.node2Id === edge2.node1Id ||
         edge1.node2Id === edge2.node2Id
       ) {
         const newAngle: AlAngle = {
-          edge1Id: edge1Id,
-          edge2Id: edge2Id
+          edge1Id,
+          edge2Id
         };
         const angleId: string = GraphUtils.getNextId(
           AlGraphEntryType.ANGLE,
@@ -974,7 +989,7 @@ export class Aleph {
     animationStart: AlCamera,
     animationEndVec3: THREE.Vector3
   ): void {
-    let animationEnd = {
+    const animationEnd = {
       position: animationEndVec3,
       target: this.camera.target.clone()
     } as AlCamera;
@@ -1009,12 +1024,12 @@ export class Aleph {
 
   private _selectNode(nodeId: string | null, animate: boolean = false): void {
     if (animate && nodeId !== this.selected) {
-      let animationStart = {
+      const animationStart = {
         position: this.camera.position.clone(),
         target: this.camera.target.clone()
       } as AlCamera;
 
-      let animationEndVec3: THREE.Vector3 = GetUtils.getCameraPositionFromNode(
+      const animationEndVec3: THREE.Vector3 = GetUtils.getCameraPositionFromNode(
         this.nodes.get(nodeId),
         this._boundingSphereRadius,
         this.camera.target
@@ -1039,11 +1054,11 @@ export class Aleph {
   }
 
   private _recenter(): void {
-    let cameraState: AlCamera = GetUtils.getCameraStateFromMesh(
+    const cameraState: AlCamera = GetUtils.getCameraStateFromMesh(
       this._getMesh()
     );
 
-    let animationStart = {
+    const animationStart = {
       position: this.camera.position.clone(),
       target: this.camera.target.clone()
     } as AlCamera;
@@ -1144,7 +1159,7 @@ export class Aleph {
   private _getMesh(): THREE.Mesh | null {
     let mesh: THREE.Mesh | null = null;
 
-    if (this.displayMode == DisplayMode.MESH) {
+    if (this.displayMode === DisplayMode.MESH) {
       const model = this._targetEntity.object3DMap.mesh;
 
       if (model instanceof THREE.Mesh) {
@@ -1153,6 +1168,7 @@ export class Aleph {
         model.traverse(child => {
           if (child instanceof THREE.Mesh && mesh === null) {
             mesh = child;
+            return mesh;
           }
         });
       }
@@ -1165,17 +1181,21 @@ export class Aleph {
     return mesh;
   }
 
+  // tslint:disable-next-line: no-any
   private _srcLoaded(ev: any): void {
     this._loadedObject = ev.detail;
 
-    let mesh: THREE.Mesh | null = this._getMesh();
+    const mesh: THREE.Mesh | null = this._getMesh();
 
     if (mesh) {
+      // Compute the bounding sphere of the mesh
       mesh.geometry.computeBoundingSphere();
+      // console.log('bounding center: ', mesh.geometry.boundingSphere.center);
       this._boundingSphereRadius = mesh.geometry.boundingSphere.radius;
       this._boundingBox = GetUtils.getBoundingBox(mesh);
+      this._boundingBox.translate(mesh.geometry.boundingSphere.center);
 
-      let cameraState: AlCamera = GetUtils.getCameraStateFromMesh(mesh);
+      const cameraState: AlCamera = GetUtils.getCameraStateFromMesh(mesh);
 
       if (cameraState) {
         this.appSetCamera(cameraState);
@@ -1229,10 +1249,27 @@ export class Aleph {
     this._hovered = event.detail.id;
   }
 
-  private _controlsInteractionHandler(_event: CustomEvent): void {}
+  private _controlsInteractionHandler(event: CustomEvent): void {
+    const cameraState = event.detail.cameraState as AlCamera;
+    this._updateLights(cameraState);
+  }
+
+  private _updateLights(cameraState: AlCamera) {
+    if (this.displayMode === DisplayMode.MESH) {
+      this._lights.forEach(light => {
+        const direction = cameraState.position.clone().normalize();
+        light.object3D.position.copy(direction);
+      });
+    }
+  }
 
   private _controlsInteractionFinishedHandler(event: CustomEvent): void {
-    this._debouncedAppSetCamera(event.detail.cameraState);
+    const cameraState = event.detail.cameraState as AlCamera;
+    this._debouncedAppSetCamera(cameraState);
+    // this._lightController.setAttribute(
+    //   "position",
+    //   ThreeUtils.vector3ToString(cameraState.position)
+    // );
   }
 
   private _spawnNodeHandler(event: CustomEvent): void {
@@ -1242,7 +1279,7 @@ export class Aleph {
       this._validTarget && // Target is valid
       this._hovered === null // Not intersecting a Node already
     ) {
-      let intersection: THREE.Intersection =
+      const intersection: THREE.Intersection =
         event.detail.aframeEvent.detail.intersection;
 
       const nodeId: string = GraphUtils.getNextId(
@@ -1253,10 +1290,10 @@ export class Aleph {
       let newNode: AlNode;
 
       if (this.displayMode === DisplayMode.VOLUME && intersection) {
-        let hitPosition = new THREE.Vector3();
-        let hitNormal = new THREE.Vector3();
+        const hitPosition = new THREE.Vector3();
+        const hitNormal = new THREE.Vector3();
 
-        let rayResult = AMIUtils.volumeRay(
+        const rayResult = AMIUtils.volumeRay(
           this._getStackHelper(),
           this._camera.object3D.children[0].position.clone(),
           this._camera.getAttribute("raycaster").direction,
@@ -1346,17 +1383,21 @@ export class Aleph {
         this._selectAngle(id);
         break;
       }
+      default: {
+        break;
+      }
     }
   }
 
   private _graphEntryDraggedHandler(event: CustomEvent): void {
     const nodeId: string = event.detail.id;
+    // tslint:disable-next-line: no-any
     const raycaster = this._camera.components.raycaster as any;
     const raycasterAttribute = this._camera.getAttribute("raycaster");
     let intersection;
-    let hitPosition = new THREE.Vector3();
+    const hitPosition = new THREE.Vector3();
     let validLocation = false;
-    let orbitPosition = this._camera.object3D.children[0].position;
+    const orbitPosition = this._camera.object3D.children[0].position;
 
     if (this.displayMode === DisplayMode.VOLUME) {
       // First try bounding box
@@ -1365,9 +1406,9 @@ export class Aleph {
       ) as THREE.Intersection;
 
       if (intersection) {
-        let hitNormal = new THREE.Vector3();
+        const hitNormal = new THREE.Vector3();
 
-        let rayResult = AMIUtils.volumeRay(
+        const rayResult = AMIUtils.volumeRay(
           this._getStackHelper(),
           orbitPosition.clone(),
           raycasterAttribute.direction,
@@ -1394,7 +1435,7 @@ export class Aleph {
 
     // IF not a valid location, dangle in space
     if (!validLocation) {
-      let distance = orbitPosition.distanceTo(
+      const distance = orbitPosition.distanceTo(
         this._targetEntity.getAttribute("position")
       );
 
@@ -1439,7 +1480,7 @@ export class Aleph {
     );
 
     this._scene.addEventListener(
-      AlOrbitControlEvents.INTERACTION_FINISHED, //todo: make this a more generic event
+      AlOrbitControlEvents.INTERACTION_FINISHED, // todo: make this a more generic event
       this._controlsInteractionFinishedHandler,
       false
     );
@@ -1502,22 +1543,9 @@ export class Aleph {
   }
   //#endregion
 
-  componentDidLoad() {}
-
-  componentDidUpdate() {
+  public componentDidUpdate() {
     if (this._scene) {
       this._addEventListeners();
     }
-
-    // Turns debug text inside the models invisible
-    // if (this.debug) {
-    //   try {
-    //     const mat = (this._camera.object3DMap.text as THREE.Mesh)
-    //       .material as THREE.Material;
-    //     if (mat) {
-    //       mat.transparent = true;
-    //     }
-    //   } catch {}
-    // }
   }
 }

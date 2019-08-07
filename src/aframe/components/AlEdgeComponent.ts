@@ -1,8 +1,8 @@
-import { Constants } from "../../Constants";
-import { ThreeUtils, AlGraphEvents, ShaderUtils } from "../../utils";
-import { AlGraphEntryType } from "../../enums";
-import { BaseComponent } from "./BaseComponent";
 import { Entity } from "aframe";
+import { Constants } from "../../Constants";
+import { AlGraphEntryType } from "../../enums";
+import { AlGraphEvents, ShaderUtils, ThreeUtils } from "../../utils";
+import { BaseComponent } from "./BaseComponent";
 
 interface AlEdgeState {
   selected: boolean;
@@ -82,7 +82,7 @@ export default AFRAME.registerComponent("al-edge", {
   },
 
   pointerDown(_event: CustomEvent): void {
-    let state = this.state as AlEdgeState;
+    const state = this.state as AlEdgeState;
     if (state.hovered) {
       this.el.sceneEl.emit(
         AlGraphEvents.SELECTED,
@@ -93,13 +93,13 @@ export default AFRAME.registerComponent("al-edge", {
   },
 
   pointerOver(_event: CustomEvent): void {
-    let state = this.state as AlEdgeState;
+    const state = this.state as AlEdgeState;
     state.hovered = true;
     this.el.sceneEl.emit(AlGraphEvents.POINTER_OVER, { id: this.el.id }, false);
   },
 
   pointerOut(_event: CustomEvent): void {
-    let state = this.state as AlEdgeState;
+    const state = this.state as AlEdgeState;
     state.hovered = false;
     this.el.sceneEl.emit(AlGraphEvents.POINTER_OUT, {}, false);
   },
@@ -108,20 +108,20 @@ export default AFRAME.registerComponent("al-edge", {
     const node1Pos = ThreeUtils.objectToVector3(this.data.node1);
     const node2Pos = ThreeUtils.objectToVector3(this.data.node2);
 
-    var orientation = new THREE.Matrix4();
+    const orientation = new THREE.Matrix4();
     orientation.lookAt(node1Pos, node2Pos, new THREE.Object3D().up);
     orientation.multiply(
       new THREE.Matrix4().set(1, 0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1)
     );
 
-    let geometry = new THREE.CylinderGeometry(
+    const geometry = new THREE.CylinderGeometry(
       this.data.radius,
       this.data.radius,
       this.data.length,
       6,
       4
     );
-    let material = new THREE.MeshBasicMaterial();
+    const material = new THREE.MeshBasicMaterial();
     const mesh = new THREE.Mesh(geometry, material);
     mesh.applyMatrix(orientation);
 
@@ -129,14 +129,14 @@ export default AFRAME.registerComponent("al-edge", {
     this.state.material = material;
     this.state.mesh = mesh;
 
-    let outlineGeometry = new THREE.CylinderGeometry(
+    const outlineGeometry = new THREE.CylinderGeometry(
       this.data.radius,
       this.data.radius,
       this.data.length - this.data.nodeScale * 2,
       6,
       4
     );
-    let outlineMaterial = ShaderUtils.getHaloMaterial();
+    const outlineMaterial = ShaderUtils.getHaloMaterial();
     const outlineMesh = new THREE.Mesh(outlineGeometry, outlineMaterial);
 
     this.state.outlineGeometry = outlineGeometry;
@@ -150,8 +150,9 @@ export default AFRAME.registerComponent("al-edge", {
       Constants.topLayerRenderOrder - 2;
   },
 
-  update(oldData): void {
-    let state = this.state as AlEdgeState;
+  // tslint:disable-next-line: no-any
+  update(oldData: any): void {
+    const state = this.state as AlEdgeState;
     state.selected = this.data.selected;
 
     // If length or radius has changed, create a new mesh
@@ -166,7 +167,7 @@ export default AFRAME.registerComponent("al-edge", {
 
   tickFunction(): void {
     const el = this.el;
-    let state = this.state as AlEdgeState;
+    const state = this.state as AlEdgeState;
 
     // update color
     if (state.hovered) {

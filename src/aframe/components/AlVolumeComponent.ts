@@ -1,9 +1,16 @@
-import { VolumetricLoader } from "../../utils/VolumetricLoader";
+import { AlOrbitControlEvents } from "..";
 import { Constants } from "../../Constants";
 import { DisplayMode } from "../../enums";
-import { AlOrbitControlEvents } from "..";
 import { EventUtils, GetUtils } from "../../utils";
+import { VolumetricLoader } from "../../utils/VolumetricLoader";
 import { BaseComponent } from "./BaseComponent";
+
+export class AlVolumeEvents {
+  public static LOADED: string = "al-volume-loaded";
+  public static ERROR: string = "al-volume-error";
+  public static RENDER_LOW: string = "al-volume-render-low";
+  public static RENDER_FULL: string = "al-volume-render-full";
+}
 
 interface AlVolumeState {
   bufferScene: THREE.Scene;
@@ -12,6 +19,7 @@ interface AlVolumeState {
   bufferScenePlaneMesh: THREE.Mesh;
   bufferSceneTexture: THREE.WebGLRenderTarget;
   lutHelper: AMI.LutHelper;
+  // tslint:disable-next-line: no-any
   stack: any;
   bufferSceneTextureHeight: number;
   bufferSceneTextureWidth: number;
@@ -20,6 +28,7 @@ interface AlVolumeState {
 
 interface AlVolumeComponent extends BaseComponent {
   createVolumePlane(): void;
+  // tslint:disable-next-line: no-any
   handleStack(stack: any): void;
   onInteraction(event: CustomEvent): void;
   onInteractionFinished(event: CustomEvent): void;
@@ -139,36 +148,37 @@ export default AFRAME.registerComponent("al-volume", {
   },
 
   createVolumePlane(): void {
-    let targetEntity = this.el.sceneEl.querySelector("#target-entity");
+    const targetEntity = this.el.sceneEl.querySelector("#target-entity");
 
     if (targetEntity) {
-      let state = this.state as AlVolumeState;
+      const state = this.state as AlVolumeState;
 
-      let refGeometry: THREE.Geometry = (state.stackhelper as any).mesh.geometry.clone();
+      // tslint:disable-next-line: no-any
+      const refGeometry: THREE.Geometry = (state.stackhelper as any).mesh.geometry.clone();
       refGeometry.computeBoundingBox();
       refGeometry.computeBoundingSphere();
 
-      let center = targetEntity.object3D.position
+      const center = targetEntity.object3D.position
         .clone()
         .add(GetUtils.getGeometryCenter(refGeometry));
 
-      let x = this.state.stackhelper.stack.dimensionsIJK.x;
-      let y = this.state.stackhelper.stack.dimensionsIJK.y;
-      let z = this.state.stackhelper.stack.dimensionsIJK.z;
+      const x = this.state.stackhelper.stack.dimensionsIJK.x;
+      const y = this.state.stackhelper.stack.dimensionsIJK.y;
+      const z = this.state.stackhelper.stack.dimensionsIJK.z;
 
-      let size = Math.max(x, Math.max(y, z));
+      const size = Math.max(x, Math.max(y, z));
 
-      let bufferScenePlaneGeometry = new THREE.PlaneGeometry(size, size);
+      const bufferScenePlaneGeometry = new THREE.PlaneGeometry(size, size);
       state.bufferScenePlaneGeometry = bufferScenePlaneGeometry;
 
-      let bufferScenePlaneMaterial = new THREE.MeshBasicMaterial({
+      const bufferScenePlaneMaterial = new THREE.MeshBasicMaterial({
         // opacity: 0.1,
         // transparent: true
         visible: false
       });
       state.bufferScenePlaneMaterial = bufferScenePlaneMaterial;
 
-      let bufferScenePlaneMesh = new THREE.Mesh(
+      const bufferScenePlaneMesh = new THREE.Mesh(
         bufferScenePlaneGeometry,
         bufferScenePlaneMaterial
       );
@@ -181,9 +191,9 @@ export default AFRAME.registerComponent("al-volume", {
   },
 
   rendererResize(): void {
-    let state = this.state as AlVolumeState;
+    const state = this.state as AlVolumeState;
 
-    let needsResize =
+    const needsResize =
       state.bufferSceneTextureWidth !== this.el.sceneEl.canvas.clientWidth ||
       state.bufferSceneTextureHeight !== this.el.sceneEl.canvas.clientHeight;
 
@@ -206,6 +216,7 @@ export default AFRAME.registerComponent("al-volume", {
     }
   },
 
+  // tslint:disable-next-line: no-any
   handleStack(stack: any): void {
     const state = this.state as AlVolumeState;
     const el = this.el;
@@ -233,6 +244,9 @@ export default AFRAME.registerComponent("al-volume", {
         state.stackhelper.textureLUT = state.lutHelper.texture;
         break;
       }
+      default: {
+        break;
+      }
     }
 
     // If a hot reload of the display, reset the mesh
@@ -257,7 +271,8 @@ export default AFRAME.registerComponent("al-volume", {
     el.sceneEl.emit(AlVolumeEvents.LOADED, state.stackhelper, false);
   },
 
-  update(oldData): void {
+  // tslint:disable-next-line: no-any
+  update(oldData: any): void {
     const state = this.state;
     const el = this.el;
 
@@ -301,6 +316,9 @@ export default AFRAME.registerComponent("al-volume", {
         this.state.bufferScenePlaneMesh.lookAt(this.el.sceneEl.camera.position);
         break;
       }
+      default: {
+        break;
+      }
     }
   },
 
@@ -327,10 +345,3 @@ export default AFRAME.registerComponent("al-volume", {
     }
   }
 } as AlVolumeComponent);
-
-export class AlVolumeEvents {
-  static LOADED: string = "al-volume-loaded";
-  static ERROR: string = "al-volume-error";
-  static RENDER_LOW: string = "al-volume-render-low";
-  static RENDER_FULL: string = "al-volume-render-full";
-}
