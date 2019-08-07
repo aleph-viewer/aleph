@@ -1,4 +1,4 @@
-var EVENTS = {
+const EVENTS = {
   CLICK: "click",
   FUSING: "fusing",
   MOUSEENTER: "mouseenter",
@@ -7,18 +7,18 @@ var EVENTS = {
   MOUSEUP: "mouseup"
 };
 
-var STATES = {
+const STATES = {
   FUSING: "cursor-fusing",
   HOVERING: "cursor-hovering",
   HOVERED: "cursor-hovered"
 };
 
-var CANVAS_EVENTS = {
+const CANVAS_EVENTS = {
   DOWN: ["mousedown", "touchstart"],
   UP: ["mouseup", "touchend"]
 };
 
-var CANVAS_HOVER_CLASS = "a-mouse-cursor-hover";
+const CANVAS_HOVER_CLASS = "a-mouse-cursor-hover";
 
 /**
  * Cursor component. Applies the raycaster component specifically for starting the raycaster

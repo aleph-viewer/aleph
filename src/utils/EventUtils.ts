@@ -1,7 +1,6 @@
 export class EventUtils {
-  // todo: use AFRAME.utils.debounce?
-  // tslint:disable-next-line: no-any
-  public static debounce(fn: any, debounceDuration: number): any {
+  // the A-Frame debounce util doesn't work with ionic
+  static debounce(fn: any, debounceDuration: number): any {
     // summary:
     //      Returns a debounced function that will make sure the given
     //      function is not triggered too much.
