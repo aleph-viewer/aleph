@@ -282,6 +282,10 @@
 
         alControlPanel.componentOnReady().then(function() {
 
+          alControlPanel.addEventListener("boundingBoxEnabledChanged", function(e) {
+            alAleph.setBoundingBoxEnabled(e.detail);
+          }, false);
+
           alControlPanel.addEventListener("displayModeChanged", function(e) {
             alAleph.setDisplayMode(e.detail);
           }, false);
@@ -290,16 +294,16 @@
             alAleph.setGraphEnabled(e.detail);
           }, false);
 
-          alControlPanel.addEventListener("boundingBoxEnabledChanged", function(e) {
-            alAleph.setBoundingBoxEnabled(e.detail);
+          alControlPanel.addEventListener("orientationChanged", function(e) {
+            alAleph.setOrientation(e.detail);
+          }, false);
+
+          alControlPanel.addEventListener("recenter", function(e) {
+            alAleph.recenter();
           }, false);
 
           alControlPanel.addEventListener("slicesIndexChanged", function(e) {
             alAleph.setSlicesIndex(e.detail);
-          }, false);
-
-          alControlPanel.addEventListener("orientationChanged", function(e) {
-            alAleph.setOrientation(e.detail);
           }, false);
 
           alControlPanel.addEventListener("slicesWindowCenterChanged", function(e) {

@@ -14,6 +14,7 @@ export class AlControlPanel {
   @Event() boundingBoxEnabledChanged: EventEmitter;
   @Event() displayModeChanged: EventEmitter;
   @Event() orientationChanged: EventEmitter;
+  @Event() recenter: EventEmitter;
   @Event() slicesIndexChanged: EventEmitter;
   @Event() slicesWindowCenterChanged: EventEmitter;
   @Event() slicesWindowWidthChanged: EventEmitter;
@@ -165,6 +166,31 @@ export class AlControlPanel {
     );
   }
 
+  renderRecenterButton() {
+    return (
+      <ion-item
+        style={{
+          display: "var(--recenter-display, block)"
+        }}
+      >
+        <ion-icon name="log-in" slot="start" />
+        <ion-button
+          slot="end"
+          size="small"
+          onClick={() => {
+            this.recenter.emit();
+          }}
+        >
+          <ion-icon name="checkmark" />
+        </ion-button>
+      </ion-item>
+    );
+  }
+
+  renderGenericOptions() {
+    return [this.renderBoundingBoxEnabled(), this.renderRecenterButton()];
+  }
+
   private _reverseNumber(num: number, min: number, max: number): number {
     return max + min - num;
   }
@@ -261,7 +287,7 @@ export class AlControlPanel {
 
         return (
           <div>
-            {this.renderBoundingBoxEnabled()}
+            {this.renderGenericOptions()}
             <ion-item
               style={{
                 display: "var(--slices-index-display, block)"
@@ -412,7 +438,7 @@ export class AlControlPanel {
 
         return (
           <div>
-            {this.renderBoundingBoxEnabled()}
+            {this.renderGenericOptions()}
             <ion-item
               style={{
                 display: "var(--volume-steps-display, block)"
@@ -495,7 +521,7 @@ export class AlControlPanel {
         );
       }
       case DisplayMode.MESH: {
-        return this.renderBoundingBoxEnabled();
+        return this.renderGenericOptions();
       }
     }
 
