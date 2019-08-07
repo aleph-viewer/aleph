@@ -99,6 +99,16 @@ Type: `Promise<void>`
 
 
 
+### `recenter() => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `resize() => Promise<void>`
 
 
