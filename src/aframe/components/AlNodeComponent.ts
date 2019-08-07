@@ -1,9 +1,9 @@
-import { Entity } from 'aframe';
-import { Constants } from '../../Constants';
-import { AlGraphEntryType } from '../../enums';
-import { ShaderUtils } from '../../utils';
-import { AlGraphEvents } from '../../utils';
-import { BaseComponent } from './BaseComponent';
+import { Entity } from "aframe";
+import { Constants } from "../../Constants";
+import { AlGraphEntryType } from "../../enums";
+import { ShaderUtils } from "../../utils";
+import { AlGraphEvents } from "../../utils";
+import { BaseComponent } from "./BaseComponent";
 
 interface AlNodeState {
   camera: THREE.Camera;
@@ -27,11 +27,11 @@ interface AlNodeComponent extends BaseComponent {
   pointerOut(_event: CustomEvent): void;
 }
 
-export default AFRAME.registerComponent('al-node', {
+export default AFRAME.registerComponent("al-node", {
   schema: {
-    scale: { type: 'number', default: 1 },
-    selected: { type: 'boolean' },
-    graphEnabled: { type: 'boolean' }
+    scale: { type: "number", default: 1 },
+    selected: { type: "boolean" },
+    graphEnabled: { type: "boolean" }
   },
 
   init(): void {
@@ -56,7 +56,7 @@ export default AFRAME.registerComponent('al-node', {
     const outlineMesh = new THREE.Mesh(outlineGeometry, outlineMaterial);
     mesh.add(outlineMesh);
 
-    el.setObject3D('mesh', mesh);
+    el.setObject3D("mesh", mesh);
     (el.object3D as THREE.Object3D).renderOrder =
       Constants.topLayerRenderOrder - 1;
 
@@ -82,27 +82,27 @@ export default AFRAME.registerComponent('al-node', {
   },
 
   addEventListeners(): void {
-    this.el.sceneEl.addEventListener('mousedown', this.pointerDown, {
+    this.el.sceneEl.addEventListener("mousedown", this.pointerDown, {
       capture: false,
       once: false,
       passive: true
     });
-    this.el.addEventListener('mouseup', this.pointerUp, {
+    this.el.addEventListener("mouseup", this.pointerUp, {
       capture: false,
       once: false,
       passive: true
     });
-    this.el.sceneEl.addEventListener('mouseup', this.pointerUp, {
+    this.el.sceneEl.addEventListener("mouseup", this.pointerUp, {
       capture: false,
       once: false,
       passive: true
     });
-    this.el.addEventListener('raycaster-intersected', this.pointerOver, {
+    this.el.addEventListener("raycaster-intersected", this.pointerOver, {
       capture: false,
       once: false,
       passive: true
     });
-    this.el.addEventListener('raycaster-intersected-cleared', this.pointerOut, {
+    this.el.addEventListener("raycaster-intersected-cleared", this.pointerOut, {
       capture: false,
       once: false,
       passive: true
@@ -110,12 +110,12 @@ export default AFRAME.registerComponent('al-node', {
   },
 
   removeEventListeners(): void {
-    this.el.sceneEl.removeEventListener('mousedown', this.pointerDown);
-    this.el.sceneEl.removeEventListener('mouseup', this.pointerUp);
-    this.el.removeEventListener('mouseup', this.pointerUp);
-    this.el.removeEventListener('raycaster-intersected', this.pointerOver);
+    this.el.sceneEl.removeEventListener("mousedown", this.pointerDown);
+    this.el.sceneEl.removeEventListener("mouseup", this.pointerUp);
+    this.el.removeEventListener("mouseup", this.pointerUp);
+    this.el.removeEventListener("raycaster-intersected", this.pointerOver);
     this.el.removeEventListener(
-      'raycaster-intersected-cleared',
+      "raycaster-intersected-cleared",
       this.pointerOut
     );
   },
@@ -203,10 +203,10 @@ export default AFRAME.registerComponent('al-node', {
 
   remove(): void {
     this.removeEventListeners();
-    this.el.removeObject3D('mesh');
+    this.el.removeObject3D("mesh");
   }
 } as AlNodeComponent);
 
 export class AlNodeEvents {
-  public static ANIMATION_STARTED: string = 'al-animation-started';
+  public static ANIMATION_STARTED: string = "al-animation-started";
 }

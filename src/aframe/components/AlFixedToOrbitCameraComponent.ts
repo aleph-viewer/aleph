@@ -1,6 +1,6 @@
-import { Constants } from '../../Constants';
-import { ThreeUtils } from '../../utils';
-import { BaseComponent } from './BaseComponent';
+import { Constants } from "../../Constants";
+import { ThreeUtils } from "../../utils";
+import { BaseComponent } from "./BaseComponent";
 interface AlFixedToOrbitCameraState {
   distanceFromTarget: number;
   target: THREE.Vector3;
@@ -10,10 +10,10 @@ interface AlFixedToOrbitCameraComponent extends BaseComponent {
   tickFunction(): void;
 }
 
-export default AFRAME.registerComponent('al-fixed-to-orbit-camera', {
+export default AFRAME.registerComponent("al-fixed-to-orbit-camera", {
   schema: {
-    distanceFromTarget: { type: 'number', default: 0.1 },
-    target: { type: 'vec3' }
+    distanceFromTarget: { type: "number", default: 0.1 },
+    target: { type: "vec3" }
   },
 
   init() {

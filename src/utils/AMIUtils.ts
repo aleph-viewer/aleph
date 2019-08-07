@@ -1,5 +1,5 @@
-import { Constants } from '../Constants';
-import { ThreeUtils } from './ThreeUtils';
+import { Constants } from "../Constants";
+import { ThreeUtils } from "./ThreeUtils";
 
 export class AMIUtils {
   private static _traceDataRay(
@@ -167,7 +167,7 @@ export class AMIUtils {
     dy /= ds;
     dz /= ds;
 
-    if (typeof maxDistance === 'undefined') {
+    if (typeof maxDistance === "undefined") {
       maxDistance = 64.0;
     } else {
       maxDistance = +maxDistance;

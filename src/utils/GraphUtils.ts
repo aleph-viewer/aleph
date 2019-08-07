@@ -1,13 +1,13 @@
-import { AlGraphEntryType } from '../enums';
-import { AlGraphEntry } from '../interfaces';
+import { AlGraphEntryType } from "../enums";
+import { AlGraphEntry } from "../interfaces";
 
 export class AlGraphEvents {
-  public static SELECTED: string = 'al-graph-selected';
-  public static POINTER_OVER: string = 'al-graph-pointer-over';
-  public static POINTER_OUT: string = 'al-graph-pointer-out';
-  public static DRAGGED: string = 'al-graph-dragged';
-  public static POINTER_DOWN: string = 'al-graph-pointer-down';
-  public static POINTER_UP: string = 'al-graph-pointer-up';
+  public static SELECTED: string = "al-graph-selected";
+  public static POINTER_OVER: string = "al-graph-pointer-over";
+  public static POINTER_OUT: string = "al-graph-pointer-out";
+  public static DRAGGED: string = "al-graph-dragged";
+  public static POINTER_DOWN: string = "al-graph-pointer-down";
+  public static POINTER_UP: string = "al-graph-pointer-up";
 }
 
 // tslint:disable-next-line: max-classes-per-file
@@ -19,7 +19,7 @@ export class GraphUtils {
       return Math.max.apply(
         Math,
         Array.from(entries).map(([id]) => {
-          return Number(id.split('-')[1]);
+          return Number(id.split("-")[1]);
         })
       );
     }
@@ -31,6 +31,6 @@ export class GraphUtils {
     type: AlGraphEntryType,
     entries: Map<string, AlGraphEntry>
   ): string {
-    return type + '-' + Number(this.getEntryWithHighestId(entries) + 1);
+    return type + "-" + Number(this.getEntryWithHighestId(entries) + 1);
   }
 }

@@ -1,5 +1,5 @@
-import { AlAngle, AlCamera, AlEdge, AlNode } from '.';
-import { DisplayMode, Orientation } from '../enums';
+import { AlAngle, AlCamera, AlEdge, AlNode } from ".";
+import { DisplayMode, Orientation } from "../enums";
 
 export interface AlAppState {
   angles: Map<string, AlAngle>;

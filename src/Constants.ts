@@ -2,9 +2,9 @@ export class Constants {
   public static fontSizeSmall = 0.75;
   public static fontSizeMedium = 1.5;
   public static fontSizeLarge = 2.5;
-  public static movedEventName = '-moved';
-  public static titleIdName = '-title';
-  public static controllerName = '-controller';
+  public static movedEventName = "-moved";
+  public static titleIdName = "-title";
+  public static controllerName = "-controller";
   public static nodeSizeRatio = 75;
   public static backboardSize = 10;
   public static zoomFactor = 2.5;
@@ -22,19 +22,19 @@ export class Constants {
   public static minTimeForThrottle = Constants.minFrameMS * 5;
 
   public static buttonColors = {
-    active: '#f50057',
-    hover: '#f50057',
-    up: '#00b0ff'
+    active: "#f50057",
+    hover: "#f50057",
+    up: "#00b0ff"
   };
 
   public static colorValues = {
-    red: '#f50057',
-    blue: '#00b0ff',
-    black: '#000000',
-    white: '#ffffff',
-    yellow: '#ffeb3b',
-    green: '#76ff03',
-    lightRed: '#f77777'
+    red: "#f50057",
+    blue: "#00b0ff",
+    black: "#000000",
+    white: "#ffffff",
+    yellow: "#ffeb3b",
+    green: "#76ff03",
+    lightRed: "#f77777"
   };
 
   public static lightValues = {

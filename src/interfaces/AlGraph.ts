@@ -1,4 +1,4 @@
-import { AlAngle, AlEdge, AlNode } from '.';
+import { AlAngle, AlEdge, AlNode } from ".";
 
 export interface AlGraph {
   nodes: Map<string, AlNode>;

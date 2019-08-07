@@ -1,6 +1,5 @@
-import { Constants } from '../../Constants';
-import { ThreeUtils } from '../../utils';
-import { BaseComponent } from './BaseComponent';
+import { Constants } from "../../Constants";
+import { ThreeUtils } from "../../utils";
 
 interface AlBoundingBoxState {
   box: THREE.Box3;
@@ -11,10 +10,10 @@ interface AlBoundingBoxState {
   mesh: THREE.Mesh;
 }
 
-export default AFRAME.registerComponent('al-bounding-box', {
+export default AFRAME.registerComponent("al-bounding-box", {
   schema: {
-    color: { type: 'string', default: '#f50057' },
-    scale: { type: 'string' }
+    color: { type: "string", default: "#f50057" },
+    scale: { type: "string" }
   },
 
   init(): void {
@@ -46,14 +45,14 @@ export default AFRAME.registerComponent('al-bounding-box', {
       visible: false
     });
     const mesh = new THREE.Mesh(geometry, material);
-    el.setObject3D('mesh2', mesh);
+    el.setObject3D("mesh2", mesh);
 
     state.boundingBox = new (THREE as any).Box3Helper(
       state.box as any,
       this.data.color
     );
     state.boundingBox.renderOrder = Constants.topLayerRenderOrder - 5;
-    el.setObject3D('mesh', state.boundingBox);
+    el.setObject3D("mesh", state.boundingBox);
 
     state.geometry = geometry;
     state.material = material;
@@ -62,7 +61,7 @@ export default AFRAME.registerComponent('al-bounding-box', {
 
   remove(): void {
     this.removeEventListeners();
-    this.el.removeObject3D('mesh');
-    this.el.removeObject3D('mesh2');
+    this.el.removeObject3D("mesh");
+    this.el.removeObject3D("mesh2");
   }
 });

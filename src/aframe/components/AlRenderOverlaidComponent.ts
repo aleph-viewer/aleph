@@ -1,6 +1,6 @@
-import { Constants } from '../../Constants';
+import { Constants } from "../../Constants";
 
-export default AFRAME.registerComponent('al-render-overlaid', {
+export default AFRAME.registerComponent("al-render-overlaid", {
   schema: {},
 
   // tslint:disable-next-line: no-any

@@ -1,9 +1,9 @@
-import { Component, Event, EventEmitter, Prop } from '@stencil/core';
-import { AlNode } from '../../interfaces';
+import { Component, Event, EventEmitter, Prop } from "@stencil/core";
+import { AlNode } from "../../interfaces";
 
 @Component({
-  tag: 'al-node-list',
-  styleUrl: 'al-node-list.css',
+  tag: "al-node-list",
+  styleUrl: "al-node-list.css",
   shadow: true
 })
 export class AlNodeList {
@@ -19,7 +19,7 @@ export class AlNodeList {
           {Array.from(this.nodes).map(([nodeId, node]) => {
             return (
               <ion-item
-                class={this.selected === nodeId ? 'selected' : null}
+                class={this.selected === nodeId ? "selected" : null}
                 onClick={() => this.selectedChanged.emit(nodeId)}
               >
                 {node.title}

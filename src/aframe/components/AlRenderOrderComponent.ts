@@ -1,8 +1,8 @@
-import { Constants } from '../../Constants';
+import { Constants } from "../../Constants";
 
-export default AFRAME.registerComponent('al-render-order', {
+export default AFRAME.registerComponent("al-render-order", {
   schema: {
-    order: { type: 'number', default: Constants.topLayerRenderOrder }
+    order: { type: "number", default: Constants.topLayerRenderOrder }
   },
 
   init() {

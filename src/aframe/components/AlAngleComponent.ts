@@ -1,8 +1,8 @@
-import { Entity } from 'aframe';
-import { Constants } from '../../Constants';
-import { AlGraphEntryType } from '../../enums';
-import { AlGraphEvents, ShaderUtils, ThreeUtils } from '../../utils';
-import { BaseComponent } from './BaseComponent';
+import { Entity } from "aframe";
+import { Constants } from "../../Constants";
+import { AlGraphEntryType } from "../../enums";
+import { AlGraphEvents, ShaderUtils, ThreeUtils } from "../../utils";
+import { BaseComponent } from "./BaseComponent";
 
 interface AlAngleState {
   selected: boolean;
@@ -22,15 +22,15 @@ interface AlAngleComponent extends BaseComponent {
   pointerOut(_event: CustomEvent): void;
 }
 
-export default AFRAME.registerComponent('al-angle', {
+export default AFRAME.registerComponent("al-angle", {
   schema: {
-    selected: { type: 'boolean' },
-    edge0Pos: { type: 'vec3' },
-    edge1Pos: { type: 'vec3' },
-    position: { type: 'vec3' },
-    length: { type: 'number' },
-    radius: { type: 'number' },
-    angle: { type: 'number' }
+    selected: { type: "boolean" },
+    edge0Pos: { type: "vec3" },
+    edge1Pos: { type: "vec3" },
+    position: { type: "vec3" },
+    length: { type: "number" },
+    radius: { type: "number" },
+    angle: { type: "number" }
   },
 
   init(): void {
@@ -58,17 +58,17 @@ export default AFRAME.registerComponent('al-angle', {
   },
 
   addEventListeners(): void {
-    this.el.addEventListener('mousedown', this.pointerDown, {
+    this.el.addEventListener("mousedown", this.pointerDown, {
       capture: false,
       once: false,
       passive: true
     });
-    this.el.addEventListener('raycaster-intersected', this.pointerOver, {
+    this.el.addEventListener("raycaster-intersected", this.pointerOver, {
       capture: false,
       once: false,
       passive: true
     });
-    this.el.addEventListener('raycaster-intersected-cleared', this.pointerOut, {
+    this.el.addEventListener("raycaster-intersected-cleared", this.pointerOut, {
       capture: false,
       once: false,
       passive: true
@@ -76,10 +76,10 @@ export default AFRAME.registerComponent('al-angle', {
   },
 
   removeEventListeners(): void {
-    this.el.removeEventListener('mousedown', this.pointerDown);
-    this.el.removeEventListener('raycaster-intersected', this.pointerOver);
+    this.el.removeEventListener("mousedown", this.pointerDown);
+    this.el.removeEventListener("raycaster-intersected", this.pointerOver);
     this.el.removeEventListener(
-      'raycaster-intersected-cleared',
+      "raycaster-intersected-cleared",
       this.pointerOut
     );
   },
@@ -152,7 +152,7 @@ export default AFRAME.registerComponent('al-angle', {
 
     mesh.add(outlineMesh);
 
-    this.el.setObject3D('mesh', mesh);
+    this.el.setObject3D("mesh", mesh);
     (this.el.object3D as THREE.Object3D).renderOrder =
       Constants.topLayerRenderOrder - 3;
   },
@@ -200,6 +200,6 @@ export default AFRAME.registerComponent('al-angle', {
 
   remove(): void {
     this.removeEventListeners();
-    this.el.removeObject3D('mesh');
+    this.el.removeObject3D("mesh");
   }
 } as AlAngleComponent);

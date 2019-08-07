@@ -1,12 +1,12 @@
 export class AlGltfModelEvents {
-  public static LOADED: string = 'al-model-loaded';
-  public static ERROR: string = 'al-model-error';
+  public static LOADED: string = "al-model-loaded";
+  public static ERROR: string = "al-model-error";
 }
 
-export default AFRAME.registerComponent('al-gltf-model', {
+export default AFRAME.registerComponent("al-gltf-model", {
   schema: {
-    src: { type: 'model', default: '' },
-    dracoDecoderPath: { type: 'string', default: '' }
+    src: { type: "model", default: "" },
+    dracoDecoderPath: { type: "string", default: "" }
   },
 
   init(): void {
@@ -47,12 +47,12 @@ export default AFRAME.registerComponent('al-gltf-model', {
           self.model = gltfModel.scene || gltfModel.scenes[0];
           self.model.animations = gltfModel.animations;
           // The "mesh" is actually a whole GLTF scene
-          el.setObject3D('mesh', self.model);
+          el.setObject3D("mesh", self.model);
 
           el.sceneEl.emit(
             AlGltfModelEvents.LOADED,
             {
-              format: 'gltf',
+              format: "gltf",
               model: self.model
             },
             false
@@ -64,12 +64,12 @@ export default AFRAME.registerComponent('al-gltf-model', {
           const message =
             error && error.message
               ? error.message
-              : 'Failed to load glTF model';
+              : "Failed to load glTF model";
           console.warn(message);
           el.sceneEl.emit(
             AlGltfModelEvents.ERROR,
             {
-              format: 'gltf',
+              format: "gltf",
               src
             },
             false
@@ -84,6 +84,6 @@ export default AFRAME.registerComponent('al-gltf-model', {
       return;
     }
     this.removeEventListeners();
-    this.el.removeObject3D('mesh');
+    this.el.removeObject3D("mesh");
   }
 });
