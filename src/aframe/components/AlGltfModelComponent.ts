@@ -36,6 +36,7 @@ export default AFRAME.registerComponent("al-gltf-model", {
         function gltfLoaded(gltfModel) {
           self.model = gltfModel.scene || gltfModel.scenes[0];
           self.model.animations = gltfModel.animations;
+          // The "mesh" is actually a whole GLTF scene
           el.setObject3D("mesh", self.model);
 
           el.sceneEl.emit(
