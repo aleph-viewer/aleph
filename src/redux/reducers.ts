@@ -15,7 +15,7 @@ export const getInitialState = () => {
     displayMode: DisplayMode.MESH,
     edges: new Map<string, AlEdge>(),
     nodes: new Map<string, AlNode>(),
-    graphEnabled: true,
+    graphEnabled: false,
     orientation: Orientation.CORONAL,
     selected: null,
     slicesIndex: 0,
