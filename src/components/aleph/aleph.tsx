@@ -793,7 +793,7 @@ export class Aleph {
         look-controls="enabled: false"
         far={Constants.cameraValues.far}
         id="mainCamera"
-        cursor="rayOrigin: mouse"
+        al-cursor="rayOrigin: mouse"
         raycaster="objects: .collidable;"
         al-orbit-control={`
           maxPolarAngle: ${Constants.cameraValues.maxPolarAngle};
