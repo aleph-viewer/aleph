@@ -462,10 +462,15 @@ export class Aleph {
           />
         );
       }
+      // This is seperate from the slice entity as it will store the volume render,
+      // preventing long load times when switching mode
       case DisplayMode.VOLUME: {
         return (
           <a-entity
             id="target-entity"
+            al-node-spawner={`
+              graphEnabled: ${this.graphEnabled};
+            `}
             al-volume={`
               srcLoaded: ${this.srcLoaded};
               src: ${this.src};
@@ -553,7 +558,6 @@ export class Aleph {
 
     return null;
   }
-
   private _renderNodes() {
     return Array.from(this.nodes).map((n: [string, AlNode]) => {
       const [nodeId, node] = n;
@@ -1201,6 +1205,7 @@ export class Aleph {
       this._boundingSphereRadius = mesh.geometry.boundingSphere.radius;
       this._boundingBox = GetUtils.getBoundingBox(mesh);
       const cameraState: AlCamera = GetUtils.getCameraStateFromMesh(mesh);
+      this._updateLights(cameraState);
 
       if (cameraState) {
         this.appSetCamera(cameraState);
