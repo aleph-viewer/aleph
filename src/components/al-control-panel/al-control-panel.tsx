@@ -2,6 +2,7 @@ import { Component, Event, EventEmitter, Prop, Watch } from "@stencil/core";
 import { Constants } from "../../Constants";
 import { DisplayMode } from "../../enums/DisplayMode";
 import { Orientation } from "../../enums/Orientation";
+import { Units } from "../../enums/Units";
 
 @Component({
   tag: "al-control-panel",
@@ -18,6 +19,7 @@ export class AlControlPanel {
   @Event() public slicesIndexChanged: EventEmitter;
   @Event() public slicesWindowCenterChanged: EventEmitter;
   @Event() public slicesWindowWidthChanged: EventEmitter;
+  @Event() public unitsChanged: EventEmitter;
   @Event() public graphEnabledChanged: EventEmitter;
   @Event() public volumeStepsChanged: EventEmitter;
   @Event() public volumeWindowCenterChanged: EventEmitter;
@@ -43,6 +45,7 @@ export class AlControlPanel {
     this.volumeWindowWidth = undefined;
   }
   @Prop({ mutable: true }) public graphEnabled: boolean = false;
+  @Prop({ mutable: true }) public units: Units = Units.METERS;
   @Prop({ mutable: true }) public volumeSteps: number;
   @Prop({ mutable: true }) public volumeWindowCenter: number;
   @Prop({ mutable: true }) public volumeWindowWidth: number;
@@ -80,6 +83,11 @@ export class AlControlPanel {
   private _slicesWindowWidth(width: number) {
     this.slicesWindowWidth = width;
     this.slicesWindowWidthChanged.emit(width);
+  }
+
+  private _units(units: Units) {
+    this.units = units;
+    this.unitsChanged.emit(units);
   }
 
   private _volumeSteps(steps: number) {
@@ -188,8 +196,40 @@ export class AlControlPanel {
     );
   }
 
+  public renderUnitsSelect() {
+    return (
+      <ion-item
+        style={{
+          display: "var(--units-display, block)"
+        }}
+      >
+        <ion-icon src="/assets/svg/units.svg" slot="start" />
+        <select
+          slot="end"
+          onChange={e =>
+            this._units((e.srcElement as HTMLSelectElement).value as Units)
+          }
+        >
+          <option selected={this.units === Units.METERS} value={Units.METERS}>
+            {Units.METERS}
+          </option>
+          <option
+            selected={this.units === Units.MILLIMETERS}
+            value={Units.MILLIMETERS}
+          >
+            {Units.MILLIMETERS}
+          </option>
+        </select>
+      </ion-item>
+    );
+  }
+
   public renderGenericOptions() {
-    return [this.renderBoundingBoxEnabled(), this.renderRecenterButton()];
+    return [
+      this.renderBoundingBoxEnabled(),
+      this.renderRecenterButton(),
+      this.renderUnitsSelect()
+    ];
   }
 
   private _reverseNumber(num: number, min: number, max: number): number {
