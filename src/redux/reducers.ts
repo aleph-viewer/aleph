@@ -5,6 +5,7 @@ import { Orientation } from "../enums/Orientation";
 import { AlAngle, AlAppState, AlEdge, AlNode } from "../interfaces";
 import { GetUtils } from "../utils";
 import { ActionTypes, TypeKeys } from "./actions";
+import { Units } from "../enums/Units";
 
 export const getInitialState = () => {
   return {
@@ -23,6 +24,7 @@ export const getInitialState = () => {
     slicesWindowWidth: 0,
     src: null,
     srcLoaded: false,
+    units: Units.METERS,
     volumeSteps: 16,
     volumeWindowCenter: 0,
     volumeWindowWidth: 0
@@ -276,6 +278,12 @@ export const app = (
       return {
         ...state,
         slicesWindowCenter: action.payload
+      };
+    }
+    case TypeKeys.APP_SET_UNITS: {
+      return {
+        ...state,
+        units: action.payload
       };
     }
     case TypeKeys.APP_SET_VOLUME_STEPS: {

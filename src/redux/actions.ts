@@ -3,6 +3,7 @@ import { Orientation } from "../enums/Orientation";
 import { AlCamera, AlEdge } from "../interfaces";
 import { AlAngle } from "../interfaces/AlAngle";
 import { AlNode } from "../interfaces/AlNode";
+import { Units } from "../enums/Units";
 
 export interface NullAction {
   type: TypeKeys.NULL;
@@ -34,6 +35,7 @@ export type ActionTypes =
   | AppSetSlicesWindowWidthAction
   | AppSetSrcAction
   | AppSetSrcLoadedAction
+  | AppSetUnitsAction
   | AppSetVolumeStepsAction
   | AppSetVolumeWindowCenterAction
   | AppSetVolumeWindowWidthAction;
@@ -64,6 +66,7 @@ export enum TypeKeys {
   APP_SET_SLICES_WINDOW_WIDTH = "APP_SET_SLICES_WINDOW_WIDTH",
   APP_SET_SRC = "APP_SET_SRC",
   APP_SET_SRC_LOADED = "APP_SET_SRC_LOADED",
+  APP_SET_UNITS = "APP_SET_UNITS",
   APP_SET_VOLUME_STEPS = "APP_SET_VOLUME_STEPS",
   APP_SET_VOLUME_WINDOW_CENTER = "APP_SET_VOLUME_WINDOW_CENTER",
   APP_SET_VOLUME_WINDOW_WIDTH = "APP_SET_VOLUME_WINDOW_WIDTH"
@@ -290,6 +293,22 @@ export const appClearAngles = (payload: void) => async (
 //#endregion
 
 //#region control panel
+
+export interface AppSetBoundingBoxEnabledAction {
+  type: TypeKeys.APP_SET_BOUNDINGBOX_VISIBLE;
+  payload: boolean;
+}
+
+export const appSetBoundingBoxEnabled = (payload: boolean) => async (
+  dispatch,
+  _getState
+) => {
+  return dispatch({
+    type: TypeKeys.APP_SET_BOUNDINGBOX_VISIBLE,
+    payload
+  });
+};
+
 export interface AppSetDisplayModeAction {
   type: TypeKeys.APP_SET_DISPLAY_MODE;
   payload: DisplayMode;
@@ -320,17 +339,14 @@ export const appSetGraphEnabled = (payload: boolean) => async (
   });
 };
 
-export interface AppSetBoundingBoxEnabledAction {
-  type: TypeKeys.APP_SET_BOUNDINGBOX_VISIBLE;
-  payload: boolean;
+export interface AppSetUnitsAction {
+  type: TypeKeys.APP_SET_UNITS;
+  payload: Units;
 }
 
-export const appSetBoundingBoxEnabled = (payload: boolean) => async (
-  dispatch,
-  _getState
-) => {
+export const appSetUnits = (payload: Units) => async (dispatch, _getState) => {
   return dispatch({
-    type: TypeKeys.APP_SET_BOUNDINGBOX_VISIBLE,
+    type: TypeKeys.APP_SET_UNITS,
     payload
   });
 };

@@ -182,6 +182,7 @@ export namespace Components {
     'setSlicesIndex': (index: number) => Promise<void>;
     'setSlicesWindowCenter': (center: number) => Promise<void>;
     'setSlicesWindowWidth': (width: number) => Promise<void>;
+    'setUnits': (units: Units) => Promise<void>;
     'setVolumeSteps': (steps: number) => Promise<void>;
     'setVolumeWindowCenter': (center: number) => Promise<void>;
     'setVolumeWindowWidth': (width: number) => Promise<void>;

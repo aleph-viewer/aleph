@@ -211,13 +211,13 @@ export class AlControlPanel {
           }
         >
           <option selected={this.units === Units.METERS} value={Units.METERS}>
-            {Units.METERS}
+            Meters
           </option>
           <option
             selected={this.units === Units.MILLIMETERS}
             value={Units.MILLIMETERS}
           >
-            {Units.MILLIMETERS}
+            Millimeters
           </option>
         </select>
       </ion-item>

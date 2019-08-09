@@ -1,22 +1,21 @@
 export class Constants {
-  public static fontSizeSmall = 0.75;
-  public static fontSizeMedium = 1.5;
-  public static fontSizeLarge = 2.5;
-  public static movedEventName = "-moved";
-  public static titleIdName = "-title";
   public static controllerName = "-controller";
-  public static nodeSizeRatio = 75;
-  public static backboardSize = 10;
-  public static zoomFactor = 2.5;
-  public static minLoadingMS = 500;
-  public static topLayerRenderOrder = 999;
-  public static angleUnitsDecimalPlaces = 2;
   public static edgeSize = 0.005;
-  public static stackSpaceMultiplier = { x: 10, y: 10, z: 10 };
+  public static fontSizeLarge = 2.5;
+  public static fontSizeMedium = 1.5;
+  public static fontSizeSmall = 0.75;
   public static maxAnimationSteps = 50;
-  public static stepsMin: number = 1;
-  public static stepsMax: number = 512;
+  public static minLoadingMS = 500;
+  public static movedEventName = "-moved";
+  public static nodeSizeRatio = 75;
+  public static stackSpaceMultiplier = { x: 10, y: 10, z: 10 };
   public static stepsIncrement = 8;
+  public static stepsMax: number = 512;
+  public static stepsMin: number = 1;
+  public static titleIdName = "-title";
+  public static topLayerRenderOrder = 999;
+  public static unitsDecimalPlaces = 2;
+  public static zoomFactor = 2.5;
 
   public static minFrameMS = 15; // Should never be higher than the returned frame time
   public static minTimeForThrottle = Constants.minFrameMS * 5;

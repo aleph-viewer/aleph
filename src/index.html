@@ -314,6 +314,10 @@
             alAleph.setSlicesWindowWidth(e.detail);
           }, false);
 
+          alControlPanel.addEventListener("unitsChanged", function(e) {
+            alAleph.setUnits(e.detail);
+          }, false);
+
           alControlPanel.addEventListener("volumeStepsChanged", function(e) {
             alAleph.setVolumeSteps(e.detail);
           }, false);

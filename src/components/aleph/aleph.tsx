@@ -45,6 +45,7 @@ import {
   appSetSlicesWindowWidth,
   appSetSrc,
   appSetSrcLoaded,
+  appSetUnits,
   appSetVolumeSteps,
   appSetVolumeWindowCenter,
   appSetVolumeWindowWidth
@@ -58,6 +59,7 @@ import {
   GraphUtils,
   ThreeUtils
 } from "../../utils";
+import { Units } from "../../enums/Units";
 
 type Entity = import("aframe").Entity;
 type Scene = import("aframe").Scene;
@@ -114,6 +116,7 @@ export class Aleph {
   public appSetSlicesWindowWidth: Action;
   public appSetSrc: Action;
   public appSetSrcLoaded: Action;
+  public appSetUnits: Action;
   public appSetVolumeSteps: Action;
   public appSetVolumeWindowCenter: Action;
   public appSetVolumeWindowWidth: Action;
@@ -138,6 +141,7 @@ export class Aleph {
   @State() public slicesWindowWidth: number;
   @State() public src: string | null;
   @State() public srcLoaded: boolean;
+  @State() public units: Units;
   @State() public volumeSteps: number;
   @State() public volumeWindowCenter: number;
   @State() public volumeWindowWidth: number;
@@ -221,6 +225,11 @@ export class Aleph {
   }
 
   @Method()
+  public async setBoundingBoxEnabled(visible: boolean): Promise<void> {
+    this._setBoundingBoxEnabled(visible);
+  }
+
+  @Method()
   public async setDisplayMode(displayMode: DisplayMode): Promise<void> {
     this._setDisplayMode(displayMode);
   }
@@ -231,18 +240,13 @@ export class Aleph {
   }
 
   @Method()
-  public async setBoundingBoxEnabled(visible: boolean): Promise<void> {
-    this._setBoundingBoxEnabled(visible);
+  public async setOrientation(orientation: Orientation): Promise<void> {
+    this._setOrientation(orientation);
   }
 
   @Method()
   public async setSlicesIndex(index: number): Promise<void> {
     this._setSlicesIndex(index);
-  }
-
-  @Method()
-  public async setOrientation(orientation: Orientation): Promise<void> {
-    this._setOrientation(orientation);
   }
 
   @Method()
@@ -253,6 +257,11 @@ export class Aleph {
   @Method()
   public async setSlicesWindowWidth(width: number): Promise<void> {
     this._setSlicesWindowWidth(width);
+  }
+
+  @Method()
+  public async setUnits(units: Units): Promise<void> {
+    this._setUnits(units);
   }
 
   @Method()
@@ -303,6 +312,7 @@ export class Aleph {
           slicesWindowWidth,
           src,
           srcLoaded,
+          units,
           volumeSteps,
           volumeWindowCenter,
           volumeWindowWidth
@@ -325,6 +335,7 @@ export class Aleph {
         slicesWindowWidth,
         src,
         srcLoaded,
+        units,
         volumeSteps,
         volumeWindowCenter,
         volumeWindowWidth
@@ -355,6 +366,7 @@ export class Aleph {
       appSetSlicesWindowWidth,
       appSetSrc,
       appSetSrcLoaded,
+      appSetUnits,
       appSetVolumeSteps,
       appSetVolumeWindowCenter,
       appSetVolumeWindowWidth
@@ -642,8 +654,7 @@ export class Aleph {
             <a-entity
               id={`${edgeId}-title`}
               text={`
-                value: ${dist.toFixed(Constants.angleUnitsDecimalPlaces) +
-                  (this.displayMode === DisplayMode.MESH ? "m" : "mm")};
+                value: ${this._convertUnits(dist)};
                 side: double;
                 align: center;
                 baseline: bottom;
@@ -763,7 +774,7 @@ export class Aleph {
               id={`${angleId}-title`}
               text={`
                 value: ${THREE.Math.radToDeg(angl).toFixed(
-                  Constants.angleUnitsDecimalPlaces
+                  Constants.unitsDecimalPlaces
                 ) + " deg"};
                 side: double;
                 align: center;
@@ -890,6 +901,36 @@ export class Aleph {
     if (this._scene) {
       // tslint:disable-next-line: no-any
       (this._scene as any).resize();
+    }
+  }
+
+  private _convertUnits(dist: number): string {
+    if (this.displayMode === DisplayMode.MESH) {
+      // if in mesh mode, units are always meters by default
+      switch (this.units) {
+        case Units.METERS: {
+          return dist.toFixed(Constants.unitsDecimalPlaces) + this.units;
+        }
+        case Units.MILLIMETERS: {
+          // convert m to mm
+          return (
+            (dist / 0.001).toFixed(Constants.unitsDecimalPlaces) + this.units
+          );
+        }
+      }
+    } else {
+      // if in volume mode, units are always millimeters by default
+      switch (this.units) {
+        case Units.METERS: {
+          // convert mm to m
+          return (
+            (dist / 1000.0).toFixed(Constants.unitsDecimalPlaces) + this.units
+          );
+        }
+        case Units.MILLIMETERS: {
+          return dist.toFixed(Constants.unitsDecimalPlaces) + this.units;
+        }
+      }
     }
   }
 
@@ -1138,6 +1179,11 @@ export class Aleph {
 
   private _setSlicesWindowWidth(width: number): void {
     this.appSetSlicesWindowWidth(width);
+    this._stateChanged();
+  }
+
+  private _setUnits(units: Units): void {
+    this.appSetUnits(units);
     this._stateChanged();
   }
 
