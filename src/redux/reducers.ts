@@ -78,7 +78,15 @@ export const app = (
       return {
         ...state,
         controlsEnabled: action.payload,
-        srcLoaded: action.payload
+        srcLoaded: action.payload,
+        boundingBoxEnabled:
+          state.displayMode !== DisplayMode.MESH
+            ? true
+            : state.boundingBoxEnabled,
+        units:
+          state.displayMode !== DisplayMode.MESH
+            ? Units.MILLIMETERS
+            : Units.METERS
       };
     }
     //#endregion
@@ -236,7 +244,7 @@ export const app = (
         ...state,
         displayMode: action.payload,
         boundingBoxEnabled:
-          action.payload === DisplayMode.VOLUME
+          action.payload !== DisplayMode.MESH
             ? true
             : state.boundingBoxEnabled
       };

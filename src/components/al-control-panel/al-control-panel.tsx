@@ -46,6 +46,10 @@ export class AlControlPanel {
   }
   @Prop({ mutable: true }) public graphEnabled: boolean = false;
   @Prop({ mutable: true }) public units: Units = Units.METERS;
+  @Watch("stackunitshelper")
+  public watchUnits() {
+    console.log("units", this.units);
+  }
   @Prop({ mutable: true }) public volumeSteps: number;
   @Prop({ mutable: true }) public volumeWindowCenter: number;
   @Prop({ mutable: true }) public volumeWindowWidth: number;
