@@ -1,3 +1,5 @@
+// todo: use the A-Frame default cursor when updating to a new release. PR was merged with fixes: https://github.com/aframevr/aframe/pull/4249
+
 const EVENTS = {
   CLICK: "click",
   FUSING: "fusing",
