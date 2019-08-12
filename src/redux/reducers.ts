@@ -244,9 +244,7 @@ export const app = (
         ...state,
         displayMode: action.payload,
         boundingBoxEnabled:
-          action.payload !== DisplayMode.MESH
-            ? true
-            : state.boundingBoxEnabled
+          action.payload !== DisplayMode.MESH ? true : state.boundingBoxEnabled
       };
     }
     case TypeKeys.APP_SET_ORIENTATION: {

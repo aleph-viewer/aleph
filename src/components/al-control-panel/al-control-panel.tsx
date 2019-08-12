@@ -46,7 +46,7 @@ export class AlControlPanel {
   }
   @Prop({ mutable: true }) public graphEnabled: boolean = false;
   @Prop({ mutable: true }) public units: Units = Units.METERS;
-  @Watch("stackunitshelper")
+  @Watch("units")
   public watchUnits() {
     console.log("units", this.units);
   }
