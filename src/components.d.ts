@@ -20,6 +20,9 @@ import {
   Orientation,
 } from './enums/Orientation';
 import {
+  Units,
+} from './enums/Units';
+import {
   DisplayMode as DisplayMode2,
   Orientation as Orientation2,
 } from './enums';
@@ -56,6 +59,7 @@ export namespace Components {
     'slicesWindowWidth': number;
     'stackhelper': AMI.StackHelper
     | AMI.VolumeRenderHelper;
+    'units': Units;
     'volumeSteps': number;
     'volumeWindowCenter': number;
     'volumeWindowWidth': number;
@@ -72,6 +76,7 @@ export namespace Components {
     'onSlicesIndexChanged'?: (event: CustomEvent) => void;
     'onSlicesWindowCenterChanged'?: (event: CustomEvent) => void;
     'onSlicesWindowWidthChanged'?: (event: CustomEvent) => void;
+    'onUnitsChanged'?: (event: CustomEvent) => void;
     'onVolumeStepsChanged'?: (event: CustomEvent) => void;
     'onVolumeWindowCenterChanged'?: (event: CustomEvent) => void;
     'onVolumeWindowWidthChanged'?: (event: CustomEvent) => void;
@@ -81,6 +86,7 @@ export namespace Components {
     'slicesWindowWidth'?: number;
     'stackhelper'?: AMI.StackHelper
     | AMI.VolumeRenderHelper;
+    'units'?: Units;
     'volumeSteps'?: number;
     'volumeWindowCenter'?: number;
     'volumeWindowWidth'?: number;
@@ -176,6 +182,7 @@ export namespace Components {
     'setSlicesIndex': (index: number) => Promise<void>;
     'setSlicesWindowCenter': (center: number) => Promise<void>;
     'setSlicesWindowWidth': (width: number) => Promise<void>;
+    'setUnits': (units: Units) => Promise<void>;
     'setVolumeSteps': (steps: number) => Promise<void>;
     'setVolumeWindowCenter': (center: number) => Promise<void>;
     'setVolumeWindowWidth': (width: number) => Promise<void>;

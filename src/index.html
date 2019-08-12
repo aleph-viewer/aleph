@@ -387,13 +387,13 @@
             false
           );
 
-          alControlPanel.addEventListener(
-            'volumeWindowCenterChanged',
-            function(e) {
-              alAleph.setVolumeWindowCenter(e.detail);
-            },
-            false
-          );
+          alControlPanel.addEventListener("unitsChanged", function(e) {
+            alAleph.setUnits(e.detail);
+          }, false);
+
+          alControlPanel.addEventListener("volumeStepsChanged", function(e) {
+            alAleph.setVolumeSteps(e.detail);
+          }, false);
 
           alControlPanel.addEventListener(
             'volumeWindowWidthChanged',
@@ -443,6 +443,7 @@
         alControlPanel.displayMode = state.displayMode;
         alControlPanel.graphEnabled = state.graphEnabled;
         alControlPanel.boundingBoxEnabled = state.boundingBoxEnabled;
+        alControlPanel.units = state.units;
 
         lastState = Object.assign({}, state);
       }

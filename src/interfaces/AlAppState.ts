@@ -1,5 +1,6 @@
 import { AlAngle, AlCamera, AlEdge, AlNode } from ".";
 import { DisplayMode, Orientation } from "../enums";
+import { Units } from "../enums/Units";
 
 export interface AlAppState {
   angles: Map<string, AlAngle>;
@@ -17,6 +18,7 @@ export interface AlAppState {
   slicesWindowWidth: number;
   src: string | null;
   srcLoaded: boolean;
+  units: Units;
   volumeSteps: number;
   volumeWindowCenter: number;
   volumeWindowWidth: number;
