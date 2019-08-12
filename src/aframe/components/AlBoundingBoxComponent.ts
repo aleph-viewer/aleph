@@ -8,6 +8,7 @@ interface AlBoundingBoxState {
   geometry: THREE.BoxGeometry;
   material: THREE.MeshBasicMaterial;
   mesh: THREE.Mesh;
+  hasRotated: boolean;
 }
 
 export default AFRAME.registerComponent("al-bounding-box", {
@@ -22,7 +23,8 @@ export default AFRAME.registerComponent("al-bounding-box", {
     this.addEventListeners();
 
     this.state = {
-      box: new THREE.Box3()
+      box: new THREE.Box3(),
+      hasRotated: false
     } as AlBoundingBoxState;
   },
 
@@ -35,7 +37,8 @@ export default AFRAME.registerComponent("al-bounding-box", {
   // tslint:disable-next-line: no-empty
   removeEventListeners(): void {},
 
-  update(): void {
+  // tslint:disable-next-line: no-any
+  update(_oldData: any): void {
     const el = this.el;
     const state = this.state as AlBoundingBoxState;
     const scale = ThreeUtils.stringToVector3(this.data.scale);
@@ -65,6 +68,7 @@ export default AFRAME.registerComponent("al-bounding-box", {
     // bmaterial.depthWrite = this.data.opacity === 0;
 
     state.boundingBox.renderOrder = Constants.topLayerRenderOrder - 5;
+
     el.setObject3D("mesh", state.boundingBox);
 
     state.geometry = geometry;

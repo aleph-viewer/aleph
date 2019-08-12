@@ -3,10 +3,10 @@ import { Constants } from "../../Constants";
 import { AlCamera } from "../../interfaces";
 import { ThreeUtils } from "../../utils";
 
-interface AlOrbitControlState {
+interface AlControlState {
   animationCache: AlCamera[];
   // tslint:disable-next-line: no-any
-  controls: any; // THREE.OrbitControls;
+  controls: THREE.OrbitControls | THREE.TrackballControls;
   mouseDown: boolean;
   wheelCounter1: number;
   wheelCounter2: number;
@@ -14,17 +14,15 @@ interface AlOrbitControlState {
   wheelMarker: boolean;
 }
 
-export class AlOrbitControlEvents {
-  public static INTERACTION: string = "al-orbit-interaction";
+export class AlControlEvents {
+  public static INTERACTION: string = "al-control-interaction";
   public static INTERACTION_FINISHED: string =
-    "al-orbit-controls-interaction-finished";
-  public static ANIMATION_STARTED: string =
-    "al-orbit-controls-animation-started";
-  public static ANIMATION_FINISHED: string =
-    "al-orbit-controls-animation-finished";
+    "al-controls-interaction-finished";
+  public static ANIMATION_STARTED: string = "al-controls-animation-started";
+  public static ANIMATION_FINISHED: string = "al-controls-animation-finished";
 }
 
-interface AlOrbitControlComponent extends ComponentDefinition {
+interface AlControlComponent extends ComponentDefinition {
   dependencies: string[];
   tickFunction(): void;
   mouseUp(event: MouseEvent): void;
@@ -35,36 +33,37 @@ interface AlOrbitControlComponent extends ComponentDefinition {
   handleAnimationCache(event: CustomEvent): void;
 }
 
-export default AFRAME.registerComponent("al-orbit-control", {
+export default AFRAME.registerComponent("al-control", {
   dependencies: ["camera"],
 
   schema: {
     animating: { type: "boolean", default: false },
-    autoRotate: { type: "boolean" },
-    autoRotateSpeed: { default: 2 },
     controlPosition: { type: "vec3" },
     controlTarget: { type: "vec3" },
-    dampingFactor: { default: 0.1 },
     enabled: { default: true },
-    enableDamping: { default: true },
-    enableKeys: { default: true },
     enablePan: { default: true },
     enableRotate: { default: true },
     enableZoom: { default: true },
-    keyPanSpeed: { default: 7 },
-    maxAzimuthAngle: { type: "number", default: Infinity },
     maxDistance: { default: 8000 },
-    // maxPolarAngle: { default: AFRAME.utils.device.isMobile() ? 90 : 120 },
-    maxPolarAngle: { default: 88 },
-    minAzimuthAngle: { type: "number", default: -Infinity },
     minDistance: { default: 1 },
-    minPolarAngle: { default: 0 },
+    o_autoRotateautoRotate: { type: "boolean" },
+    o_autoRotateSpeed: { default: 2 },
+    o_dampingFactor: { default: 0.1 },
+    o_enableDamping: { default: true },
+    o_enableKeys: { default: true },
+    o_keyPanSpeed: { default: 7 },
+    o_maxAzimuthAngle: { type: "number", default: Infinity },
+    o_maxPolarAngle: { default: 88 },
+    o_minAzimuthAngle: { type: "number", default: -Infinity },
+    o_minPolarAngle: { default: 0 },
+    o_screenSpacePanning: { default: false },
     rotateSpeed: { default: 0.05 },
-    screenSpacePanning: { default: false },
-    zoomSpeed: { type: "number", default: 0.5 }
+    zoomSpeed: { type: "number", default: 0.5 },
+    isTrackballControls: { type: "boolean", default: true }
   },
 
   bindMethods() {
+    this.makeControls = this.makeControls.bind(this);
     this.mouseDown = this.mouseDown.bind(this);
     this.mouseMove = this.mouseMove.bind(this);
     this.mouseUp = this.mouseUp.bind(this);
@@ -96,7 +95,7 @@ export default AFRAME.registerComponent("al-orbit-control", {
       passive: true
     });
     this.el.sceneEl.addEventListener(
-      AlOrbitControlEvents.ANIMATION_STARTED,
+      AlControlEvents.ANIMATION_STARTED,
       this.handleAnimationCache,
       false
     );
@@ -108,7 +107,7 @@ export default AFRAME.registerComponent("al-orbit-control", {
       this.el.sceneEl.canvas.removeEventListener("mousedown", this.mouseDown);
     this.el.sceneEl.canvas.removeEventListener("wheel", this.canvasWheel);
     this.el.sceneEl.removeEventListener(
-      AlOrbitControlEvents.ANIMATION_STARTED,
+      AlControlEvents.ANIMATION_STARTED,
       this.handleAnimationCache,
       false
     );
@@ -125,7 +124,7 @@ export default AFRAME.registerComponent("al-orbit-control", {
 
     if (controls.enabled) {
       this.el.sceneEl.emit(
-        AlOrbitControlEvents.INTERACTION_FINISHED,
+        AlControlEvents.INTERACTION_FINISHED,
         { cameraState: this.getCameraState() },
         false
       );
@@ -140,7 +139,7 @@ export default AFRAME.registerComponent("al-orbit-control", {
   mouseMove(_event: MouseEvent) {
     if (this.state.mouseDown) {
       this.el.sceneEl.emit(
-        AlOrbitControlEvents.INTERACTION,
+        AlControlEvents.INTERACTION,
         { cameraState: this.getCameraState() },
         false
       );
@@ -159,7 +158,7 @@ export default AFRAME.registerComponent("al-orbit-control", {
         state.wheelCounter1 = 0;
         state.wheelCounter2 = 0;
         this.el.sceneEl.emit(
-          AlOrbitControlEvents.INTERACTION_FINISHED,
+          AlControlEvents.INTERACTION_FINISHED,
           { cameraState: this.getCameraState() },
           false
         );
@@ -179,15 +178,13 @@ export default AFRAME.registerComponent("al-orbit-control", {
     }
 
     this.el.sceneEl.emit(
-      AlOrbitControlEvents.INTERACTION,
+      AlControlEvents.INTERACTION,
       { cameraState: this.getCameraState() },
       false
     );
   },
 
   init() {
-    const el = this.el;
-    const data = this.data;
     document.body.style.cursor = "grab";
 
     this.tickFunction = AFRAME.utils.throttle(
@@ -196,25 +193,9 @@ export default AFRAME.registerComponent("al-orbit-control", {
       this
     );
 
-    // tslint:disable-next-line: no-any
-    const controls = new (THREE as any).OrbitControls(
-      el.getObject3D("camera"),
-      el.sceneEl.renderer.domElement
-    );
-
-    // Convert the controlPosition & controlTarget Objects into THREE.Vector3
-    const controlPosition = ThreeUtils.objectToVector3(data.controlPosition);
-    const controlTarget = ThreeUtils.objectToVector3(data.controlTarget);
-
-    controls.object.position.copy(controlPosition);
-    el.getObject3D("camera").position.copy(controlPosition);
-    controls.target.copy(controlTarget);
-
-    const animationCache = [];
-
-    (this.state as AlOrbitControlState) = {
-      animationCache,
-      controls,
+    (this.state as AlControlState) = {
+      animationCache: [],
+      controls: null,
       mouseDown: false,
       wheelCounter1: 0,
       wheelCounter2: undefined,
@@ -222,13 +203,14 @@ export default AFRAME.registerComponent("al-orbit-control", {
       wheelMarker: true
     };
 
+    this.makeControls();
     this.bindMethods();
     this.addListeners();
 
     // wait a frame before emitting initialised event
     ThreeUtils.waitOneFrame(() => {
       this.el.sceneEl.emit(
-        AlOrbitControlEvents.INTERACTION,
+        AlControlEvents.INTERACTION,
         { cameraState: this.getCameraState() },
         false
       );
@@ -242,31 +224,69 @@ export default AFRAME.registerComponent("al-orbit-control", {
     } as AlCamera;
   },
 
+  makeControls(): void {
+    let controls;
+
+    if (this.data.isTrackballControls) {
+      // tslint:disable-next-line: no-any
+      controls = new (THREE as any).TrackballControls(
+        this.el.getObject3D("camera"),
+        this.el.sceneEl.renderer.domElement
+      );
+    } else {
+      // tslint:disable-next-line: no-any
+      controls = new (THREE as any).OrbitControls(
+        this.el.getObject3D("camera"),
+        this.el.sceneEl.renderer.domElement
+      );
+    }
+
+    // Convert the controlPosition & controlTarget Objects into THREE.Vector3
+    const controlPosition = ThreeUtils.objectToVector3(
+      this.data.controlPosition
+    );
+    const controlTarget = ThreeUtils.objectToVector3(this.data.controlTarget);
+
+    controls.object.position.copy(controlPosition);
+    this.el.getObject3D("camera").position.copy(controlPosition);
+    controls.target.copy(controlTarget);
+
+    (this.state as AlControlState).controls = controls;
+  },
+
   // tslint:disable-next-line: no-any
   update(_oldData: any) {
+    if (_oldData.isTrackballControls !== this.data.isTrackballControls) {
+      this.makeControls();
+    }
+
     const controls = this.state.controls;
     const data = this.data;
 
+    if (!this.data.isTrackballControls) {
+      controls.autoRotate = data.o_autoRotate;
+      controls.autoRotateSpeed = data.o_autoRotateSpeed;
+      controls.dampingFactor = data.o_dampingFactor;
+      controls.enableDamping = data.o_enableDamping;
+      controls.enableKeys = data.o_enableKeys;
+      controls.keyPanSpeed = data.o_keyPanSpeed;
+      controls.maxPolarAngle = THREE.Math.degToRad(data.o_maxPolarAngle);
+      controls.maxAzimuthAngle = THREE.Math.degToRad(data.o_maxAzimuthAngle);
+      controls.minPolarAngle = THREE.Math.degToRad(data.o_minPolarAngle);
+      controls.minAzimuthAngle = THREE.Math.degToRad(data.o_minAzimuthAngle);
+      controls.screenSpacePanning = data.o_screenSpacePanning;
+    }
+
     controls.target = ThreeUtils.objectToVector3(data.controlTarget);
-    controls.autoRotate = data.autoRotate;
-    controls.autoRotateSpeed = data.autoRotateSpeed;
-    controls.dampingFactor = data.dampingFactor;
     controls.enabled = data.enabled;
-    controls.enableDamping = data.enableDamping;
-    controls.enableKeys = data.enableKeys;
     controls.enablePan = data.enablePan;
     controls.enableRotate = data.enableRotate;
     controls.enableZoom = data.enableZoom;
-    controls.keyPanSpeed = data.keyPanSpeed;
-    controls.maxPolarAngle = THREE.Math.degToRad(data.maxPolarAngle);
-    controls.maxAzimuthAngle = THREE.Math.degToRad(data.maxAzimuthAngle);
     controls.maxDistance = data.maxDistance;
     controls.minDistance = data.minDistance;
-    controls.minPolarAngle = THREE.Math.degToRad(data.minPolarAngle);
-    controls.minAzimuthAngle = THREE.Math.degToRad(data.minAzimuthAngle);
     controls.rotateSpeed = data.rotateSpeed;
-    controls.screenSpacePanning = data.screenSpacePanning;
     controls.zoomSpeed = data.zoomSpeed;
+
     this.el
       .getObject3D("camera")
       .position.copy(ThreeUtils.objectToVector3(data.controlPosition));
@@ -286,20 +306,16 @@ export default AFRAME.registerComponent("al-orbit-control", {
         this.el.getObject3D("camera").position.copy(nextFrame.position);
         controls.target.copy(nextFrame.target);
         this.el.sceneEl.emit(
-          AlOrbitControlEvents.INTERACTION,
+          AlControlEvents.INTERACTION,
           { cameraState: this.getCameraState() },
           false
         );
       }
 
       if (this.state.animationCache.length === 0) {
+        this.el.sceneEl.emit(AlControlEvents.ANIMATION_FINISHED, {}, false);
         this.el.sceneEl.emit(
-          AlOrbitControlEvents.ANIMATION_FINISHED,
-          {},
-          false
-        );
-        this.el.sceneEl.emit(
-          AlOrbitControlEvents.INTERACTION_FINISHED,
+          AlControlEvents.INTERACTION_FINISHED,
           { cameraState: this.getCameraState() },
           false
         );
@@ -317,8 +333,8 @@ export default AFRAME.registerComponent("al-orbit-control", {
 
   remove() {
     this.removeListeners();
-    let state = this.state as AlOrbitControlState;
+    let state = this.state as AlControlState;
     state.controls.dispose();
     state = null;
   }
-} as AlOrbitControlComponent);
+} as AlControlComponent);

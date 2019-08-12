@@ -1,7 +1,7 @@
 import { AlOrbitControlEvents } from "..";
 import { Constants } from "../../Constants";
 import { DisplayMode } from "../../enums";
-import { EventUtils } from "../../utils";
+import { EventUtils /*ThreeUtils*/ } from "../../utils";
 import { VolumetricLoader } from "../../utils/VolumetricLoader";
 import { BaseComponent } from "./BaseComponent";
 
@@ -45,7 +45,8 @@ export default AFRAME.registerComponent("al-volume", {
     srcLoaded: { type: "boolean" },
     volumeSteps: { type: "number" },
     volumeWindowCenter: { type: "number" },
-    volumeWindowWidth: { type: "number" }
+    volumeWindowWidth: { type: "number" },
+    initialRotation: { type: "string" }
   },
 
   init(): void {
@@ -181,6 +182,13 @@ export default AFRAME.registerComponent("al-volume", {
 
         state.stackhelper.bbox.visible = false;
         state.stackhelper.border.color = Constants.colorValues.blue;
+
+        // Apply initial rotation to the slice helper
+        // const rotation = ThreeUtils.stringToVector3(this.data.initialRotation);
+        // ((state.stackhelper as unknown) as THREE.Object3D).rotateX(rotation.x);
+        // ((state.stackhelper as unknown) as THREE.Object3D).rotateY(rotation.y);
+        // ((state.stackhelper as unknown) as THREE.Object3D).rotateZ(rotation.z);
+
         break;
       }
       case DisplayMode.VOLUME: {
@@ -216,6 +224,18 @@ export default AFRAME.registerComponent("al-volume", {
       }
 
       this.state.bufferScene.add(this.state.stackhelper);
+
+      // Apply initial rotation to the buffer scene
+      // const rotation = ThreeUtils.stringToVector3(this.data.initialRotation);
+      // (this.state.bufferScene.children[0] as THREE.Object3D).rotateX(
+      //   rotation.x
+      // );
+      // (this.state.bufferScene.children[0] as THREE.Object3D).rotateY(
+      //   rotation.y
+      // );
+      // (this.state.bufferScene.children[0] as THREE.Object3D).rotateZ(
+      //   rotation.z
+      // );
     }
 
     el.sceneEl.emit(AlVolumeEvents.LOADED, state.stackhelper, false);

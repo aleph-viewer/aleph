@@ -19,6 +19,7 @@ import { AlVolumeEvents } from "../../aframe/components/AlVolumeComponent";
 import { Constants } from "../../Constants";
 import { DisplayMode, Orientation } from "../../enums";
 import { AlGraphEntryType } from "../../enums";
+import { Units } from "../../enums/Units";
 import { AlAngle, AlCamera, AlEdge, AlNode } from "../../interfaces";
 import { AlGraph } from "../../interfaces/AlGraph";
 import {
@@ -59,7 +60,6 @@ import {
   GraphUtils,
   ThreeUtils
 } from "../../utils";
-import { Units } from "../../enums/Units";
 
 type Entity = import("aframe").Entity;
 type Scene = import("aframe").Scene;
@@ -443,9 +443,12 @@ export class Aleph {
               dracoDecoderPath: ${this.dracoDecoderPath};
             `}
             position="0 0 0"
+            rotation="180 0 180"
             scale="1 1 1"
             ref={(el: Entity) => (this._targetEntity = el)}
-          />
+          >
+            {this._renderBoundingBox()}
+          </a-entity>
         );
       }
       case DisplayMode.SLICES: {
@@ -457,6 +460,7 @@ export class Aleph {
               graphEnabled: ${this.graphEnabled};
             `}
             al-volume={`
+              initialRotation: "180 0 180";
               srcLoaded: ${this.srcLoaded};
               src: ${this.src};
               displayMode: ${this.displayMode};
@@ -471,7 +475,9 @@ export class Aleph {
             `}
             position="0 0 0"
             ref={(el: Entity) => (this._targetEntity = el)}
-          />
+          >
+            {this._renderBoundingBox()}
+          </a-entity>
         );
       }
       // This is seperate from the slice entity as it will store the volume render,
@@ -483,6 +489,7 @@ export class Aleph {
           <a-entity
             id="target-entity"
             al-volume={`
+              initialRotation: "180 0 180";
               srcLoaded: ${this.srcLoaded};
               src: ${this.src};
               displayMode: ${this.displayMode};
@@ -497,7 +504,9 @@ export class Aleph {
             `}
             position="0 0 0"
             ref={(el: Entity) => (this._targetEntity = el)}
-          />
+          >
+            {this._renderBoundingBox()}
+          </a-entity>
         );
       }
       default: {
@@ -826,14 +835,14 @@ export class Aleph {
         id="mainCamera"
         al-cursor="rayOrigin: mouse"
         raycaster="objects: .collidable;"
-        al-orbit-control={`
-          maxPolarAngle: ${Constants.cameraValues.maxPolarAngle};
+        al-control={`
+          o_maxPolarAngle: ${Constants.cameraValues.maxPolarAngle};
           minDistance: ${Constants.cameraValues.minDistance};
-          screenSpacePanning: true;
+          o_screenSpacePanning: true;
           rotateSpeed: ${Constants.cameraValues.rotateSpeed};
           zoomSpeed: ${Constants.cameraValues.zoomSpeed};
-          enableDamping: true;
-          dampingFactor: ${Constants.cameraValues.dampingFactor};
+          o_enableDamping: true;
+          o_dampingFactor: ${Constants.cameraValues.dampingFactor};
           controlTarget: ${ThreeUtils.vector3ToString(
             this.camera ? this.camera.target : new THREE.Vector3(0, 0, 0)
           )};
@@ -843,7 +852,8 @@ export class Aleph {
           enabled: ${this.controlsEnabled};
           animating: ${
             this.camera && this.camera.animating ? this.camera.animating : false
-          }
+          };
+          isTrackballControls: ${false};
         `}
         ref={el => (this._camera = el)}
       />,
@@ -864,7 +874,6 @@ export class Aleph {
         vr-mode-ui="enabled: false"
         ref={el => (this._scene = el)}
       >
-        {this._renderBoundingBox()}
         {this._renderSrc()}
         {this._renderNodes()}
         {this._renderEdges()}
@@ -917,6 +926,9 @@ export class Aleph {
             (dist / 0.001).toFixed(Constants.unitsDecimalPlaces) + this.units
           );
         }
+        default: {
+          return dist.toFixed(Constants.unitsDecimalPlaces) + this.units;
+        }
       }
     } else {
       // if in volume mode, units are always millimeters by default
@@ -928,6 +940,9 @@ export class Aleph {
           );
         }
         case Units.MILLIMETERS: {
+          return dist.toFixed(Constants.unitsDecimalPlaces) + this.units;
+        }
+        default: {
           return dist.toFixed(Constants.unitsDecimalPlaces) + this.units;
         }
       }

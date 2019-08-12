@@ -10,14 +10,7 @@
     <script src="https://unpkg.com/mobx@4.9.4/lib/mobx.umd.js"></script>
     <script src="/assets/aframe-master.js"></script>
     <script src="https://unpkg.com/three@0.102.1/examples/js/controls/OrbitControls.js"></script>
-
-    <!-- Post Processing Scripts -->
-    <script src="https://unpkg.com/three@0.102.1/examples/js/postprocessing/EffectComposer.js"></script>
-    <script src="https://unpkg.com/three@0.102.1/examples/js/postprocessing/RenderPass.js"></script>
-    <script src="https://unpkg.com/three@0.102.1/examples/js/postprocessing/ShaderPass.js"></script>
-    <script src="https://unpkg.com/three@0.102.1/examples/js/shaders/CopyShader.js"></script>
-    <script src="https://unpkg.com/three@0.102.1/examples/js/shaders/HorizontalBlurShader.js"></script>
-    <script src="https://unpkg.com/three@0.102.1/examples/js/shaders/VerticalBlurShader.js"></script>
+    <script src="https://unpkg.com/three@0.102.1/examples/js/controls/TrackballControls.js"></script>
 
     <script src="https://unpkg.com/@ionic/core@4.1.1/dist/ionic.js"></script>
     <script src="/assets/ami.min.js"></script>
@@ -169,12 +162,27 @@
       });
 
       urls = new Map([
-      ["https://nomad-project.co.uk/objects/collection/toy-lion/_toy-lion/toy-lion.gltf", "Lion (GLTF)"],
-        ["https://iiif-3d-manifests.netlify.com/collection/gltf/woody/_woody/assets/woody.gltf", "Fisherman (GLTF)"],
-        ["http://files.blokdust.io/test/bowl-draco.glb", "Bowl (DRACO)"],
-        ["https://ami-test-manifests.netlify.com/collection/dicom/brain/_brain/brain.json", "Brain (DICOM)"],
-        ["https://www.morphosource.org/media/morphosource/dcm_sample/platypus2/dcm_multi_vf300_jpegQ95_16bit_allslices.json", "Platypus (DICOM)"],
-        ["https://www.morphosource.org/media/morphosource/dcm_sample/ptilocercus/dcm_multi_vf300_jpegQ95_16bit_allslices.json", "Tree Shrew (DICOM)"]
+        [
+          'https://nomad-project.co.uk/objects/collection/toy-lion/_toy-lion/toy-lion.gltf',
+          'Lion (GLTF)'
+        ],
+        [
+          'https://iiif-3d-manifests.netlify.com/collection/gltf/woody/_woody/assets/woody.gltf',
+          'Fisherman (GLTF)'
+        ],
+        ['http://files.blokdust.io/test/bowl-draco.glb', 'Bowl (DRACO)'],
+        [
+          'https://ami-test-manifests.netlify.com/collection/dicom/brain/_brain/brain.json',
+          'Brain (DICOM)'
+        ],
+        [
+          'https://www.morphosource.org/media/morphosource/dcm_sample/platypus2/dcm_multi_vf300_jpegQ95_16bit_allslices.json',
+          'Platypus (DICOM)'
+        ],
+        [
+          'https://www.morphosource.org/media/morphosource/dcm_sample/ptilocercus/dcm_multi_vf300_jpegQ95_16bit_allslices.json',
+          'Tree Shrew (DICOM)'
+        ]
       ]);
 
       state = new AlephInspectorState();
@@ -364,13 +372,21 @@
             false
           );
 
-          alControlPanel.addEventListener("unitsChanged", function(e) {
-            alAleph.setUnits(e.detail);
-          }, false);
+          alControlPanel.addEventListener(
+            'unitsChanged',
+            function(e) {
+              alAleph.setUnits(e.detail);
+            },
+            false
+          );
 
-          alControlPanel.addEventListener("volumeStepsChanged", function(e) {
-            alAleph.setVolumeSteps(e.detail);
-          }, false);
+          alControlPanel.addEventListener(
+            'volumeStepsChanged',
+            function(e) {
+              alAleph.setVolumeSteps(e.detail);
+            },
+            false
+          );
 
           alControlPanel.addEventListener(
             'volumeWindowCenterChanged',

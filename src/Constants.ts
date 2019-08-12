@@ -49,7 +49,7 @@ export class Constants {
     near: 0.05,
     far: 10000,
     fov: 45,
-    maxPolarAngle: 360,
+    maxPolarAngle: 179,
     rotateSpeed: 0.5,
     zoomSpeed: 1,
     dampingFactor: 0.25,
