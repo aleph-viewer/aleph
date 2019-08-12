@@ -158,6 +158,7 @@
           this.srcLoaded = false;
           this.nodes = null;
           this.selected = null;
+          this.units = null;
         }
       }
 
@@ -165,7 +166,8 @@
         nodes: mobx.observable,
         selected: mobx.observable,
         src: mobx.observable,
-        srcLoaded: mobx.observable
+        srcLoaded: mobx.observable,
+        units: mobx.observable
       });
 
       urls = new Map([
@@ -210,6 +212,7 @@
               state.nodes = e.detail.nodes;
               state.selected = e.detail.selected;
               state.srcLoaded = e.detail.srcLoaded;
+              state.units = e.detail.units;
             },
             false
           );
