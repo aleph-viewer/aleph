@@ -62,7 +62,7 @@ export default AFRAME.registerComponent("al-bounding-box", {
       .material as THREE.Material;
     bmaterial.opacity = this.data.opactiy;
     bmaterial.transparent = this.data.opacity === 0;
-    bmaterial.depthWrite = this.data.opacity === 0;
+    // bmaterial.depthWrite = this.data.opacity === 0;
 
     state.boundingBox.renderOrder = Constants.topLayerRenderOrder - 5;
     el.setObject3D("mesh", state.boundingBox);

@@ -4,7 +4,6 @@ import { DisplayMode } from "../../enums";
 import { EventUtils, GetUtils } from "../../utils";
 import { VolumetricLoader } from "../../utils/VolumetricLoader";
 import { BaseComponent } from "./BaseComponent";
-
 export class AlVolumeEvents {
   public static LOADED: string = "al-volume-loaded";
   public static ERROR: string = "al-volume-error";
@@ -17,13 +16,14 @@ interface AlVolumeState {
   bufferScenePlaneGeometry: THREE.PlaneGeometry;
   bufferScenePlaneMaterial: THREE.MeshBasicMaterial;
   bufferScenePlaneMesh: THREE.Mesh;
-  bufferSceneTexture: THREE.WebGLRenderTarget;
+  bufferSceneRenderTarget: THREE.WebGLRenderTarget;
   lutHelper: AMI.LutHelper;
   // tslint:disable-next-line: no-any
   stack: any;
-  bufferSceneTextureHeight: number;
-  bufferSceneTextureWidth: number;
+  bufferSceneRenderTargetHeight: number;
+  bufferSceneRenderTargetWidth: number;
   stackhelper: AMI.StackHelper | AMI.VolumeRenderHelper;
+  composer: THREE.EffectComposer;
 }
 
 interface AlVolumeComponent extends BaseComponent {
@@ -62,8 +62,8 @@ export default AFRAME.registerComponent("al-volume", {
 
     this.state = {
       bufferScene: new THREE.Scene(),
-      bufferSceneTextureHeight: this.el.sceneEl.canvas.clientHeight,
-      bufferSceneTextureWidth: this.el.sceneEl.canvas.clientWidth
+      bufferSceneRenderTargetHeight: this.el.sceneEl.canvas.clientHeight,
+      bufferSceneRenderTargetWidth: this.el.sceneEl.canvas.clientWidth
     } as AlVolumeState;
 
     this.bindMethods();
@@ -124,13 +124,44 @@ export default AFRAME.registerComponent("al-volume", {
   },
 
   createBufferTexture(): void {
-    this.state.bufferSceneTexture = new THREE.WebGLRenderTarget(
-      this.state.bufferSceneTextureWidth,
-      this.state.bufferSceneTextureHeight,
+    const state = this.state;
+    const mainScene = this.el.sceneEl.object3D as THREE.Scene;
+
+    state.bufferSceneRenderTarget = new THREE.WebGLRenderTarget(
+      state.bufferSceneRenderTargetWidth,
+      state.bufferSceneRenderTargetHeight,
       { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter }
     );
-    (this.el.sceneEl
-      .object3D as THREE.Scene).background = this.state.bufferSceneTexture.texture;
+
+    state.composer = new THREE.EffectComposer(
+      this.el.sceneEl.renderer,
+      state.bufferSceneRenderTarget
+    );
+
+    // tslint:disable-next-line: no-any
+    const threeAny = THREE as any;
+
+    const effectHBlur = new THREE.ShaderPass(threeAny.HorizontalBlurShader);
+    const effectVBlur = new THREE.ShaderPass(threeAny.VerticalBlurShader);
+    effectHBlur.uniforms.h.value = 2 / (state.bufferSceneRenderTargetWidth / 2);
+    effectVBlur.uniforms.v.value =
+      2 / (state.bufferSceneRenderTargetHeight / 2);
+
+    const renderVolume = new THREE.RenderPass(
+      state.bufferScene,
+      this.el.sceneEl.camera
+    );
+
+    const copyPass = new THREE.ShaderPass(THREE.CopyShader);
+    copyPass.renderToScreen = true;
+
+    state.composer.addPass(renderVolume);
+    // state.composer.addPass(effectHBlur);
+    // state.composer.addPass(effectVBlur);
+    state.composer.addPass(copyPass);
+
+    mainScene.background = state.composer.renderTarget2.texture;
+    // mainScene.background = state.bufferSceneRenderTarget;
   },
 
   onInteraction(_event: CustomEvent): void {
@@ -194,12 +225,14 @@ export default AFRAME.registerComponent("al-volume", {
     const state = this.state as AlVolumeState;
 
     const needsResize =
-      state.bufferSceneTextureWidth !== this.el.sceneEl.canvas.clientWidth ||
-      state.bufferSceneTextureHeight !== this.el.sceneEl.canvas.clientHeight;
+      state.bufferSceneRenderTargetWidth !==
+        this.el.sceneEl.canvas.clientWidth ||
+      state.bufferSceneRenderTargetHeight !==
+        this.el.sceneEl.canvas.clientHeight;
 
     if (needsResize && this.data.displayMode === DisplayMode.VOLUME) {
-      state.bufferSceneTextureWidth = this.el.sceneEl.canvas.clientWidth;
-      state.bufferSceneTextureHeight = this.el.sceneEl.canvas.clientHeight;
+      state.bufferSceneRenderTargetWidth = this.el.sceneEl.canvas.clientWidth;
+      state.bufferSceneRenderTargetHeight = this.el.sceneEl.canvas.clientHeight;
 
       this.createBufferTexture();
       this.renderBufferScene();
@@ -213,6 +246,8 @@ export default AFRAME.registerComponent("al-volume", {
         this.el.sceneEl.camera,
         this.state.bufferSceneTexture
       );
+
+      this.state.composer.render(1);
     }
   },
 
