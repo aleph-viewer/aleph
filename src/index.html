@@ -10,6 +10,15 @@
     <script src="https://unpkg.com/mobx@4.9.4/lib/mobx.umd.js"></script>
     <script src="/assets/aframe-master.js"></script>
     <script src="https://unpkg.com/three@0.102.1/examples/js/controls/OrbitControls.js"></script>
+
+    <!-- Post Processing Scripts -->
+    <script src="https://unpkg.com/three@0.102.1/examples/js/postprocessing/EffectComposer.js"></script>
+    <script src="https://unpkg.com/three@0.102.1/examples/js/postprocessing/RenderPass.js"></script>
+    <script src="https://unpkg.com/three@0.102.1/examples/js/postprocessing/ShaderPass.js"></script>
+    <script src="https://unpkg.com/three@0.102.1/examples/js/shaders/CopyShader.js"></script>
+    <script src="https://unpkg.com/three@0.102.1/examples/js/shaders/HorizontalBlurShader.js"></script>
+    <script src="https://unpkg.com/three@0.102.1/examples/js/shaders/VerticalBlurShader.js"></script>
+
     <script src="https://unpkg.com/@ionic/core@4.1.1/dist/ionic.js"></script>
     <script src="/assets/ami.min.js"></script>
     <script src="/build/aleph.js"></script>
@@ -80,9 +89,7 @@
   </head>
   <body>
     <div id="container">
-
       <div id="debug" class="disabled">
-
         <h1>ℵ</h1>
 
         <ion-app>
@@ -106,8 +113,7 @@
             </ion-tab>
             <ion-tab tab="graph">
               <al-node-list></al-node-list>
-              <ion-item-divider>
-              </ion-item-divider>
+              <ion-item-divider> </ion-item-divider>
               <al-node-editor></al-node-editor>
               <al-edge-editor></al-edge-editor>
               <al-angle-editor></al-angle-editor>
@@ -129,12 +135,22 @@
           height="100%"
         ></uv-aleph>
       </div>
-
     </div>
 
     <script>
-
-      let state, lastState, urls, container, debug, alAleph, alUrlPicker, alNodeList, alConsole, alNodeEditor, alEdgeEditor, alAngleEditor, alControlPanel;
+      let state,
+        lastState,
+        urls,
+        container,
+        debug,
+        alAleph,
+        alUrlPicker,
+        alNodeList,
+        alConsole,
+        alNodeEditor,
+        alEdgeEditor,
+        alAngleEditor,
+        alControlPanel;
 
       class AlephInspectorState {
         constructor() {
@@ -165,26 +181,26 @@
       lastState = {};
 
       function init() {
-        container = document.getElementById("container");
-        debug = document.getElementById("debug");
-        alAleph = document.querySelector("uv-aleph");
-        alUrlPicker = document.querySelector("al-url-picker");
-        alConsole = document.querySelector("al-console");
-        alNodeList = document.querySelector("al-node-list");
-        alNodeEditor = document.querySelector("al-node-editor");
-        alEdgeEditor = document.querySelector("al-edge-editor");
-        alAngleEditor = document.querySelector("al-angle-editor");
-        alControlPanel = document.querySelector("al-control-panel");
-        loadSrcButton = document.getElementById("load-src-button");
-        nodesTextArea = document.getElementById("nodes-textarea");
-        loadNodesButton = document.getElementById("load-nodes-button");
+        container = document.getElementById('container');
+        debug = document.getElementById('debug');
+        alAleph = document.querySelector('uv-aleph');
+        alUrlPicker = document.querySelector('al-url-picker');
+        alConsole = document.querySelector('al-console');
+        alNodeList = document.querySelector('al-node-list');
+        alNodeEditor = document.querySelector('al-node-editor');
+        alEdgeEditor = document.querySelector('al-edge-editor');
+        alAngleEditor = document.querySelector('al-angle-editor');
+        alControlPanel = document.querySelector('al-control-panel');
+        loadSrcButton = document.getElementById('load-src-button');
+        nodesTextArea = document.getElementById('nodes-textarea');
+        loadNodesButton = document.getElementById('load-nodes-button');
 
         alAleph.componentOnReady().then(function() {
           //component.setDisplayMode("slices");
           state.src = Array.from(urls)[0][0]; // load src when component ready
 
           alAleph.addEventListener(
-            "changed",
+            'changed',
             function(e) {
               state.angles = e.detail.angles;
               state.boundingBoxEnabled = e.detail.boundingBoxEnabled;
@@ -199,28 +215,31 @@
           );
 
           alAleph.addEventListener(
-            "loaded",
+            'loaded',
             function(ev) {
-              if (state.displayMode !== "mesh") {
+              if (state.displayMode !== 'mesh') {
                 alControlPanel.stackhelper = ev.detail;
               }
             },
             false
           );
-
         });
 
         alUrlPicker.componentOnReady().then(function() {
-          alUrlPicker.addEventListener("urlChanged", function(e) {
-            state.src = e.detail;
-          }, false);
+          alUrlPicker.addEventListener(
+            'urlChanged',
+            function(e) {
+              state.src = e.detail;
+            },
+            false
+          );
 
           alUrlPicker.urls = urls;
         });
 
         alNodeList.componentOnReady().then(function() {
           alNodeList.addEventListener(
-            "selectedChanged",
+            'selectedChanged',
             function(e) {
               alAleph.selectNode(e.detail);
             },
@@ -230,7 +249,7 @@
 
         alNodeEditor.componentOnReady().then(function() {
           alNodeEditor.addEventListener(
-            "delete",
+            'delete',
             function(e) {
               alAleph.deleteNode(e.detail);
             },
@@ -238,7 +257,7 @@
           );
 
           alNodeEditor.addEventListener(
-            "save",
+            'save',
             function(e) {
               alAleph.setNode(e.detail);
             },
@@ -248,7 +267,7 @@
 
         alEdgeEditor.componentOnReady().then(function() {
           alEdgeEditor.addEventListener(
-            "delete",
+            'delete',
             function(e) {
               alAleph.deleteEdge(e.detail);
             },
@@ -258,7 +277,7 @@
 
         alAngleEditor.componentOnReady().then(function() {
           alAngleEditor.addEventListener(
-            "delete",
+            'delete',
             function(e) {
               alAleph.deleteAngle(e.detail);
             },
@@ -268,7 +287,7 @@
 
         alConsole.componentOnReady().then(function() {
           alConsole.addEventListener(
-            "command",
+            'command',
             function(e) {
               const graph = JSON.parse(alConsole.cmd);
               if (graph) {
@@ -281,39 +300,71 @@
         });
 
         alControlPanel.componentOnReady().then(function() {
+          alControlPanel.addEventListener(
+            'boundingBoxEnabledChanged',
+            function(e) {
+              alAleph.setBoundingBoxEnabled(e.detail);
+            },
+            false
+          );
 
-          alControlPanel.addEventListener("boundingBoxEnabledChanged", function(e) {
-            alAleph.setBoundingBoxEnabled(e.detail);
-          }, false);
+          alControlPanel.addEventListener(
+            'displayModeChanged',
+            function(e) {
+              alAleph.setDisplayMode(e.detail);
+            },
+            false
+          );
 
-          alControlPanel.addEventListener("displayModeChanged", function(e) {
-            alAleph.setDisplayMode(e.detail);
-          }, false);
+          alControlPanel.addEventListener(
+            'graphEnabledChanged',
+            function(e) {
+              alAleph.setGraphEnabled(e.detail);
+            },
+            false
+          );
 
-          alControlPanel.addEventListener("graphEnabledChanged", function(e) {
-            alAleph.setGraphEnabled(e.detail);
-          }, false);
+          alControlPanel.addEventListener(
+            'orientationChanged',
+            function(e) {
+              alAleph.setOrientation(e.detail);
+            },
+            false
+          );
 
-          alControlPanel.addEventListener("orientationChanged", function(e) {
-            alAleph.setOrientation(e.detail);
-          }, false);
+          alControlPanel.addEventListener(
+            'recenter',
+            function(e) {
+              alAleph.recenter();
+            },
+            false
+          );
 
-          alControlPanel.addEventListener("recenter", function(e) {
-            alAleph.recenter();
-          }, false);
+          alControlPanel.addEventListener(
+            'slicesIndexChanged',
+            function(e) {
+              alAleph.setSlicesIndex(e.detail);
+            },
+            false
+          );
 
-          alControlPanel.addEventListener("slicesIndexChanged", function(e) {
-            alAleph.setSlicesIndex(e.detail);
-          }, false);
+          alControlPanel.addEventListener(
+            'slicesWindowCenterChanged',
+            function(e) {
+              alAleph.setSlicesWindowCenter(e.detail);
+            },
+            false
+          );
 
-          alControlPanel.addEventListener("slicesWindowCenterChanged", function(e) {
-            alAleph.setSlicesWindowCenter(e.detail);
-          }, false);
+          alControlPanel.addEventListener(
+            'slicesWindowWidthChanged',
+            function(e) {
+              alAleph.setSlicesWindowWidth(e.detail);
+            },
+            false
+          );
 
-          alControlPanel.addEventListener("slicesWindowWidthChanged", function(e) {
-            alAleph.setSlicesWindowWidth(e.detail);
-          }, false);
-
+<<<<<<< HEAD
           alControlPanel.addEventListener("unitsChanged", function(e) {
             alAleph.setUnits(e.detail);
           }, false);
@@ -321,14 +372,31 @@
           alControlPanel.addEventListener("volumeStepsChanged", function(e) {
             alAleph.setVolumeSteps(e.detail);
           }, false);
+=======
+          alControlPanel.addEventListener(
+            'volumeStepsChanged',
+            function(e) {
+              alAleph.setVolumeSteps(e.detail);
+            },
+            false
+          );
+>>>>>>> e76d8a742a83a7171e17237fb5688b9209d91091
 
-          alControlPanel.addEventListener("volumeWindowCenterChanged", function(e) {
-            alAleph.setVolumeWindowCenter(e.detail);
-          }, false);
+          alControlPanel.addEventListener(
+            'volumeWindowCenterChanged',
+            function(e) {
+              alAleph.setVolumeWindowCenter(e.detail);
+            },
+            false
+          );
 
-          alControlPanel.addEventListener("volumeWindowWidthChanged", function(e) {
-            alAleph.setVolumeWindowWidth(e.detail);
-          }, false);
+          alControlPanel.addEventListener(
+            'volumeWindowWidthChanged',
+            function(e) {
+              alAleph.setVolumeWindowWidth(e.detail);
+            },
+            false
+          );
         });
 
         mobx.autorun(() => {
@@ -337,7 +405,6 @@
       }
 
       function render() {
-
         if (state.src && state.src !== lastState.src) {
           alAleph.load(state.src);
         }
@@ -347,9 +414,9 @@
         }
 
         if (!state.srcLoaded) {
-          debug.classList.add("disabled");
+          debug.classList.add('disabled');
         } else {
-          debug.classList.remove("disabled");
+          debug.classList.remove('disabled');
         }
 
         // if (state.srcLoaded) {
@@ -376,18 +443,17 @@
       }
 
       function getGraphJson() {
-
         if (state.nodes && state.edges && state.angles) {
           var graph = {
             nodes: Array.from(state.nodes),
             edges: Array.from(state.edges),
             angles: Array.from(state.angles)
-          }
+          };
 
           return JSON.stringify(graph);
         }
 
-        return "";
+        return '';
       }
 
       function getSelectedNode() {
@@ -420,23 +486,22 @@
         return null;
       }
 
-      document.addEventListener("DOMContentLoaded", function(event) {
+      document.addEventListener('DOMContentLoaded', function(event) {
         init();
         resize();
       });
 
       function resize() {
-        container.style.height = window.innerHeight + "px";
+        container.style.height = window.innerHeight + 'px';
         if (alAleph.resize) {
           // scene will resize internally as it listens to window.onresize. however, it's useful to be able to force a resize if the window.onresize event isn't fired
           alAleph.resize();
         }
       }
 
-      window.addEventListener("resize", function() {
+      window.addEventListener('resize', function() {
         resize();
       });
-
     </script>
   </body>
 </html>
