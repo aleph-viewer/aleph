@@ -1,5 +1,6 @@
 import {
   Component,
+  h,
   Element,
   Event,
   EventEmitter,

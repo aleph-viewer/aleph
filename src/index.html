@@ -13,7 +13,8 @@
 
     <script src="https://unpkg.com/@ionic/core@4.1.1/dist/ionic.js"></script>
     <script src="/assets/ami.min.js"></script>
-    <script src="/build/aleph.js"></script>
+    <script type="module" src="/build/aleph.esm.js"></script>
+    <script nomodule src="/build/aleph.js"></script>
 
     <link rel="stylesheet" href="/build/aleph.css" />
     <style>
@@ -284,7 +285,7 @@
 
         alConsole.componentOnReady().then(function() {
           alConsole.addEventListener(
-            'command',
+            'runCommand',
             function(e) {
               const graph = JSON.parse(alConsole.cmd);
               if (graph) {

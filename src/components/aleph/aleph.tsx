@@ -2,12 +2,14 @@
 import { KeyDown } from "@edsilv/key-codes";
 import {
   Component,
+  h,
   Event,
   EventEmitter,
   Method,
   Prop,
   State
 } from "@stencil/core";
+import "@stencil/redux";
 import { Action, Store } from "@stencil/redux";
 import "../../aframe";
 import {

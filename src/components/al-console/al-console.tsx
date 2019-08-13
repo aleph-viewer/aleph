@@ -1,4 +1,4 @@
-import { Component, Event, EventEmitter, Prop } from "@stencil/core";
+import { Component, h, Event, EventEmitter, Prop } from "@stencil/core";
 
 @Component({
   tag: "al-console",
@@ -8,7 +8,7 @@ import { Component, Event, EventEmitter, Prop } from "@stencil/core";
 export class AlConsole {
   private _cmd: HTMLTextAreaElement;
 
-  @Event() public command: EventEmitter;
+  @Event() public runCommand: EventEmitter;
 
   @Prop({ mutable: true }) public cmd: string;
 
@@ -29,7 +29,7 @@ export class AlConsole {
           type="submit"
           onClick={() => {
             if (this.cmd) {
-              this.command.emit(this._cmd.value);
+              this.runCommand.emit(this._cmd.value);
             }
           }}
         >

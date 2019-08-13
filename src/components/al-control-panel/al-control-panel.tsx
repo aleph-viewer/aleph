@@ -1,4 +1,4 @@
-import { Component, Event, EventEmitter, Prop, Watch } from "@stencil/core";
+import { Component, h, Event, EventEmitter, Prop, Watch } from "@stencil/core";
 import { Constants } from "../../Constants";
 import { DisplayMode } from "../../enums/DisplayMode";
 import { Orientation } from "../../enums/Orientation";
