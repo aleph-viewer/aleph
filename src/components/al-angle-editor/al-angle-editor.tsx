@@ -1,4 +1,4 @@
-import { Component, h, Event, EventEmitter, Prop } from "@stencil/core";
+import { Component, Event, EventEmitter, h, Prop } from "@stencil/core";
 import { AlAngle } from "../../interfaces";
 
 @Component({

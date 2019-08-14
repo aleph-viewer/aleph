@@ -2,7 +2,6 @@
 import { KeyDown } from "@edsilv/key-codes";
 import {
   Component,
-  h,
   Event,
   EventEmitter,
   h,
@@ -518,17 +517,18 @@ export class Aleph {
       const meshGeom = this._getMesh().geometry;
       let position: THREE.Vector3;
 
+      let opacity;
+      if (this.boundingBoxEnabled) {
+        opacity = 1;
+      } else {
+        opacity = 0;
+      }
+
       if (this.displayMode === DisplayMode.VOLUME) {
-        let opacity;
         position = this._targetEntity.object3D.position
           .clone()
           .add(GetUtils.getGeometryCenter(meshGeom));
 
-        if (this.boundingBoxEnabled) {
-          opacity = 1;
-        } else {
-          opacity = 0;
-        }
         return (
           <a-entity
             position={ThreeUtils.vector3ToString(position)}
@@ -544,7 +544,7 @@ export class Aleph {
             ref={el => (this._boundingEntity = el)}
           />
         );
-      } else if (this.boundingBoxEnabled) {
+      } else {
         switch (this.displayMode) {
           case DisplayMode.MESH: {
             if (!this._hasAligned) {
@@ -578,7 +578,7 @@ export class Aleph {
             al-bounding-box={`
                 scale: ${ThreeUtils.vector3ToString(size)};
                 color: ${Constants.colorValues.red};
-                opacity: 1;
+                opacity: ${opacity};
               `}
             ref={el => (this._boundingEntity = el)}
           />
