@@ -1,8 +1,18 @@
-import { Component, h, Event, EventEmitter, Prop, Watch } from "@stencil/core";
+import {
+  Component,
+  h,
+  Element,
+  Event,
+  EventEmitter,
+  Prop,
+  Watch
+} from "@stencil/core";
 import { Constants } from "../../Constants";
 import { DisplayMode } from "../../enums/DisplayMode";
 import { Orientation } from "../../enums/Orientation";
 import { Units } from "../../enums/Units";
+import { ContentStrings } from "./ContentStrings";
+import { getLocaleComponentStrings } from "../../utils/Locale";
 
 @Component({
   tag: "al-control-panel",
@@ -11,6 +21,9 @@ import { Units } from "../../enums/Units";
 })
 export class AlControlPanel {
   private _lastStackOrientationIndex: number;
+
+  @Element() element: HTMLElement;
+  contentStrings: ContentStrings;
 
   @Event() public boundingBoxEnabledChanged: EventEmitter;
   @Event() public displayModeChanged: EventEmitter;
@@ -49,6 +62,10 @@ export class AlControlPanel {
   @Prop({ mutable: true }) public volumeSteps: number;
   @Prop({ mutable: true }) public volumeWindowCenter: number;
   @Prop({ mutable: true }) public volumeWindowWidth: number;
+
+  async componentWillLoad(): Promise<void> {
+    this.contentStrings = await getLocaleComponentStrings(this.element);
+  }
 
   private _boundingBoxEnabled(enabled: boolean) {
     this.boundingBoxEnabled = enabled;
@@ -125,13 +142,13 @@ export class AlControlPanel {
               selected={this.displayMode === DisplayMode.SLICES}
               value={DisplayMode.SLICES}
             >
-              Slices
+              {this.contentStrings.slices}
             </option>
             <option
               selected={this.displayMode === DisplayMode.VOLUME}
               value={DisplayMode.VOLUME}
             >
-              Volume
+              {this.contentStrings.volume}
             </option>
           </select>
         </ion-item>
@@ -190,7 +207,7 @@ export class AlControlPanel {
             this.recenter.emit();
           }}
         >
-          Recenter
+          {this.contentStrings.recenter}
         </ion-button>
       </ion-item>
     );
@@ -211,13 +228,13 @@ export class AlControlPanel {
           }
         >
           <option selected={this.units === Units.METERS} value={Units.METERS}>
-            Meters
+            {this.contentStrings.meters}
           </option>
           <option
             selected={this.units === Units.MILLIMETERS}
             value={Units.MILLIMETERS}
           >
-            Millimeters
+            {this.contentStrings.millimeters}
           </option>
         </select>
       </ion-item>
@@ -361,19 +378,19 @@ export class AlControlPanel {
                   selected={this.orientation === Orientation.CORONAL}
                   value={Orientation.CORONAL}
                 >
-                  Coronal
+                  {this.contentStrings.coronal}
                 </option>
                 <option
                   selected={this.orientation === Orientation.SAGGITAL}
                   value={Orientation.SAGGITAL}
                 >
-                  Saggital
+                  {this.contentStrings.saggital}
                 </option>
                 <option
                   selected={this.orientation === Orientation.AXIAL}
                   value={Orientation.AXIAL}
                 >
-                  Axial
+                  {this.contentStrings.axial}
                 </option>
               </select>
             </ion-item>

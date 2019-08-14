@@ -24,7 +24,7 @@ export class AlEdgeEditor {
               this.edge = null;
             }}
           >
-            <ion-icon name="remove" />
+            <ion-icon src="/assets/svg/minus.svg" />
           </ion-button>
         </form>
       );
