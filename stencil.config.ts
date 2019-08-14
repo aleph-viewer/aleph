@@ -8,7 +8,7 @@ export const config: Config = {
       esmLoaderPath: '../loader'
     },
     {
-      type: 'docs-readme'
+      type: 'docs'
     },
     {
       type: 'www',

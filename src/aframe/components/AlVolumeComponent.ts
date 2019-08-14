@@ -1,7 +1,7 @@
-import { AlOrbitControlEvents } from "..";
 import { Constants } from "../../Constants";
 import { DisplayMode } from "../../enums";
 import { EventUtils } from "../../utils";
+import { AlControlEvents } from "../../utils/AlControlEvents";
 import { VolumetricLoader } from "../../utils/VolumetricLoader";
 import { BaseComponent } from "./BaseComponent";
 
@@ -92,13 +92,13 @@ export default AFRAME.registerComponent("al-volume", {
     );
 
     this.el.sceneEl.addEventListener(
-      AlOrbitControlEvents.INTERACTION,
+      AlControlEvents.INTERACTION,
       this.onInteraction,
       false
     );
 
     this.el.sceneEl.addEventListener(
-      AlOrbitControlEvents.INTERACTION_FINISHED,
+      AlControlEvents.INTERACTION_FINISHED,
       this.onInteractionFinished,
       false
     );
@@ -108,12 +108,12 @@ export default AFRAME.registerComponent("al-volume", {
     this.el.sceneEl.removeEventListener("rendererresize", this.rendererResize);
 
     this.el.sceneEl.removeEventListener(
-      AlOrbitControlEvents.INTERACTION,
+      AlControlEvents.INTERACTION,
       this.onInteraction
     );
 
     this.el.sceneEl.removeEventListener(
-      AlOrbitControlEvents.INTERACTION_FINISHED,
+      AlControlEvents.INTERACTION_FINISHED,
       this.onInteractionFinished
     );
   },

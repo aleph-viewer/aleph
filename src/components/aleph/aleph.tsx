@@ -4,7 +4,6 @@ import {
   Component,
   Event,
   EventEmitter,
-  h,
   Method,
   Prop,
   State
@@ -12,11 +11,7 @@ import {
 import "@stencil/redux";
 import { Action, Store } from "@stencil/redux";
 import "../../aframe";
-import {
-  AlGltfModelEvents,
-  AlNodeSpawnerEvents,
-  AlOrbitControlEvents
-} from "../../aframe";
+import { AlGltfModelEvents } from "../../aframe";
 import { AlVolumeEvents } from "../../aframe/components/AlVolumeComponent";
 import { Constants } from "../../Constants";
 import { DisplayMode, Orientation } from "../../enums";
@@ -25,17 +20,6 @@ import { Units } from "../../enums/Units";
 import { AlAngle, AlCamera, AlEdge, AlNode } from "../../interfaces";
 import { AlGraph } from "../../interfaces/AlGraph";
 import {
-  appClearAngles,
-  appClearEdges,
-  appClearNodes,
-  appDeleteAngle,
-  appDeleteEdge,
-  appDeleteNode,
-  appSelectAngle,
-  appSelectEdge,
-  appSelectNode,
-  appSetAngle,
-  appSetBoundingBoxEnabled,
   appSetCamera,
   appSetControlsEnabled,
   appSetDisplayMode,
@@ -62,6 +46,7 @@ import {
   GraphUtils,
   ThreeUtils
 } from "../../utils";
+import { AlControlEvents } from "../../utils/AlControlEvents";
 
 type Entity = import("aframe").Entity;
 type Scene = import("aframe").Scene;
@@ -150,7 +135,9 @@ export class Aleph {
   //#endregion
 
   // Tentative fix for repeated alignment issues
-  private hasAligned: boolean = false;
+  private _hasAligned: boolean = false;
+  // Is the control scheme in trackball mode?
+  private _isTrackball: boolean = false;
 
   //#region general methods
 
@@ -547,7 +534,7 @@ export class Aleph {
       } else if (this.boundingBoxEnabled) {
         switch (this.displayMode) {
           case DisplayMode.MESH: {
-            if (!this.hasAligned) {
+            if (!this._hasAligned) {
               if (this._boundingBox.intersectsBox(meshGeom.boundingBox)) {
                 // Check if mesh intersects bounding box; if it does apply the offset
                 const offset = meshGeom.boundingSphere.center.clone();
@@ -557,7 +544,7 @@ export class Aleph {
               } else {
                 position = this._targetEntity.object3D.position.clone();
               }
-              this.hasAligned = true;
+              this._hasAligned = true;
             }
             break;
           }
@@ -824,8 +811,9 @@ export class Aleph {
     ];
   }
 
-  private _renderCamera() {
-    return [
+  // tslint:disable-next-line: no-any
+  private _orbitCamera(): any {
+    return (
       <a-camera
         fov={Constants.cameraValues.fov}
         near={Constants.cameraValues.near}
@@ -854,7 +842,44 @@ export class Aleph {
           }
         `}
         ref={el => (this._camera = el)}
-      />,
+      />
+    );
+  }
+
+  // tslint:disable-next-line: no-any
+  private _trackballCamera(): any {
+    return (
+      <a-camera
+        fov={Constants.cameraValues.fov}
+        near={Constants.cameraValues.near}
+        look-controls="enabled: false"
+        far={Constants.cameraValues.far}
+        id="mainCamera"
+        al-cursor="rayOrigin: mouse"
+        raycaster="objects: .collidable;"
+        al-trackball-control={`
+          rotateSpeed: ${Constants.cameraValues.rotateSpeed};
+          zoomSpeed: ${Constants.cameraValues.zoomSpeed};
+          dynamicDampingFactor: ${Constants.cameraValues.dampingFactor};
+          controlTarget: ${ThreeUtils.vector3ToString(
+            this.camera ? this.camera.target : new THREE.Vector3(0, 0, 0)
+          )};
+          controlPosition: ${ThreeUtils.vector3ToString(
+            this.camera ? this.camera.position : new THREE.Vector3(0, 0, 0)
+          )};
+          enabled: ${this.controlsEnabled};
+          animating: ${
+            this.camera && this.camera.animating ? this.camera.animating : false
+          }
+        `}
+        ref={el => (this._camera = el)}
+      />
+    );
+  }
+
+  private _renderCamera() {
+    return [
+      this._isTrackball ? this._trackballCamera() : this._orbitCamera(),
       this._renderLights()
     ];
   }
@@ -925,6 +950,9 @@ export class Aleph {
             (dist / 0.001).toFixed(Constants.unitsDecimalPlaces) + this.units
           );
         }
+        default: {
+          break;
+        }
       }
     } else {
       // if in volume mode, units are always millimeters by default
@@ -937,6 +965,9 @@ export class Aleph {
         }
         case Units.MILLIMETERS: {
           return dist.toFixed(Constants.unitsDecimalPlaces) + this.units;
+        }
+        default: {
+          break;
         }
       }
     }
@@ -1077,7 +1108,7 @@ export class Aleph {
         );
 
         this._scene.emit(
-          AlOrbitControlEvents.ANIMATION_STARTED,
+          AlControlEvents.ANIMATION_STARTED,
           { slerpPath },
           false
         );
@@ -1541,19 +1572,19 @@ export class Aleph {
     window.addEventListener("keyup", this._keyUpHandler, false);
 
     this._scene.addEventListener(
-      AlOrbitControlEvents.ANIMATION_FINISHED,
+      AlControlEvents.ANIMATION_FINISHED,
       this._controlsAnimationFinishedHandler,
       false
     );
 
     this._scene.addEventListener(
-      AlOrbitControlEvents.INTERACTION, // todo: make this a more generic event
+      AlControlEvents.INTERACTION, // todo: make this a more generic event
       this._controlsInteractionHandler,
       false
     );
 
     this._scene.addEventListener(
-      AlOrbitControlEvents.INTERACTION_FINISHED, // todo: make this a more generic event
+      AlControlEvents.INTERACTION_FINISHED, // todo: make this a more generic event
       this._controlsInteractionFinishedHandler,
       false
     );

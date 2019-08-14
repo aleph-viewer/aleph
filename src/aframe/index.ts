@@ -11,14 +11,8 @@ import { AlNodeEvents } from "./components/AlNodeComponent";
 import "./components/AlNodeSpawnerComponent";
 import { AlNodeSpawnerEvents } from "./components/AlNodeSpawnerComponent";
 import "./components/AlOrbitControlComponent";
-import { AlOrbitControlEvents } from "./components/AlOrbitControlComponent";
 import "./components/AlRenderOrderComponent";
 import "./components/AlRenderOverlaidComponent";
 import "./components/AlVolumeComponent";
 
-export {
-  AlGltfModelEvents,
-  AlNodeEvents,
-  AlNodeSpawnerEvents,
-  AlOrbitControlEvents
-};
+export { AlGltfModelEvents, AlNodeEvents, AlNodeSpawnerEvents };
