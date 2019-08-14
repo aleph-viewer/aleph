@@ -147,7 +147,7 @@ export class Aleph {
   //#endregion
 
   // Is the control scheme in trackball mode?
-  private _isTrackball: boolean = true;
+  private _isTrackball: boolean = false;
 
   //#region general methods
 
