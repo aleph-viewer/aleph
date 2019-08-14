@@ -5,9 +5,7 @@
  */
 
 
-import '@stencil/core';
-
-import '@stencil/redux';
+import { HTMLStencilElement, JSXBase } from '@stencil/core/internal';
 import {
   AlAngle,
   AlEdge,
@@ -23,32 +21,20 @@ import {
   Units,
 } from './enums/Units';
 import {
-  DisplayMode as DisplayMode2,
-  Orientation as Orientation2,
+  DisplayMode as DisplayMode1,
+  Orientation as Orientation1,
 } from './enums';
 import {
   AlGraph,
 } from './interfaces/AlGraph';
 
-
 export namespace Components {
-
   interface AlAngleEditor {
     'angle': [string, AlAngle];
   }
-  interface AlAngleEditorAttributes extends StencilHTMLAttributes {
-    'angle'?: [string, AlAngle];
-    'onDelete'?: (event: CustomEvent) => void;
-  }
-
   interface AlConsole {
     'cmd': string;
   }
-  interface AlConsoleAttributes extends StencilHTMLAttributes {
-    'cmd'?: string;
-    'onRunCommand'?: (event: CustomEvent) => void;
-  }
-
   interface AlControlPanel {
     'boundingBoxEnabled': boolean;
     'displayMode': DisplayMode;
@@ -57,68 +43,23 @@ export namespace Components {
     'slicesIndex': number;
     'slicesWindowCenter': number;
     'slicesWindowWidth': number;
-    'stackhelper': AMI.StackHelper
+    'stackhelper': | AMI.StackHelper
     | AMI.VolumeRenderHelper;
     'units': Units;
     'volumeSteps': number;
     'volumeWindowCenter': number;
     'volumeWindowWidth': number;
   }
-  interface AlControlPanelAttributes extends StencilHTMLAttributes {
-    'boundingBoxEnabled'?: boolean;
-    'displayMode'?: DisplayMode;
-    'graphEnabled'?: boolean;
-    'onBoundingBoxEnabledChanged'?: (event: CustomEvent) => void;
-    'onDisplayModeChanged'?: (event: CustomEvent) => void;
-    'onGraphEnabledChanged'?: (event: CustomEvent) => void;
-    'onOrientationChanged'?: (event: CustomEvent) => void;
-    'onRecenter'?: (event: CustomEvent) => void;
-    'onSlicesIndexChanged'?: (event: CustomEvent) => void;
-    'onSlicesWindowCenterChanged'?: (event: CustomEvent) => void;
-    'onSlicesWindowWidthChanged'?: (event: CustomEvent) => void;
-    'onUnitsChanged'?: (event: CustomEvent) => void;
-    'onVolumeStepsChanged'?: (event: CustomEvent) => void;
-    'onVolumeWindowCenterChanged'?: (event: CustomEvent) => void;
-    'onVolumeWindowWidthChanged'?: (event: CustomEvent) => void;
-    'orientation'?: Orientation;
-    'slicesIndex'?: number;
-    'slicesWindowCenter'?: number;
-    'slicesWindowWidth'?: number;
-    'stackhelper'?: AMI.StackHelper
-    | AMI.VolumeRenderHelper;
-    'units'?: Units;
-    'volumeSteps'?: number;
-    'volumeWindowCenter'?: number;
-    'volumeWindowWidth'?: number;
-  }
-
   interface AlEdgeEditor {
     'edge': [string, AlEdge];
   }
-  interface AlEdgeEditorAttributes extends StencilHTMLAttributes {
-    'edge'?: [string, AlEdge];
-    'onDelete'?: (event: CustomEvent) => void;
-  }
-
   interface AlNodeEditor {
     'node': [string, AlNode];
   }
-  interface AlNodeEditorAttributes extends StencilHTMLAttributes {
-    'node'?: [string, AlNode];
-    'onDelete'?: (event: CustomEvent) => void;
-    'onSave'?: (event: CustomEvent) => void;
-  }
-
   interface AlNodeList {
     'nodes': Map<string, AlNode> | null;
     'selected': string | null;
   }
-  interface AlNodeListAttributes extends StencilHTMLAttributes {
-    'nodes'?: Map<string, AlNode> | null;
-    'onSelectedChanged'?: (event: CustomEvent) => void;
-    'selected'?: string | null;
-  }
-
   interface AlTabs {
     /**
     * Get the currently selected tab
@@ -133,31 +74,10 @@ export namespace Components {
     */
     'select': (tab: any) => Promise<boolean>;
   }
-  interface AlTabsAttributes extends StencilHTMLAttributes {
-    /**
-    * Emitted when the navigation has finished transitioning to a new component.
-    */
-    'onIonTabsDidChange'?: (event: CustomEvent<{
-      tab: string;
-    }>) => void;
-    /**
-    * Emitted when the navigation is about to transition to a new component.
-    */
-    'onIonTabsWillChange'?: (event: CustomEvent<{
-      tab: string;
-    }>) => void;
-  }
-
   interface AlUrlPicker {
     'url': string | null;
     'urls': Map<string, string> | null;
   }
-  interface AlUrlPickerAttributes extends StencilHTMLAttributes {
-    'onUrlChanged'?: (event: CustomEvent) => void;
-    'url'?: string | null;
-    'urls'?: Map<string, string> | null;
-  }
-
   interface UvAleph {
     'clearGraph': () => Promise<void>;
     'deleteAngle': (angleId: string) => Promise<void>;
@@ -188,45 +108,9 @@ export namespace Components {
     'setVolumeWindowWidth': (width: number) => Promise<void>;
     'width': string;
   }
-  interface UvAlephAttributes extends StencilHTMLAttributes {
-    'dracoDecoderPath'?: string | null;
-    'height'?: string;
-    /**
-    * Fires whenever the internal state changes passing an object describing the state.
-    */
-    'onChanged'?: (event: CustomEvent) => void;
-    /**
-    * Fires when an object is loaded passing either the object or a stackhelper for volumetric data.
-    */
-    'onLoaded'?: (event: CustomEvent) => void;
-    'width'?: string;
-  }
 }
 
 declare global {
-  interface StencilElementInterfaces {
-    'AlAngleEditor': Components.AlAngleEditor;
-    'AlConsole': Components.AlConsole;
-    'AlControlPanel': Components.AlControlPanel;
-    'AlEdgeEditor': Components.AlEdgeEditor;
-    'AlNodeEditor': Components.AlNodeEditor;
-    'AlNodeList': Components.AlNodeList;
-    'AlTabs': Components.AlTabs;
-    'AlUrlPicker': Components.AlUrlPicker;
-    'UvAleph': Components.UvAleph;
-  }
-
-  interface StencilIntrinsicElements {
-    'al-angle-editor': Components.AlAngleEditorAttributes;
-    'al-console': Components.AlConsoleAttributes;
-    'al-control-panel': Components.AlControlPanelAttributes;
-    'al-edge-editor': Components.AlEdgeEditorAttributes;
-    'al-node-editor': Components.AlNodeEditorAttributes;
-    'al-node-list': Components.AlNodeListAttributes;
-    'al-tabs': Components.AlTabsAttributes;
-    'al-url-picker': Components.AlUrlPickerAttributes;
-    'uv-aleph': Components.UvAlephAttributes;
-  }
 
 
   interface HTMLAlAngleEditorElement extends Components.AlAngleEditor, HTMLStencilElement {}
@@ -282,20 +166,7 @@ declare global {
     prototype: HTMLUvAlephElement;
     new (): HTMLUvAlephElement;
   };
-
   interface HTMLElementTagNameMap {
-    'al-angle-editor': HTMLAlAngleEditorElement
-    'al-console': HTMLAlConsoleElement
-    'al-control-panel': HTMLAlControlPanelElement
-    'al-edge-editor': HTMLAlEdgeEditorElement
-    'al-node-editor': HTMLAlNodeEditorElement
-    'al-node-list': HTMLAlNodeListElement
-    'al-tabs': HTMLAlTabsElement
-    'al-url-picker': HTMLAlUrlPickerElement
-    'uv-aleph': HTMLUvAlephElement
-  }
-
-  interface ElementTagNameMap {
     'al-angle-editor': HTMLAlAngleEditorElement;
     'al-console': HTMLAlConsoleElement;
     'al-control-panel': HTMLAlControlPanelElement;
@@ -306,14 +177,111 @@ declare global {
     'al-url-picker': HTMLAlUrlPickerElement;
     'uv-aleph': HTMLUvAlephElement;
   }
-
-
-  export namespace JSX {
-    export interface Element {}
-    export interface IntrinsicElements extends StencilIntrinsicElements {
-      [tagName: string]: any;
-    }
-  }
-  export interface HTMLAttributes extends StencilHTMLAttributes {}
-
 }
+
+declare namespace LocalJSX {
+  interface AlAngleEditor extends JSXBase.HTMLAttributes<HTMLAlAngleEditorElement> {
+    'angle'?: [string, AlAngle];
+    'onDelete'?: (event: CustomEvent<any>) => void;
+  }
+  interface AlConsole extends JSXBase.HTMLAttributes<HTMLAlConsoleElement> {
+    'cmd'?: string;
+    'onRunCommand'?: (event: CustomEvent<any>) => void;
+  }
+  interface AlControlPanel extends JSXBase.HTMLAttributes<HTMLAlControlPanelElement> {
+    'boundingBoxEnabled'?: boolean;
+    'displayMode'?: DisplayMode;
+    'graphEnabled'?: boolean;
+    'onBoundingBoxEnabledChanged'?: (event: CustomEvent<any>) => void;
+    'onDisplayModeChanged'?: (event: CustomEvent<any>) => void;
+    'onGraphEnabledChanged'?: (event: CustomEvent<any>) => void;
+    'onOrientationChanged'?: (event: CustomEvent<any>) => void;
+    'onRecenter'?: (event: CustomEvent<any>) => void;
+    'onSlicesIndexChanged'?: (event: CustomEvent<any>) => void;
+    'onSlicesWindowCenterChanged'?: (event: CustomEvent<any>) => void;
+    'onSlicesWindowWidthChanged'?: (event: CustomEvent<any>) => void;
+    'onUnitsChanged'?: (event: CustomEvent<any>) => void;
+    'onVolumeStepsChanged'?: (event: CustomEvent<any>) => void;
+    'onVolumeWindowCenterChanged'?: (event: CustomEvent<any>) => void;
+    'onVolumeWindowWidthChanged'?: (event: CustomEvent<any>) => void;
+    'orientation'?: Orientation;
+    'slicesIndex'?: number;
+    'slicesWindowCenter'?: number;
+    'slicesWindowWidth'?: number;
+    'stackhelper'?: | AMI.StackHelper
+    | AMI.VolumeRenderHelper;
+    'units'?: Units;
+    'volumeSteps'?: number;
+    'volumeWindowCenter'?: number;
+    'volumeWindowWidth'?: number;
+  }
+  interface AlEdgeEditor extends JSXBase.HTMLAttributes<HTMLAlEdgeEditorElement> {
+    'edge'?: [string, AlEdge];
+    'onDelete'?: (event: CustomEvent<any>) => void;
+  }
+  interface AlNodeEditor extends JSXBase.HTMLAttributes<HTMLAlNodeEditorElement> {
+    'node'?: [string, AlNode];
+    'onDelete'?: (event: CustomEvent<any>) => void;
+    'onSave'?: (event: CustomEvent<any>) => void;
+  }
+  interface AlNodeList extends JSXBase.HTMLAttributes<HTMLAlNodeListElement> {
+    'nodes'?: Map<string, AlNode> | null;
+    'onSelectedChanged'?: (event: CustomEvent<any>) => void;
+    'selected'?: string | null;
+  }
+  interface AlTabs extends JSXBase.HTMLAttributes<HTMLAlTabsElement> {
+    /**
+    * Emitted when the navigation has finished transitioning to a new component.
+    */
+    'onIonTabsDidChange'?: (event: CustomEvent<{
+      tab: string;
+    }>) => void;
+    /**
+    * Emitted when the navigation is about to transition to a new component.
+    */
+    'onIonTabsWillChange'?: (event: CustomEvent<{
+      tab: string;
+    }>) => void;
+  }
+  interface AlUrlPicker extends JSXBase.HTMLAttributes<HTMLAlUrlPickerElement> {
+    'onUrlChanged'?: (event: CustomEvent<any>) => void;
+    'url'?: string | null;
+    'urls'?: Map<string, string> | null;
+  }
+  interface UvAleph extends JSXBase.HTMLAttributes<HTMLUvAlephElement> {
+    'dracoDecoderPath'?: string | null;
+    'height'?: string;
+    /**
+    * Fires whenever the internal state changes passing an object describing the state.
+    */
+    'onChanged'?: (event: CustomEvent<any>) => void;
+    /**
+    * Fires when an object is loaded passing either the object or a stackhelper for volumetric data.
+    */
+    'onLoaded'?: (event: CustomEvent<any>) => void;
+    'width'?: string;
+  }
+
+  interface IntrinsicElements {
+    'al-angle-editor': AlAngleEditor;
+    'al-console': AlConsole;
+    'al-control-panel': AlControlPanel;
+    'al-edge-editor': AlEdgeEditor;
+    'al-node-editor': AlNodeEditor;
+    'al-node-list': AlNodeList;
+    'al-tabs': AlTabs;
+    'al-url-picker': AlUrlPicker;
+    'uv-aleph': UvAleph;
+  }
+}
+
+export { LocalJSX as JSX };
+
+
+declare module "@stencil/core" {
+  export namespace JSX {
+    interface IntrinsicElements extends LocalJSX.IntrinsicElements {}
+  }
+}
+
+
