@@ -1,8 +1,8 @@
-import { Component, Event, EventEmitter, Prop } from '@stencil/core';
+import { Component, h, Event, EventEmitter, Prop } from "@stencil/core";
 
 @Component({
-  tag: 'al-url-picker',
-  styleUrl: 'al-url-picker.css',
+  tag: "al-url-picker",
+  styleUrl: "al-url-picker.css",
   shadow: true
 })
 export class AlUrlPicker {
@@ -19,8 +19,8 @@ export class AlUrlPicker {
         <form onSubmit={e => e.preventDefault()}>
           <ion-select
             value={this.url}
-            interface='popover'
-            placeholder=''
+            interface="popover"
+            placeholder=""
             onIonChange={e => this.urlChanged.emit(e.detail.value)}
           >
             {Array.from(this.urls).map(([url, title]) => {
@@ -28,19 +28,19 @@ export class AlUrlPicker {
             })}
           </ion-select>
           <ion-input
-            type='url'
-            size='100'
-            placeholder='src'
+            type="url"
+            size="100"
+            placeholder="src"
             required
             value={this.url}
             ref={el => (this._input = el)}
           />
           <ion-button
-            size='small'
-            type='submit'
+            size="small"
+            type="submit"
             onClick={() => this.urlChanged.emit(this._input.value)}
           >
-            <ion-icon name='refresh' />
+            <ion-icon name="refresh" />
           </ion-button>
         </form>
       );

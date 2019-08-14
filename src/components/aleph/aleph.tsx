@@ -2,6 +2,7 @@
 import { KeyDown } from "@edsilv/key-codes";
 import {
   Component,
+  h,
   Event,
   EventEmitter,
   Method,
@@ -11,7 +12,7 @@ import {
 import "@stencil/redux";
 import { Action, Store } from "@stencil/redux";
 import "../../aframe";
-import { AlGltfModelEvents } from "../../aframe";
+import { AlGltfModelEvents, AlNodeSpawnerEvents } from "../../aframe";
 import { AlVolumeEvents } from "../../aframe/components/AlVolumeComponent";
 import { Constants } from "../../Constants";
 import { DisplayMode, Orientation } from "../../enums";
@@ -20,6 +21,17 @@ import { Units } from "../../enums/Units";
 import { AlAngle, AlCamera, AlEdge, AlNode } from "../../interfaces";
 import { AlGraph } from "../../interfaces/AlGraph";
 import {
+  appClearAngles,
+  appClearEdges,
+  appClearNodes,
+  appDeleteAngle,
+  appDeleteEdge,
+  appDeleteNode,
+  appSelectAngle,
+  appSelectEdge,
+  appSelectNode,
+  appSetAngle,
+  appSetBoundingBoxEnabled,
   appSetCamera,
   appSetControlsEnabled,
   appSetDisplayMode,
