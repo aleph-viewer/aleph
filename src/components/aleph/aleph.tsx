@@ -146,8 +146,6 @@ export class Aleph {
   @State() public volumeWindowWidth: number;
   //#endregion
 
-  // Tentative fix for repeated alignment issues
-  private _hasAligned: boolean = false;
   // Is the control scheme in trackball mode?
   private _isTrackball: boolean = false;
 
@@ -547,7 +545,6 @@ export class Aleph {
       } else {
         switch (this.displayMode) {
           case DisplayMode.MESH: {
-            if (!this._hasAligned) {
               if (this._boundingBox.intersectsBox(meshGeom.boundingBox)) {
                 // Check if mesh intersects bounding box; if it does apply the offset
                 const offset = meshGeom.boundingSphere.center.clone();
@@ -557,8 +554,6 @@ export class Aleph {
               } else {
                 position = this._targetEntity.object3D.position.clone();
               }
-              this._hasAligned = true;
-            }
             break;
           }
           case DisplayMode.SLICES: {
