@@ -13,8 +13,7 @@ import { Action, Store } from '@stencil/redux';
 import '../../aframe';
 import {
   AlGltfModelEvents,
-  AlNodeSpawnerEvents,
-  AlOrbitControlEvents
+  AlNodeSpawnerEvents
 } from '../../aframe';
 import { AlVolumeEvents } from '../../aframe/components/AlVolumeComponent';
 import { Constants } from '../../Constants';
@@ -61,6 +60,7 @@ import {
   GraphUtils,
   ThreeUtils
 } from '../../utils';
+import { AlControlEvents } from '../../utils/AlControlEvents';
 
 type Entity = import('aframe').Entity;
 type Scene = import('aframe').Scene;
@@ -1122,7 +1122,7 @@ export class Aleph {
         );
 
         this._scene.emit(
-          AlOrbitControlEvents.ANIMATION_STARTED,
+          AlControlEvents.ANIMATION_STARTED,
           { slerpPath },
           false
         );
@@ -1586,19 +1586,19 @@ export class Aleph {
     window.addEventListener('keyup', this._keyUpHandler, false);
 
     this._scene.addEventListener(
-      AlOrbitControlEvents.ANIMATION_FINISHED,
+      AlControlEvents.ANIMATION_FINISHED,
       this._controlsAnimationFinishedHandler,
       false
     );
 
     this._scene.addEventListener(
-      AlOrbitControlEvents.INTERACTION, // todo: make this a more generic event
+      AlControlEvents.INTERACTION, // todo: make this a more generic event
       this._controlsInteractionHandler,
       false
     );
 
     this._scene.addEventListener(
-      AlOrbitControlEvents.INTERACTION_FINISHED, // todo: make this a more generic event
+      AlControlEvents.INTERACTION_FINISHED, // todo: make this a more generic event
       this._controlsInteractionFinishedHandler,
       false
     );
