@@ -1,6 +1,5 @@
 import {
   Component,
-  h,
   Element,
   Event,
   EventEmitter,
@@ -8,7 +7,7 @@ import {
   Method,
   Prop,
   State
-} from "@stencil/core";
+} from '@stencil/core';
 
 // tslint:disable-next-line: no-any
 type HTMLIonTabElement = any;
@@ -21,8 +20,8 @@ type TabButtonClickEventDetail = any;
  * @slot bottom - Content is placed at the bottom of the screen.
  */
 @Component({
-  tag: "al-tabs",
-  styleUrl: "al-tabs.css",
+  tag: 'al-tabs',
+  styleUrl: 'al-tabs.css',
   shadow: true
 })
 export class Tabs {
@@ -34,7 +33,7 @@ export class Tabs {
   @State() public tabs: HTMLIonTabElement[] = [];
   @State() public selectedTab?: HTMLIonTabElement;
 
-  @Prop({ context: "document" }) public doc!: Document;
+  @Prop({ context: 'document' }) public doc!: Document;
 
   /**
    * Emitted when the navigation will load a component.
@@ -57,7 +56,7 @@ export class Tabs {
   }>;
 
   public async componentWillLoad() {
-    this.tabs = Array.from(this.el.querySelectorAll("ion-tab"));
+    this.tabs = Array.from(this.el.querySelectorAll('ion-tab'));
     this.ionNavWillLoad.emit();
     this.componentWillUpdate();
   }
@@ -73,14 +72,14 @@ export class Tabs {
 
   public componentWillUpdate() {
     // tslint:disable-next-line: no-any
-    const tabBar: any = this.el.querySelector("ion-tab-bar");
+    const tabBar: any = this.el.querySelector('ion-tab-bar');
     if (tabBar) {
       const tab = this.selectedTab ? this.selectedTab.tab : undefined;
       tabBar.selectedTab = tab;
     }
   }
 
-  @Listen("ionTabButtonClick")
+  @Listen('ionTabButtonClick')
   protected onTabClicked(ev: CustomEvent<TabButtonClickEventDetail>) {
     const { tab } = ev.detail;
     const selectedTab = this.tabs.find(t => t.tab === tab);
@@ -112,7 +111,7 @@ export class Tabs {
     tab: string | HTMLIonTabElement
   ): Promise<HTMLIonTabElement | undefined> {
     const tabEl =
-      typeof tab === "string" ? this.tabs.find(t => t.tab === tab) : tab;
+      typeof tab === 'string' ? this.tabs.find(t => t.tab === tab) : tab;
 
     if (!tabEl) {
       // tslint:disable-next-line: no-console
@@ -137,7 +136,7 @@ export class Tabs {
 
   private setActive(selectedTab: HTMLIonTabElement): Promise<void> {
     if (this.transitioning) {
-      return Promise.reject("transitioning already happening");
+      return Promise.reject('transitioning already happening');
     }
 
     this.transitioning = true;
@@ -178,11 +177,11 @@ export class Tabs {
 
   public render() {
     return [
-      <slot name="top" />,
-      <div class="tabs-inner">
+      <slot name='top' />,
+      <div class='tabs-inner'>
         <slot />
       </div>,
-      <slot name="bottom" />
+      <slot name='bottom' />
     ];
   }
 }

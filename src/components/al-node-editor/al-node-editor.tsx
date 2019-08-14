@@ -1,9 +1,9 @@
-import { Component, h, Event, EventEmitter, Prop } from "@stencil/core";
-import { AlNode } from "../../interfaces";
+import { Component, Event, EventEmitter, Prop } from '@stencil/core';
+import { AlNode } from '../../interfaces';
 
 @Component({
-  tag: "al-node-editor",
-  styleUrl: "al-node-editor.css",
+  tag: 'al-node-editor',
+  styleUrl: 'al-node-editor.css',
   shadow: true
 })
 export class AlNodeEditor {
@@ -21,7 +21,7 @@ export class AlNodeEditor {
           <ion-item>
             <ion-input
               value={node.title}
-              placeholder="title"
+              placeholder='title'
               required
               onIonChange={e => (node.title = e.detail.value)}
             />
@@ -29,30 +29,30 @@ export class AlNodeEditor {
           <ion-item>
             <ion-textarea
               value={node.description}
-              placeholder="description"
-              rows="10"
+              placeholder='description'
+              rows='10'
               onIonChange={e => (node.description = e.detail.value)}
             />
           </ion-item>
           <ion-button
-            size="small"
+            size='small'
             onClick={() => {
               this.delete.emit(nodeId);
               this.node = null;
             }}
           >
-            <ion-icon name="remove" />
+            <ion-icon name='remove' />
           </ion-button>
           <ion-button
-            size="small"
-            type="submit"
+            size='small'
+            type='submit'
             onClick={() => {
               if (node.title) {
                 this.save.emit([nodeId, node]);
               }
             }}
           >
-            <ion-icon name="checkmark" />
+            <ion-icon name='checkmark' />
           </ion-button>
         </form>
       );
