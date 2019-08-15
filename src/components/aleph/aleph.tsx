@@ -147,7 +147,7 @@ export class Aleph {
   //#endregion
 
   // Is the control scheme in trackball mode?
-  private _isTrackball: boolean = false;
+  private _isTrackball: boolean = true;
 
   //#region general methods
 
@@ -1349,12 +1349,12 @@ export class Aleph {
 
   private _graphEntryPointerUpHandler(_event: CustomEvent): void {
     this.appSetControlsEnabled(true);
-    ThreeUtils.enableOrbitControls(this._camera, true);
+    ThreeUtils.enableControls(this._camera, true, this._isTrackball);
   }
 
   private _graphEntryPointerDownHandler(_event: CustomEvent): void {
     this.appSetControlsEnabled(false);
-    ThreeUtils.enableOrbitControls(this._camera, false);
+    ThreeUtils.enableControls(this._camera, false, this._isTrackball);
   }
 
   private _graphEntryPointerOutHandler(_event: CustomEvent): void {

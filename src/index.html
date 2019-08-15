@@ -10,6 +10,7 @@
     <script src="https://unpkg.com/mobx@4.9.4/lib/mobx.umd.js"></script>
     <script src="/assets/aframe-master.js"></script>
     <script src="https://unpkg.com/three@0.102.1/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://unpkg.com/three@0.102.1/examples/js/controls/TrackballControls.js"></script>
 
     <script src="https://unpkg.com/@ionic/core@4.1.1/dist/ionic.js"></script>
     <script src="/assets/ami.min.js"></script>
@@ -164,13 +165,31 @@
       });
 
       urls = new Map([
-      ["https://nomad-project.co.uk/objects/collection/toy-lion/_toy-lion/toy-lion.gltf", "Lion (GLTF)"],
-        ["https://iiif-3d-manifests.netlify.com/collection/gltf/woody/_woody/assets/woody.gltf", "Fisherman (GLTF)"],
-        ["http://files.blokdust.io/test/bowl-draco.glb", "Bowl (DRACO)"],
-        ["https://aleph-fixtures.netlify.com/collection/dicom/brain/_brain/brain.json", "Brain (DICOM)"],
-        ["https://www.morphosource.org/media/morphosource/dcm_sample/platypus2/dcm_multi_vf300_jpegQ95_16bit_allslices.json", "Platypus (DICOM)"],
-        ["https://www.morphosource.org/media/morphosource/dcm_sample/ptilocercus/dcm_multi_vf300_jpegQ95_16bit_allslices.json", "Tree Shrew (DICOM)"],
-        ["https://aleph-fixtures.netlify.com/collection/gltf/bunny/_bunny/bunny_default_materials.glb", "Bunny Default Materials (GLB)"]
+        [
+          'https://nomad-project.co.uk/objects/collection/toy-lion/_toy-lion/toy-lion.gltf',
+          'Lion (GLTF)'
+        ],
+        [
+          'https://iiif-3d-manifests.netlify.com/collection/gltf/woody/_woody/assets/woody.gltf',
+          'Fisherman (GLTF)'
+        ],
+        ['http://files.blokdust.io/test/bowl-draco.glb', 'Bowl (DRACO)'],
+        [
+          'https://aleph-fixtures.netlify.com/collection/dicom/brain/_brain/brain.json',
+          'Brain (DICOM)'
+        ],
+        [
+          'https://www.morphosource.org/media/morphosource/dcm_sample/platypus2/dcm_multi_vf300_jpegQ95_16bit_allslices.json',
+          'Platypus (DICOM)'
+        ],
+        [
+          'https://www.morphosource.org/media/morphosource/dcm_sample/ptilocercus/dcm_multi_vf300_jpegQ95_16bit_allslices.json',
+          'Tree Shrew (DICOM)'
+        ],
+        [
+          'https://aleph-fixtures.netlify.com/collection/gltf/bunny/_bunny/bunny_default_materials.glb',
+          'Bunny Default Materials (GLB)'
+        ]
       ]);
 
       // ["https://aleph-fixtures.netlify.com/collection/nrrd/tooth/_tooth/tooth.json", "Tooth (NRRD)"]
@@ -363,13 +382,21 @@
             false
           );
 
-          alControlPanel.addEventListener("unitsChanged", function(e) {
-            alAleph.setUnits(e.detail);
-          }, false);
+          alControlPanel.addEventListener(
+            'unitsChanged',
+            function(e) {
+              alAleph.setUnits(e.detail);
+            },
+            false
+          );
 
-          alControlPanel.addEventListener("volumeStepsChanged", function(e) {
-            alAleph.setVolumeSteps(e.detail);
-          }, false);
+          alControlPanel.addEventListener(
+            'volumeStepsChanged',
+            function(e) {
+              alAleph.setVolumeSteps(e.detail);
+            },
+            false
+          );
 
           alControlPanel.addEventListener(
             'volumeWindowCenterChanged',

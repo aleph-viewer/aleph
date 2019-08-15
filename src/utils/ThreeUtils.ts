@@ -16,8 +16,14 @@ export class ThreeUtils {
   }
 
   // Must use setAttribute, otherwise THREE.OrbitControls onMouseUp doesn't always pick up the change :-(
-  public static enableOrbitControls(camEntity: Entity, enabled: boolean) {
-    camEntity.setAttribute("al-orbit-control", `enabled: ${enabled}`);
+  public static enableControls(
+    camEntity: Entity,
+    enabled: boolean,
+    isTrackball: boolean
+  ) {
+    isTrackball
+      ? camEntity.setAttribute("al-trackball-control", `enabled: ${enabled}`)
+      : camEntity.setAttribute("al-orbit-control", `enabled: ${enabled}`);
   }
 
   public static waitOneFrame(func: () => void) {

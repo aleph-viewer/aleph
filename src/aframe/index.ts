@@ -13,6 +13,7 @@ import { AlNodeSpawnerEvents } from "./components/AlNodeSpawnerComponent";
 import "./components/AlOrbitControlComponent";
 import "./components/AlRenderOrderComponent";
 import "./components/AlRenderOverlaidComponent";
+import "./components/AlTrackballControlComponent";
 import "./components/AlVolumeComponent";
 
 export { AlGltfModelEvents, AlNodeEvents, AlNodeSpawnerEvents };
