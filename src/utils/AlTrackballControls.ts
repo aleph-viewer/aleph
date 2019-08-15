@@ -569,8 +569,3 @@ export class AlTrackballControls {
     this._domElement.removeEventListener('touchmove', this._touchMove, false);
   }
 }
-
-this.handleResize();
-
-// force an update at start
-this.update();
