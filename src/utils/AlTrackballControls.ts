@@ -14,33 +14,34 @@ export const AlTrackballState = {
   TOUCH_ZOOM_PAN: 4
 };
 
-export class AlTrackballControls {
+export class AlTrackballControls extends THREE.EventDispatcher {
   public object;
   public target: THREE.Vector3;
 
   // tslint:disable-next-line: no-any
-  private _domElement: any;
+  public domElement: any;
 
   // API
-  private _enabled: boolean;
-  private _screen = {
+  public enabled: boolean;
+  public screen = {
     left: 0,
     top: 0,
     width: 0,
     height: 0
   };
-  private _rotateSpeed: number;
-  private _zoomSpeed: number;
-  private _panSpeed: number;
+  public rotateSpeed: number;
+  public zoomSpeed: number;
+  public panSpeed: number;
 
-  private _noRotate: boolean;
-  private _noZoom: boolean;
-  private _noPan: boolean;
+  public noRotate: boolean;
+  public noZoom: boolean;
+  public noPan: boolean;
 
-  private _staticMoving: boolean;
-  private _dynamicDampingFactor: number;
-  private _minDistance: number;
-  private _maxDistance: number;
+  public staticMoving: boolean;
+  public dynamicDampingFactor: number;
+  public minDistance: number;
+  public maxDistance: number;
+  // ===============================
 
   private _mouseButtons;
 
@@ -65,32 +66,34 @@ export class AlTrackballControls {
   private _up0: THREE.Vector3;
 
   // events
-  //   private _changeEvent = { type: 'change' };
-  //   private _startEvent = { type: 'start' };
-  //   private _endEvent = { type: 'end' };
+  private _changeEvent = { type: 'change' };
+  private _startEvent = { type: 'start' };
+  private _endEvent = { type: 'end' };
 
   // tslint:disable-next-line: no-any
   constructor(object: any, domElement: HTMLElement | Document) {
+    super();
+
     this.object = object;
-    this._domElement = domElement !== undefined ? domElement : document;
+    this.domElement = domElement !== undefined ? domElement : document;
 
     // ======== API ========
-    this._enabled = true;
-    this._screen = { left: 0, top: 0, width: 0, height: 0 };
+    this.enabled = true;
+    this.screen = { left: 0, top: 0, width: 0, height: 0 };
 
-    this._rotateSpeed = 1.0;
-    this._zoomSpeed = 1.2;
-    this._panSpeed = 0.3;
+    this.rotateSpeed = 1.0;
+    this.zoomSpeed = 1.2;
+    this.panSpeed = 0.3;
 
-    this._noRotate = false;
-    this._noZoom = false;
-    this._noPan = false;
+    this.noRotate = false;
+    this.noZoom = false;
+    this.noPan = false;
 
-    this._staticMoving = false;
-    this._dynamicDampingFactor = 0.2;
+    this.staticMoving = false;
+    this.dynamicDampingFactor = 0.2;
 
-    this._minDistance = 0;
-    this._maxDistance = Infinity;
+    this.minDistance = 0;
+    this.maxDistance = Infinity;
 
     this._mouseButtons = {
       ROTATE: THREE.MOUSE.LEFT,
@@ -140,38 +143,38 @@ export class AlTrackballControls {
   }
 
   private _addListeners() {
-    this._domElement.addEventListener('mousedown', this._mouseDown, {
+    this.domElement.addEventListener('mousedown', this._mouseDown, {
       capture: false,
       once: false,
       passive: true
     });
-    this._domElement.addEventListener('mousemove', this._mouseMove, {
+    this.domElement.addEventListener('mousemove', this._mouseMove, {
       capture: false,
       once: false,
       passive: true
     });
-    this._domElement.addEventListener('mouseup', this._mouseUp, {
+    this.domElement.addEventListener('mouseup', this._mouseUp, {
       capture: false,
       once: false,
       passive: true
     });
-    this._domElement.addEventListener('wheel', this._mouseWheel, {
+    this.domElement.addEventListener('wheel', this._mouseWheel, {
       capture: false,
       once: false,
       passive: true
     });
 
-    this._domElement.addEventListener('touchstart', this._touchStart, {
+    this.domElement.addEventListener('touchstart', this._touchStart, {
       capture: false,
       once: false,
       passive: true
     });
-    this._domElement.addEventListener('touchend', this._touchEnd, {
+    this.domElement.addEventListener('touchend', this._touchEnd, {
       capture: false,
       once: false,
       passive: true
     });
-    this._domElement.addEventListener('touchmove', this._touchMove, {
+    this.domElement.addEventListener('touchmove', this._touchMove, {
       capture: false,
       once: false,
       passive: true
@@ -179,7 +182,7 @@ export class AlTrackballControls {
   }
 
   private _mouseDown(event: MouseEvent) {
-    if (this._enabled === false) {
+    if (this.enabled === false) {
       return;
     }
 
@@ -187,7 +190,7 @@ export class AlTrackballControls {
       switch (event.button) {
         case this._mouseButtons.LEFT:
           this._state = AlTrackballState.ROTATE;
-          if (!this._noRotate) {
+          if (!this.noRotate) {
             this._moveCurr.copy(
               this._getMouseOnCircle(event.pageX, event.pageY)
             );
@@ -197,7 +200,7 @@ export class AlTrackballControls {
 
         case this._mouseButtons.MIDDLE:
           this._state = AlTrackballState.ZOOM;
-          if (!this._noZoom) {
+          if (!this.noZoom) {
             this._zoomStart.copy(
               this._getMouseOnScreen(event.pageX, event.pageY)
             );
@@ -207,7 +210,7 @@ export class AlTrackballControls {
 
         case this._mouseButtons.RIGHT:
           this._state = AlTrackballState.PAN;
-          if (!this._noPan) {
+          if (!this.noPan) {
             this._panStart.copy(
               this._getMouseOnScreen(event.pageX, event.pageY)
             );
@@ -220,36 +223,36 @@ export class AlTrackballControls {
       }
     }
 
-    // this.emit(this._startEvent);
+    this.dispatchEvent(this._startEvent);
   }
 
   private _mouseMove(event: MouseEvent) {
-    if (this._enabled === false) {
+    if (this.enabled === false) {
       return;
     }
 
-    if (this._state === AlTrackballState.ROTATE && !this._noRotate) {
+    if (this._state === AlTrackballState.ROTATE && !this.noRotate) {
       this._movePrev.copy(this._moveCurr);
       this._moveCurr.copy(this._getMouseOnCircle(event.pageX, event.pageY));
-    } else if (this._state === AlTrackballState.ZOOM && !this._noZoom) {
+    } else if (this._state === AlTrackballState.ZOOM && !this.noZoom) {
       this._zoomEnd.copy(this._getMouseOnScreen(event.pageX, event.pageY));
-    } else if (this._state === AlTrackballState.PAN && !this._noPan) {
+    } else if (this._state === AlTrackballState.PAN && !this.noPan) {
       this._panEnd.copy(this._getMouseOnScreen(event.pageX, event.pageY));
     }
   }
 
   private _mouseUp(_event: MouseEvent) {
-    if (this._enabled === false) {
+    if (this.enabled === false) {
       return;
     }
 
     this._state = AlTrackballState.NONE;
 
-    // this.dispatchEvent(this._endEvent);
+    this.dispatchEvent(this._endEvent);
   }
 
   private _mouseWheel(event: WheelEvent) {
-    if (this._enabled === false || this._noZoom === true) {
+    if (this.enabled === false || this.noZoom === true) {
       return;
     }
     switch (event.deltaMode) {
@@ -269,12 +272,12 @@ export class AlTrackballControls {
         break;
     }
 
-    // this.dispatchEvent(this._startEvent);
-    // this.dispatchEvent(this._endEvent);
+    this.dispatchEvent(this._startEvent);
+    this.dispatchEvent(this._endEvent);
   }
 
   private _touchStart(event: TouchEvent) {
-    if (this._enabled === false) {
+    if (this.enabled === false) {
       return;
     }
     switch (event.touches.length) {
@@ -302,11 +305,11 @@ export class AlTrackballControls {
         break;
     }
 
-    // this.dispatchEvent(this._startEvent);
+    this.dispatchEvent(this._startEvent);
   }
 
   private _touchEnd(event: TouchEvent) {
-    if (this._enabled === false) {
+    if (this.enabled === false) {
       return;
     }
 
@@ -327,11 +330,11 @@ export class AlTrackballControls {
       }
     }
 
-    // this.dispatchEvent(this._endEvent);
+    this.dispatchEvent(this._endEvent);
   }
 
   private _touchMove(event: TouchEvent) {
-    if (this._enabled === false) {
+    if (this.enabled === false) {
       return;
     }
 
@@ -356,27 +359,27 @@ export class AlTrackballControls {
     }
   }
   public _resize() {
-    if (this._domElement === document) {
-      this._screen.left = 0;
-      this._screen.top = 0;
-      this._screen.width = window.innerWidth;
-      this._screen.height = window.innerHeight;
+    if (this.domElement === document) {
+      this.screen.left = 0;
+      this.screen.top = 0;
+      this.screen.width = window.innerWidth;
+      this.screen.height = window.innerHeight;
     } else {
-      const box = this._domElement.getBoundingClientRect();
+      const box = this.domElement.getBoundingClientRect();
       // adjustments come from similar code in the jquery offset() function
-      const d = this._domElement.ownerDocument.documentElement;
-      this._screen.left = box.left + window.pageXOffset - d.clientLeft;
-      this._screen.top = box.top + window.pageYOffset - d.clientTop;
-      this._screen.width = box.width;
-      this._screen.height = box.height;
+      const d = this.domElement.ownerDocument.documentElement;
+      this.screen.left = box.left + window.pageXOffset - d.clientLeft;
+      this.screen.top = box.top + window.pageYOffset - d.clientTop;
+      this.screen.width = box.width;
+      this.screen.height = box.height;
     }
   }
 
   private _getMouseOnScreen(pageX: number, pageY: number): THREE.Vector2 {
     const vector = new THREE.Vector2();
     vector.set(
-      (pageX - this._screen.left) / this._screen.width,
-      (pageY - this._screen.top) / this._screen.height
+      (pageX - this.screen.left) / this.screen.width,
+      (pageY - this.screen.top) / this.screen.height
     );
 
     return vector;
@@ -385,10 +388,9 @@ export class AlTrackballControls {
   private _getMouseOnCircle(pageX: number, pageY: number): THREE.Vector2 {
     const vector = new THREE.Vector2();
     vector.set(
-      (pageX - this._screen.width * 0.5 - this._screen.left) /
-        (this._screen.width * 0.5),
-      (this._screen.height + 2 * (this._screen.top - pageY)) /
-        this._screen.width // screen.width intentional
+      (pageX - this.screen.width * 0.5 - this.screen.left) /
+        (this.screen.width * 0.5),
+      (this.screen.height + 2 * (this.screen.top - pageY)) / this.screen.width // screen.width intentional
     );
     return vector;
   }
@@ -425,7 +427,7 @@ export class AlTrackballControls {
 
       axis.crossVectors(moveDirection, this._eye).normalize();
 
-      angle *= this._rotateSpeed;
+      angle *= this.rotateSpeed;
       quaternion.setFromAxisAngle(axis, angle);
 
       this._eye.applyQuaternion(quaternion);
@@ -433,8 +435,8 @@ export class AlTrackballControls {
 
       this._lastAxis.copy(axis);
       this._lastAngle = angle;
-    } else if (!this._staticMoving && this._lastAngle) {
-      this._lastAngle *= Math.sqrt(1.0 - this._dynamicDampingFactor);
+    } else if (!this.staticMoving && this._lastAngle) {
+      this._lastAngle *= Math.sqrt(1.0 - this.dynamicDampingFactor);
       this._eye.copy(this.object.position).sub(this.target);
       quaternion.setFromAxisAngle(this._lastAxis, this._lastAngle);
       this._eye.applyQuaternion(quaternion);
@@ -452,17 +454,17 @@ export class AlTrackballControls {
       this._touchZoomDistanceStart = this._touchZoomDistanceEnd;
       this._eye.multiplyScalar(factor);
     } else {
-      factor = 1.0 + (this._zoomEnd.y - this._zoomStart.y) * this._zoomSpeed;
+      factor = 1.0 + (this._zoomEnd.y - this._zoomStart.y) * this.zoomSpeed;
 
       if (factor !== 1.0 && factor > 0.0) {
         this._eye.multiplyScalar(factor);
       }
 
-      if (this._staticMoving) {
+      if (this.staticMoving) {
         this._zoomStart.copy(this._zoomEnd);
       } else {
         this._zoomStart.y +=
-          (this._zoomEnd.y - this._zoomStart.y) * this._dynamicDampingFactor;
+          (this._zoomEnd.y - this._zoomStart.y) * this.dynamicDampingFactor;
       }
     }
   }
@@ -474,7 +476,7 @@ export class AlTrackballControls {
     mouseChange.copy(this._panEnd).sub(this._panStart);
 
     if (mouseChange.lengthSq()) {
-      mouseChange.multiplyScalar(this._eye.length() * this._panSpeed);
+      mouseChange.multiplyScalar(this._eye.length() * this.panSpeed);
 
       pan
         .copy(this._eye)
@@ -485,32 +487,32 @@ export class AlTrackballControls {
       this.object.position.add(pan);
       this.target.add(pan);
 
-      if (this._staticMoving) {
+      if (this.staticMoving) {
         this._panStart.copy(this._panEnd);
       } else {
         this._panStart.add(
           mouseChange
             .subVectors(this._panEnd, this._panStart)
-            .multiplyScalar(this._dynamicDampingFactor)
+            .multiplyScalar(this.dynamicDampingFactor)
         );
       }
     }
   }
 
   private _checkDistances() {
-    if (!this._noZoom || !this._noPan) {
-      if (this._eye.lengthSq() > this._maxDistance * this._maxDistance) {
+    if (!this.noZoom || !this.noPan) {
+      if (this._eye.lengthSq() > this.maxDistance * this.maxDistance) {
         this.object.position.addVectors(
           this.target,
-          this._eye.setLength(this._maxDistance)
+          this._eye.setLength(this.maxDistance)
         );
         this._zoomStart.copy(this._zoomEnd);
       }
 
-      if (this._eye.lengthSq() < this._minDistance * this._minDistance) {
+      if (this._eye.lengthSq() < this.minDistance * this.minDistance) {
         this.object.position.addVectors(
           this.target,
-          this._eye.setLength(this._minDistance)
+          this._eye.setLength(this.minDistance)
         );
         this._zoomStart.copy(this._zoomEnd);
       }
@@ -520,13 +522,13 @@ export class AlTrackballControls {
   public update() {
     this._eye.subVectors(this.object.position, this.target);
 
-    if (!this._noRotate) {
+    if (!this.noRotate) {
       this._rotateCamera();
     }
-    if (!this._noZoom) {
+    if (!this.noZoom) {
       this._zoomCamera();
     }
-    if (!this._noPan) {
+    if (!this.noPan) {
       this._panCamera();
     }
 
@@ -535,7 +537,7 @@ export class AlTrackballControls {
     this.object.lookAt(this.target);
 
     if (this._lastPosition.distanceToSquared(this.object.position) > this.EPS) {
-      //   this.dispatchEvent(this._changeEvent);
+      this.dispatchEvent(this._changeEvent);
       this._lastPosition.copy(this.object.position);
     }
   }
@@ -549,7 +551,7 @@ export class AlTrackballControls {
     this._eye.subVectors(this.object.position, this.target);
     this.object.lookAt(this.target);
 
-    // this.dispatchEvent(this._changeEvent);
+    this.dispatchEvent(this._changeEvent);
 
     this._lastPosition.copy(this.object.position);
   }
@@ -559,13 +561,13 @@ export class AlTrackballControls {
   }
 
   private _removeListeners() {
-    this._domElement.removeEventListener('mousedown', this._mouseDown, false);
-    this._domElement.removeEventListener('mousemove', this._mouseMove, false);
-    this._domElement.removeEventListener('mouseup', this._mouseUp, false);
-    this._domElement.removeEventListener('wheel', this._mouseWheel, false);
+    this.domElement.removeEventListener('mousedown', this._mouseDown, false);
+    this.domElement.removeEventListener('mousemove', this._mouseMove, false);
+    this.domElement.removeEventListener('mouseup', this._mouseUp, false);
+    this.domElement.removeEventListener('wheel', this._mouseWheel, false);
 
-    this._domElement.removeEventListener('touchstart', this._touchStart, false);
-    this._domElement.removeEventListener('touchend', this._touchEnd, false);
-    this._domElement.removeEventListener('touchmove', this._touchMove, false);
+    this.domElement.removeEventListener('touchstart', this._touchStart, false);
+    this.domElement.removeEventListener('touchend', this._touchEnd, false);
+    this.domElement.removeEventListener('touchmove', this._touchMove, false);
   }
 }
