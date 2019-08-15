@@ -13,6 +13,7 @@ import { Orientation } from "../../enums/Orientation";
 import { Units } from "../../enums/Units";
 import { ContentStrings } from "./ContentStrings";
 import { getLocaleComponentStrings } from "../../utils/Locale";
+import { Material } from "../../enums/Material";
 
 @Component({
   tag: "al-control-panel",
@@ -27,6 +28,7 @@ export class AlControlPanel {
 
   @Event() public boundingBoxEnabledChanged: EventEmitter;
   @Event() public displayModeChanged: EventEmitter;
+  @Event() public materialChanged: EventEmitter;
   @Event() public orientationChanged: EventEmitter;
   @Event() public recenter: EventEmitter;
   @Event() public slicesIndexChanged: EventEmitter;
@@ -40,6 +42,7 @@ export class AlControlPanel {
 
   @Prop({ mutable: true }) public boundingBoxEnabled: boolean = false;
   @Prop({ mutable: true }) public displayMode: DisplayMode = DisplayMode.MESH;
+  @Prop({ mutable: true }) public material: Material = Material.DEFAULT;
   @Prop({ mutable: true }) public orientation: Orientation =
     Orientation.CORONAL;
   @Prop({ mutable: true }) public slicesIndex: number;
@@ -80,6 +83,11 @@ export class AlControlPanel {
   private _graphEnabled(enabled: boolean) {
     this.graphEnabled = enabled;
     this.graphEnabledChanged.emit(enabled);
+  }
+
+  private _material(material: Material) {
+    this.material = material;
+    this.materialChanged.emit(material);
   }
 
   private _orientation(orientation: Orientation) {
@@ -235,6 +243,56 @@ export class AlControlPanel {
             value={Units.MILLIMETERS}
           >
             {this.contentStrings.millimeters}
+          </option>
+        </select>
+      </ion-item>
+    );
+  }
+
+  public renderMaterialSelect() {
+    return (
+      <ion-item
+        style={{
+          display: "var(--material-display, block)"
+        }}
+      >
+        <ion-icon src="/assets/svg/material.svg" slot="start" />
+        <select
+          slot="end"
+          onChange={e =>
+            this._material((e.srcElement as HTMLSelectElement)
+              .value as Material)
+          }
+        >
+          <option
+            selected={this.material === Material.DEFAULT}
+            value={Material.DEFAULT}
+          >
+            {this.contentStrings.default}
+          </option>
+          <option
+            selected={this.material === Material.CLAY}
+            value={Material.CLAY}
+          >
+            {this.contentStrings.clay}
+          </option>
+          <option
+            selected={this.material === Material.NORMALS}
+            value={Material.NORMALS}
+          >
+            {this.contentStrings.normals}
+          </option>
+          <option
+            selected={this.material === Material.WIREFRAME}
+            value={Material.WIREFRAME}
+          >
+            {this.contentStrings.wireframe}
+          </option>
+          <option
+            selected={this.material === Material.XRAY}
+            value={Material.XRAY}
+          >
+            {this.contentStrings.xray}
           </option>
         </select>
       </ion-item>
@@ -579,7 +637,7 @@ export class AlControlPanel {
         );
       }
       case DisplayMode.MESH: {
-        return this.renderGenericOptions();
+        return [this.renderGenericOptions(), this.renderMaterialSelect()];
       }
       default: {
         return;

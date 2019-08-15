@@ -34,4 +34,4 @@ Aleph is comprised of several [web components](https://developer.mozilla.org/en-
 
 ## Examples
 
-https://aleph-demo.netlify.com
+https://aframe-viewer.netlify.com
