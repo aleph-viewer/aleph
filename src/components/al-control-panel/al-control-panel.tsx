@@ -637,7 +637,8 @@ export class AlControlPanel {
         );
       }
       case DisplayMode.MESH: {
-        return [this.renderGenericOptions(), this.renderMaterialSelect()];
+        //return [this.renderGenericOptions(), this.renderMaterialSelect()];
+        return this.renderGenericOptions();
       }
       default: {
         return;
