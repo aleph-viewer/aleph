@@ -33,7 +33,7 @@ export class AlConsole {
             }
           }}
         >
-          <ion-icon name="arrow-dropright" />
+          <ion-icon src="/assets/svg/run.svg" />
         </ion-button>
       </form>
     );

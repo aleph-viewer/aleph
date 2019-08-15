@@ -15,5 +15,9 @@ export const config: Config = {
       serviceWorker: null // disable service workers
     }
   ],
+  copy: [{
+    src: "**/*.i18n.*.json",
+    dest: "i18n"
+  }],
   globalStyle: 'src/global/theme.css'
 };

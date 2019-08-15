@@ -1,5 +1,14 @@
-import { Component, h, Event, EventEmitter, Prop } from "@stencil/core";
+import {
+  Component,
+  h,
+  Element,
+  Event,
+  EventEmitter,
+  Prop
+} from "@stencil/core";
 import { AlNode } from "../../interfaces";
+import { ContentStrings } from "./ContentStrings";
+import { getLocaleComponentStrings } from "../../utils/Locale";
 
 @Component({
   tag: "al-node-editor",
@@ -7,10 +16,17 @@ import { AlNode } from "../../interfaces";
   shadow: true
 })
 export class AlNodeEditor {
+  @Element() element: HTMLElement;
+  contentStrings: ContentStrings;
+
   @Event() public delete: EventEmitter;
   @Event() public save: EventEmitter;
 
   @Prop({ mutable: true }) public node: [string, AlNode];
+
+  async componentWillLoad(): Promise<void> {
+    this.contentStrings = await getLocaleComponentStrings(this.element);
+  }
 
   public render() {
     if (this.node) {
@@ -21,7 +37,7 @@ export class AlNodeEditor {
           <ion-item>
             <ion-input
               value={node.title}
-              placeholder="title"
+              placeholder={this.contentStrings.title}
               required
               onIonChange={e => (node.title = e.detail.value)}
             />
@@ -29,7 +45,7 @@ export class AlNodeEditor {
           <ion-item>
             <ion-textarea
               value={node.description}
-              placeholder="description"
+              placeholder={this.contentStrings.description}
               rows="10"
               onIonChange={e => (node.description = e.detail.value)}
             />
@@ -41,7 +57,7 @@ export class AlNodeEditor {
               this.node = null;
             }}
           >
-            <ion-icon name="remove" />
+            <ion-icon src="/assets/svg/minus.svg" />
           </ion-button>
           <ion-button
             size="small"
@@ -52,7 +68,7 @@ export class AlNodeEditor {
               }
             }}
           >
-            <ion-icon name="checkmark" />
+            <ion-icon src="/assets/svg/tick.svg" />
           </ion-button>
         </form>
       );
