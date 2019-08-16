@@ -15,6 +15,9 @@ import {
   DisplayMode,
 } from './enums/DisplayMode';
 import {
+  Material,
+} from './enums/Material';
+import {
   Orientation,
 } from './enums/Orientation';
 import {
@@ -39,6 +42,7 @@ export namespace Components {
     'boundingBoxEnabled': boolean;
     'displayMode': DisplayMode;
     'graphEnabled': boolean;
+    'material': Material;
     'orientation': Orientation;
     'slicesIndex': number;
     'slicesWindowCenter': number;
@@ -97,6 +101,7 @@ export namespace Components {
     'setEdge': (edge: [string, AlEdge]) => Promise<void>;
     'setGraph': (graph: AlGraph) => Promise<void>;
     'setGraphEnabled': (enabled: boolean) => Promise<void>;
+    'setMaterial': (material: Material) => Promise<void>;
     'setNode': (node: [string, AlNode]) => Promise<void>;
     'setOrientation': (orientation: Orientation) => Promise<void>;
     'setSlicesIndex': (index: number) => Promise<void>;
@@ -192,9 +197,11 @@ declare namespace LocalJSX {
     'boundingBoxEnabled'?: boolean;
     'displayMode'?: DisplayMode;
     'graphEnabled'?: boolean;
+    'material'?: Material;
     'onBoundingBoxEnabledChanged'?: (event: CustomEvent<any>) => void;
     'onDisplayModeChanged'?: (event: CustomEvent<any>) => void;
     'onGraphEnabledChanged'?: (event: CustomEvent<any>) => void;
+    'onMaterialChanged'?: (event: CustomEvent<any>) => void;
     'onOrientationChanged'?: (event: CustomEvent<any>) => void;
     'onRecenter'?: (event: CustomEvent<any>) => void;
     'onSlicesIndexChanged'?: (event: CustomEvent<any>) => void;

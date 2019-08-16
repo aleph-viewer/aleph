@@ -1,10 +1,11 @@
-import { combineReducers } from "redux";
-import { MeshFileType } from "../enums";
-import { DisplayMode } from "../enums/DisplayMode";
-import { Orientation } from "../enums/Orientation";
-import { AlAngle, AlAppState, AlEdge, AlNode } from "../interfaces";
-import { GetUtils } from "../utils";
 import { ActionTypes, TypeKeys } from "./actions";
+import { AlAngle, AlAppState, AlEdge, AlNode } from "../interfaces";
+import { combineReducers } from "redux";
+import { DisplayMode } from "../enums/DisplayMode";
+import { GetUtils } from "../utils";
+import { Material } from "../enums/Material";
+import { MeshFileType } from "../enums";
+import { Orientation } from "../enums/Orientation";
 import { Units } from "../enums/Units";
 
 export const getInitialState = () => {
@@ -15,6 +16,7 @@ export const getInitialState = () => {
     controlsEnabled: true,
     displayMode: DisplayMode.MESH,
     edges: new Map<string, AlEdge>(),
+    material: Material.DEFAULT,
     nodes: new Map<string, AlNode>(),
     graphEnabled: false,
     orientation: Orientation.CORONAL,
@@ -28,7 +30,7 @@ export const getInitialState = () => {
     volumeSteps: 16,
     volumeWindowCenter: 0,
     volumeWindowWidth: 0
-  };
+  } as AlAppState;
 };
 
 // todo: split app reducer into src, nodes, edges, etc reducers and combine them
@@ -252,6 +254,12 @@ export const app = (
         ...state,
         slicesIndex: undefined,
         orientation: action.payload
+      };
+    }
+    case TypeKeys.APP_SET_MATERIAL: {
+      return {
+        ...state,
+        material: action.payload
       };
     }
     case TypeKeys.APP_SET_NODES_ENABLED: {
