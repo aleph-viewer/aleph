@@ -16,8 +16,7 @@ import { AlGltfModelEvents, AlNodeSpawnerEvents } from "../../aframe";
 import { AlVolumeEvents } from "../../aframe/components/AlVolumeComponent";
 import { Constants } from "../../Constants";
 import { DisplayMode, Orientation } from "../../enums";
-import { AlGraphEntryType } from "../../enums";
-import { Units } from "../../enums/Units";
+import { AlGraphEntryType, ControlsType, Material, Units } from "../../enums";
 import { AlAngle, AlCamera, AlEdge, AlNode } from "../../interfaces";
 import { AlGraph } from "../../interfaces/AlGraph";
 import {
@@ -34,6 +33,7 @@ import {
   appSetBoundingBoxEnabled,
   appSetCamera,
   appSetControlsEnabled,
+  appSetControlsType,
   appSetDisplayMode,
   appSetEdge,
   appSetGraphEnabled,
@@ -60,7 +60,6 @@ import {
   ThreeUtils
 } from "../../utils";
 import { AlControlEvents } from "../../utils/AlControlEvents";
-import { Material } from "../../enums/Material";
 
 type Entity = import("aframe").Entity;
 type Scene = import("aframe").Scene;
@@ -107,6 +106,7 @@ export class Aleph {
   public appSetBoundingBoxEnabled: Action;
   public appSetCamera: Action;
   public appSetControlsEnabled: Action;
+  public appSetControlsType: Action;
   public appSetDisplayMode: Action;
   public appSetEdge: Action;
   public appSetGraphEnabled: Action;
@@ -129,6 +129,7 @@ export class Aleph {
   @State() public boundingBoxEnabled: boolean;
   @State() public camera: AlCamera;
   @State() public controlsEnabled: boolean;
+  @State() public controlsType: ControlsType;
   @State() public displayMode: DisplayMode;
   @State() public edges: Map<string, AlEdge>;
   @State() public graphEnabled: boolean;
@@ -149,9 +150,6 @@ export class Aleph {
   @State() public volumeWindowCenter: number;
   @State() public volumeWindowWidth: number;
   //#endregion
-
-  // Is the control scheme in trackball mode?
-  private _isTrackball: boolean = true;
 
   //#region general methods
 
@@ -241,6 +239,16 @@ export class Aleph {
   }
 
   @Method()
+  public async setControlsEnabled(enabled: boolean): Promise<void> {
+    this._setControlsEnabled(enabled);
+  }
+
+  @Method()
+  public async setControlsType(type: ControlsType): Promise<void> {
+    this._setControlsType(type);
+  }
+
+  @Method()
   public async setGraphEnabled(enabled: boolean): Promise<void> {
     this._setGraphEnabled(enabled);
   }
@@ -312,6 +320,7 @@ export class Aleph {
           boundingBoxEnabled,
           camera,
           controlsEnabled,
+          controlsType,
           displayMode,
           edges,
           graphEnabled,
@@ -336,6 +345,7 @@ export class Aleph {
         boundingBoxEnabled,
         camera,
         controlsEnabled,
+        controlsType,
         displayMode,
         edges,
         graphEnabled,
@@ -369,6 +379,7 @@ export class Aleph {
       appSetBoundingBoxEnabled,
       appSetCamera,
       appSetControlsEnabled,
+      appSetControlsType,
       appSetDisplayMode,
       appSetEdge,
       appSetGraphEnabled,
@@ -832,7 +843,7 @@ export class Aleph {
   }
 
   // tslint:disable-next-line: no-any
-  private _orbitCamera(): any {
+  private _renderOrbitCamera(): any {
     return (
       <a-camera
         fov={Constants.cameraValues.fov}
@@ -867,7 +878,7 @@ export class Aleph {
   }
 
   // tslint:disable-next-line: no-any
-  private _trackballCamera(): any {
+  private _renderTrackballCamera(): any {
     return (
       <a-camera
         fov={Constants.cameraValues.fov}
@@ -901,9 +912,23 @@ export class Aleph {
     );
   }
 
+  private _renderControls() {
+    switch (this.controlsType) {
+      case ControlsType.TRACKBALL : {
+        return this._renderTrackballCamera();
+      }
+      case ControlsType.ORBIT : {
+        return this._renderOrbitCamera();
+      }
+      default : {
+        return null;
+      }
+    }
+  }
+
   private _renderCamera() {
     return [
-      this._isTrackball ? this._trackballCamera() : this._orbitCamera(),
+      this._renderControls(),
       this._renderLights()
     ];
   }
@@ -1220,6 +1245,16 @@ export class Aleph {
     this._stateChanged();
   }
 
+  private _setControlsEnabled(enabled: boolean): void {
+    this.appSetControlsEnabled(enabled);
+    this._stateChanged();
+  }
+
+  private _setControlsType(type: ControlsType): void {
+    this.appSetControlsType(type);
+    this._stateChanged();
+  }
+
   private _setGraphEnabled(enabled: boolean): void {
     this.appSetGraphEnabled(enabled);
     this._stateChanged();
@@ -1366,12 +1401,12 @@ export class Aleph {
 
   private _graphEntryPointerUpHandler(_event: CustomEvent): void {
     this.appSetControlsEnabled(true);
-    ThreeUtils.enableControls(this._camera, true, this._isTrackball);
+    ThreeUtils.enableControls(this._camera, true, this.controlsType);
   }
 
   private _graphEntryPointerDownHandler(_event: CustomEvent): void {
     this.appSetControlsEnabled(false);
-    ThreeUtils.enableControls(this._camera, false, this._isTrackball);
+    ThreeUtils.enableControls(this._camera, false, this.controlsType);
   }
 
   private _graphEntryPointerOutHandler(_event: CustomEvent): void {

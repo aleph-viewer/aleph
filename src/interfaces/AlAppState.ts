@@ -1,4 +1,5 @@
 import { AlAngle, AlCamera, AlEdge, AlNode } from ".";
+import { ControlsType } from "../enums/ControlsType";
 import { DisplayMode, Orientation } from "../enums";
 import { Material } from "../enums/Material";
 import { Units } from "../enums/Units";
@@ -8,6 +9,7 @@ export interface AlAppState {
   boundingBoxEnabled: boolean;
   camera: AlCamera;
   controlsEnabled: boolean;
+  controlsType: ControlsType;
   displayMode: DisplayMode;
   edges: Map<string, AlEdge>;
   graphEnabled: boolean;

@@ -211,7 +211,6 @@
         loadNodesButton = document.getElementById('load-nodes-button');
 
         alAleph.componentOnReady().then(function() {
-          //component.setDisplayMode("slices");
           state.src = Array.from(urls)[0][0]; // load src when component ready
 
           alAleph.addEventListener(
@@ -219,6 +218,7 @@
             function(e) {
               state.angles = e.detail.angles;
               state.boundingBoxEnabled = e.detail.boundingBoxEnabled;
+              state.controlsType = e.detail.controlsType;
               state.displayMode = e.detail.displayMode;
               state.edges = e.detail.edges;
               state.graphEnabled = e.detail.graphEnabled;
@@ -321,6 +321,14 @@
             'boundingBoxEnabledChanged',
             function(e) {
               alAleph.setBoundingBoxEnabled(e.detail);
+            },
+            false
+          );
+
+          alControlPanel.addEventListener(
+            'controlsTypeChanged',
+            function(e) {
+              alAleph.setControlsType(e.detail);
             },
             false
           );
@@ -458,9 +466,10 @@
         alNodeEditor.node = getSelectedNode();
         alEdgeEditor.edge = getSelectedEdge();
         alAngleEditor.angle = getSelectedAngle();
+        alControlPanel.boundingBoxEnabled = state.boundingBoxEnabled;
+        alControlPanel.controlsType = state.controlsType;
         alControlPanel.displayMode = state.displayMode;
         alControlPanel.graphEnabled = state.graphEnabled;
-        alControlPanel.boundingBoxEnabled = state.boundingBoxEnabled;
         alControlPanel.material = state.material;
         alControlPanel.units = state.units;
 

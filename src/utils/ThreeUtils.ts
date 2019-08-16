@@ -1,5 +1,6 @@
 import { Constants } from "../Constants";
 import { AlCamera } from "../interfaces";
+import { ControlsType } from "../enums";
 
 type Entity = import("aframe").Entity;
 
@@ -19,9 +20,9 @@ export class ThreeUtils {
   public static enableControls(
     camEntity: Entity,
     enabled: boolean,
-    isTrackball: boolean
+    type: ControlsType
   ) {
-    isTrackball
+    type === ControlsType.TRACKBALL
       ? camEntity.setAttribute("al-trackball-control", `enabled: ${enabled}`)
       : camEntity.setAttribute("al-orbit-control", `enabled: ${enabled}`);
   }

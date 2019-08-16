@@ -1,4 +1,4 @@
-export enum Controls {
+export enum ControlsType {
   ORBIT = "orbit",
   TRACKBALL = "trackball"
 }
