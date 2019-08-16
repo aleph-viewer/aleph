@@ -621,7 +621,9 @@ export class Aleph {
               anchor: center;
               width: ${Constants.fontSizeMedium * this._boundingSphereRadius}
             `}
-            al-look-to-camera
+            al-look-to-camera={`
+              isTrackball: ${this._isTrackball}
+            `}
             al-render-overlaid
             visible={`${this.selected === nodeId}`}
             position={ThreeUtils.vector3ToString(textOffset)}
