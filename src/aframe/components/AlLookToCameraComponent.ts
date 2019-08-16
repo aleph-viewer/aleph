@@ -40,14 +40,28 @@ export default AFRAME.registerComponent('al-look-to-camera', {
   },
 
   tickFunction() {
-    this.el.object3D.lookAt(this.el.sceneEl.camera.position);
-
     // Copy to up vector to make sure it stays upright
     // TODO: Add check for VR mode to prevent this behaviour
     if (this.data.isTrackball) {
+      this.el.object3D.lookAt(this.el.sceneEl.camera.position);
       (this.el.object3D as THREE.Object3D).up.copy(
         this.el.sceneEl.camera.up.clone()
       );
+      // ELSE we're on orbit mode
+    } else {
+      // const rotVec3 = new THREE.Vector3();
+      // (this.el.object3D as THREE.Object3D).rotation.toVector3(rotVec3);
+      // rotVec3.multiply(new THREE.Vector3(1, 1, 0));
+      // (this.el.object3D as THREE.Object3D).rotation.setFromVector3(rotVec3);
+      const pos: THREE.Vector3 = this.el.object3D.position;
+      const cam: THREE.Vector3 = this.el.sceneEl.camera.position;
+
+      const dot = new THREE.Vector3();
+      dot.crossVectors(pos.clone(), cam.clone()).normalize();
+
+      this.el.object3D.up.copy(dot);
+      this.el.object3D.lookAt(cam);
+      (this.el.object3D as THREE.Object3D).rotateZ(Math.PI / 2);
     }
   },
 

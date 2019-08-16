@@ -1,18 +1,18 @@
 export class Constants {
-  public static controllerName = "-controller";
+  public static controllerName = '-controller';
   public static edgeSize = 0.005;
   public static fontSizeLarge = 2.5;
   public static fontSizeMedium = 1.5;
   public static fontSizeSmall = 0.75;
   public static maxAnimationSteps = 50;
   public static minLoadingMS = 500;
-  public static movedEventName = "-moved";
+  public static movedEventName = '-moved';
   public static nodeSizeRatio = 75;
   public static stackSpaceMultiplier = { x: 10, y: 10, z: 10 };
   public static stepsIncrement = 8;
   public static stepsMax: number = 512;
   public static stepsMin: number = 1;
-  public static titleIdName = "-title";
+  public static titleIdName = '-title';
   public static topLayerRenderOrder = 999;
   public static unitsDecimalPlaces = 2;
   public static zoomFactor = 2.5;
@@ -21,19 +21,19 @@ export class Constants {
   public static minTimeForThrottle = Constants.minFrameMS * 5;
 
   public static buttonColors = {
-    active: "#f50057",
-    hover: "#f50057",
-    up: "#00b0ff"
+    active: '#f50057',
+    hover: '#f50057',
+    up: '#00b0ff'
   };
 
   public static colorValues = {
-    red: "#f50057",
-    blue: "#00b0ff",
-    black: "#000000",
-    white: "#ffffff",
-    yellow: "#ffeb3b",
-    green: "#76ff03",
-    lightRed: "#f77777"
+    red: '#f50057',
+    blue: '#00b0ff',
+    black: '#000000',
+    white: '#ffffff',
+    yellow: '#ffeb3b',
+    green: '#76ff03',
+    lightRed: '#f77777'
   };
 
   public static lightValues = {
@@ -49,7 +49,7 @@ export class Constants {
     near: 0.05,
     far: 10000,
     fov: 45,
-    maxPolarAngle: 360,
+    maxPolarAngle: 175,
     rotateSpeed: 0.5,
     zoomSpeed: 1,
     dampingFactor: 0.25,

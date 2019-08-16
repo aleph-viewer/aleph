@@ -151,7 +151,7 @@ export class Aleph {
   //#endregion
 
   // Is the control scheme in trackball mode?
-  private _isTrackball: boolean = true;
+  private _isTrackball: boolean = false;
 
   //#region general methods
 
@@ -619,15 +619,18 @@ export class Aleph {
               align: center;
               baseline: bottom;
               anchor: center;
-              width: ${Constants.fontSizeMedium * this._boundingSphereRadius}
+              width: ${Constants.fontSizeMedium * this._boundingSphereRadius};
             `}
             al-look-to-camera={`
-              isTrackball: ${this._isTrackball}
+              isTrackball: ${this._isTrackball};
             `}
             al-render-overlaid
             visible={`${this.selected === nodeId}`}
             position={ThreeUtils.vector3ToString(textOffset)}
             id={`${nodeId}-label`}
+            al-background={`
+              text: ${node.title};
+            `}
           />
         </a-entity>
       );
