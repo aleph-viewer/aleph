@@ -234,8 +234,6 @@ export default AFRAME.registerComponent('al-trackball-control', {
     const controls = this.state.controls;
     const data = this.data;
 
-    console.log('trackball-data-position: ', data.controlPosition);
-
     controls.target = ThreeUtils.objectToVector3(data.controlTarget);
     controls.dynamicDampingFactor = data.dynamicDampingFactor;
     controls.enabled = data.enabled;

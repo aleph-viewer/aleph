@@ -17,6 +17,7 @@ import { AlVolumeEvents } from "../../aframe/components/AlVolumeComponent";
 import { Constants } from "../../Constants";
 import { DisplayMode, Orientation } from "../../enums";
 import { AlGraphEntryType } from "../../enums";
+import { Material } from "../../enums/Material";
 import { Units } from "../../enums/Units";
 import { AlAngle, AlCamera, AlEdge, AlNode } from "../../interfaces";
 import { AlGraph } from "../../interfaces/AlGraph";
@@ -60,7 +61,6 @@ import {
   ThreeUtils
 } from "../../utils";
 import { AlControlEvents } from "../../utils/AlControlEvents";
-import { Material } from "../../enums/Material";
 
 type Entity = import("aframe").Entity;
 type Scene = import("aframe").Scene;
