@@ -870,8 +870,8 @@ export class Aleph {
           screenTop: ${0};
           screenWidth: ${this._scene ? this._scene.canvas.width : 0};
           screenHeight: ${this._scene ? this._scene.canvas.height : 0};
-          rotateSpeed: ${Constants.cameraValues.rotateSpeed};
-          zoomSpeed: ${Constants.cameraValues.zoomSpeed};
+          rotateSpeed: ${Constants.cameraValues.rotateSpeed * 2};
+          zoomSpeed: ${Constants.cameraValues.zoomSpeed * 2};
           dynamicDampingFactor: ${Constants.cameraValues.dampingFactor};
           controlTarget: ${ThreeUtils.vector3ToString(
             this.camera ? this.camera.target : new THREE.Vector3(0, 0, 0)
