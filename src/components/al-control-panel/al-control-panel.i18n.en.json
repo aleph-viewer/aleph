@@ -1,10 +1,15 @@
 {
   "axial": "Axial",
+  "clay": "Clay",
   "coronal": "Coronal",
+  "default": "Default",
   "meters": "Meters",
   "millimeters": "Millimeters",
+  "normals": "Normals",
   "recenter": "Recenter",
   "saggital": "Saggital",
   "slices": "Slices",
-  "volume": "Volume"
+  "volume": "Volume",
+  "wireframe": "Wireframe",
+  "xray": "XRay"
 }

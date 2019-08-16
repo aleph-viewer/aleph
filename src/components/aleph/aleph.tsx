@@ -37,6 +37,7 @@ import {
   appSetDisplayMode,
   appSetEdge,
   appSetGraphEnabled,
+  appSetMaterial,
   appSetNode,
   appSetOrientation,
   appSetSlicesIndex,
@@ -59,6 +60,7 @@ import {
   ThreeUtils
 } from "../../utils";
 import { AlControlEvents } from "../../utils/AlControlEvents";
+import { Material } from "../../enums/Material";
 
 type Entity = import("aframe").Entity;
 type Scene = import("aframe").Scene;
@@ -108,6 +110,7 @@ export class Aleph {
   public appSetDisplayMode: Action;
   public appSetEdge: Action;
   public appSetGraphEnabled: Action;
+  public appSetMaterial: Action;
   public appSetNode: Action;
   public appSetOrientation: Action;
   public appSetSlicesIndex: Action;
@@ -129,6 +132,7 @@ export class Aleph {
   @State() public displayMode: DisplayMode;
   @State() public edges: Map<string, AlEdge>;
   @State() public graphEnabled: boolean;
+  @State() public material: Material;
   @State() public nodes: Map<string, AlNode>;
   @State() public nodesVisible: boolean;
   @State() public optionsEnabled: boolean;
@@ -242,6 +246,11 @@ export class Aleph {
   }
 
   @Method()
+  public async setMaterial(material: Material): Promise<void> {
+    this._setMaterial(material);
+  }
+
+  @Method()
   public async setOrientation(orientation: Orientation): Promise<void> {
     this._setOrientation(orientation);
   }
@@ -306,6 +315,7 @@ export class Aleph {
           displayMode,
           edges,
           graphEnabled,
+          material,
           nodes,
           orientation,
           selected,
@@ -329,6 +339,7 @@ export class Aleph {
         displayMode,
         edges,
         graphEnabled,
+        material,
         nodes,
         orientation,
         selected,
@@ -361,6 +372,7 @@ export class Aleph {
       appSetDisplayMode,
       appSetEdge,
       appSetGraphEnabled,
+      appSetMaterial,
       appSetNode,
       appSetOrientation,
       appSetSlicesIndex,
@@ -1203,23 +1215,28 @@ export class Aleph {
     this._stateChanged();
   }
 
-  private _setGraphEnabled(enabled: boolean): void {
-    this.appSetGraphEnabled(enabled);
-    this._stateChanged();
-  }
-
   private _setBoundingBoxEnabled(visible: boolean): void {
     this.appSetBoundingBoxEnabled(visible);
     this._stateChanged();
   }
 
-  private _setSlicesIndex(index: number): void {
-    this.appSetSlicesIndex(index);
+  private _setGraphEnabled(enabled: boolean): void {
+    this.appSetGraphEnabled(enabled);
+    this._stateChanged();
+  }
+
+  private _setMaterial(material: Material): void {
+    this.appSetMaterial(material);
     this._stateChanged();
   }
 
   private _setOrientation(orientation: Orientation): void {
     this.appSetOrientation(orientation);
+    this._stateChanged();
+  }
+
+  private _setSlicesIndex(index: number): void {
+    this.appSetSlicesIndex(index);
     this._stateChanged();
   }
 

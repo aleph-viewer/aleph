@@ -1,8 +1,9 @@
-import { DisplayMode } from "../enums/DisplayMode";
-import { Orientation } from "../enums/Orientation";
-import { AlCamera, AlEdge } from "../interfaces";
 import { AlAngle } from "../interfaces/AlAngle";
+import { AlCamera, AlEdge } from "../interfaces";
 import { AlNode } from "../interfaces/AlNode";
+import { DisplayMode } from "../enums/DisplayMode";
+import { Material } from "../enums/Material";
+import { Orientation } from "../enums/Orientation";
 import { Units } from "../enums/Units";
 
 export interface NullAction {
@@ -28,6 +29,7 @@ export type ActionTypes =
   | AppSetDisplayModeAction
   | AppSetEdgeAction
   | AppSetGraphEnabledAction
+  | AppSetMaterialAction
   | AppSetNodeAction
   | AppSetOrientationAction
   | AppSetSlicesIndexAction
@@ -58,6 +60,7 @@ export enum TypeKeys {
   APP_SET_CONTROLS_ENABLED = "APP_SET_CONTROLS_ENABLED",
   APP_SET_DISPLAY_MODE = "APP_SET_DISPLAY_MODE",
   APP_SET_EDGE = "APP_SET_EDGE",
+  APP_SET_MATERIAL = "APP_SET_MATERIAL",
   APP_SET_NODE = "APP_SET_NODE",
   APP_SET_NODES_ENABLED = "APP_SET_NODES_ENABLED",
   APP_SET_ORIENTATION = "APP_SET_ORIENTATION",
@@ -335,6 +338,21 @@ export const appSetGraphEnabled = (payload: boolean) => async (
 ) => {
   return dispatch({
     type: TypeKeys.APP_SET_NODES_ENABLED,
+    payload
+  });
+};
+
+export interface AppSetMaterialAction {
+  type: TypeKeys.APP_SET_MATERIAL;
+  payload: Material;
+}
+
+export const appSetMaterial = (payload: Material) => async (
+  dispatch,
+  _getState
+) => {
+  return dispatch({
+    type: TypeKeys.APP_SET_MATERIAL,
     payload
   });
 };

@@ -148,11 +148,10 @@
 
       class AlephInspectorState {
         constructor() {
-          this.src = null;
-          this.srcLoaded = false;
           this.nodes = null;
           this.selected = null;
-          this.units = null;
+          this.src = null;
+          this.srcLoaded = false;
         }
       }
 
@@ -160,8 +159,7 @@
         nodes: mobx.observable,
         selected: mobx.observable,
         src: mobx.observable,
-        srcLoaded: mobx.observable,
-        units: mobx.observable
+        srcLoaded: mobx.observable
       });
 
       urls = new Map([
@@ -224,6 +222,7 @@
               state.displayMode = e.detail.displayMode;
               state.edges = e.detail.edges;
               state.graphEnabled = e.detail.graphEnabled;
+              state.material = e.detail.material;
               state.nodes = e.detail.nodes;
               state.selected = e.detail.selected;
               state.srcLoaded = e.detail.srcLoaded;
@@ -343,6 +342,14 @@
           );
 
           alControlPanel.addEventListener(
+            'materialChanged',
+            function(e) {
+              alAleph.setMaterial(e.detail);
+            },
+            false
+          );
+
+          alControlPanel.addEventListener(
             'orientationChanged',
             function(e) {
               alAleph.setOrientation(e.detail);
@@ -454,6 +461,7 @@
         alControlPanel.displayMode = state.displayMode;
         alControlPanel.graphEnabled = state.graphEnabled;
         alControlPanel.boundingBoxEnabled = state.boundingBoxEnabled;
+        alControlPanel.material = state.material;
         alControlPanel.units = state.units;
 
         lastState = Object.assign({}, state);

@@ -1,5 +1,6 @@
 import { AlAngle, AlCamera, AlEdge, AlNode } from ".";
 import { DisplayMode, Orientation } from "../enums";
+import { Material } from "../enums/Material";
 import { Units } from "../enums/Units";
 
 export interface AlAppState {
@@ -10,6 +11,7 @@ export interface AlAppState {
   displayMode: DisplayMode;
   edges: Map<string, AlEdge>;
   graphEnabled: boolean;
+  material: Material;
   nodes: Map<string, AlNode>;
   orientation: Orientation;
   selected: string | null;
