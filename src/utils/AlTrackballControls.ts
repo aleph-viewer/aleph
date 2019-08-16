@@ -5,13 +5,21 @@
  * @author Luca Antiga 	/ http://lantiga.github.io
  */
 
-export const AlTrackballState = {
+// Possible states for control component
+const AlTrackballState = {
   NONE: -1,
   ROTATE: 0,
   ZOOM: 1,
   PAN: 2,
   TOUCH_ROTATE: 3,
   TOUCH_ZOOM_PAN: 4
+};
+
+// Mouse button binds to actions
+const AlMouseButtons = {
+  ROTATE: THREE.MOUSE.LEFT,
+  ZOOM: THREE.MOUSE.MIDDLE,
+  PAN: THREE.MOUSE.RIGHT
 };
 
 export class AlTrackballControls extends THREE.EventDispatcher {
@@ -42,9 +50,6 @@ export class AlTrackballControls extends THREE.EventDispatcher {
   public minDistance: number;
   public maxDistance: number;
   // ===============================
-
-  private _mouseButtons;
-
   private EPS: number;
   private _lastPosition: THREE.Vector3;
 
@@ -66,9 +71,9 @@ export class AlTrackballControls extends THREE.EventDispatcher {
   private _up0: THREE.Vector3;
 
   // events
-  private _changeEvent = { type: 'change' };
-  private _startEvent = { type: 'start' };
-  private _endEvent = { type: 'end' };
+  private _changeEvent = { type: "change" };
+  private _startEvent = { type: "start" };
+  private _endEvent = { type: "end" };
 
   // tslint:disable-next-line: no-any
   constructor(object: any, domElement: HTMLElement | Document) {
@@ -94,12 +99,6 @@ export class AlTrackballControls extends THREE.EventDispatcher {
 
     this.minDistance = 0;
     this.maxDistance = Infinity;
-
-    this._mouseButtons = {
-      ROTATE: THREE.MOUSE.LEFT,
-      ZOOM: THREE.MOUSE.MIDDLE,
-      PAN: THREE.MOUSE.RIGHT
-    };
     // =====================
 
     // ===== internals =====
@@ -143,38 +142,38 @@ export class AlTrackballControls extends THREE.EventDispatcher {
   }
 
   private _addListeners() {
-    this.domElement.addEventListener('mousedown', this._mouseDown, {
+    this.domElement.addEventListener("mousedown", this._mouseDown, {
       capture: false,
       once: false,
       passive: true
     });
-    this.domElement.addEventListener('mousemove', this._mouseMove, {
+    this.domElement.addEventListener("mousemove", this._mouseMove, {
       capture: false,
       once: false,
       passive: true
     });
-    this.domElement.addEventListener('mouseup', this._mouseUp, {
+    this.domElement.addEventListener("mouseup", this._mouseUp, {
       capture: false,
       once: false,
       passive: true
     });
-    this.domElement.addEventListener('wheel', this._mouseWheel, {
+    this.domElement.addEventListener("wheel", this._mouseWheel, {
       capture: false,
       once: false,
       passive: true
     });
 
-    this.domElement.addEventListener('touchstart', this._touchStart, {
+    this.domElement.addEventListener("touchstart", this._touchStart, {
       capture: false,
       once: false,
       passive: true
     });
-    this.domElement.addEventListener('touchend', this._touchEnd, {
+    this.domElement.addEventListener("touchend", this._touchEnd, {
       capture: false,
       once: false,
       passive: true
     });
-    this.domElement.addEventListener('touchmove', this._touchMove, {
+    this.domElement.addEventListener("touchmove", this._touchMove, {
       capture: false,
       once: false,
       passive: true
@@ -188,7 +187,7 @@ export class AlTrackballControls extends THREE.EventDispatcher {
 
     if (this._state === AlTrackballState.NONE) {
       switch (event.button) {
-        case this._mouseButtons.LEFT:
+        case AlMouseButtons.ROTATE:
           this._state = AlTrackballState.ROTATE;
           if (!this.noRotate) {
             this._moveCurr.copy(
@@ -198,7 +197,7 @@ export class AlTrackballControls extends THREE.EventDispatcher {
           }
           break;
 
-        case this._mouseButtons.MIDDLE:
+        case AlMouseButtons.ZOOM:
           this._state = AlTrackballState.ZOOM;
           if (!this.noZoom) {
             this._zoomStart.copy(
@@ -208,7 +207,7 @@ export class AlTrackballControls extends THREE.EventDispatcher {
           }
           break;
 
-        case this._mouseButtons.RIGHT:
+        case AlMouseButtons.PAN:
           this._state = AlTrackballState.PAN;
           if (!this.noPan) {
             this._panStart.copy(
@@ -224,6 +223,7 @@ export class AlTrackballControls extends THREE.EventDispatcher {
     }
 
     this.dispatchEvent(this._startEvent);
+    this.update();
   }
 
   private _mouseMove(event: MouseEvent) {
@@ -239,6 +239,7 @@ export class AlTrackballControls extends THREE.EventDispatcher {
     } else if (this._state === AlTrackballState.PAN && !this.noPan) {
       this._panEnd.copy(this._getMouseOnScreen(event.pageX, event.pageY));
     }
+    this.update();
   }
 
   private _mouseUp(_event: MouseEvent) {
@@ -249,6 +250,7 @@ export class AlTrackballControls extends THREE.EventDispatcher {
     this._state = AlTrackballState.NONE;
 
     this.dispatchEvent(this._endEvent);
+    this.update();
   }
 
   private _mouseWheel(event: WheelEvent) {
@@ -274,6 +276,7 @@ export class AlTrackballControls extends THREE.EventDispatcher {
 
     this.dispatchEvent(this._startEvent);
     this.dispatchEvent(this._endEvent);
+    this.update();
   }
 
   private _touchStart(event: TouchEvent) {
@@ -306,6 +309,7 @@ export class AlTrackballControls extends THREE.EventDispatcher {
     }
 
     this.dispatchEvent(this._startEvent);
+    this.update();
   }
 
   private _touchEnd(event: TouchEvent) {
@@ -331,6 +335,7 @@ export class AlTrackballControls extends THREE.EventDispatcher {
     }
 
     this.dispatchEvent(this._endEvent);
+    this.update();
   }
 
   private _touchMove(event: TouchEvent) {
@@ -357,6 +362,7 @@ export class AlTrackballControls extends THREE.EventDispatcher {
         this._panEnd.copy(this._getMouseOnScreen(x, y));
         break;
     }
+    this.update();
   }
   public _resize() {
     if (this.domElement === document) {
@@ -561,13 +567,13 @@ export class AlTrackballControls extends THREE.EventDispatcher {
   }
 
   private _removeListeners() {
-    this.domElement.removeEventListener('mousedown', this._mouseDown, false);
-    this.domElement.removeEventListener('mousemove', this._mouseMove, false);
-    this.domElement.removeEventListener('mouseup', this._mouseUp, false);
-    this.domElement.removeEventListener('wheel', this._mouseWheel, false);
+    this.domElement.removeEventListener("mousedown", this._mouseDown, false);
+    this.domElement.removeEventListener("mousemove", this._mouseMove, false);
+    this.domElement.removeEventListener("mouseup", this._mouseUp, false);
+    this.domElement.removeEventListener("wheel", this._mouseWheel, false);
 
-    this.domElement.removeEventListener('touchstart', this._touchStart, false);
-    this.domElement.removeEventListener('touchend', this._touchEnd, false);
-    this.domElement.removeEventListener('touchmove', this._touchMove, false);
+    this.domElement.removeEventListener("touchstart", this._touchStart, false);
+    this.domElement.removeEventListener("touchend", this._touchEnd, false);
+    this.domElement.removeEventListener("touchmove", this._touchMove, false);
   }
 }
