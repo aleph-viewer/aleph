@@ -1,15 +1,15 @@
-import { Constants } from "../Constants";
-import { AlCamera } from "../interfaces";
+import { Constants } from '../Constants';
+import { AlCamera } from '../interfaces';
 
-type Entity = import("aframe").Entity;
+type Entity = import('aframe').Entity;
 
 export class ThreeUtils {
   public static isWebGL2Available() {
     try {
       // tslint:disable-next-line: no-any
-      const canvas: any = document.createElement("canvas");
+      const canvas: any = document.createElement('canvas');
       return !!// tslint:disable-next-line: no-any
-      ((window as any).WebGL2RenderingContext && canvas.getContext("webgl2"));
+      ((window as any).WebGL2RenderingContext && canvas.getContext('webgl2'));
     } catch (e) {
       return false;
     }
@@ -22,8 +22,8 @@ export class ThreeUtils {
     isTrackball: boolean
   ) {
     isTrackball
-      ? camEntity.setAttribute("al-trackball-control", `enabled: ${enabled}`)
-      : camEntity.setAttribute("al-orbit-control", `enabled: ${enabled}`);
+      ? camEntity.setAttribute('al-trackball-control', `enabled: ${enabled}`)
+      : camEntity.setAttribute('al-orbit-control', `enabled: ${enabled}`);
   }
 
   public static waitOneFrame(func: () => void) {
@@ -65,11 +65,11 @@ export class ThreeUtils {
   }
 
   public static vector3ToString(vec: THREE.Vector3): string {
-    return vec.toArray().join(" ");
+    return vec.toArray().join(' ');
   }
 
   public static stringToVector3(vec: string): THREE.Vector3 {
-    const res = vec.split(" ");
+    const res = vec.split(' ');
     const vect = new THREE.Vector3();
     vect.x = Number(res[0]);
     vect.y = Number(res[1]);
@@ -112,7 +112,7 @@ export class ThreeUtils {
     return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
   }
 
-  public static getSlerpPath(
+  public static getSlerpCameraPath(
     start: AlCamera,
     end: AlCamera,
     positionChange: boolean,
@@ -136,6 +136,24 @@ export class ThreeUtils {
           ? ThreeUtils.slerp(st.clone(), et.clone(), percent)
           : et
       } as AlCamera);
+    }
+
+    return path;
+  }
+
+  public static getSlerpPath(
+    start: THREE.Vector3,
+    end: THREE.Vector3
+  ): number[] {
+    const path = [];
+
+    // add epsilon to avoid NaN due to divide by 0 in the atan in angleTo
+    const sp: THREE.Vector3 = start.clone().addScalar(Number.EPSILON);
+    const ep: THREE.Vector3 = end.clone().addScalar(Number.EPSILON);
+
+    for (let frame = 0; frame <= Constants.maxAnimationSteps; frame++) {
+      const percent = this.easeInOutCubic(frame / Constants.maxAnimationSteps);
+      path.push(ThreeUtils.slerp(sp.clone(), ep.clone(), percent));
     }
 
     return path;

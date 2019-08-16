@@ -26,6 +26,10 @@ export class AlTrackballControls extends THREE.EventDispatcher {
   public object;
   public target: THREE.Vector3;
 
+  public get up0(): THREE.Vector3 {
+    return this._up0.clone();
+  }
+
   // tslint:disable-next-line: no-any
   public domElement: any;
 
@@ -124,8 +128,6 @@ export class AlTrackballControls extends THREE.EventDispatcher {
     this._target0 = this.target.clone();
     this._position0 = this.object.position.clone();
     this._up0 = this.object.up.clone();
-
-    // NEED TO ANIMATE UP VECTOR AS WELL
 
     this._bindMethods();
     this._addListeners();
