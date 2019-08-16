@@ -23,7 +23,7 @@
     "test": "stencil test --spec --e2e",
     "test.watch": "stencil test --spec --e2e --watchAll",
     "netlify": "netlify deploy --dir=www --prod",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run test && npm run build"
   },
   "dependencies": {
     "@edsilv/key-codes": "0.1.1",
@@ -35,8 +35,8 @@
   "devDependencies": {
     "@stencil/core": "1.2.4",
     "@types/aframe": "0.8.3",
-    "@types/jest": "23.3.14",
-    "@types/puppeteer": "1.12.3",
+    "@types/jest": "24.0.17",
+    "@types/puppeteer": "1.12.4",
     "@types/redux": "3.6.0",
     "@types/three": "0.93.30",
     "copyfiles": "2.1.0",
