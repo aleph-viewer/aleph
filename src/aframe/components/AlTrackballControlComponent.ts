@@ -7,6 +7,7 @@ import { AlTrackballControls } from "../../utils/AlTrackballControls";
 
 interface AlTrackballControlState {
   animationCache: AlCamera[];
+  cameraAnimationCache: THREE.Vector3[];
   // tslint:disable-next-line: no-any
   controls: AlTrackballControls; // THREE.TrackballControls;
   mouseDown: boolean;
@@ -103,6 +104,13 @@ export default AFRAME.registerComponent("al-trackball-control", {
 
   handleAnimationCache(event: CustomEvent) {
     this.state.animationCache = event.detail.slerpPath;
+
+    const camera = this.el.getObject3D("camera") as THREE.Camera;
+
+    this.state.cameraAnimationCache = ThreeUtils.getSlerpPath(
+      camera.up.clone(),
+      (this.state.controls as AlTrackballControls).up0
+    );
   },
 
   mouseUp(_event: MouseEvent) {
@@ -201,6 +209,7 @@ export default AFRAME.registerComponent("al-trackball-control", {
 
     (this.state as AlTrackballControlState) = {
       animationCache,
+      cameraAnimationCache: null,
       controls,
       mouseDown: false,
       wheelCounter1: 0,
@@ -234,8 +243,6 @@ export default AFRAME.registerComponent("al-trackball-control", {
     const controls = this.state.controls;
     const data = this.data;
 
-    console.log("trackball-data-position: ", data.controlPosition);
-
     controls.target = ThreeUtils.objectToVector3(data.controlTarget);
     controls.dynamicDampingFactor = data.dynamicDampingFactor;
     controls.enabled = data.enabled;
@@ -266,11 +273,21 @@ export default AFRAME.registerComponent("al-trackball-control", {
 
     if (this.data.animating) {
       const nextFrame: AlCamera = this.state.animationCache.shift();
+      const nextCamera: THREE.Vector3 = this.state.cameraAnimationCache.shift();
 
       if (nextFrame && nextFrame.position && nextFrame.target) {
+        const camera = this.el.getObject3D("camera") as THREE.Camera;
+
         controls.object.position.copy(nextFrame.position);
-        this.el.getObject3D("camera").position.copy(nextFrame.position);
+        camera.position.copy(nextFrame.position);
+
+        // Need to align Up vector as well to re-orient correctly
+        // inside the Quaternion space that trackball uses
+        if (nextCamera) {
+          camera.up.copy(nextCamera);
+        }
         controls.target.copy(nextFrame.target);
+
         this.el.sceneEl.emit(
           AlControlEvents.INTERACTION,
           { cameraState: this.getCameraState() },
@@ -288,7 +305,7 @@ export default AFRAME.registerComponent("al-trackball-control", {
       }
     }
 
-    if (controls.enabled && (controls.enableDamping || controls.autoRotate)) {
+    if (controls.enabled) {
       controls.update();
     }
   },

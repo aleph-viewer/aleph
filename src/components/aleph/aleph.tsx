@@ -630,13 +630,18 @@ export class Aleph {
               align: center;
               baseline: bottom;
               anchor: center;
-              width: ${Constants.fontSizeMedium * this._boundingSphereRadius}
+              width: ${Constants.fontSizeMedium * this._boundingSphereRadius};
             `}
-            al-look-to-camera
+            al-look-to-camera={`
+              controlsType: ${this.controlsType};
+            `}
             al-render-overlaid
             visible={`${this.selected === nodeId}`}
             position={ThreeUtils.vector3ToString(textOffset)}
             id={`${nodeId}-label`}
+            al-background={`
+              text: ${node.title};
+            `}
           />
         </a-entity>
       );
@@ -914,23 +919,20 @@ export class Aleph {
 
   private _renderControls() {
     switch (this.controlsType) {
-      case ControlsType.TRACKBALL : {
+      case ControlsType.TRACKBALL: {
         return this._renderTrackballCamera();
       }
-      case ControlsType.ORBIT : {
+      case ControlsType.ORBIT: {
         return this._renderOrbitCamera();
       }
-      default : {
+      default: {
         return null;
       }
     }
   }
 
   private _renderCamera() {
-    return [
-      this._renderControls(),
-      this._renderLights()
-    ];
+    return [this._renderControls(), this._renderLights()];
   }
 
   private _renderScene() {
@@ -1149,7 +1151,7 @@ export class Aleph {
       if (diffPos > 0) {
         animationEnd.position.copy(animationEndVec3.clone());
 
-        const slerpPath: number[] = ThreeUtils.getSlerpPath(
+        const slerpPath = ThreeUtils.getSlerpCameraPath(
           animationStart,
           animationEnd,
           diffPos > 0,
