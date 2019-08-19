@@ -30,6 +30,7 @@ export class Constants {
     red: '#f50057',
     blue: '#00b0ff',
     black: '#000000',
+    grey: '#222222',
     white: '#ffffff',
     yellow: '#ffeb3b',
     green: '#76ff03',

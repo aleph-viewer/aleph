@@ -628,10 +628,18 @@ export class Aleph {
             visible={`${this.selected === nodeId}`}
             position={ThreeUtils.vector3ToString(textOffset)}
             id={`${nodeId}-label`}
-            al-background={`
-              text: ${node.title};
-            `}
-          />
+          >
+            <a-plane
+              position={ThreeUtils.vector3ToString(textOffset)}
+              color={Constants.colorValues.black}
+              opacity='0.9'
+              al-background={`
+                text: ${node.title};
+                boundingRadius: ${this._boundingSphereRadius};
+              `}
+              al-render-overlaid
+            />
+          </a-entity>
         </a-entity>
       );
     });

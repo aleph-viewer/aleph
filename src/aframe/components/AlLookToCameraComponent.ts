@@ -1,13 +1,13 @@
-import { Constants } from '../../Constants';
-import { BaseComponent } from './BaseComponent';
+import { Constants } from "../../Constants";
+import { BaseComponent } from "./BaseComponent";
 
 interface AlLookToCameraComponent extends BaseComponent {
   tickFunction(): void;
 }
 
-export default AFRAME.registerComponent('al-look-to-camera', {
+export default AFRAME.registerComponent("al-look-to-camera", {
   schema: {
-    isTrackball: { type: 'boolean', default: false }
+    isTrackball: { type: "boolean", default: false }
   },
 
   init() {
