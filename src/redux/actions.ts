@@ -5,6 +5,7 @@ import { DisplayMode } from "../enums/DisplayMode";
 import { Material } from "../enums/Material";
 import { Orientation } from "../enums/Orientation";
 import { Units } from "../enums/Units";
+import { ControlsType } from "../enums/ControlsType";
 
 export interface NullAction {
   type: TypeKeys.NULL;
@@ -26,6 +27,7 @@ export type ActionTypes =
   | AppSetBoundingBoxEnabledAction
   | AppSetCameraAction
   | AppSetControlsEnabledAction
+  | AppSetControlsTypeAction
   | AppSetDisplayModeAction
   | AppSetEdgeAction
   | AppSetGraphEnabledAction
@@ -58,6 +60,7 @@ export enum TypeKeys {
   APP_SET_BOUNDINGBOX_VISIBLE = "APP_SET_BOUNDINGBOX_VISIBLE",
   APP_SET_CAMERA = "APP_SET_CAMERA",
   APP_SET_CONTROLS_ENABLED = "APP_SET_CONTROLS_ENABLED",
+  APP_SET_CONTROLS_TYPE = "APP_SET_CONTROLS_TYPE",
   APP_SET_DISPLAY_MODE = "APP_SET_DISPLAY_MODE",
   APP_SET_EDGE = "APP_SET_EDGE",
   APP_SET_MATERIAL = "APP_SET_MATERIAL",
@@ -508,6 +511,21 @@ export const appSetControlsEnabled = (payload: boolean) => async (
 ) => {
   return dispatch({
     type: TypeKeys.APP_SET_CONTROLS_ENABLED,
+    payload
+  });
+};
+
+export interface AppSetControlsTypeAction {
+  type: TypeKeys.APP_SET_CONTROLS_TYPE;
+  payload: ControlsType;
+}
+
+export const appSetControlsType = (payload: ControlsType) => async (
+  dispatch,
+  _getState
+) => {
+  return dispatch({
+    type: TypeKeys.APP_SET_CONTROLS_TYPE,
     payload
   });
 };

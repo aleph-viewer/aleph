@@ -1,6 +1,7 @@
 import { ActionTypes, TypeKeys } from "./actions";
 import { AlAngle, AlAppState, AlEdge, AlNode } from "../interfaces";
 import { combineReducers } from "redux";
+import { ControlsType } from "../enums/ControlsType";
 import { DisplayMode } from "../enums/DisplayMode";
 import { GetUtils } from "../utils";
 import { Material } from "../enums/Material";
@@ -14,6 +15,7 @@ export const getInitialState = () => {
     boundingBoxEnabled: false,
     camera: null,
     controlsEnabled: true,
+    controlsType: ControlsType.ORBIT,
     displayMode: DisplayMode.MESH,
     edges: new Map<string, AlEdge>(),
     material: Material.DEFAULT,
@@ -333,6 +335,12 @@ export const app = (
       return {
         ...state,
         controlsEnabled: action.payload
+      };
+    }
+    case TypeKeys.APP_SET_CONTROLS_TYPE: {
+      return {
+        ...state,
+        controlsType: action.payload
       };
     }
     default: {

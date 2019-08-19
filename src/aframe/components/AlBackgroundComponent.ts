@@ -1,5 +1,5 @@
-import { Constants } from '../../Constants';
-import { BaseComponent } from './BaseComponent';
+import { Constants } from "../../Constants";
+import { BaseComponent } from "./BaseComponent";
 
 interface AlBackgroundComponent extends BaseComponent {
   tickFunction(): void;

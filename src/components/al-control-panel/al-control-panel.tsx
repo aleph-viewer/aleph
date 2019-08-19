@@ -14,6 +14,7 @@ import { Units } from "../../enums/Units";
 import { ContentStrings } from "./ContentStrings";
 import { getLocaleComponentStrings } from "../../utils/Locale";
 import { Material } from "../../enums/Material";
+import { ControlsType } from "../../enums";
 
 @Component({
   tag: "al-control-panel",
@@ -27,6 +28,7 @@ export class AlControlPanel {
   contentStrings: ContentStrings;
 
   @Event() public boundingBoxEnabledChanged: EventEmitter;
+  @Event() public controlsTypeChanged: EventEmitter;
   @Event() public displayModeChanged: EventEmitter;
   @Event() public materialChanged: EventEmitter;
   @Event() public orientationChanged: EventEmitter;
@@ -41,6 +43,8 @@ export class AlControlPanel {
   @Event() public volumeWindowWidthChanged: EventEmitter;
 
   @Prop({ mutable: true }) public boundingBoxEnabled: boolean = false;
+  @Prop({ mutable: true }) public controlsType: ControlsType =
+    ControlsType.ORBIT;
   @Prop({ mutable: true }) public displayMode: DisplayMode = DisplayMode.MESH;
   @Prop({ mutable: true }) public material: Material = Material.DEFAULT;
   @Prop({ mutable: true }) public orientation: Orientation =
@@ -73,6 +77,11 @@ export class AlControlPanel {
   private _boundingBoxEnabled(enabled: boolean) {
     this.boundingBoxEnabled = enabled;
     this.boundingBoxEnabledChanged.emit(enabled);
+  }
+
+  private _controlsType(controlsType: ControlsType) {
+    this.controlsType = controlsType;
+    this.controlsTypeChanged.emit(controlsType);
   }
 
   private _displayMode(displayMode: DisplayMode) {
@@ -200,6 +209,38 @@ export class AlControlPanel {
     );
   }
 
+  public renderControlsTypeSelect() {
+    return (
+      <ion-item
+        style={{
+          display: "var(--controls-type-display, block)"
+        }}
+      >
+        <ion-icon src="/assets/svg/controls-type.svg" slot="start" />
+        <select
+          slot="end"
+          onChange={e =>
+            this._controlsType((e.srcElement as HTMLSelectElement)
+              .value as ControlsType)
+          }
+        >
+          <option
+            selected={this.controlsType === ControlsType.ORBIT}
+            value={ControlsType.ORBIT}
+          >
+            {this.contentStrings.orbit}
+          </option>
+          <option
+            selected={this.controlsType === ControlsType.TRACKBALL}
+            value={ControlsType.TRACKBALL}
+          >
+            {this.contentStrings.trackball}
+          </option>
+        </select>
+      </ion-item>
+    );
+  }
+
   public renderRecenterButton() {
     return (
       <ion-item
@@ -302,6 +343,7 @@ export class AlControlPanel {
   public renderGenericOptions() {
     return [
       this.renderBoundingBoxEnabled(),
+      this.renderControlsTypeSelect(),
       this.renderRecenterButton(),
       this.renderUnitsSelect()
     ];

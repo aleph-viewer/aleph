@@ -12,6 +12,13 @@ import {
   AlNode,
 } from './interfaces';
 import {
+  ControlsType,
+  DisplayMode as DisplayMode1,
+  Material as Material1,
+  Orientation as Orientation1,
+  Units as Units1,
+} from './enums';
+import {
   DisplayMode,
 } from './enums/DisplayMode';
 import {
@@ -23,10 +30,6 @@ import {
 import {
   Units,
 } from './enums/Units';
-import {
-  DisplayMode as DisplayMode1,
-  Orientation as Orientation1,
-} from './enums';
 import {
   AlGraph,
 } from './interfaces/AlGraph';
@@ -40,6 +43,7 @@ export namespace Components {
   }
   interface AlControlPanel {
     'boundingBoxEnabled': boolean;
+    'controlsType': ControlsType;
     'displayMode': DisplayMode;
     'graphEnabled': boolean;
     'material': Material;
@@ -94,6 +98,8 @@ export namespace Components {
     'resize': () => Promise<void>;
     'selectNode': (nodeId: string) => Promise<void>;
     'setBoundingBoxEnabled': (visible: boolean) => Promise<void>;
+    'setControlsEnabled': (enabled: boolean) => Promise<void>;
+    'setControlsType': (type: ControlsType) => Promise<void>;
     'setDisplayMode': (displayMode: DisplayMode) => Promise<void>;
     /**
     * Creates or updates an edge in the graph
@@ -195,10 +201,12 @@ declare namespace LocalJSX {
   }
   interface AlControlPanel extends JSXBase.HTMLAttributes<HTMLAlControlPanelElement> {
     'boundingBoxEnabled'?: boolean;
+    'controlsType'?: ControlsType;
     'displayMode'?: DisplayMode;
     'graphEnabled'?: boolean;
     'material'?: Material;
     'onBoundingBoxEnabledChanged'?: (event: CustomEvent<any>) => void;
+    'onControlsTypeChanged'?: (event: CustomEvent<any>) => void;
     'onDisplayModeChanged'?: (event: CustomEvent<any>) => void;
     'onGraphEnabledChanged'?: (event: CustomEvent<any>) => void;
     'onMaterialChanged'?: (event: CustomEvent<any>) => void;

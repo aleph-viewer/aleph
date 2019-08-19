@@ -45,6 +45,7 @@
     "prettier": "1.17.0",
     "prettier-check": "2.0.0",
     "puppeteer": "1.19.0",
+    "tslint": "^5.18.0",
     "tslint-config-prettier": "1.18.0",
     "typescript-tslint-plugin": "0.3.1"
   },
