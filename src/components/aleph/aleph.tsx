@@ -1,24 +1,28 @@
-//#region Imports
-import { KeyDown } from "@edsilv/key-codes";
+import "@stencil/redux";
+import "../../aframe";
+import {
+  AMIUtils,
+  AlGraphEvents,
+  EventUtils,
+  GetUtils,
+  GraphUtils,
+  ThreeUtils
+} from "../../utils";
+import { Action, Store } from "@stencil/redux";
+import { AlAngle, AlCamera, AlEdge, AlNode } from "../../interfaces";
+import { AlGltfModelEvents, AlNodeSpawnerEvents } from "../../aframe";
+import { AlGraphEntryType, ControlsType, Material, Units } from "../../enums";
 import {
   Component,
+  Element,
   Event,
   EventEmitter,
-  h,
   Method,
   Prop,
-  State
+  State,
+  h
 } from "@stencil/core";
-import "@stencil/redux";
-import { Action, Store } from "@stencil/redux";
-import "../../aframe";
-import { AlGltfModelEvents, AlNodeSpawnerEvents } from "../../aframe";
-import { AlVolumeEvents } from "../../aframe/components/AlVolumeComponent";
-import { Constants } from "../../Constants";
 import { DisplayMode, Orientation } from "../../enums";
-import { AlGraphEntryType, ControlsType, Material, Units } from "../../enums";
-import { AlAngle, AlCamera, AlEdge, AlNode } from "../../interfaces";
-import { AlGraph } from "../../interfaces/AlGraph";
 import {
   appClearAngles,
   appClearEdges,
@@ -50,20 +54,18 @@ import {
   appSetVolumeWindowCenter,
   appSetVolumeWindowWidth
 } from "../../redux/actions";
-import { configureStore } from "../../redux/store";
-import {
-  AlGraphEvents,
-  AMIUtils,
-  EventUtils,
-  GetUtils,
-  GraphUtils,
-  ThreeUtils
-} from "../../utils";
+
 import { AlControlEvents } from "../../utils/AlControlEvents";
+import { AlGraph } from "../../interfaces/AlGraph";
+import { AlVolumeEvents } from "../../aframe/components/AlVolumeComponent";
+import { Constants } from "../../Constants";
+import { ContentStrings } from "./ContentStrings";
+import { KeyDown } from "@edsilv/key-codes";
+import { configureStore } from "../../redux/store";
+import { getLocaleComponentStrings } from "../../utils/Locale";
 
 type Entity = import("aframe").Entity;
 type Scene = import("aframe").Scene;
-//#endregion
 
 @Component({
   tag: "uv-aleph",
@@ -75,6 +77,7 @@ export class Aleph {
   private _boundingBox: THREE.Box3;
   private _boundingSphereRadius: number;
   private _camera: Entity;
+  private _contentStrings: ContentStrings;
   private _debouncedAppSetCamera: (state: AlCamera) => void;
   private _hovered: string | null = null;
   private _isShiftDown: boolean = false;
@@ -86,6 +89,8 @@ export class Aleph {
   private _validTarget: boolean;
   private _boundingEntity: Entity;
   private _lights: Entity[];
+
+  @Element() private _element: HTMLElement;
 
   @Prop({ context: "store" }) public store: Store;
   @Prop() public dracoDecoderPath: string | null;
@@ -306,7 +311,9 @@ export class Aleph {
   /** Fires when an object is loaded passing either the object or a stackhelper for volumetric data. */
   @Event() public loaded: EventEmitter;
 
-  public componentWillLoad() {
+  protected async componentWillLoad() {
+    this._contentStrings = await getLocaleComponentStrings(this._element);
+    console.log(this._contentStrings.test);
     this._isWebGl2 = ThreeUtils.isWebGL2Available();
 
     // redux
@@ -639,18 +646,10 @@ export class Aleph {
             visible={`${this.selected === nodeId}`}
             position={ThreeUtils.vector3ToString(textOffset)}
             id={`${nodeId}-label`}
-          >
-            <a-plane
-              position={ThreeUtils.vector3ToString(textOffset)}
-              color={Constants.colorValues.black}
-              opacity="0.9"
-              al-background={`
-                text: ${node.title};
-                boundingRadius: ${this._boundingSphereRadius};
-              `}
-              al-render-overlaid
-            />
-          </a-entity>
+            al-background={`
+              text: ${node.title};
+            `}
+          />
         </a-entity>
       );
     });

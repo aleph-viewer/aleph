@@ -1,31 +1,27 @@
 import {
   Component,
-  h,
   Element,
   Event,
   EventEmitter,
   Prop,
-  Watch
+  Watch,
+  h
 } from "@stencil/core";
+import { ControlsType, Material, Orientation, Units } from "../../enums";
 import { Constants } from "../../Constants";
-import { DisplayMode } from "../../enums/DisplayMode";
-import { Orientation } from "../../enums/Orientation";
-import { Units } from "../../enums/Units";
 import { ContentStrings } from "./ContentStrings";
+import { DisplayMode } from "../../enums/DisplayMode";
 import { getLocaleComponentStrings } from "../../utils/Locale";
-import { Material } from "../../enums/Material";
-import { ControlsType } from "../../enums";
-
 @Component({
   tag: "al-control-panel",
   styleUrl: "al-control-panel.css",
   shadow: true
 })
 export class AlControlPanel {
+  private _contentStrings: ContentStrings;
   private _lastStackOrientationIndex: number;
 
-  @Element() element: HTMLElement;
-  contentStrings: ContentStrings;
+  @Element() private _element: HTMLElement;
 
   @Event() public boundingBoxEnabledChanged: EventEmitter;
   @Event() public controlsTypeChanged: EventEmitter;
@@ -70,8 +66,8 @@ export class AlControlPanel {
   @Prop({ mutable: true }) public volumeWindowCenter: number;
   @Prop({ mutable: true }) public volumeWindowWidth: number;
 
-  async componentWillLoad(): Promise<void> {
-    this.contentStrings = await getLocaleComponentStrings(this.element);
+  protected async componentWillLoad(): Promise<void> {
+    this._contentStrings = await getLocaleComponentStrings(this._element);
   }
 
   private _boundingBoxEnabled(enabled: boolean) {
@@ -159,13 +155,13 @@ export class AlControlPanel {
               selected={this.displayMode === DisplayMode.SLICES}
               value={DisplayMode.SLICES}
             >
-              {this.contentStrings.slices}
+              {this._contentStrings.slices}
             </option>
             <option
               selected={this.displayMode === DisplayMode.VOLUME}
               value={DisplayMode.VOLUME}
             >
-              {this.contentStrings.volume}
+              {this._contentStrings.volume}
             </option>
           </select>
         </ion-item>
@@ -228,13 +224,13 @@ export class AlControlPanel {
             selected={this.controlsType === ControlsType.ORBIT}
             value={ControlsType.ORBIT}
           >
-            {this.contentStrings.orbit}
+            {this._contentStrings.orbit}
           </option>
           <option
             selected={this.controlsType === ControlsType.TRACKBALL}
             value={ControlsType.TRACKBALL}
           >
-            {this.contentStrings.trackball}
+            {this._contentStrings.trackball}
           </option>
         </select>
       </ion-item>
@@ -256,7 +252,7 @@ export class AlControlPanel {
             this.recenter.emit();
           }}
         >
-          {this.contentStrings.recenter}
+          {this._contentStrings.recenter}
         </ion-button>
       </ion-item>
     );
@@ -277,13 +273,13 @@ export class AlControlPanel {
           }
         >
           <option selected={this.units === Units.METERS} value={Units.METERS}>
-            {this.contentStrings.meters}
+            {this._contentStrings.meters}
           </option>
           <option
             selected={this.units === Units.MILLIMETERS}
             value={Units.MILLIMETERS}
           >
-            {this.contentStrings.millimeters}
+            {this._contentStrings.millimeters}
           </option>
         </select>
       </ion-item>
@@ -309,31 +305,31 @@ export class AlControlPanel {
             selected={this.material === Material.DEFAULT}
             value={Material.DEFAULT}
           >
-            {this.contentStrings.default}
+            {this._contentStrings.default}
           </option>
           <option
             selected={this.material === Material.CLAY}
             value={Material.CLAY}
           >
-            {this.contentStrings.clay}
+            {this._contentStrings.clay}
           </option>
           <option
             selected={this.material === Material.NORMALS}
             value={Material.NORMALS}
           >
-            {this.contentStrings.normals}
+            {this._contentStrings.normals}
           </option>
           <option
             selected={this.material === Material.WIREFRAME}
             value={Material.WIREFRAME}
           >
-            {this.contentStrings.wireframe}
+            {this._contentStrings.wireframe}
           </option>
           <option
             selected={this.material === Material.XRAY}
             value={Material.XRAY}
           >
-            {this.contentStrings.xray}
+            {this._contentStrings.xray}
           </option>
         </select>
       </ion-item>
@@ -478,19 +474,19 @@ export class AlControlPanel {
                   selected={this.orientation === Orientation.CORONAL}
                   value={Orientation.CORONAL}
                 >
-                  {this.contentStrings.coronal}
+                  {this._contentStrings.coronal}
                 </option>
                 <option
                   selected={this.orientation === Orientation.SAGGITAL}
                   value={Orientation.SAGGITAL}
                 >
-                  {this.contentStrings.saggital}
+                  {this._contentStrings.saggital}
                 </option>
                 <option
                   selected={this.orientation === Orientation.AXIAL}
                   value={Orientation.AXIAL}
                 >
-                  {this.contentStrings.axial}
+                  {this._contentStrings.axial}
                 </option>
               </select>
             </ion-item>
@@ -679,7 +675,6 @@ export class AlControlPanel {
         );
       }
       case DisplayMode.MESH: {
-        //return [this.renderGenericOptions(), this.renderMaterialSelect()];
         return this.renderGenericOptions();
       }
       default: {
