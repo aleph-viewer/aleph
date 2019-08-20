@@ -1,6 +1,6 @@
-import { AlCamera } from "../interfaces";
 import { Constants } from "../Constants";
 import { ControlsType } from "../enums";
+import { AlCamera } from "../interfaces";
 
 type Entity = import("aframe").Entity;
 
