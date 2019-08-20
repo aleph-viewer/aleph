@@ -643,7 +643,7 @@ export class Aleph {
             <a-plane
               position={ThreeUtils.vector3ToString(textOffset)}
               color={Constants.colorValues.black}
-              opacity='0.9'
+              opacity="0.9"
               al-background={`
                 text: ${node.title};
                 boundingRadius: ${this._boundingSphereRadius};

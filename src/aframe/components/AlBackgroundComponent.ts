@@ -9,11 +9,11 @@ interface AlBackgroundState {
   hasUpdated: boolean;
 }
 
-export default AFRAME.registerComponent('al-background', {
+export default AFRAME.registerComponent("al-background", {
   schema: {
-    text: { type: 'string', default: '' },
-    boundingRadius: { type: 'number', default: 1 },
-    scale: { type: 'number', default: 8 }
+    text: { type: "string", default: "" },
+    boundingRadius: { type: "number", default: 1 },
+    scale: { type: "number", default: 8 }
   },
 
   init() {
@@ -75,9 +75,9 @@ export default AFRAME.registerComponent('al-background', {
         material.flatShading = true;
         material.roughness = 1;
 
-        const position = this.el.getAttribute('position') as THREE.Vector3;
+        const position = this.el.getAttribute("position") as THREE.Vector3;
         position.sub(new THREE.Vector3(0, position.y * 0.05, 0.02));
-        this.el.setAttribute('position', position);
+        this.el.setAttribute("position", position);
 
         this.state.hasUpdated = true;
       }
