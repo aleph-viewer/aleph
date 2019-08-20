@@ -7,10 +7,10 @@
 
 ## Events
 
-| Event               | Description                                                                | Type                           |
-| ------------------- | -------------------------------------------------------------------------- | ------------------------------ |
-| `ionTabsDidChange`  | Emitted when the navigation has finished transitioning to a new component. | `CustomEvent<{ tab: string }>` |
-| `ionTabsWillChange` | Emitted when the navigation is about to transition to a new component.     | `CustomEvent<{ tab: string }>` |
+| Event               | Description                                                                | Type                            |
+| ------------------- | -------------------------------------------------------------------------- | ------------------------------- |
+| `ionTabsDidChange`  | Emitted when the navigation has finished transitioning to a new component. | `CustomEvent<{ tab: string; }>` |
+| `ionTabsWillChange` | Emitted when the navigation is about to transition to a new component.     | `CustomEvent<{ tab: string; }>` |
 
 
 ## Methods
@@ -29,12 +29,6 @@ Type: `Promise<string>`
 
 Get the tab element given the tab name
 
-#### Parameters
-
-| Name  | Type  | Description |
-| ----- | ----- | ----------- |
-| `tab` | `any` |             |
-
 #### Returns
 
 Type: `Promise<any>`
@@ -44,12 +38,6 @@ Type: `Promise<any>`
 ### `select(tab: any) => Promise<boolean>`
 
 Index or the Tab instance, of the tab to select.
-
-#### Parameters
-
-| Name  | Type  | Description |
-| ----- | ----- | ----------- |
-| `tab` | `any` |             |
 
 #### Returns
 

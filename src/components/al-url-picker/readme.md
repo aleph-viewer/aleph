@@ -15,9 +15,9 @@
 
 ## Events
 
-| Event        | Description | Type                |
-| ------------ | ----------- | ------------------- |
-| `urlChanged` |             | `CustomEvent<void>` |
+| Event        | Description | Type               |
+| ------------ | ----------- | ------------------ |
+| `urlChanged` |             | `CustomEvent<any>` |
 
 
 ----------------------------------------------

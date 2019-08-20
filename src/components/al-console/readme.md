@@ -14,9 +14,9 @@
 
 ## Events
 
-| Event     | Description | Type                |
-| --------- | ----------- | ------------------- |
-| `command` |             | `CustomEvent<void>` |
+| Event        | Description | Type               |
+| ------------ | ----------- | ------------------ |
+| `runCommand` |             | `CustomEvent<any>` |
 
 
 ----------------------------------------------

@@ -7,36 +7,42 @@
 
 ## Properties
 
-| Property             | Attribute              | Description | Type                                                               | Default               |
-| -------------------- | ---------------------- | ----------- | ------------------------------------------------------------------ | --------------------- |
-| `boundingBoxEnabled` | `bounding-box-enabled` |             | `boolean`                                                          | `false`               |
-| `displayMode`        | `display-mode`         |             | `DisplayMode.MESH \| DisplayMode.SLICES \| DisplayMode.VOLUME`     | `DisplayMode.MESH`    |
-| `graphEnabled`       | `graph-enabled`        |             | `boolean`                                                          | `false`               |
-| `orientation`        | `orientation`          |             | `Orientation.AXIAL \| Orientation.CORONAL \| Orientation.SAGGITAL` | `Orientation.CORONAL` |
-| `slicesIndex`        | `slices-index`         |             | `number`                                                           | `undefined`           |
-| `slicesWindowCenter` | `slices-window-center` |             | `number`                                                           | `undefined`           |
-| `slicesWindowWidth`  | `slices-window-width`  |             | `number`                                                           | `undefined`           |
-| `stackhelper`        | --                     |             | `StackHelper \| VolumeRenderHelper`                                | `undefined`           |
-| `volumeSteps`        | `volume-steps`         |             | `number`                                                           | `undefined`           |
-| `volumeWindowCenter` | `volume-window-center` |             | `number`                                                           | `undefined`           |
-| `volumeWindowWidth`  | `volume-window-width`  |             | `number`                                                           | `undefined`           |
+| Property             | Attribute              | Description | Type                                                                                           | Default               |
+| -------------------- | ---------------------- | ----------- | ---------------------------------------------------------------------------------------------- | --------------------- |
+| `boundingBoxEnabled` | `bounding-box-enabled` |             | `boolean`                                                                                      | `false`               |
+| `controlsType`       | `controls-type`        |             | `ControlsType.ORBIT \| ControlsType.TRACKBALL`                                                 | `ControlsType.ORBIT`  |
+| `displayMode`        | `display-mode`         |             | `DisplayMode.MESH \| DisplayMode.SLICES \| DisplayMode.VOLUME`                                 | `DisplayMode.MESH`    |
+| `graphEnabled`       | `graph-enabled`        |             | `boolean`                                                                                      | `false`               |
+| `material`           | `material`             |             | `Material.CLAY \| Material.DEFAULT \| Material.NORMALS \| Material.WIREFRAME \| Material.XRAY` | `Material.DEFAULT`    |
+| `orientation`        | `orientation`          |             | `Orientation.AXIAL \| Orientation.CORONAL \| Orientation.SAGGITAL`                             | `Orientation.CORONAL` |
+| `slicesIndex`        | `slices-index`         |             | `number`                                                                                       | `undefined`           |
+| `slicesWindowCenter` | `slices-window-center` |             | `number`                                                                                       | `undefined`           |
+| `slicesWindowWidth`  | `slices-window-width`  |             | `number`                                                                                       | `undefined`           |
+| `stackhelper`        | --                     |             | `StackHelper \| VolumeRenderHelper`                                                            | `undefined`           |
+| `units`              | `units`                |             | `Units.METERS \| Units.MILLIMETERS`                                                            | `Units.METERS`        |
+| `volumeSteps`        | `volume-steps`         |             | `number`                                                                                       | `undefined`           |
+| `volumeWindowCenter` | `volume-window-center` |             | `number`                                                                                       | `undefined`           |
+| `volumeWindowWidth`  | `volume-window-width`  |             | `number`                                                                                       | `undefined`           |
 
 
 ## Events
 
-| Event                       | Description | Type                |
-| --------------------------- | ----------- | ------------------- |
-| `boundingBoxEnabledChanged` |             | `CustomEvent<void>` |
-| `displayModeChanged`        |             | `CustomEvent<void>` |
-| `graphEnabledChanged`       |             | `CustomEvent<void>` |
-| `orientationChanged`        |             | `CustomEvent<void>` |
-| `recenter`                  |             | `CustomEvent<void>` |
-| `slicesIndexChanged`        |             | `CustomEvent<void>` |
-| `slicesWindowCenterChanged` |             | `CustomEvent<void>` |
-| `slicesWindowWidthChanged`  |             | `CustomEvent<void>` |
-| `volumeStepsChanged`        |             | `CustomEvent<void>` |
-| `volumeWindowCenterChanged` |             | `CustomEvent<void>` |
-| `volumeWindowWidthChanged`  |             | `CustomEvent<void>` |
+| Event                       | Description | Type               |
+| --------------------------- | ----------- | ------------------ |
+| `boundingBoxEnabledChanged` |             | `CustomEvent<any>` |
+| `controlsTypeChanged`       |             | `CustomEvent<any>` |
+| `displayModeChanged`        |             | `CustomEvent<any>` |
+| `graphEnabledChanged`       |             | `CustomEvent<any>` |
+| `materialChanged`           |             | `CustomEvent<any>` |
+| `orientationChanged`        |             | `CustomEvent<any>` |
+| `recenter`                  |             | `CustomEvent<any>` |
+| `slicesIndexChanged`        |             | `CustomEvent<any>` |
+| `slicesWindowCenterChanged` |             | `CustomEvent<any>` |
+| `slicesWindowWidthChanged`  |             | `CustomEvent<any>` |
+| `unitsChanged`              |             | `CustomEvent<any>` |
+| `volumeStepsChanged`        |             | `CustomEvent<any>` |
+| `volumeWindowCenterChanged` |             | `CustomEvent<any>` |
+| `volumeWindowWidthChanged`  |             | `CustomEvent<any>` |
 
 
 ## CSS Custom Properties
