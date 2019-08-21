@@ -1,14 +1,14 @@
-import { BaseComponent } from "./BaseComponent";
-import { Constants } from "../../Constants";
-import { ControlsType } from "../../enums";
+import { BaseComponent } from './BaseComponent';
+import { Constants } from '../../Constants';
+import { ControlsType } from '../../enums';
 
 interface AlLookToCameraComponent extends BaseComponent {
   tickFunction(): void;
 }
 
-export default AFRAME.registerComponent("al-look-to-camera", {
+export default AFRAME.registerComponent('al-look-to-camera', {
   schema: {
-    controlsType: { type: "string", default: ControlsType.ORBIT }
+    controlsType: { type: 'string', default: ControlsType.ORBIT }
   },
 
   init() {
@@ -33,7 +33,7 @@ export default AFRAME.registerComponent("al-look-to-camera", {
   // tslint:disable-next-line: no-any
   update(oldData: any): void {
     // Reset the up vector if we change camera mode
-    if (this.data.isTrackball !== oldData.isTrackball) {
+    if (this.data.controlsType !== oldData.controlsType) {
       (this.el.object3D as THREE.Object3D).up.copy(
         this.el.sceneEl.camera.up.clone()
       );
