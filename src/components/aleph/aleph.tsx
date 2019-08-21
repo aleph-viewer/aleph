@@ -1,7 +1,8 @@
+import { KeyDown } from "@edsilv/key-codes";
 import { Action, Store } from "@edsilv/stencil-redux";
+import "@edsilv/stencil-redux";
 import {
   Component,
-  Element,
   Event,
   EventEmitter,
   h,
@@ -9,9 +10,10 @@ import {
   Prop,
   State
 } from "@stencil/core";
-import "@edsilv/stencil-redux";
 import "../../aframe";
 import { AlGltfModelEvents, AlNodeSpawnerEvents } from "../../aframe";
+import { AlVolumeEvents } from "../../aframe/components/AlVolumeComponent";
+import { Constants } from "../../Constants";
 import {
   AlGraphEntryType,
   ControlsType,
@@ -20,7 +22,7 @@ import {
   Orientation,
   Units
 } from "../../enums";
-import { AlAngle, AlCamera, AlEdge, AlNode } from "../../interfaces";
+import { AlAngle, AlCamera, AlEdge, AlGraph, AlNode } from "../../interfaces";
 import {
   appClearAngles,
   appClearEdges,
@@ -52,6 +54,7 @@ import {
   appSetVolumeWindowCenter,
   appSetVolumeWindowWidth
 } from "../../redux/actions";
+import { configureStore } from "../../redux/store";
 import {
   AlGraphEvents,
   AMIUtils,
@@ -60,15 +63,7 @@ import {
   GraphUtils,
   ThreeUtils
 } from "../../utils";
-
-import { KeyDown } from "@edsilv/key-codes";
-import { AlVolumeEvents } from "../../aframe/components/AlVolumeComponent";
-import { Constants } from "../../Constants";
-import { AlGraph } from "../../interfaces/AlGraph";
-import { configureStore } from "../../redux/store";
 import { AlControlEvents } from "../../utils/AlControlEvents";
-import { getLocaleComponentStrings } from "../../utils/Locale";
-import { ContentStrings } from "./ContentStrings";
 
 type Entity = import("aframe").Entity;
 type Scene = import("aframe").Scene;
@@ -83,7 +78,6 @@ export class Aleph {
   private _boundingBox: THREE.Box3;
   private _boundingSphereRadius: number;
   private _camera: Entity;
-  private _contentStrings: ContentStrings;
   private _debouncedAppSetCamera: (state: AlCamera) => void;
   private _hovered: string | null = null;
   private _isShiftDown: boolean = false;
@@ -95,13 +89,14 @@ export class Aleph {
   private _validTarget: boolean;
   private _boundingEntity: Entity;
   private _lights: Entity[];
+  //#endregion
 
-  @Element() private _element: HTMLElement;
-
+  //#region props
   @Prop({ context: "store" }) public store: Store;
   @Prop() public dracoDecoderPath: string | null;
   @Prop() public width: string = "640";
   @Prop() public height: string = "480";
+  //#endregion
 
   //#region actions
   public appClearAngles: Action;
@@ -311,19 +306,18 @@ export class Aleph {
 
   //#endregion
 
+  //#region events
   /** Fires whenever the internal state changes passing an object describing the state. */
   @Event() public changed: EventEmitter;
 
   /** Fires when an object is loaded passing either the object or a stackhelper for volumetric data. */
   @Event() public loaded: EventEmitter;
+  //#endregion
 
   protected async componentWillLoad() {
-    this._contentStrings = await getLocaleComponentStrings(this._element);
-    console.log(this._contentStrings.test);
     this._isWebGl2 = ThreeUtils.isWebGL2Available();
 
     // redux
-
     this.store.setStore(configureStore({}));
 
     this.store.mapStateToProps(this, state => {

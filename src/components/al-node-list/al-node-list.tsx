@@ -1,14 +1,7 @@
-import {
-  Component,
-  h,
-  Element,
-  Event,
-  EventEmitter,
-  Prop
-} from "@stencil/core";
+import { Component, Event, EventEmitter, h, Prop } from "@stencil/core";
 import { AlNode } from "../../interfaces";
+import i18n from "./al-node-list.i18n.en.json";
 import { ContentStrings } from "./ContentStrings";
-import { getLocaleComponentStrings } from "../../utils/Locale";
 
 @Component({
   tag: "al-node-list",
@@ -16,17 +9,12 @@ import { getLocaleComponentStrings } from "../../utils/Locale";
   shadow: true
 })
 export class AlNodeList {
-  @Element() element: HTMLElement;
-  contentStrings: ContentStrings;
+  private _contentStrings: ContentStrings = i18n;
 
   @Event() public selectedChanged: EventEmitter;
 
   @Prop({ mutable: true }) public nodes: Map<string, AlNode> | null = null;
   @Prop({ mutable: true }) public selected: string | null = null;
-
-  async componentWillLoad(): Promise<void> {
-    this.contentStrings = await getLocaleComponentStrings(this.element);
-  }
 
   public render() {
     if (this.nodes && this.nodes.size) {
@@ -45,7 +33,7 @@ export class AlNodeList {
         </ion-list>
       );
     }
-    return <p>{this.contentStrings.noneExist}</p>;
+    return <p>{this._contentStrings.noneExist}</p>;
   }
 
   // render(): JSX.ElementInterfaces {

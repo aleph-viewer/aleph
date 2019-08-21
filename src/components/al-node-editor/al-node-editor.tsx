@@ -1,14 +1,7 @@
-import {
-  Component,
-  h,
-  Element,
-  Event,
-  EventEmitter,
-  Prop
-} from "@stencil/core";
+import { Component, Event, EventEmitter, h, Prop } from "@stencil/core";
 import { AlNode } from "../../interfaces";
+import i18n from "./al-node-editor.i18n.en.json";
 import { ContentStrings } from "./ContentStrings";
-import { getLocaleComponentStrings } from "../../utils/Locale";
 
 @Component({
   tag: "al-node-editor",
@@ -16,17 +9,12 @@ import { getLocaleComponentStrings } from "../../utils/Locale";
   shadow: true
 })
 export class AlNodeEditor {
-  @Element() element: HTMLElement;
-  contentStrings: ContentStrings;
+  private _contentStrings: ContentStrings = i18n;
 
   @Event() public delete: EventEmitter;
   @Event() public save: EventEmitter;
 
   @Prop({ mutable: true }) public node: [string, AlNode];
-
-  async componentWillLoad(): Promise<void> {
-    this.contentStrings = await getLocaleComponentStrings(this.element);
-  }
 
   public render() {
     if (this.node) {
@@ -37,7 +25,7 @@ export class AlNodeEditor {
           <ion-item>
             <ion-input
               value={node.title}
-              placeholder={this.contentStrings.title}
+              placeholder={this._contentStrings.title}
               required
               onIonChange={e => (node.title = e.detail.value)}
             />
@@ -45,7 +33,7 @@ export class AlNodeEditor {
           <ion-item>
             <ion-textarea
               value={node.description}
-              placeholder={this.contentStrings.description}
+              placeholder={this._contentStrings.description}
               rows="10"
               onIonChange={e => (node.description = e.detail.value)}
             />

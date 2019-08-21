@@ -9,6 +9,7 @@ import { HTMLStencilElement, JSXBase } from '@stencil/core/internal';
 import {
   AlAngle,
   AlEdge,
+  AlGraph,
   AlNode,
 } from './interfaces';
 import {
@@ -21,9 +22,6 @@ import {
 import {
   DisplayMode,
 } from './enums/DisplayMode';
-import {
-  AlGraph,
-} from './interfaces/AlGraph';
 
 export namespace Components {
   interface AlAngleEditor {

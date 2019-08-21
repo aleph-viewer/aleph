@@ -1,16 +1,8 @@
-import {
-  Component,
-  Element,
-  Event,
-  EventEmitter,
-  h,
-  Prop,
-  Watch
-} from "@stencil/core";
+import { Component, Event, EventEmitter, h, Prop, Watch } from "@stencil/core";
 import { Constants } from "../../Constants";
 import { ControlsType, Material, Orientation, Units } from "../../enums";
 import { DisplayMode } from "../../enums/DisplayMode";
-import { getLocaleComponentStrings } from "../../utils/Locale";
+import i18n from "./al-control-panel.i18n.en.json";
 import { ContentStrings } from "./ContentStrings";
 @Component({
   tag: "al-control-panel",
@@ -18,10 +10,8 @@ import { ContentStrings } from "./ContentStrings";
   shadow: true
 })
 export class AlControlPanel {
-  private _contentStrings: ContentStrings;
+  private _contentStrings: ContentStrings = i18n;
   private _lastStackOrientationIndex: number;
-
-  @Element() private _element: HTMLElement;
 
   @Event() public boundingBoxEnabledChanged: EventEmitter;
   @Event() public controlsTypeChanged: EventEmitter;
@@ -65,10 +55,6 @@ export class AlControlPanel {
   @Prop({ mutable: true }) public volumeSteps: number;
   @Prop({ mutable: true }) public volumeWindowCenter: number;
   @Prop({ mutable: true }) public volumeWindowWidth: number;
-
-  protected async componentWillLoad(): Promise<void> {
-    this._contentStrings = await getLocaleComponentStrings(this._element);
-  }
 
   private _boundingBoxEnabled(enabled: boolean) {
     this.boundingBoxEnabled = enabled;
