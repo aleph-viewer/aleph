@@ -1,4 +1,15 @@
 import { Component, Event, EventEmitter, h, Prop, Watch } from "@stencil/core";
+import AnnotateIcon from "../../assets/svg/annotate.svg";
+import BoundingBoxIcon from "../../assets/svg/bounding-box.svg";
+import BrightnessIcon from "../../assets/svg/brightness.svg";
+import ContrastIcon from "../../assets/svg/contrast.svg";
+import ControlsTypeIcon from "../../assets/svg/controls-type.svg";
+import DisplayModeIcon from "../../assets/svg/display-mode.svg";
+import MaterialIcon from "../../assets/svg/material.svg";
+import OrientationIcon from "../../assets/svg/orientation.svg";
+import RecenterIcon from "../../assets/svg/recenter.svg";
+import SliderIcon from "../../assets/svg/slider.svg";
+import UnitsIcon from "../../assets/svg/units.svg";
 import { Constants } from "../../Constants";
 import { ControlsType, Material, Orientation, Units } from "../../enums";
 import { DisplayMode } from "../../enums/DisplayMode";
@@ -129,7 +140,7 @@ export class AlControlPanel {
             display: "var(--display-mode-display, block)"
           }}
         >
-          <ion-icon src="/assets/svg/display-mode.svg" slot="start" />
+          <ion-icon src={DisplayModeIcon} slot="start" />
           <select
             slot="end"
             onChange={e =>
@@ -164,7 +175,7 @@ export class AlControlPanel {
           display: "var(--graph-enabled-display, block)"
         }}
       >
-        <ion-icon src="/assets/svg/annotate.svg" slot="start" />
+        <ion-icon src={AnnotateIcon} slot="start" />
         <ion-toggle
           slot="end"
           checked={this.graphEnabled}
@@ -181,7 +192,7 @@ export class AlControlPanel {
           display: "var(--bounding-box-enabled-display, block)"
         }}
       >
-        <ion-icon src="/assets/svg/bounding-box.svg" slot="start" />
+        <ion-icon src={BoundingBoxIcon} slot="start" />
         <ion-toggle
           slot="end"
           checked={this.boundingBoxEnabled}
@@ -198,7 +209,7 @@ export class AlControlPanel {
           display: "var(--controls-type-display, block)"
         }}
       >
-        <ion-icon src="/assets/svg/controls-type.svg" slot="start" />
+        <ion-icon src={ControlsTypeIcon} slot="start" />
         <select
           slot="end"
           onChange={e =>
@@ -230,7 +241,7 @@ export class AlControlPanel {
           display: "var(--recenter-display, block)"
         }}
       >
-        <ion-icon src="/assets/svg/recenter.svg" slot="start" />
+        <ion-icon src={RecenterIcon} slot="start" />
         <ion-button
           slot="end"
           size="small"
@@ -251,7 +262,7 @@ export class AlControlPanel {
           display: "var(--units-display, block)"
         }}
       >
-        <ion-icon src="/assets/svg/units.svg" slot="start" />
+        <ion-icon src={UnitsIcon} slot="start" />
         <select
           slot="end"
           onChange={e =>
@@ -279,7 +290,7 @@ export class AlControlPanel {
           display: "var(--material-display, block)"
         }}
       >
-        <ion-icon src="/assets/svg/material.svg" slot="start" />
+        <ion-icon src={MaterialIcon} slot="start" />
         <select
           slot="end"
           onChange={e =>
@@ -433,7 +444,7 @@ export class AlControlPanel {
                 display: "var(--slices-index-display, block)"
               }}
             >
-              <ion-icon src="/assets/svg/slider.svg" slot="start" />
+              <ion-icon src={SliderIcon} slot="start" />
               <ion-range
                 slot="end"
                 min="0"
@@ -448,7 +459,7 @@ export class AlControlPanel {
                 display: "var(--slices-orientation-display, block)"
               }}
             >
-              <ion-icon src="/assets/svg/orientation.svg" slot="start" />
+              <ion-icon src={OrientationIcon} slot="start" />
               <select
                 slot="end"
                 onChange={e =>
@@ -481,7 +492,7 @@ export class AlControlPanel {
                 display: "var(--slices-window-center-display, block)"
               }}
             >
-              <ion-icon src="/assets/svg/brightness.svg" slot="start" />
+              <ion-icon src={BrightnessIcon} slot="start" />
               <ion-range
                 slot="end"
                 min={windowCenterMin}
@@ -507,7 +518,7 @@ export class AlControlPanel {
                 display: "var(--slices-window-width-display, block)"
               }}
             >
-              <ion-icon src="/assets/svg/contrast.svg" slot="start" />
+              <ion-icon src={ContrastIcon} slot="start" />
               <ion-range
                 slot="end"
                 min={windowWidthMin}
@@ -584,7 +595,7 @@ export class AlControlPanel {
                 display: "var(--volume-steps-display, block)"
               }}
             >
-              <ion-icon src="/assets/svg/slider.svg" slot="start" />
+              <ion-icon src={SliderIcon} slot="start" />
               <ion-range
                 slot="end"
                 min={Constants.stepsMin}
@@ -610,7 +621,7 @@ export class AlControlPanel {
                 display: "var(--volume-window-center-display, block)"
               }}
             >
-              <ion-icon src="/assets/svg/brightness.svg" slot="start" />
+              <ion-icon src={BrightnessIcon} slot="start" />
               <ion-range
                 slot="end"
                 min={windowCenterMin}
@@ -636,7 +647,7 @@ export class AlControlPanel {
                 display: "var(--volume-window-width-display, block)"
               }}
             >
-              <ion-icon src="/assets/svg/contrast.svg" slot="start" />
+              <ion-icon src={ContrastIcon} slot="start" />
               <ion-range
                 slot="end"
                 min={windowWidthMin}

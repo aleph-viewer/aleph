@@ -1,9 +1,9 @@
 export class Constants {
   public static controllerName = "-controller";
   public static edgeSize = 0.005;
-  public static fontSizeLarge = 2.5;
+  public static fontSizeLarge = 2;
   public static fontSizeMedium = 1.5;
-  public static fontSizeSmall = 0.75;
+  public static fontSizeSmall = 1;
   public static maxAnimationSteps = 50;
   public static minLoadingMS = 500;
   public static movedEventName = "-moved";

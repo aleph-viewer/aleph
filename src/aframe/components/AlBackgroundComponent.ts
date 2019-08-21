@@ -76,7 +76,7 @@ export default AFRAME.registerComponent("al-background", {
         material.roughness = 1;
 
         const position = this.el.getAttribute("position") as THREE.Vector3;
-        position.sub(new THREE.Vector3(0, position.y * 0.05, 0.02));
+        position.sub(new THREE.Vector3(0, position.y * 0.05, 0.00001));
         this.el.setAttribute("position", position);
 
         this.state.hasUpdated = true;

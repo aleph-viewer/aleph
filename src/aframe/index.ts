@@ -14,6 +14,7 @@ import "./components/AlNodeSpawnerComponent";
 import "./components/AlOrbitControlComponent";
 import "./components/AlRenderOrderComponent";
 import "./components/AlRenderOverlaidComponent";
+import "./components/AlScreenSpace";
 import "./components/AlTrackballControlComponent";
 import "./components/AlVolumeComponent";
 

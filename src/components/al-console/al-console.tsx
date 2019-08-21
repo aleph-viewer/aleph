@@ -1,5 +1,5 @@
-import { Component, h, Event, EventEmitter, Prop } from "@stencil/core";
-
+import { Component, Event, EventEmitter, h, Prop } from "@stencil/core";
+import RunIcon from "../../assets/svg/run.svg";
 @Component({
   tag: "al-console",
   styleUrl: "al-console.css",
@@ -33,7 +33,7 @@ export class AlConsole {
             }
           }}
         >
-          <ion-icon src="/assets/svg/run.svg" />
+          <ion-icon src={RunIcon} />
         </ion-button>
       </form>
     );

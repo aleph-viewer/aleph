@@ -67,6 +67,7 @@ import { AlControlEvents } from "../../utils/AlControlEvents";
 
 type Entity = import("aframe").Entity;
 type Scene = import("aframe").Scene;
+//#endregion
 
 @Component({
   tag: "uv-aleph",
@@ -562,7 +563,7 @@ export class Aleph {
             position={ThreeUtils.vector3ToString(position)}
             al-bounding-box={`
               scale: ${ThreeUtils.vector3ToString(size)};
-              color: ${Constants.colorValues.red};
+              color: ${Constants.colorValues.white};
               opacity: ${opacity};
             `}
             al-node-spawner={`
@@ -602,7 +603,7 @@ export class Aleph {
             position={ThreeUtils.vector3ToString(position)}
             al-bounding-box={`
                 scale: ${ThreeUtils.vector3ToString(size)};
-                color: ${Constants.colorValues.red};
+                color: ${Constants.colorValues.white};
                 opacity: ${opacity};
               `}
             ref={el => (this._boundingEntity = el)}
@@ -639,17 +640,33 @@ export class Aleph {
               anchor: center;
               width: ${Constants.fontSizeMedium * this._boundingSphereRadius};
             `}
-            al-look-to-camera={`
-              controlsType: ${this.controlsType};
+            al-screen-space={`
+              position: ${ThreeUtils.vector3ToString(
+                ThreeUtils.stringToVector3(node.position).add(
+                  textOffset.clone()
+                )
+              )};
+              boundingRadius: ${this._boundingSphereRadius};
+              cameraPosition: ${ThreeUtils.vector3ToString(
+                this.camera.position
+              )};
             `}
             al-render-overlaid
             visible={`${this.selected === nodeId}`}
-            position={ThreeUtils.vector3ToString(textOffset)}
             id={`${nodeId}-label`}
-            al-background={`
-              text: ${node.title};
-            `}
-          />
+          >
+            <a-plane
+              position={ThreeUtils.vector3ToString(textOffset)}
+              color={Constants.colorValues.black}
+              opacity="0.9"
+              al-background={`
+                text: ${node.title};
+                boundingRadius: ${Constants.fontSizeMedium *
+                  this._boundingSphereRadius};
+              `}
+              al-render-overlaid
+            />
+          </a-entity>
         </a-entity>
       );
     });
@@ -675,6 +692,8 @@ export class Aleph {
         const radius = this._boundingSphereRadius * Constants.edgeSize;
         textOffset.multiplyScalar(scale);
 
+        const textV = this._convertUnits(dist);
+
         return (
           <a-entity
             class="collidable"
@@ -692,7 +711,7 @@ export class Aleph {
             <a-entity
               id={`${edgeId}-title`}
               text={`
-                value: ${this._convertUnits(dist)};
+                value: ${textV};
                 side: double;
                 align: center;
                 baseline: bottom;
@@ -701,9 +720,29 @@ export class Aleph {
               `}
               position={ThreeUtils.vector3ToString(textOffset)}
               visible={`${this.selected === edgeId}`}
-              al-look-to-camera
+              al-screen-space={`
+                position: ${ThreeUtils.vector3ToString(
+                  centoid.clone().add(textOffset.clone())
+                )};
+                boundingRadius: ${this._boundingSphereRadius};
+                cameraPosition: ${ThreeUtils.vector3ToString(
+                  this.camera.position
+                )};
+              `}
               al-render-overlaid
-            />
+            >
+              <a-plane
+                position={ThreeUtils.vector3ToString(textOffset)}
+                color={Constants.colorValues.black}
+                opacity="0.9"
+                al-background={`
+                text: ${textV};
+                boundingRadius: ${Constants.fontSizeSmall *
+                  this._boundingSphereRadius};
+              `}
+                al-render-overlaid
+              />
+            </a-entity>
           </a-entity>
         );
       }
@@ -793,6 +832,10 @@ export class Aleph {
         const scale = (node1.scale + node2.scale + centralNode.scale) / 3;
         textOffset.multiplyScalar(scale);
 
+        const textV =
+          THREE.Math.radToDeg(angl).toFixed(Constants.unitsDecimalPlaces) +
+          " deg";
+
         return (
           <a-entity
             class="collidable"
@@ -811,9 +854,7 @@ export class Aleph {
             <a-entity
               id={`${angleId}-title`}
               text={`
-                value: ${THREE.Math.radToDeg(angl).toFixed(
-                  Constants.unitsDecimalPlaces
-                ) + " deg"};
+                value: ${textV};
                 side: double;
                 align: center;
                 baseline: bottom;
@@ -824,9 +865,29 @@ export class Aleph {
                 position.clone().add(textOffset)
               )}
               visible={`${this.selected === angleId}`}
-              al-look-to-camera
+              al-screen-space={`
+                position: ${ThreeUtils.vector3ToString(
+                  centralPos.clone().add(textOffset.clone())
+                )};
+                boundingRadius: ${this._boundingSphereRadius};
+                cameraPosition: ${ThreeUtils.vector3ToString(
+                  this.camera.position
+                )};
+              `}
               al-render-overlaid
-            />
+            >
+              <a-plane
+                position={ThreeUtils.vector3ToString(textOffset)}
+                color={Constants.colorValues.black}
+                opacity="0.9"
+                al-background={`
+                text: ${textV};
+                boundingRadius: ${Constants.fontSizeSmall *
+                  this._boundingSphereRadius};
+              `}
+                al-render-overlaid
+              />
+            </a-entity>
           </a-entity>
         );
       }
@@ -969,6 +1030,7 @@ export class Aleph {
     return (
       <div
         id="al-container"
+        class={this.displayMode}
         style={{
           width: GetUtils.addCssUnits(this.width),
           height: GetUtils.addCssUnits(this.height)

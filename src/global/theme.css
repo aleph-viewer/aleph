@@ -1,7 +1,9 @@
 :root {
   --app-background-color: #f7f7f7;
   --ion-background-color: #f7f7f7;
-  --viewport-background-color: #000;
+  --mesh-viewport-background-color: #000;
+  --slices-viewport-background-color: #000;
+  --volume-viewport-background-color: #000;
   --ion-font-size-base: 5px;
   --color: #00b0ff;
 

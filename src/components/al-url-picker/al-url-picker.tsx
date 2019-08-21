@@ -1,4 +1,5 @@
-import { Component, h, Event, EventEmitter, Prop } from "@stencil/core";
+import { Component, Event, EventEmitter, h, Prop } from "@stencil/core";
+import RefreshIcon from "../../assets/svg/refresh.svg";
 
 @Component({
   tag: "al-url-picker",
@@ -40,7 +41,7 @@ export class AlUrlPicker {
             type="submit"
             onClick={() => this.urlChanged.emit(this._input.value)}
           >
-            <ion-icon src="/assets/svg/refresh.svg" />
+            <ion-icon src={RefreshIcon} />
           </ion-button>
         </form>
       );

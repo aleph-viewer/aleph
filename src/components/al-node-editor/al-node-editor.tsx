@@ -1,4 +1,6 @@
 import { Component, Event, EventEmitter, h, Prop } from "@stencil/core";
+import MinusIcon from "../../assets/svg/minus.svg";
+import TickIcon from "../../assets/svg/tick.svg";
 import { AlNode } from "../../interfaces";
 import i18n from "./al-node-editor.i18n.en.json";
 import { ContentStrings } from "./ContentStrings";
@@ -45,7 +47,7 @@ export class AlNodeEditor {
               this.node = null;
             }}
           >
-            <ion-icon src="/assets/svg/minus.svg" />
+            <ion-icon src={MinusIcon} />
           </ion-button>
           <ion-button
             size="small"
@@ -56,7 +58,7 @@ export class AlNodeEditor {
               }
             }}
           >
-            <ion-icon src="/assets/svg/tick.svg" />
+            <ion-icon src={TickIcon} />
           </ion-button>
         </form>
       );

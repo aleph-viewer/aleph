@@ -33,7 +33,7 @@ export default AFRAME.registerComponent("al-look-to-camera", {
   // tslint:disable-next-line: no-any
   update(oldData: any): void {
     // Reset the up vector if we change camera mode
-    if (this.data.isTrackball !== oldData.isTrackball) {
+    if (this.data.controlsType !== oldData.controlsType) {
       (this.el.object3D as THREE.Object3D).up.copy(
         this.el.sceneEl.camera.up.clone()
       );

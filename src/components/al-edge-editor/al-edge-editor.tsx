@@ -1,4 +1,5 @@
-import { Component, h, Event, EventEmitter, Prop } from "@stencil/core";
+import { Component, Event, EventEmitter, h, Prop } from "@stencil/core";
+import MinusIcon from "../../assets/svg/minus.svg";
 import { AlEdge } from "../../interfaces";
 
 @Component({
@@ -24,7 +25,7 @@ export class AlEdgeEditor {
               this.edge = null;
             }}
           >
-            <ion-icon src="/assets/svg/minus.svg" />
+            <ion-icon src={MinusIcon} />
           </ion-button>
         </form>
       );
