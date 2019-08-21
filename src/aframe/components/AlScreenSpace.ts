@@ -32,10 +32,7 @@ export default AFRAME.registerComponent('al-screen-space', {
   // tslint:disable-next-line: no-empty
   removeEventListeners(): void {},
 
-  // tslint:disable-next-line: no-any no-empty
-  update(_oldData: any): void {},
-
-  tickFunction() {
+  update(): void {
     const camera = this.el.sceneEl.camera as THREE.PerspectiveCamera;
     const object = this.el.object3D as THREE.Object3D;
 
@@ -61,6 +58,9 @@ export default AFRAME.registerComponent('al-screen-space', {
     const scale = pointD * Constants.zoomFactor;
     this.el.setAttribute('scale', `${scale} ${scale} ${scale}`);
   },
+
+  // tslint:disable-next-line: no-empty
+  tickFunction() {},
 
   tick() {
     this.tickFunction();

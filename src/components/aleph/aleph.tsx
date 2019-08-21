@@ -1,4 +1,5 @@
-import { Action, Store } from "@edsilv/stencil-redux";
+import { Action, Store } from '@edsilv/stencil-redux';
+import '@edsilv/stencil-redux';
 import {
   Component,
   Element,
@@ -8,10 +9,9 @@ import {
   Method,
   Prop,
   State
-} from "@stencil/core";
-import "@edsilv/stencil-redux";
-import "../../aframe";
-import { AlGltfModelEvents, AlNodeSpawnerEvents } from "../../aframe";
+} from '@stencil/core';
+import '../../aframe';
+import { AlGltfModelEvents, AlNodeSpawnerEvents } from '../../aframe';
 import {
   AlGraphEntryType,
   ControlsType,
@@ -19,8 +19,8 @@ import {
   Material,
   Orientation,
   Units
-} from "../../enums";
-import { AlAngle, AlCamera, AlEdge, AlNode } from "../../interfaces";
+} from '../../enums';
+import { AlAngle, AlCamera, AlEdge, AlNode } from '../../interfaces';
 import {
   appClearAngles,
   appClearEdges,
@@ -51,7 +51,7 @@ import {
   appSetVolumeSteps,
   appSetVolumeWindowCenter,
   appSetVolumeWindowWidth
-} from "../../redux/actions";
+} from '../../redux/actions';
 import {
   AlGraphEvents,
   AMIUtils,
@@ -59,16 +59,16 @@ import {
   GetUtils,
   GraphUtils,
   ThreeUtils
-} from "../../utils";
+} from '../../utils';
 
-import { KeyDown } from "@edsilv/key-codes";
-import { AlVolumeEvents } from "../../aframe/components/AlVolumeComponent";
-import { Constants } from "../../Constants";
-import { AlGraph } from "../../interfaces/AlGraph";
-import { configureStore } from "../../redux/store";
-import { AlControlEvents } from "../../utils/AlControlEvents";
-import { getLocaleComponentStrings } from "../../utils/Locale";
-import { ContentStrings } from "./ContentStrings";
+import { KeyDown } from '@edsilv/key-codes';
+import { AlVolumeEvents } from '../../aframe/components/AlVolumeComponent';
+import { Constants } from '../../Constants';
+import { AlGraph } from '../../interfaces/AlGraph';
+import { configureStore } from '../../redux/store';
+import { AlControlEvents } from '../../utils/AlControlEvents';
+import { getLocaleComponentStrings } from '../../utils/Locale';
+import { ContentStrings } from './ContentStrings';
 
 type Entity = import('aframe').Entity;
 type Scene = import('aframe').Scene;
@@ -99,7 +99,7 @@ export class Aleph {
 
   @Element() private _element: HTMLElement;
 
-  @Prop({ context: "store" }) public store: Store;
+  @Prop({ context: 'store' }) public store: Store;
   @Prop() public dracoDecoderPath: string | null;
   @Prop() public width: string = '640';
   @Prop() public height: string = '480';
