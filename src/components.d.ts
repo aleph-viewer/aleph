@@ -14,22 +14,13 @@ import {
 import {
   ControlsType,
   DisplayMode as DisplayMode1,
-  Material as Material1,
-  Orientation as Orientation1,
-  Units as Units1,
+  Material,
+  Orientation,
+  Units,
 } from './enums';
 import {
   DisplayMode,
 } from './enums/DisplayMode';
-import {
-  Material,
-} from './enums/Material';
-import {
-  Orientation,
-} from './enums/Orientation';
-import {
-  Units,
-} from './enums/Units';
 import {
   AlGraph,
 } from './interfaces/AlGraph';
