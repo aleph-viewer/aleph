@@ -3,15 +3,15 @@ import {
   Element,
   Event,
   EventEmitter,
+  h,
   Prop,
-  Watch,
-  h
+  Watch
 } from "@stencil/core";
-import { ControlsType, Material, Orientation, Units } from "../../enums";
 import { Constants } from "../../Constants";
-import { ContentStrings } from "./ContentStrings";
+import { ControlsType, Material, Orientation, Units } from "../../enums";
 import { DisplayMode } from "../../enums/DisplayMode";
 import { getLocaleComponentStrings } from "../../utils/Locale";
+import { ContentStrings } from "./ContentStrings";
 @Component({
   tag: "al-control-panel",
   styleUrl: "al-control-panel.css",

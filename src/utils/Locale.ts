@@ -1,3 +1,5 @@
+import { I18nJson } from "../interfaces/I18nJson";
+
 function getComponentClosestLanguage(element: HTMLElement): string {
   const closestElement = element.closest("[lang]") as HTMLElement;
   return closestElement ? closestElement.lang : "en";
@@ -6,23 +8,24 @@ function getComponentClosestLanguage(element: HTMLElement): string {
 function fetchLocaleStringsForComponent(
   componentName: string,
   locale: string
-): Promise<any> {
-  return new Promise(
-    (resolve, reject): void => {
-      fetch(`/i18n/${componentName}.i18n.${locale}.json`).then(
-        result => {
-          if (result.ok) resolve(result.json());
-          else reject();
-        },
-        () => reject()
-      );
-    }
-  );
+): Promise<I18nJson> {
+  return new Promise((resolve, reject): void => {
+    fetch(`/i18n/${componentName}.i18n.${locale}.json`).then(
+      result => {
+        if (result.ok) {
+          resolve(result.json());
+        } else {
+          reject();
+        }
+      },
+      () => reject()
+    );
+  });
 }
 
 export async function getLocaleComponentStrings(
   element: HTMLElement
-): Promise<any> {
+): Promise<I18nJson> {
   const componentName = element.tagName.toLowerCase();
   const componentLanguage = getComponentClosestLanguage(element);
   let strings;

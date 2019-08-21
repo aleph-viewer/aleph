@@ -1,28 +1,26 @@
-import "@stencil/redux";
-import "../../aframe";
-import {
-  AMIUtils,
-  AlGraphEvents,
-  EventUtils,
-  GetUtils,
-  GraphUtils,
-  ThreeUtils
-} from "../../utils";
-import { Action, Store } from "@stencil/redux";
-import { AlAngle, AlCamera, AlEdge, AlNode } from "../../interfaces";
-import { AlGltfModelEvents, AlNodeSpawnerEvents } from "../../aframe";
-import { AlGraphEntryType, ControlsType, Material, Units } from "../../enums";
+import { Action, Store } from "@edsilv/stencil-redux";
 import {
   Component,
   Element,
   Event,
   EventEmitter,
+  h,
   Method,
   Prop,
-  State,
-  h
+  State
 } from "@stencil/core";
-import { DisplayMode, Orientation } from "../../enums";
+import "@edsilv/stencil-redux";
+import "../../aframe";
+import { AlGltfModelEvents, AlNodeSpawnerEvents } from "../../aframe";
+import {
+  AlGraphEntryType,
+  ControlsType,
+  DisplayMode,
+  Material,
+  Orientation,
+  Units
+} from "../../enums";
+import { AlAngle, AlCamera, AlEdge, AlNode } from "../../interfaces";
 import {
   appClearAngles,
   appClearEdges,
@@ -54,15 +52,23 @@ import {
   appSetVolumeWindowCenter,
   appSetVolumeWindowWidth
 } from "../../redux/actions";
+import {
+  AlGraphEvents,
+  AMIUtils,
+  EventUtils,
+  GetUtils,
+  GraphUtils,
+  ThreeUtils
+} from "../../utils";
 
-import { AlControlEvents } from "../../utils/AlControlEvents";
-import { AlGraph } from "../../interfaces/AlGraph";
+import { KeyDown } from "@edsilv/key-codes";
 import { AlVolumeEvents } from "../../aframe/components/AlVolumeComponent";
 import { Constants } from "../../Constants";
-import { ContentStrings } from "./ContentStrings";
-import { KeyDown } from "@edsilv/key-codes";
+import { AlGraph } from "../../interfaces/AlGraph";
 import { configureStore } from "../../redux/store";
+import { AlControlEvents } from "../../utils/AlControlEvents";
 import { getLocaleComponentStrings } from "../../utils/Locale";
+import { ContentStrings } from "./ContentStrings";
 
 type Entity = import("aframe").Entity;
 type Scene = import("aframe").Scene;
