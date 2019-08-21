@@ -646,9 +646,6 @@ export class Aleph {
               anchor: center;
               width: ${Constants.fontSizeMedium * this._boundingSphereRadius};
             `}
-            // al-look-to-camera={`
-            //   controlsType: ${this.controlsType};
-            // `}
             al-screen-space={`
               position: ${ThreeUtils.vector3ToString(
                 ThreeUtils.stringToVector3(node.position).add(
@@ -729,8 +726,14 @@ export class Aleph {
               `}
               position={ThreeUtils.vector3ToString(textOffset)}
               visible={`${this.selected === edgeId}`}
-              al-look-to-camera={`
-                controlsType: ${this.controlsType};
+              al-screen-space={`
+                position: ${ThreeUtils.vector3ToString(
+                  centoid.clone().add(textOffset.clone())
+                )};
+                boundingRadius: ${this._boundingSphereRadius};
+                cameraPosition: ${ThreeUtils.vector3ToString(
+                  this.camera.position
+                )};
               `}
               al-render-overlaid
             >
@@ -868,9 +871,15 @@ export class Aleph {
                 position.clone().add(textOffset)
               )}
               visible={`${this.selected === angleId}`}
-              al-look-to-camera={`
-              controlsType: ${this.controlsType};
-            `}
+              al-screen-space={`
+                position: ${ThreeUtils.vector3ToString(
+                  centralPos.clone().add(textOffset.clone())
+                )};
+                boundingRadius: ${this._boundingSphereRadius};
+                cameraPosition: ${ThreeUtils.vector3ToString(
+                  this.camera.position
+                )};
+              `}
               al-render-overlaid
             >
               <a-plane
