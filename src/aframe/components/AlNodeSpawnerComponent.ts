@@ -1,6 +1,6 @@
-import { ThreeUtils } from "../../utils";
-import { AlGraphEvents } from "../../utils/GraphUtils";
-import { BaseComponent } from "./BaseComponent";
+import { ThreeUtils } from '../../utils';
+import { AlGraphEvents } from '../../utils/GraphUtils';
+import { BaseComponent } from './BaseComponent';
 
 interface AlNodeSpawnerState {
   left: boolean;
@@ -8,8 +8,8 @@ interface AlNodeSpawnerState {
 }
 
 export class AlNodeSpawnerEvents {
-  public static VALID_TARGET: string = "al-valid-target";
-  public static ADD_NODE: string = "al-add-node";
+  public static VALID_TARGET: string = 'al-valid-target';
+  public static ADD_NODE: string = 'al-add-node';
 }
 
 interface AlNodeSpawnerComponent extends BaseComponent {
@@ -22,9 +22,9 @@ interface AlNodeSpawnerComponent extends BaseComponent {
   pointerUp(event: CustomEvent): void;
 }
 
-export default AFRAME.registerComponent("al-node-spawner", {
+export default AFRAME.registerComponent('al-node-spawner', {
   schema: {
-    graphEnabled: { type: "boolean" }
+    graphEnabled: { type: 'boolean' }
   },
 
   init(): void {
@@ -48,37 +48,37 @@ export default AFRAME.registerComponent("al-node-spawner", {
   },
 
   addEventListeners() {
-    this.el.sceneEl.canvas.addEventListener("mousedown", this.canvasMouseDown, {
+    this.el.sceneEl.canvas.addEventListener('mousedown', this.canvasMouseDown, {
       capture: false,
       once: false,
       passive: true
     });
-    this.el.sceneEl.canvas.addEventListener("mouseup", this.canvasMouseUp, {
+    this.el.sceneEl.canvas.addEventListener('mouseup', this.canvasMouseUp, {
       capture: false,
       once: false,
       passive: true
     });
-    this.el.addEventListener("raycaster-intersected", this.pointerOver, {
+    this.el.addEventListener('raycaster-intersected', this.pointerOver, {
       capture: false,
       once: false,
       passive: true
     });
     this.el.addEventListener(
-      "raycaster-intersected-cleared",
+      'raycaster-intersected-cleared',
       this.pointerOut,
       false
     );
-    this.el.addEventListener("click", this.elClick, {
+    this.el.addEventListener('click', this.elClick, {
       capture: false,
       once: false,
       passive: true
     });
-    this.el.addEventListener("mousedown", this.pointerDown, {
+    this.el.addEventListener('mousedown', this.pointerDown, {
       capture: false,
       once: false,
       passive: true
     });
-    this.el.addEventListener("mouseup", this.pointerUp, {
+    this.el.addEventListener('mouseup', this.pointerUp, {
       capture: false,
       once: false,
       passive: true
@@ -87,18 +87,18 @@ export default AFRAME.registerComponent("al-node-spawner", {
 
   removeEventListeners() {
     this.el.sceneEl.canvas.removeEventListener(
-      "mousedown",
+      'mousedown',
       this.canvasMouseDown
     );
-    this.el.sceneEl.canvas.removeEventListener("mouseup", this.canvasMouseUp);
-    this.el.removeEventListener("raycaster-intersected", this.pointerOver);
+    this.el.sceneEl.canvas.removeEventListener('mouseup', this.canvasMouseUp);
+    this.el.removeEventListener('raycaster-intersected', this.pointerOver);
     this.el.removeEventListener(
-      "raycaster-intersected-cleared",
+      'raycaster-intersected-cleared',
       this.pointerOut
     );
-    this.el.removeEventListener("click", this.elClick);
-    this.el.removeEventListener("mousedown", this.pointerDown);
-    this.el.removeEventListener("mouseup", this.pointerUp);
+    this.el.removeEventListener('click', this.elClick);
+    this.el.removeEventListener('mousedown', this.pointerDown);
+    this.el.removeEventListener('mouseup', this.pointerUp);
   },
 
   canvasMouseDown(event: MouseEvent) {

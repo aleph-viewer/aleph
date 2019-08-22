@@ -59,6 +59,7 @@ export class Constants {
     maxPolarAngle: 175,
     rotateSpeed: 0.5,
     zoomSpeed: 1,
+    panSpeed: 0.9,
     dampingFactor: 0.25,
     minDistance: 0
   };

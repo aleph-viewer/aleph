@@ -1,26 +1,28 @@
 // todo: use the A-Frame default cursor when updating to a new release. PR was merged with fixes: https://github.com/aframevr/aframe/pull/4249
 
 const EVENTS = {
-  CLICK: "click",
-  FUSING: "fusing",
-  MOUSEENTER: "mouseenter",
-  MOUSEDOWN: "mousedown",
-  MOUSELEAVE: "mouseleave",
-  MOUSEUP: "mouseup"
+  CLICK: 'click',
+  FUSING: 'fusing',
+  MOUSEENTER: 'mouseenter',
+  MOUSEDOWN: 'mousedown',
+  MOUSELEAVE: 'mouseleave',
+  MOUSEUP: 'mouseup'
+  // TOUCHSTART: 'touchstart',
+  // TOUCHEND: 'touchend'
 };
 
 const STATES = {
-  FUSING: "cursor-fusing",
-  HOVERING: "cursor-hovering",
-  HOVERED: "cursor-hovered"
+  FUSING: 'cursor-fusing',
+  HOVERING: 'cursor-hovering',
+  HOVERED: 'cursor-hovered'
 };
 
 const CANVAS_EVENTS = {
-  DOWN: ["mousedown", "touchstart"],
-  UP: ["mouseup", "touchend"]
+  DOWN: ['mousedown', 'touchstart'],
+  UP: ['mouseup', 'touchend']
 };
 
-const CANVAS_HOVER_CLASS = "a-mouse-cursor-hover";
+const CANVAS_HOVER_CLASS = 'a-mouse-cursor-hover';
 
 /**
  * Cursor component. Applies the raycaster component specifically for starting the raycaster
@@ -34,8 +36,8 @@ const CANVAS_HOVER_CLASS = "a-mouse-cursor-hover";
  * @member {Element} intersectedEl - Currently-intersected entity. Used to keep track to
  *         emit events when unintersecting.
  */
-export default AFRAME.registerComponent("al-cursor", {
-  dependencies: ["raycaster"],
+export default AFRAME.registerComponent('al-cursor', {
+  dependencies: ['raycaster'],
 
   schema: {
     downEvents: { default: [] },
@@ -43,7 +45,7 @@ export default AFRAME.registerComponent("al-cursor", {
     fuseTimeout: { default: 1500, min: 0 },
     mouseCursorStylesEnabled: { default: true },
     upEvents: { default: [] },
-    rayOrigin: { default: "entity", oneOf: ["mouse", "entity"] }
+    rayOrigin: { default: 'entity', oneOf: ['mouse', 'entity'] }
   },
 
   init: function() {
@@ -126,7 +128,7 @@ export default AFRAME.registerComponent("al-cursor", {
     if (canvas) {
       addCanvasListeners();
     } else {
-      el.sceneEl.addEventListener("render-target-loaded", addCanvasListeners);
+      el.sceneEl.addEventListener('render-target-loaded', addCanvasListeners);
     }
 
     data.downEvents.forEach(function(downEvent) {
@@ -135,15 +137,15 @@ export default AFRAME.registerComponent("al-cursor", {
     data.upEvents.forEach(function(upEvent) {
       el.addEventListener(upEvent, self.onCursorUp);
     });
-    el.addEventListener("raycaster-intersection", this.onIntersection);
+    el.addEventListener('raycaster-intersection', this.onIntersection);
     el.addEventListener(
-      "raycaster-intersection-cleared",
+      'raycaster-intersection-cleared',
       this.onIntersectionCleared
     );
 
-    el.sceneEl.addEventListener("rendererresize", this.updateCanvasBounds);
-    window.addEventListener("resize", this.updateCanvasBounds);
-    window.addEventListener("scroll", this.updateCanvasBounds);
+    el.sceneEl.addEventListener('rendererresize', this.updateCanvasBounds);
+    window.addEventListener('resize', this.updateCanvasBounds);
+    window.addEventListener('scroll', this.updateCanvasBounds);
 
     this.updateMouseEventListeners();
   },
@@ -170,18 +172,18 @@ export default AFRAME.registerComponent("al-cursor", {
     data.upEvents.forEach(function(upEvent) {
       el.removeEventListener(upEvent, self.onCursorUp);
     });
-    el.removeEventListener("raycaster-intersection", this.onIntersection);
+    el.removeEventListener('raycaster-intersection', this.onIntersection);
     el.removeEventListener(
-      "raycaster-intersection-cleared",
+      'raycaster-intersection-cleared',
       this.onIntersectionCleared
     );
-    canvas.removeEventListener("mousemove", this.onMouseMove);
-    canvas.removeEventListener("touchstart", this.onMouseMove);
-    canvas.removeEventListener("touchmove", this.onMouseMove);
+    canvas.removeEventListener('mousemove', this.onMouseMove);
+    canvas.removeEventListener('touchstart', this.onMouseMove);
+    canvas.removeEventListener('touchmove', this.onMouseMove);
 
-    el.sceneEl.removeEventListener("rendererresize", this.updateCanvasBounds);
-    window.removeEventListener("resize", this.updateCanvasBounds);
-    window.removeEventListener("scroll", this.updateCanvasBounds);
+    el.sceneEl.removeEventListener('rendererresize', this.updateCanvasBounds);
+    window.removeEventListener('resize', this.updateCanvasBounds);
+    window.removeEventListener('scroll', this.updateCanvasBounds);
   },
 
   updateMouseEventListeners: function() {
@@ -189,15 +191,15 @@ export default AFRAME.registerComponent("al-cursor", {
     var el = this.el;
 
     canvas = el.sceneEl.canvas;
-    canvas.removeEventListener("mousemove", this.onMouseMove);
-    canvas.removeEventListener("touchmove", this.onMouseMove);
-    el.setAttribute("raycaster", "useWorldCoordinates", false);
-    if (this.data.rayOrigin !== "mouse") {
+    canvas.removeEventListener('mousemove', this.onMouseMove);
+    canvas.removeEventListener('touchmove', this.onMouseMove);
+    el.setAttribute('raycaster', 'useWorldCoordinates', false);
+    if (this.data.rayOrigin !== 'mouse') {
       return;
     }
-    canvas.addEventListener("mousemove", this.onMouseMove, false);
-    canvas.addEventListener("touchmove", this.onMouseMove, false);
-    el.setAttribute("raycaster", "useWorldCoordinates", true);
+    canvas.addEventListener('mousemove', this.onMouseMove, false);
+    canvas.addEventListener('touchmove', this.onMouseMove, false);
+    el.setAttribute('raycaster', 'useWorldCoordinates', true);
     this.updateCanvasBounds();
   },
 
@@ -217,7 +219,7 @@ export default AFRAME.registerComponent("al-cursor", {
       camera.parent.updateMatrixWorld();
 
       // Calculate mouse position based on the canvas element
-      if (evt.type === "touchmove" || evt.type === "touchstart") {
+      if (evt.type === 'touchmove' || evt.type === 'touchstart') {
         // Track the first touch for simplicity.
         point = evt.touches.item(0);
       } else {
@@ -235,8 +237,8 @@ export default AFRAME.registerComponent("al-cursor", {
         .unproject(camera)
         .sub(origin)
         .normalize();
-      this.el.setAttribute("raycaster", rayCasterConfig);
-      if (evt.type === "touchmove") {
+      this.el.setAttribute('raycaster', rayCasterConfig);
+      if (evt.type === 'touchmove') {
         evt.preventDefault();
       }
     };
@@ -248,7 +250,7 @@ export default AFRAME.registerComponent("al-cursor", {
   onCursorDown: function(evt) {
     this.isCursorDown = true;
     // Raycast again for touch.
-    if (this.data.rayOrigin === "mouse" && evt.type === "touchstart") {
+    if (this.data.rayOrigin === 'mouse' && evt.type === 'touchstart') {
       this.onMouseMove(evt);
       this.el.components.raycaster.checkIntersections();
       evt.preventDefault();
@@ -281,14 +283,14 @@ export default AFRAME.registerComponent("al-cursor", {
       this.cursorDownEl.emit(EVENTS.MOUSEUP, this.intersectedEventDetail);
     }
     if (
-      (!data.fuse || data.rayOrigin === "mouse") &&
+      (!data.fuse || data.rayOrigin === 'mouse') &&
       this.intersectedEl &&
       this.cursorDownEl === this.intersectedEl
     ) {
       this.twoWayEmit(EVENTS.CLICK);
     }
     this.cursorDownEl = null;
-    if (evt.type === "touchend") {
+    if (evt.type === 'touchend') {
       evt.preventDefault();
     }
   },
@@ -367,7 +369,7 @@ export default AFRAME.registerComponent("al-cursor", {
     intersectedEl.addState(STATES.HOVERED);
     this.twoWayEmit(EVENTS.MOUSEENTER);
 
-    if (this.data.mouseCursorStylesEnabled && this.data.rayOrigin === "mouse") {
+    if (this.data.mouseCursorStylesEnabled && this.data.rayOrigin === 'mouse') {
       this.el.sceneEl.canvas.classList.add(CANVAS_HOVER_CLASS);
     }
 
@@ -400,7 +402,7 @@ export default AFRAME.registerComponent("al-cursor", {
     cursorEl.removeState(STATES.FUSING);
     this.twoWayEmit(EVENTS.MOUSELEAVE);
 
-    if (this.data.mouseCursorStylesEnabled && this.data.rayOrigin === "mouse") {
+    if (this.data.mouseCursorStylesEnabled && this.data.rayOrigin === 'mouse') {
       this.el.sceneEl.canvas.classList.remove(CANVAS_HOVER_CLASS);
     }
 
