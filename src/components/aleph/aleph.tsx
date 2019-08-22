@@ -1713,13 +1713,13 @@ export class Aleph {
     );
 
     this._scene.addEventListener(
-      AlControlEvents.INTERACTION, // todo: make this a more generic event
+      AlControlEvents.INTERACTION,
       this._controlsInteractionHandler,
       false
     );
 
     this._scene.addEventListener(
-      AlControlEvents.INTERACTION_FINISHED, // todo: make this a more generic event
+      AlControlEvents.INTERACTION_FINISHED,
       this._controlsInteractionFinishedHandler,
       false
     );

@@ -1,52 +1,6 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    viewBox="0 0 512 512"
-   class="s-ion-icon"
-   version="1.1"
-   id="svg4534"
-   sodipodi:docname="material.svg"
-   inkscape:version="0.92.3 (2405546, 2018-03-11)">
-  <metadata
-     id="metadata4540">
-    <rdf:RDF>
-      <cc:Work
-         rdf:about="">
-        <dc:format>image/svg+xml</dc:format>
-        <dc:type
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
-      </cc:Work>
-    </rdf:RDF>
-  </metadata>
-  <defs
-     id="defs4538" />
-  <sodipodi:namedview
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1"
-     objecttolerance="10"
-     gridtolerance="10"
-     guidetolerance="10"
-     inkscape:pageopacity="0"
-     inkscape:pageshadow="2"
-     inkscape:window-width="3360"
-     inkscape:window-height="1780"
-     id="namedview4536"
-     showgrid="false"
-     inkscape:zoom="2.113034"
-     inkscape:cx="265.48159"
-     inkscape:cy="244.65894"
-     inkscape:window-x="4468"
-     inkscape:window-y="-12"
-     inkscape:window-maximized="1"
-     inkscape:current-layer="svg4534" />
+   class="s-ion-icon">
   <path
      d="M 256.98047 48.896484 A 206.13857 206.13857 0 0 0 50.841797 255.03516 A 206.13857 206.13857 0 0 0 256.98047 461.17383 A 206.13857 206.13857 0 0 0 463.11914 255.03516 A 206.13857 206.13857 0 0 0 256.98047 48.896484 z M 257.67383 87.675781 A 167.98955 167.98955 0 0 1 425.30078 245.44531 C 412.87866 256.57974 388.94263 274.19096 351.36523 286.45312 C 300.32182 303.10949 257.66602 301.8457 257.66602 301.8457 L 258.26758 423.63281 A 167.98955 167.98955 0 0 1 257.67383 423.6543 A 167.98955 167.98955 0 0 1 89.683594 255.66602 A 167.98955 167.98955 0 0 1 90.216797 245 C 102.48677 256.10361 126.54615 274.02159 164.64258 286.45312 C 215.686 303.10948 257.66602 301.8457 257.66602 301.8457 L 257.67383 87.675781 z "
      id="path836" />

@@ -1,11 +1,11 @@
-import { AlAngle } from "../interfaces/AlAngle";
-import { AlCamera, AlEdge } from "../interfaces";
-import { AlNode } from "../interfaces/AlNode";
+import { ControlsType } from "../enums/ControlsType";
 import { DisplayMode } from "../enums/DisplayMode";
 import { Material } from "../enums/Material";
 import { Orientation } from "../enums/Orientation";
 import { Units } from "../enums/Units";
-import { ControlsType } from "../enums/ControlsType";
+import { AlCamera, AlEdge } from "../interfaces";
+import { AlAngle } from "../interfaces/AlAngle";
+import { AlNode } from "../interfaces/AlNode";
 
 export interface NullAction {
   type: TypeKeys.NULL;

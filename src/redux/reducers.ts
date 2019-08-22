@@ -1,13 +1,13 @@
-import { ActionTypes, TypeKeys } from "./actions";
-import { AlAngle, AlAppState, AlEdge, AlNode } from "../interfaces";
 import { combineReducers } from "redux";
+import { MeshFileType } from "../enums";
 import { ControlsType } from "../enums/ControlsType";
 import { DisplayMode } from "../enums/DisplayMode";
-import { GetUtils } from "../utils";
 import { Material } from "../enums/Material";
-import { MeshFileType } from "../enums";
 import { Orientation } from "../enums/Orientation";
 import { Units } from "../enums/Units";
+import { AlAngle, AlAppState, AlEdge, AlNode } from "../interfaces";
+import { GetUtils } from "../utils";
+import { ActionTypes, TypeKeys } from "./actions";
 
 export const getInitialState = () => {
   return {
