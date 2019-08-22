@@ -1,16 +1,16 @@
-import { Constants } from "../Constants";
-import { ControlsType } from "../enums";
-import { AlCamera } from "../interfaces";
+import { Constants } from '../Constants';
+import { ControlsType } from '../enums';
+import { AlCamera } from '../interfaces';
 
-type Entity = import("aframe").Entity;
+type Entity = import('aframe').Entity;
 
 export class ThreeUtils {
   public static isWebGL2Available() {
     try {
       // tslint:disable-next-line: no-any
-      const canvas: any = document.createElement("canvas");
+      const canvas: any = document.createElement('canvas');
       return !!// tslint:disable-next-line: no-any
-      ((window as any).WebGL2RenderingContext && canvas.getContext("webgl2"));
+      ((window as any).WebGL2RenderingContext && canvas.getContext('webgl2'));
     } catch (e) {
       return false;
     }
@@ -23,8 +23,8 @@ export class ThreeUtils {
     type: ControlsType
   ) {
     type === ControlsType.TRACKBALL
-      ? camEntity.setAttribute("al-trackball-control", `enabled: ${enabled}`)
-      : camEntity.setAttribute("al-orbit-control", `enabled: ${enabled}`);
+      ? camEntity.setAttribute('al-trackball-control', `enabled: ${enabled}`)
+      : camEntity.setAttribute('al-orbit-control', `enabled: ${enabled}`);
   }
 
   public static waitOneFrame(func: () => void) {
@@ -66,11 +66,11 @@ export class ThreeUtils {
   }
 
   public static vector3ToString(vec: THREE.Vector3): string {
-    return vec.toArray().join(" ");
+    return vec.toArray().join(' ');
   }
 
   public static stringToVector3(vec: string): THREE.Vector3 {
-    const res = vec.split(" ");
+    const res = vec.split(' ');
     const vect = new THREE.Vector3();
     vect.x = Number(res[0]);
     vect.y = Number(res[1]);
@@ -158,5 +158,68 @@ export class ThreeUtils {
     }
 
     return path;
+  }
+
+  public static lookToFrustrumSpace(
+    object: THREE.Object3D,
+    camera: THREE.PerspectiveCamera,
+    worldPosition: THREE.Vector3,
+    cameraPosition: THREE.Vector3
+  ) {
+    const cameraDirection = new THREE.Vector3();
+    camera.getWorldDirection(cameraDirection);
+
+    const distance = cameraPosition.distanceTo(new THREE.Vector3(0, 0, 0));
+    const lookPlane = new THREE.Plane(cameraDirection, distance);
+
+    const frustrumDirection = new THREE.Vector3();
+    lookPlane.projectPoint(worldPosition, frustrumDirection);
+
+    object.lookAt(frustrumDirection);
+  }
+
+  // public static scaleInFrustrumSpace(
+  //   object: THREE.Object3D,
+  //   camera: THREE.PerspectiveCamera,
+  //   worldPosition: THREE.Vector3,
+  //   cameraPosition: THREE.Vector3
+  // ) {
+  //   const cameraDirection = new THREE.Vector3();
+  //   camera.getWorldDirection(cameraDirection);
+
+  //   const distance = cameraPosition.distanceTo(new THREE.Vector3(0, 0, 0));
+  //   const lookPlane = new THREE.Plane(cameraDirection, distance);
+
+  //   const frustrumDirection = new THREE.Vector3();
+  //   lookPlane.projectPoint(worldPosition, frustrumDirection);
+
+  //   const ray = new THREE.Ray(worldPosition);
+  //   ray.lookAt(frustrumDirection);
+  //   const pointD = ray.distanceToPlane(lookPlane);
+
+  //   // TODO: Make constant to the bbox size?
+  //   const scale = pointD * Constants.zoomFactor;
+  //   object.scale.set(scale, scale, scale);
+  // }
+
+  public static getFrustrumSpaceDistance(
+    camera: THREE.Camera,
+    worldPosition: THREE.Vector3,
+    cameraPosition: THREE.Vector3
+  ): number {
+    const cameraDirection = new THREE.Vector3();
+    camera.getWorldDirection(cameraDirection);
+
+    const distance = cameraPosition.distanceTo(new THREE.Vector3(0, 0, 0));
+    const lookPlane = new THREE.Plane(cameraDirection, distance);
+
+    const frustrumDirection = new THREE.Vector3();
+    lookPlane.projectPoint(worldPosition, frustrumDirection);
+
+    const ray = new THREE.Ray(worldPosition);
+    ray.lookAt(frustrumDirection);
+
+    const dist = ray.distanceToPlane(lookPlane);
+    return dist;
   }
 }

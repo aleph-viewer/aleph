@@ -1,11 +1,11 @@
-import { Component, Event, EventEmitter, h, Prop } from "@stencil/core";
-import { AlNode } from "../../interfaces";
-import i18n from "./al-node-list.i18n.en.json";
-import { ContentStrings } from "./ContentStrings";
+import { Component, Event, EventEmitter, h, Prop } from '@stencil/core';
+import { AlNode } from '../../interfaces';
+import i18n from './al-node-list.i18n.en.json';
+import { ContentStrings } from './ContentStrings';
 
 @Component({
-  tag: "al-node-list",
-  styleUrl: "al-node-list.css",
+  tag: 'al-node-list',
+  styleUrl: 'al-node-list.css',
   shadow: true
 })
 export class AlNodeList {
@@ -17,14 +17,14 @@ export class AlNodeList {
   @Prop({ mutable: true }) public selected: string | null = null;
 
   public render() {
-    console.log("selected", this.selected);
+    // console.log("selected", this.selected);
     if (this.nodes && this.nodes.size) {
       return (
         <ion-list>
           {Array.from(this.nodes).map(([nodeId, node]) => {
             return (
               <ion-item
-                class={this.selected === nodeId ? "selected" : null}
+                class={this.selected === nodeId ? 'selected' : null}
                 onClick={() => this.selectedChanged.emit(nodeId)}
               >
                 {node.title}
