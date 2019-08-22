@@ -85,7 +85,7 @@ export default AFRAME.registerComponent('al-background', {
           );
           mesh.renderOrder = Constants.topLayerRenderOrder - 1;
           mesh.position.add(
-            new THREE.Vector3(0, height * (this.data.frustrumDistance / 3), 0)
+            new THREE.Vector3(0, height * (this.data.frustrumDistance / 4), 0)
           );
           this.el.object3D.add(mesh);
           this.state.hasUpdated = true;
