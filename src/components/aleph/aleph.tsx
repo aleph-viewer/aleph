@@ -621,7 +621,9 @@ export class Aleph {
         ThreeUtils.stringToVector3(node.position),
         this.camera.position
       );
-      const entityScale = frustrumDistance * Constants.frustrumScaleFactor;
+      const entityScale =
+        (frustrumDistance / this._boundingSphereRadius) *
+        Constants.frustrumScaleFactor;
 
       const textOffset: THREE.Vector3 = new THREE.Vector3(0, 4, 0);
       textOffset.multiplyScalar(node.scale);
@@ -652,7 +654,7 @@ export class Aleph {
             al-render-overlaid
             visible={`${this.selected === nodeId}`}
             id={`${nodeId}-label`}
-            al-look-to-camera={`
+            al-billboard-baggins={`
               controlsType: ${this.controlsType};
               cameraPosition: ${ThreeUtils.vector3ToString(
                 this.camera.position
@@ -666,8 +668,7 @@ export class Aleph {
                 boundingRadius: ${Constants.fontSizeMedium *
                   this._boundingSphereRadius};
             `}
-          >
-          </a-entity>
+          ></a-entity>
         </a-entity>
       );
     });
@@ -700,7 +701,9 @@ export class Aleph {
           centoid.clone(),
           this.camera.position
         );
-        const entityScale = frustrumDistance * Constants.frustrumScaleFactor;
+        const entityScale =
+          (frustrumDistance / this._boundingSphereRadius) *
+          Constants.frustrumScaleFactor;
 
         return (
           <a-entity
@@ -730,7 +733,7 @@ export class Aleph {
               position={ThreeUtils.vector3ToString(textOffset)}
               visible={`${this.selected === edgeId}`}
               scale={` ${entityScale} ${entityScale} ${entityScale};`}
-              al-look-to-camera={`
+              al-billboard-baggins={`
                 controlsType: ${this.controlsType};
                 cameraPosition: ${ThreeUtils.vector3ToString(
                   this.camera.position
@@ -745,8 +748,7 @@ export class Aleph {
                     this._boundingSphereRadius};
               `}
               al-render-overlaid
-            >
-            </a-entity>
+            ></a-entity>
           </a-entity>
         );
       }
@@ -844,7 +846,9 @@ export class Aleph {
           centralPos.clone(),
           this.camera.position
         );
-        const entityScale = frustrumDistance * Constants.frustrumScaleFactor;
+        const entityScale =
+          (frustrumDistance / this._boundingSphereRadius) *
+          Constants.frustrumScaleFactor;
 
         return (
           <a-entity
@@ -877,7 +881,7 @@ export class Aleph {
                 position.clone().add(textOffset)
               )}
               visible={`${this.selected === angleId}`}
-              al-look-to-camera={`
+              al-billboard-baggins={`
                 controlsType: ${this.controlsType};
                 cameraPosition: ${ThreeUtils.vector3ToString(
                   this.camera.position
@@ -894,8 +898,7 @@ export class Aleph {
                   this._boundingSphereRadius};
               `}
               al-render-overlaid
-            >
-            </a-entity>
+            ></a-entity>
           </a-entity>
         );
       }
@@ -1218,13 +1221,22 @@ export class Aleph {
     animationStart: AlCamera,
     animationEndVec3: THREE.Vector3
   ): void {
+    const defaultCamera: AlCamera = GetUtils.getCameraStateFromMesh(
+      this._getMesh()
+    );
+
     const animationEnd = {
       position: animationEndVec3,
-      target: this.camera.target.clone()
+      target: defaultCamera.target.clone()
     } as AlCamera;
 
     if (animationEndVec3) {
-      const diffPos: number = animationEndVec3.distanceTo(this.camera.position);
+      const diffPos: number = animationEnd.position.distanceTo(
+        this.camera.position
+      );
+      const diffTarg: number = animationEnd.target.distanceTo(
+        this.camera.target
+      );
 
       if (diffPos > 0) {
         animationEnd.position.copy(animationEndVec3.clone());
@@ -1233,7 +1245,7 @@ export class Aleph {
           animationStart,
           animationEnd,
           diffPos > 0,
-          false
+          diffTarg > 0
         );
 
         this._scene.emit(

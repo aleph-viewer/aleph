@@ -75,9 +75,9 @@ export class AlTrackballControls extends THREE.EventDispatcher {
   private _up0: THREE.Vector3;
 
   // events
-  private _changeEvent = { type: "change" };
-  private _startEvent = { type: "start" };
-  private _endEvent = { type: "end" };
+  private _changeEvent = { type: 'change' };
+  private _startEvent = { type: 'start' };
+  private _endEvent = { type: 'end' };
 
   // tslint:disable-next-line: no-any
   constructor(object: any, domElement: HTMLElement | Document) {
@@ -146,38 +146,38 @@ export class AlTrackballControls extends THREE.EventDispatcher {
   }
 
   private _addListeners() {
-    this.domElement.addEventListener("mousedown", this._mouseDown, {
+    this.domElement.addEventListener('mousedown', this._mouseDown, {
       capture: false,
       once: false,
       passive: true
     });
-    window.addEventListener("mousemove", this._mouseMove, {
+    window.addEventListener('mousemove', this._mouseMove, {
       capture: false,
       once: false,
       passive: true
     });
-    window.addEventListener("mouseup", this._mouseUp, {
+    window.addEventListener('mouseup', this._mouseUp, {
       capture: false,
       once: false,
       passive: true
     });
-    this.domElement.addEventListener("wheel", this._mouseWheel, {
+    this.domElement.addEventListener('wheel', this._mouseWheel, {
       capture: false,
       once: false,
       passive: true
     });
 
-    this.domElement.addEventListener("touchstart", this._touchStart, {
+    this.domElement.addEventListener('touchstart', this._touchStart, {
       capture: false,
       once: false,
       passive: true
     });
-    window.addEventListener("touchend", this._touchEnd, {
+    window.addEventListener('touchend', this._touchEnd, {
       capture: false,
       once: false,
       passive: true
     });
-    window.addEventListener("touchmove", this._touchMove, {
+    window.addEventListener('touchmove', this._touchMove, {
       capture: false,
       once: false,
       passive: true
@@ -570,13 +570,13 @@ export class AlTrackballControls extends THREE.EventDispatcher {
   }
 
   private _removeListeners() {
-    this.domElement.removeEventListener("mousedown", this._mouseDown, false);
-    window.removeEventListener("mousemove", this._mouseMove, false);
-    window.removeEventListener("mouseup", this._mouseUp, false);
-    this.domElement.removeEventListener("wheel", this._mouseWheel, false);
+    this.domElement.removeEventListener('mousedown', this._mouseDown, false);
+    window.removeEventListener('mousemove', this._mouseMove, false);
+    window.removeEventListener('mouseup', this._mouseUp, false);
+    this.domElement.removeEventListener('wheel', this._mouseWheel, false);
 
-    this.domElement.removeEventListener("touchstart", this._touchStart, false);
-    window.removeEventListener("touchend", this._touchEnd, false);
-    window.removeEventListener("touchmove", this._touchMove, false);
+    this.domElement.removeEventListener('touchstart', this._touchStart, false);
+    window.removeEventListener('touchend', this._touchEnd, false);
+    window.removeEventListener('touchmove', this._touchMove, false);
   }
 }

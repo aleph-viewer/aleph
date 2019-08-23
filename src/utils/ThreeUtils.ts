@@ -142,7 +142,7 @@ export class ThreeUtils {
     return path;
   }
 
-  public static getSlerpPath(
+  public static getSlerp3Path(
     start: THREE.Vector3,
     end: THREE.Vector3
   ): number[] {
@@ -177,30 +177,6 @@ export class ThreeUtils {
 
     object.lookAt(frustrumDirection);
   }
-
-  // public static scaleInFrustrumSpace(
-  //   object: THREE.Object3D,
-  //   camera: THREE.PerspectiveCamera,
-  //   worldPosition: THREE.Vector3,
-  //   cameraPosition: THREE.Vector3
-  // ) {
-  //   const cameraDirection = new THREE.Vector3();
-  //   camera.getWorldDirection(cameraDirection);
-
-  //   const distance = cameraPosition.distanceTo(new THREE.Vector3(0, 0, 0));
-  //   const lookPlane = new THREE.Plane(cameraDirection, distance);
-
-  //   const frustrumDirection = new THREE.Vector3();
-  //   lookPlane.projectPoint(worldPosition, frustrumDirection);
-
-  //   const ray = new THREE.Ray(worldPosition);
-  //   ray.lookAt(frustrumDirection);
-  //   const pointD = ray.distanceToPlane(lookPlane);
-
-  //   // TODO: Make constant to the bbox size?
-  //   const scale = pointD * Constants.zoomFactor;
-  //   object.scale.set(scale, scale, scale);
-  // }
 
   public static getFrustrumSpaceDistance(
     camera: THREE.Camera,

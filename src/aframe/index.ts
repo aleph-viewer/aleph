@@ -1,12 +1,12 @@
 import './components/AlAngleComponent';
 import './components/AlBackgroundComponent';
+import './components/AlBillboardBaggins';
 import './components/AlBoundingBoxComponent';
 import './components/AlCursorComponent';
 import './components/AlEdgeComponent';
 import './components/AlFixedToOrbitCameraComponent';
 import './components/AlGltfModelComponent';
 import { AlGltfModelEvents } from './components/AlGltfModelComponent';
-import './components/AlLookToCameraComponent';
 import { AlNodeEvents } from './components/AlNodeComponent';
 import './components/AlNodeComponent';
 import { AlNodeSpawnerEvents } from './components/AlNodeSpawnerComponent';

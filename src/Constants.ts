@@ -16,7 +16,7 @@ export class Constants {
   public static topLayerRenderOrder = 999;
   public static unitsDecimalPlaces = 2;
   public static zoomFactor = 2.5;
-  public static frustrumScaleFactor = 5;
+  public static frustrumScaleFactor = 0.7;
 
   public static textPadding = {
     width: 0.03,
