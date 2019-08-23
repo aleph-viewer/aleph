@@ -1238,14 +1238,17 @@ export class Aleph {
         this.camera.target
       );
 
-      if (diffPos > 0) {
+      const needsPos = diffPos / Constants.maxAnimationSteps > Number.EPSILON;
+      const needsTarg = diffTarg / Constants.maxAnimationSteps > Number.EPSILON;
+
+      if (needsPos || needsTarg) {
         animationEnd.position.copy(animationEndVec3.clone());
 
         const slerpPath = ThreeUtils.getSlerpCameraPath(
           animationStart,
           animationEnd,
-          diffPos > 0,
-          diffTarg > 0
+          needsPos,
+          needsTarg
         );
 
         this._scene.emit(

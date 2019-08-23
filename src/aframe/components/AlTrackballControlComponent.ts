@@ -15,7 +15,6 @@ interface AlTrackballControlState {
   wheelCounter2: number;
   wheelInterval: number;
   wheelMarker: boolean;
-  panCache: THREE.Vector2[];
 }
 
 interface AlTrackballControlComponent extends ComponentDefinition {
@@ -111,11 +110,6 @@ export default AFRAME.registerComponent('al-trackball-control', {
     this.state.cameraAnimationCache = ThreeUtils.getSlerp3Path(
       camera.up.clone(),
       (this.state.controls as AlTrackballControls).up0
-    );
-
-    this.state.panCache = ThreeUtils.getSlerp2Path(
-      this.state.controls.panEnd,
-      new THREE.Vector2(0, 0)
     );
   },
 
@@ -221,8 +215,7 @@ export default AFRAME.registerComponent('al-trackball-control', {
       wheelCounter1: 0,
       wheelCounter2: undefined,
       wheelInterval: 50,
-      wheelMarker: true,
-      panCache: null
+      wheelMarker: true
     };
 
     this.bindMethods();
@@ -281,7 +274,6 @@ export default AFRAME.registerComponent('al-trackball-control', {
     if (this.data.animating) {
       const nextFrame: AlCamera = this.state.animationCache.shift();
       const nextCamera: THREE.Vector3 = this.state.cameraAnimationCache.shift();
-      // const nextPan: THREE.Vector2 = this.state.panCache.shift();
 
       if (nextFrame && nextFrame.position && nextFrame.target) {
         const camera = this.el.getObject3D('camera') as THREE.Camera;
