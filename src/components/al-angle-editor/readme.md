@@ -14,10 +14,23 @@
 
 ## Events
 
-| Event    | Description | Type               |
-| -------- | ----------- | ------------------ |
-| `delete` |             | `CustomEvent<any>` |
+| Event         | Description | Type               |
+| ------------- | ----------- | ------------------ |
+| `deleteAngle` |             | `CustomEvent<any>` |
 
+
+## Dependencies
+
+### Used by
+
+ - [al-control-panel](..\al-control-panel)
+
+### Graph
+```mermaid
+graph TD;
+  al-control-panel --> al-angle-editor
+  style al-angle-editor fill:#f9f,stroke:#333,stroke-width:4px
+```
 
 ----------------------------------------------
 

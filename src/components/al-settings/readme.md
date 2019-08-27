@@ -61,6 +61,19 @@
 | `--volume-window-width-display`  | Volume Window Width Range Display   |
 
 
+## Dependencies
+
+### Used by
+
+ - [al-control-panel](..\al-control-panel)
+
+### Graph
+```mermaid
+graph TD;
+  al-control-panel --> al-settings
+  style al-settings fill:#f9f,stroke:#333,stroke-width:4px
+```
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

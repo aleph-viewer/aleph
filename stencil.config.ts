@@ -22,6 +22,9 @@ export const config: Config = {
       dest: 'i18n'
     }
   ],
+  testing: {
+    testPathIgnorePatterns: ["/node_modules/", "/src/utils/shaders/"]
+  },
   plugins: [glslify({ basedir: 'src/assets/shaders' })],
   globalStyle: 'src/global/theme.css'
 };
