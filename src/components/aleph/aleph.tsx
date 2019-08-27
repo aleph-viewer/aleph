@@ -1,6 +1,6 @@
-import { KeyDown } from '@edsilv/key-codes';
-import { Action, Store } from '@edsilv/stencil-redux';
-import '@edsilv/stencil-redux';
+import { KeyDown } from "@edsilv/key-codes";
+import { Action, Store } from "@edsilv/stencil-redux";
+import "@edsilv/stencil-redux";
 import {
   Component,
   Event,
@@ -9,11 +9,11 @@ import {
   Method,
   Prop,
   State
-} from '@stencil/core';
-import '../../aframe';
-import { AlGltfModelEvents, AlNodeSpawnerEvents } from '../../aframe';
-import { AlVolumeEvents } from '../../aframe/components/AlVolumeComponent';
-import { Constants } from '../../Constants';
+} from "@stencil/core";
+import "../../aframe";
+import { AlGltfModelEvents, AlNodeSpawnerEvents } from "../../aframe";
+import { AlVolumeEvents } from "../../aframe/components/AlVolumeComponent";
+import { Constants } from "../../Constants";
 import {
   AlGraphEntryType,
   ControlsType,
@@ -21,8 +21,8 @@ import {
   Material,
   Orientation,
   Units
-} from '../../enums';
-import { AlAngle, AlCamera, AlEdge, AlGraph, AlNode } from '../../interfaces';
+} from "../../enums";
+import { AlAngle, AlCamera, AlEdge, AlGraph, AlNode } from "../../interfaces";
 import {
   appClearAngles,
   appClearEdges,
@@ -53,8 +53,8 @@ import {
   appSetVolumeSteps,
   appSetVolumeWindowCenter,
   appSetVolumeWindowWidth
-} from '../../redux/actions';
-import { configureStore } from '../../redux/store';
+} from "../../redux/actions";
+import { configureStore } from "../../redux/store";
 import {
   AlGraphEvents,
   AMIUtils,
@@ -62,16 +62,16 @@ import {
   GetUtils,
   GraphUtils,
   ThreeUtils
-} from '../../utils';
-import { AlControlEvents } from '../../utils/AlControlEvents';
+} from "../../utils";
+import { AlControlEvents } from "../../utils/AlControlEvents";
 
-type Entity = import('aframe').Entity;
-type Scene = import('aframe').Scene;
+type Entity = import("aframe").Entity;
+type Scene = import("aframe").Scene;
 //#endregion
 
 @Component({
-  tag: 'uv-aleph',
-  styleUrl: 'aleph.css',
+  tag: "uv-aleph",
+  styleUrl: "aleph.css",
   shadow: false
 })
 export class Aleph {
@@ -93,10 +93,10 @@ export class Aleph {
   //#endregion
 
   //#region props
-  @Prop({ context: 'store' }) public store: Store;
+  @Prop({ context: "store" }) public store: Store;
   @Prop() public dracoDecoderPath: string | null;
-  @Prop() public width: string = '640';
-  @Prop() public height: string = '480';
+  @Prop() public width: string = "640";
+  @Prop() public height: string = "480";
   //#endregion
 
   //#region actions
@@ -451,8 +451,8 @@ export class Aleph {
   private _renderSpinner() {
     if (this.src && !this.srcLoaded) {
       return (
-        <div id='spinner'>
-          <div class='square' />
+        <div id="spinner">
+          <div class="square" />
         </div>
       );
     }
@@ -467,7 +467,7 @@ export class Aleph {
       case DisplayMode.MESH: {
         return (
           <a-entity
-            class='collidable'
+            class="collidable"
             al-node-spawner={`
               graphEnabled: ${this.graphEnabled};
             `}
@@ -475,8 +475,8 @@ export class Aleph {
               src: url(${this.src});
               dracoDecoderPath: ${this.dracoDecoderPath};
             `}
-            position='0 0 0'
-            scale='1 1 1'
+            position="0 0 0"
+            scale="1 1 1"
             ref={(el: Entity) => (this._targetEntity = el)}
           />
         );
@@ -484,8 +484,8 @@ export class Aleph {
       case DisplayMode.SLICES: {
         return (
           <a-entity
-            id='target-entity'
-            class='collidable'
+            id="target-entity"
+            class="collidable"
             al-node-spawner={`
               graphEnabled: ${this.graphEnabled};
             `}
@@ -502,7 +502,7 @@ export class Aleph {
               volumeWindowWidth: ${this.volumeWindowWidth};
               isWebGl2: ${this._isWebGl2};
             `}
-            position='0 0 0'
+            position="0 0 0"
             ref={(el: Entity) => (this._targetEntity = el)}
           />
         );
@@ -514,7 +514,7 @@ export class Aleph {
       case DisplayMode.VOLUME: {
         return (
           <a-entity
-            id='target-entity'
+            id="target-entity"
             al-volume={`
               srcLoaded: ${this.srcLoaded};
               src: ${this.src};
@@ -528,7 +528,7 @@ export class Aleph {
               volumeWindowWidth: ${this.volumeWindowWidth};
               isWebGl2: ${this._isWebGl2};
             `}
-            position='0 0 0'
+            position="0 0 0"
             ref={(el: Entity) => (this._targetEntity = el)}
           />
         );
@@ -569,7 +569,7 @@ export class Aleph {
             al-node-spawner={`
               graphEnabled: ${this.graphEnabled};
             `}
-            class='collidable'
+            class="collidable"
             ref={el => (this._boundingEntity = el)}
           />
         );
@@ -630,7 +630,7 @@ export class Aleph {
 
       return (
         <a-entity
-          class='collidable'
+          class="collidable"
           id={nodeId}
           position={node.position}
           al-node={`
@@ -707,7 +707,7 @@ export class Aleph {
 
         return (
           <a-entity
-            class='collidable'
+            class="collidable"
             id={edgeId}
             position={ThreeUtils.vector3ToString(centoid)}
             al-edge={`
@@ -839,7 +839,7 @@ export class Aleph {
 
         const textV =
           THREE.Math.radToDeg(angl).toFixed(Constants.unitsDecimalPlaces) +
-          ' deg';
+          " deg";
 
         const frustrumDistance = ThreeUtils.getFrustrumSpaceDistance(
           this._scene.camera,
@@ -852,7 +852,7 @@ export class Aleph {
 
         return (
           <a-entity
-            class='collidable'
+            class="collidable"
             id={angleId}
             position={centralNode.position}
             al-angle={`
@@ -908,20 +908,20 @@ export class Aleph {
   private _renderLights() {
     return [
       <a-entity
-        id='light-1'
-        light='type: directional; color: #ffffff; intensity: 0.5'
-        position='1 1 1'
+        id="light-1"
+        light="type: directional; color: #ffffff; intensity: 0.5"
+        position="1 1 1"
         ref={el => (this._lights[0] = el)}
       />,
       <a-entity
-        id='light-2'
-        light='type: directional; color: #ffffff; intensity: 0.5'
-        position='-1 -1 -1'
+        id="light-2"
+        light="type: directional; color: #ffffff; intensity: 0.5"
+        position="-1 -1 -1"
         ref={el => (this._lights[1] = el)}
       />,
       <a-entity
-        id='light-3'
-        light='type: ambient; color: #d0d0d0; intensity: 1'
+        id="light-3"
+        light="type: ambient; color: #d0d0d0; intensity: 1"
       />
     ];
   }
@@ -932,11 +932,11 @@ export class Aleph {
       <a-camera
         fov={Constants.cameraValues.fov}
         near={Constants.cameraValues.near}
-        look-controls='enabled: false'
+        look-controls="enabled: false"
         far={Constants.cameraValues.far}
-        id='mainCamera'
-        al-cursor='rayOrigin: mouse'
-        raycaster='objects: .collidable;'
+        id="mainCamera"
+        al-cursor="rayOrigin: mouse"
+        raycaster="objects: .collidable;"
         al-orbit-control={`
           maxPolarAngle: ${Constants.cameraValues.maxPolarAngle};
           minDistance: ${Constants.cameraValues.minDistance};
@@ -967,11 +967,11 @@ export class Aleph {
       <a-camera
         fov={Constants.cameraValues.fov}
         near={Constants.cameraValues.near}
-        look-controls='enabled: false'
+        look-controls="enabled: false"
         far={Constants.cameraValues.far}
-        id='mainCamera'
-        al-cursor='rayOrigin: mouse'
-        raycaster='objects: .collidable;'
+        id="mainCamera"
+        al-cursor="rayOrigin: mouse"
+        raycaster="objects: .collidable;"
         al-trackball-control={`
           screenLeft: ${0};
           screenTop: ${0};
@@ -1025,7 +1025,7 @@ export class Aleph {
           webgl2: ${this._isWebGl2};
           antialias: true;
         `}
-        vr-mode-ui='enabled: false'
+        vr-mode-ui="enabled: false"
         ref={el => (this._scene = el)}
       >
         {this._renderBoundingBox()}
@@ -1041,17 +1041,17 @@ export class Aleph {
   public render() {
     return (
       <div
-        id='al-container'
+        id="al-container"
         class={this.displayMode}
         style={{
           width: GetUtils.addCssUnits(this.width),
           height: GetUtils.addCssUnits(this.height)
         }}
       >
-        <div id='lut-container'>
-          <div id='lut-min'>0.0</div>
-          <div id='lut-canvases' />
-          <div id='lut-max'>1.0</div>
+        <div id="lut-container">
+          <div id="lut-min">0.0</div>
+          <div id="lut-canvases" />
+          <div id="lut-max">1.0</div>
         </div>
         {this._renderScene()}
         {this._renderSpinner()}
@@ -1129,7 +1129,7 @@ export class Aleph {
       this._setEdge([edgeId, newEdge]);
     } else {
       // tslint:disable-next-line: no-console
-      console.log('edge already exists');
+      console.log("edge already exists");
     }
   }
 
@@ -1164,10 +1164,10 @@ export class Aleph {
 
         this._setAngle([angleId, newAngle]);
       } else {
-        console.warn('cannot create angle: edges not connected');
+        console.warn("cannot create angle: edges not connected");
       }
     } else {
-      console.warn('cannot create angle: angle already exists');
+      console.warn("cannot create angle: angle already exists");
     }
   }
 
@@ -1468,7 +1468,7 @@ export class Aleph {
       this._stateChanged();
       this.loaded.emit(ev.detail);
     } else {
-      throw new Error('Unable to find a mesh in loaded object');
+      throw new Error("Unable to find a mesh in loaded object");
     }
   }
   //#endregion
@@ -1559,7 +1559,7 @@ export class Aleph {
         const rayResult = AMIUtils.volumeRay(
           this._getStackHelper(),
           this._camera.object3D.children[0].position.clone(),
-          this._camera.getAttribute('raycaster').direction,
+          this._camera.getAttribute("raycaster").direction,
           Constants.cameraValues.far,
           hitPosition,
           hitNormal
@@ -1574,7 +1574,7 @@ export class Aleph {
         }
       } else if (intersection) {
         newNode = {
-          targetId: '0',
+          targetId: "0",
           position: ThreeUtils.vector3ToString(intersection.point),
           scale: this._boundingSphereRadius / Constants.nodeSizeRatio,
           title: nodeId
@@ -1656,7 +1656,7 @@ export class Aleph {
     const nodeId: string = event.detail.id;
     // tslint:disable-next-line: no-any
     const raycaster = this._camera.components.raycaster as any;
-    const raycasterAttribute = this._camera.getAttribute('raycaster');
+    const raycasterAttribute = this._camera.getAttribute("raycaster");
     let intersection;
     const hitPosition = new THREE.Vector3();
     let validLocation = false;
@@ -1699,7 +1699,7 @@ export class Aleph {
     // IF not a valid location, dangle in space
     if (!validLocation) {
       const distance = orbitPosition.distanceTo(
-        this._targetEntity.getAttribute('position')
+        this._targetEntity.getAttribute("position")
       );
 
       hitPosition.copy(orbitPosition);
@@ -1727,8 +1727,8 @@ export class Aleph {
   }
 
   private _addEventListeners(): void {
-    window.addEventListener('keydown', this._keyDownHandler, false);
-    window.addEventListener('keyup', this._keyUpHandler, false);
+    window.addEventListener("keydown", this._keyDownHandler, false);
+    window.addEventListener("keyup", this._keyUpHandler, false);
 
     this._scene.addEventListener(
       AlControlEvents.ANIMATION_FINISHED,

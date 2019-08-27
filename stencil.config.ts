@@ -1,4 +1,5 @@
 import { Config } from '@stencil/core';
+import glslify from 'rollup-plugin-glslify';
 
 export const config: Config = {
   namespace: 'aleph',
@@ -15,9 +16,12 @@ export const config: Config = {
       serviceWorker: null // disable service workers
     }
   ],
-  copy: [{
-    src: "**/*.i18n.*.json",
-    dest: "i18n"
-  }],
+  copy: [
+    {
+      src: '**/*.i18n.*.json',
+      dest: 'i18n'
+    }
+  ],
+  plugins: [glslify({ basedir: 'src/assets/shaders' })],
   globalStyle: 'src/global/theme.css'
 };

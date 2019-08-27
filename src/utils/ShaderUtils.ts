@@ -1,29 +1,7 @@
+import haloFragmentS from '../assets/shaders/halo/halo.frag';
+import haloVertexS from '../assets/shaders/halo/halo.vert';
+
 export class ShaderUtils {
-  public static haloVertex: string = `
-    varying vec3 vNormal;
-
-    void main()
-    {
-        vNormal = normalize( normalMatrix * normal );
-        gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
-    }
-  `;
-
-  public static haloFragment: string = `
-    varying vec3 vNormal;
-    uniform float r;
-    uniform float g;
-    uniform float b;
-    uniform float a;
-    uniform float c;
-
-    void main()
-    {
-        float intensity = pow( c - dot( vNormal, vec3( 0.0, 0.0, 1.0 ) ), 4.0 );
-        gl_FragColor = vec4(r, g, b, a) * intensity;
-    }
-  `;
-
   public static getHaloMaterial(
     red: number = 0.5,
     green: number = 0.5,
@@ -39,8 +17,8 @@ export class ShaderUtils {
         a: { value: alpha },
         c: { value: chrominace }
       },
-      vertexShader: this.haloVertex,
-      fragmentShader: this.haloFragment,
+      vertexShader: haloVertexS,
+      fragmentShader: haloFragmentS,
       side: THREE.BackSide,
       blending: THREE.AdditiveBlending,
       transparent: true,

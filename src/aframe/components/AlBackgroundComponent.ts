@@ -1,5 +1,5 @@
-import { Constants } from '../../Constants';
-import { BaseComponent } from './BaseComponent';
+import { Constants } from "../../Constants";
+import { BaseComponent } from "./BaseComponent";
 
 interface AlBackgroundComponent extends BaseComponent {
   tickFunction(): void;
@@ -9,12 +9,12 @@ interface AlBackgroundState {
   hasUpdated: boolean;
 }
 
-export default AFRAME.registerComponent('al-background', {
+export default AFRAME.registerComponent("al-background", {
   schema: {
-    text: { type: 'string', default: '' },
-    boundingRadius: { type: 'number', default: 1 },
-    scale: { type: 'number', default: 8 },
-    frustrumDistance: { type: 'number', default: 1 }
+    text: { type: "string", default: "" },
+    boundingRadius: { type: "number", default: 1 },
+    scale: { type: "number", default: 8 },
+    frustrumDistance: { type: "number", default: 1 }
   },
 
   init() {
