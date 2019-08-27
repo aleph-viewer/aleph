@@ -17,7 +17,6 @@ export class AlNodeList {
   @Prop({ mutable: true }) public selected: string | null = null;
 
   public render() {
-    console.log("selected", this.selected);
     if (this.nodes && this.nodes.size) {
       return (
         <ion-list>

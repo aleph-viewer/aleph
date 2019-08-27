@@ -1,0 +1,17 @@
+{
+  "axial": "Axial",
+  "clay": "Clay",
+  "coronal": "Coronal",
+  "default": "Default",
+  "meters": "Meters",
+  "millimeters": "Millimeters",
+  "normals": "Normals",
+  "orbit": "Orbit",
+  "recenter": "Recenter",
+  "saggital": "Saggital",
+  "slices": "Slices",
+  "trackball": "Trackball",
+  "volume": "Volume",
+  "wireframe": "Wireframe",
+  "xray": "XRay"
+}

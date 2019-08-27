@@ -8,7 +8,7 @@ import { AlAngle } from "../../interfaces";
   shadow: true
 })
 export class AlAngleEditor {
-  @Event() public delete: EventEmitter;
+  @Event() public deleteAngle: EventEmitter;
 
   @Prop({ mutable: true }) public angle: [string, AlAngle];
 
@@ -21,7 +21,7 @@ export class AlAngleEditor {
           <ion-button
             size="small"
             onClick={() => {
-              this.delete.emit(angleId);
+              this.deleteAngle.emit(angleId);
               this.angle = null;
             }}
           >

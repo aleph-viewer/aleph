@@ -7,10 +7,8 @@
       content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0"
     />
     <title>Aleph</title>
-    <script src="https://unpkg.com/mobx@4.9.4/lib/mobx.umd.js"></script>
     <script src="/assets/aframe-master.js"></script>
     <script src="https://unpkg.com/three@0.102.1/examples/js/controls/OrbitControls.js"></script>
-    <script src="https://unpkg.com/three@0.102.1/examples/js/controls/TrackballControls.js"></script>
 
     <script
       type="module"
@@ -93,156 +91,85 @@
     <div id="container">
       <div id="debug" class="disabled">
         <h1>ℵ</h1>
-
-        <ion-app>
-          <al-tabs>
-            <ion-tab-bar>
-              <ion-tab-button tab="src">
-                <ion-label>src</ion-label>
-              </ion-tab-button>
-              <ion-tab-button tab="settings">
-                <ion-label>settings</ion-label>
-              </ion-tab-button>
-              <ion-tab-button tab="graph">
-                <ion-label>graph</ion-label>
-              </ion-tab-button>
-              <ion-tab-button tab="console">
-                <ion-label>console</ion-label>
-              </ion-tab-button>
-            </ion-tab-bar>
-            <ion-tab tab="src">
-              <al-url-picker></al-url-picker>
-            </ion-tab>
-            <ion-tab tab="graph">
-              <al-node-list></al-node-list>
-              <ion-item-divider> </ion-item-divider>
-              <al-node-editor></al-node-editor>
-              <al-edge-editor></al-edge-editor>
-              <al-angle-editor></al-angle-editor>
-            </ion-tab>
-            <ion-tab tab="settings">
-              <al-control-panel></al-control-panel>
-            </ion-tab>
-            <ion-tab tab="console">
-              <al-console></al-console>
-            </ion-tab>
-          </al-tabs>
-        </ion-app>
+        <al-control-panel></al-control-panel>
       </div>
 
       <div id="scene">
-        <uv-aleph
+        <al-viewer
           draco-decoder-path="assets/"
           width="100%"
           height="100%"
-        ></uv-aleph>
+        ></al-viewer>
       </div>
     </div>
 
     <script>
-      let state,
-        lastState,
-        urls,
-        container,
-        debug,
-        alAleph,
-        alUrlPicker,
-        alNodeList,
-        alConsole,
-        alNodeEditor,
-        alEdgeEditor,
-        alAngleEditor,
-        alControlPanel;
 
-      class AlephInspectorState {
-        constructor() {
-          this.nodes = null;
-          this.selected = null;
-          this.src = null;
-          this.srcLoaded = false;
-        }
-      }
+      let container, alControlPanel, alViewer, state;
 
-      mobx.decorate(AlephInspectorState, {
-        nodes: mobx.observable,
-        selected: mobx.observable,
-        src: mobx.observable,
-        srcLoaded: mobx.observable
-      });
+      let prevState = {};
 
-      urls = new Map([
+      const urls = new Map([
         [
-          'https://nomad-project.co.uk/objects/collection/toy-lion/_toy-lion/toy-lion.gltf',
-          'Lion (GLTF)'
+          "https://nomad-project.co.uk/objects/collection/toy-lion/_toy-lion/toy-lion.gltf",
+          "Lion (GLTF)"
         ],
         [
-          'https://iiif-3d-manifests.netlify.com/collection/gltf/woody/_woody/assets/woody.gltf',
-          'Fisherman (GLTF)'
+          "https://iiif-3d-manifests.netlify.com/collection/gltf/woody/_woody/assets/woody.gltf",
+          "Fisherman (GLTF)"
         ],
-        ['http://files.blokdust.io/test/bowl-draco.glb', 'Bowl (DRACO)'],
+        ["http://files.blokdust.io/test/bowl-draco.glb", "Bowl (DRACO)"],
         [
-          'https://aleph-fixtures.netlify.com/collection/dicom/brain/_brain/brain.json',
-          'Brain (DICOM)'
-        ],
-        [
-          'https://www.morphosource.org/media/morphosource/dcm_sample/platypus2/dcm_multi_vf300_jpegQ95_16bit_allslices.json',
-          'Platypus (DICOM)'
+          "https://aleph-fixtures.netlify.com/collection/dicom/brain/_brain/brain.json",
+          "Brain (DICOM)"
         ],
         [
-          'https://www.morphosource.org/media/morphosource/dcm_sample/ptilocercus/dcm_multi_vf300_jpegQ95_16bit_allslices.json',
-          'Tree Shrew (DICOM)'
+          "https://www.morphosource.org/media/morphosource/dcm_sample/platypus2/dcm_multi_vf300_jpegQ95_16bit_allslices.json",
+          "Platypus (DICOM)"
         ],
         [
-          'https://aleph-fixtures.netlify.com/collection/gltf/bunny/_bunny/bunny_default_materials.glb',
-          'Bunny Default Materials (GLB)'
+          "https://www.morphosource.org/media/morphosource/dcm_sample/ptilocercus/dcm_multi_vf300_jpegQ95_16bit_allslices.json",
+          "Tree Shrew (DICOM)"
+        ],
+        [
+          "https://aleph-fixtures.netlify.com/collection/gltf/bunny/_bunny/bunny_default_materials.glb",
+          "Bunny Default Materials (GLB)"
         ]
       ]);
 
-      // ["https://aleph-fixtures.netlify.com/collection/nrrd/tooth/_tooth/tooth.json", "Tooth (NRRD)"]
-
-      state = new AlephInspectorState();
-      lastState = {};
-
       function init() {
-        container = document.getElementById('container');
-        debug = document.getElementById('debug');
-        alAleph = document.querySelector('uv-aleph');
-        alUrlPicker = document.querySelector('al-url-picker');
-        alConsole = document.querySelector('al-console');
-        alNodeList = document.querySelector('al-node-list');
-        alNodeEditor = document.querySelector('al-node-editor');
-        alEdgeEditor = document.querySelector('al-edge-editor');
-        alAngleEditor = document.querySelector('al-angle-editor');
-        alControlPanel = document.querySelector('al-control-panel');
-        loadSrcButton = document.getElementById('load-src-button');
-        nodesTextArea = document.getElementById('nodes-textarea');
-        loadNodesButton = document.getElementById('load-nodes-button');
+        container = document.getElementById("container");
+        alControlPanel = document.querySelector("al-control-panel");
+        alViewer = document.querySelector("al-viewer");
 
-        alAleph.componentOnReady().then(function() {
-          state.src = Array.from(urls)[0][0]; // load src when component ready
+        alControlPanel.urls = urls;
 
-          alAleph.addEventListener(
-            'changed',
+        alViewer.componentOnReady().then(function() {
+
+          // load src when component ready
+          nextState({
+            src: Array.from(urls)[0][0]
+          });
+
+          alViewer.addEventListener(
+            "changed",
             function(e) {
-              state.angles = e.detail.angles;
-              state.boundingBoxEnabled = e.detail.boundingBoxEnabled;
-              state.controlsType = e.detail.controlsType;
-              state.displayMode = e.detail.displayMode;
-              state.edges = e.detail.edges;
-              state.graphEnabled = e.detail.graphEnabled;
-              state.material = e.detail.material;
-              state.nodes = e.detail.nodes;
-              state.selected = e.detail.selected;
-              state.srcLoaded = e.detail.srcLoaded;
-              state.units = e.detail.units;
+              nextState({
+                angles: e.detail.angles,
+                displayMode: e.detail.displayMode,
+                edges: e.detail.edges,
+                nodes: e.detail.nodes,
+                selected: e.detail.selected,
+                srcLoaded: e.detail.srcLoaded
+              });
             },
             false
           );
 
-          alAleph.addEventListener(
-            'loaded',
+          alViewer.addEventListener(
+            "loaded",
             function(ev) {
-              if (state.displayMode !== 'mesh') {
+              if (state.displayMode !== "mesh") {
                 alControlPanel.stackhelper = ev.detail;
               }
             },
@@ -250,300 +177,229 @@
           );
         });
 
-        alUrlPicker.componentOnReady().then(function() {
-          alUrlPicker.addEventListener(
-            'urlChanged',
+        alControlPanel.componentOnReady().then(function() {
+
+          alControlPanel.addEventListener(
+            "boundingBoxEnabledChanged",
             function(e) {
-              state.src = e.detail;
+              alViewer.setBoundingBoxEnabled(e.detail);
             },
             false
           );
 
-          alUrlPicker.urls = urls;
-        });
-
-        alNodeList.componentOnReady().then(function() {
-          alNodeList.addEventListener(
-            'selectedChanged',
+          alControlPanel.addEventListener(
+            "controlsTypeChanged",
             function(e) {
-              alAleph.selectNode(e.detail);
-            },
-            false
-          );
-        });
-
-        alNodeEditor.componentOnReady().then(function() {
-          alNodeEditor.addEventListener(
-            'delete',
-            function(e) {
-              alAleph.deleteNode(e.detail);
+              alViewer.setControlsType(e.detail);
             },
             false
           );
 
-          alNodeEditor.addEventListener(
-            'save',
+          alControlPanel.addEventListener(
+            "deleteAngle",
             function(e) {
-              alAleph.setNode(e.detail);
+              alViewer.deleteAngle(e.detail);
             },
             false
           );
-        });
 
-        alEdgeEditor.componentOnReady().then(function() {
-          alEdgeEditor.addEventListener(
-            'delete',
+          alControlPanel.addEventListener(
+            "deleteEdge",
             function(e) {
-              alAleph.deleteEdge(e.detail);
+              alViewer.deleteEdge(e.detail);
             },
             false
           );
-        });
 
-        alAngleEditor.componentOnReady().then(function() {
-          alAngleEditor.addEventListener(
-            'delete',
+          alControlPanel.addEventListener(
+            "deleteNode",
             function(e) {
-              alAleph.deleteAngle(e.detail);
+              alViewer.deleteNode(e.detail);
             },
             false
           );
-        });
 
-        alConsole.componentOnReady().then(function() {
-          alConsole.addEventListener(
-            'runCommand',
+          alControlPanel.addEventListener(
+            "displayModeChanged",
             function(e) {
-              const graph = JSON.parse(alConsole.cmd);
+              alViewer.setDisplayMode(e.detail);
+            },
+            false
+          );
+
+          alControlPanel.addEventListener(
+            "graphEnabledChanged",
+            function(e) {
+              alViewer.setGraphEnabled(e.detail);
+            },
+            false
+          );
+
+          alControlPanel.addEventListener(
+            "materialChanged",
+            function(e) {
+              alViewer.setMaterial(e.detail);
+            },
+            false
+          );
+
+          alControlPanel.addEventListener(
+            "orientationChanged",
+            function(e) {
+              alViewer.setOrientation(e.detail);
+            },
+            false
+          );
+
+          alControlPanel.addEventListener(
+            "recenter",
+            function(e) {
+              alViewer.recenter();
+            },
+            false
+          );
+
+          alControlPanel.addEventListener(
+            "graphSubmitted",
+            function(e) {
+              const graph = JSON.parse(e.detail);
               if (graph) {
-                alAleph.clearGraph();
-                alAleph.setGraph(graph);
+                alViewer.clearGraph();
+                alViewer.setGraph(graph);
               }
             },
             false
           );
-        });
 
-        alControlPanel.componentOnReady().then(function() {
           alControlPanel.addEventListener(
-            'boundingBoxEnabledChanged',
+            "saveNode",
             function(e) {
-              alAleph.setBoundingBoxEnabled(e.detail);
+              alViewer.setNode(e.detail);
             },
             false
           );
 
           alControlPanel.addEventListener(
-            'controlsTypeChanged',
+            "selectedChanged",
             function(e) {
-              alAleph.setControlsType(e.detail);
+              alViewer.selectNode(e.detail);
             },
             false
           );
 
           alControlPanel.addEventListener(
-            'displayModeChanged',
+            "slicesIndexChanged",
             function(e) {
-              alAleph.setDisplayMode(e.detail);
+              alViewer.setSlicesIndex(e.detail);
             },
             false
           );
 
           alControlPanel.addEventListener(
-            'graphEnabledChanged',
+            "slicesWindowCenterChanged",
             function(e) {
-              alAleph.setGraphEnabled(e.detail);
+              alViewer.setSlicesWindowCenter(e.detail);
             },
             false
           );
 
           alControlPanel.addEventListener(
-            'materialChanged',
+            "slicesWindowWidthChanged",
             function(e) {
-              alAleph.setMaterial(e.detail);
+              alViewer.setSlicesWindowWidth(e.detail);
             },
             false
           );
 
           alControlPanel.addEventListener(
-            'orientationChanged',
+            "unitsChanged",
             function(e) {
-              alAleph.setOrientation(e.detail);
+              alViewer.setUnits(e.detail);
             },
             false
           );
 
           alControlPanel.addEventListener(
-            'recenter',
+            "urlChanged",
             function(e) {
-              alAleph.recenter();
+              nextState({
+                src: e.detail
+              });
             },
             false
           );
 
           alControlPanel.addEventListener(
-            'slicesIndexChanged',
+            "volumeStepsChanged",
             function(e) {
-              alAleph.setSlicesIndex(e.detail);
+              alViewer.setVolumeSteps(e.detail);
             },
             false
           );
 
           alControlPanel.addEventListener(
-            'slicesWindowCenterChanged',
+            "volumeWindowCenterChanged",
             function(e) {
-              alAleph.setSlicesWindowCenter(e.detail);
+              alViewer.setVolumeWindowCenter(e.detail);
             },
             false
           );
 
           alControlPanel.addEventListener(
-            'slicesWindowWidthChanged',
+            "volumeWindowWidthChanged",
             function(e) {
-              alAleph.setSlicesWindowWidth(e.detail);
+              alViewer.setVolumeWindowWidth(e.detail);
             },
             false
           );
-
-          alControlPanel.addEventListener(
-            'unitsChanged',
-            function(e) {
-              alAleph.setUnits(e.detail);
-            },
-            false
-          );
-
-          alControlPanel.addEventListener(
-            'volumeStepsChanged',
-            function(e) {
-              alAleph.setVolumeSteps(e.detail);
-            },
-            false
-          );
-
-          alControlPanel.addEventListener(
-            'volumeWindowCenterChanged',
-            function(e) {
-              alAleph.setVolumeWindowCenter(e.detail);
-            },
-            false
-          );
-
-          alControlPanel.addEventListener(
-            'volumeWindowWidthChanged',
-            function(e) {
-              alAleph.setVolumeWindowWidth(e.detail);
-            },
-            false
-          );
-        });
-
-        mobx.autorun(() => {
-          render();
         });
       }
 
-      function render() {
-        if (state.src && state.src !== lastState.src) {
-          alAleph.load(state.src);
+      function nextState(s) {
+
+        state = Object.assign({}, state, s);
+
+        if (state.src && state.src !== prevState.src) {
+          alViewer.load(state.src);
         }
 
         if (state.src) {
-          alUrlPicker.url = state.src;
+          alControlPanel.url = state.src;
         }
 
         if (!state.srcLoaded) {
-          debug.classList.add('disabled');
+          debug.classList.add("disabled");
         } else {
-          debug.classList.remove('disabled');
+          debug.classList.remove("disabled");
         }
 
-        // if (state.srcLoaded) {
-        //   // move the auto-generated framerate counter to the debug col
-        //   setTimeout(() => {
-        //     const framerate = document.querySelector(".rs-base");
-        //     if (framerate) {
-        //       debug.appendChild(framerate);
-        //     }
-        //   }, 250);
-        // }
-
-        alConsole.cmd = getGraphJson();
-        alNodeList.nodes = state.nodes;
-        alNodeList.selected = state.selected;
-        alNodeEditor.node = getSelectedNode();
-        alEdgeEditor.edge = getSelectedEdge();
-        alAngleEditor.angle = getSelectedAngle();
-        alControlPanel.boundingBoxEnabled = state.boundingBoxEnabled;
-        alControlPanel.controlsType = state.controlsType;
+        alControlPanel.angles = state.angles;
         alControlPanel.displayMode = state.displayMode;
-        alControlPanel.graphEnabled = state.graphEnabled;
-        alControlPanel.material = state.material;
-        alControlPanel.units = state.units;
+        alControlPanel.edges = state.edges;
+        alControlPanel.nodes = state.nodes;
+        alControlPanel.selected = state.selected;
 
-        lastState = Object.assign({}, state);
+        prevState = Object.assign({}, state);
       }
 
-      function getGraphJson() {
-        if (state.nodes && state.edges && state.angles) {
-          var graph = {
-            nodes: Array.from(state.nodes),
-            edges: Array.from(state.edges),
-            angles: Array.from(state.angles)
-          };
-
-          return JSON.stringify(graph);
-        }
-
-        return '';
-      }
-
-      function getSelectedNode() {
-        if (state.selected && state.nodes) {
-          const n = state.nodes.get(state.selected);
-          if (n) {
-            return [state.selected, n];
-          }
-        }
-        return null;
-      }
-
-      function getSelectedEdge() {
-        if (state.selected && state.edges) {
-          const e = state.edges.get(state.selected);
-          if (e) {
-            return [state.selected, e];
-          }
-        }
-        return null;
-      }
-
-      function getSelectedAngle() {
-        if (state.selected && state.angles) {
-          const a = state.angles.get(state.selected);
-          if (a) {
-            return [state.selected, a];
-          }
-        }
-        return null;
-      }
-
-      document.addEventListener('DOMContentLoaded', function(event) {
+      document.addEventListener("DOMContentLoaded", function(event) {
         init();
         resize();
       });
 
       function resize() {
-        container.style.height = window.innerHeight + 'px';
-        if (alAleph.resize) {
+        container.style.height = window.innerHeight + "px";
+        if (alViewer.resize) {
           // scene will resize internally as it listens to window.onresize. however, it's useful to be able to force a resize if the window.onresize event isn't fired
-          alAleph.resize();
+          alViewer.resize();
         }
       }
 
-      window.addEventListener('resize', function() {
+      window.addEventListener("resize", function() {
         resize();
       });
+
     </script>
+
   </body>
 </html>

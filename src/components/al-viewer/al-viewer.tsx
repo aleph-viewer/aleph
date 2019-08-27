@@ -70,8 +70,8 @@ type Scene = import("aframe").Scene;
 //#endregion
 
 @Component({
-  tag: "uv-aleph",
-  styleUrl: "aleph.css",
+  tag: "al-viewer",
+  styleUrl: "al-viewer.css",
   shadow: false
 })
 export class Aleph {
