@@ -13,7 +13,8 @@ export default AFRAME.registerComponent("al-background", {
   schema: {
     text: { type: "string", default: "" },
     boundingRadius: { type: "number", default: 1 },
-    scale: { type: "number", default: 8 }
+    scale: { type: "number", default: 8 },
+    frustrumDistance: { type: "number", default: 1 }
   },
 
   init() {
@@ -49,37 +50,46 @@ export default AFRAME.registerComponent("al-background", {
   // tslint:disable-next-line: no-empty
   tickFunction() {
     if (!this.state.hasUpdated) {
-      const parentGeom = (this.el.parentEl.object3DMap.text as THREE.Mesh)
-        .geometry as THREE.BufferGeometry;
+      // const parentGeom = (this.el.parentEl.object3DMap.text as THREE.Mesh)
+      //   .geometry as THREE.BufferGeometry;
 
-      if (parentGeom.attributes.position) {
-        parentGeom.computeBoundingBox();
+      const parent = this.el.object3DMap.text as THREE.Mesh;
+      let parentGeom;
+      if (parent) {
+        parentGeom = parent.geometry as THREE.BufferGeometry;
 
-        const size = new THREE.Vector3();
-        parentGeom.boundingBox.getSize(size);
+        if (parentGeom.attributes.position) {
+          parentGeom.computeBoundingBox();
 
-        const height =
-          (size.y * this.data.boundingRadius) /
-          (this.data.scale * Constants.nodeSizeRatio);
-        const width =
-          (size.x * this.data.boundingRadius) /
-          (this.data.scale * Constants.nodeSizeRatio);
+          const size = new THREE.Vector3();
+          parentGeom.boundingBox.getSize(size);
 
-        const mesh = this.el.object3DMap.mesh as THREE.Mesh;
+          const height =
+            (size.y * 0.001 + Constants.textPadding.height) *
+            this.data.boundingRadius;
 
-        mesh.scale.set(width * 1.1, height * 1.2, 1);
-
-        const material = mesh.material as THREE.MeshStandardMaterial;
-
-        // material.depthWrite = false;
-        material.flatShading = true;
-        material.roughness = 1;
-
-        const position = this.el.getAttribute("position") as THREE.Vector3;
-        position.sub(new THREE.Vector3(0, position.y * 0.05, 0.00001));
-        this.el.setAttribute("position", position);
-
-        this.state.hasUpdated = true;
+          const planeGeom = new THREE.PlaneGeometry(1, 1, 1, 1);
+          const planeMat = new THREE.MeshStandardMaterial();
+          planeMat.color = new THREE.Color(Constants.colorValues.black);
+          planeMat.transparent = true;
+          planeMat.opacity = 0.9;
+          planeMat.flatShading = true;
+          planeMat.roughness = 1;
+          planeMat.depthTest = false;
+          const mesh = new THREE.Mesh(planeGeom, planeMat);
+          mesh.scale.set(
+            (size.x * 0.001 + Constants.textPadding.width) *
+              this.data.boundingRadius,
+            height,
+            1
+          );
+          mesh.renderOrder = Constants.topLayerRenderOrder - 1;
+          mesh.position.add(
+            new THREE.Vector3(0, height * (this.data.frustrumDistance / 4), 0)
+          );
+          this.el.object3D.add(mesh);
+          this.state.hasUpdated = true;
+        }
       }
     }
   },

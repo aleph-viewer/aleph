@@ -2,8 +2,8 @@ export class Constants {
   public static controllerName = "-controller";
   public static edgeSize = 0.005;
   public static fontSizeLarge = 2;
-  public static fontSizeMedium = 1.5;
-  public static fontSizeSmall = 1;
+  public static fontSizeMedium = 1.2;
+  public static fontSizeSmall = 0.9;
   public static maxAnimationSteps = 50;
   public static minLoadingMS = 500;
   public static movedEventName = "-moved";
@@ -16,6 +16,12 @@ export class Constants {
   public static topLayerRenderOrder = 999;
   public static unitsDecimalPlaces = 2;
   public static zoomFactor = 2.5;
+  public static frustrumScaleFactor = 0.7;
+
+  public static textPadding = {
+    width: 0.03,
+    height: 0.03
+  };
 
   public static minFrameMS = 15; // Should never be higher than the returned frame time
   public static minTimeForThrottle = Constants.minFrameMS * 5;
@@ -53,6 +59,7 @@ export class Constants {
     maxPolarAngle: 175,
     rotateSpeed: 0.5,
     zoomSpeed: 1,
+    panSpeed: 0.9,
     dampingFactor: 0.25,
     minDistance: 0
   };

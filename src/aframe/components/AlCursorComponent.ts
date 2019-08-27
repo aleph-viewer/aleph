@@ -7,6 +7,8 @@ const EVENTS = {
   MOUSEDOWN: "mousedown",
   MOUSELEAVE: "mouseleave",
   MOUSEUP: "mouseup"
+  // TOUCHSTART: 'touchstart',
+  // TOUCHEND: 'touchend'
 };
 
 const STATES = {

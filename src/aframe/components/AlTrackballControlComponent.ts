@@ -107,7 +107,7 @@ export default AFRAME.registerComponent("al-trackball-control", {
 
     const camera = this.el.getObject3D("camera") as THREE.Camera;
 
-    this.state.cameraAnimationCache = ThreeUtils.getSlerpPath(
+    this.state.cameraAnimationCache = ThreeUtils.getSlerp3Path(
       camera.up.clone(),
       (this.state.controls as AlTrackballControls).up0
     );
@@ -290,7 +290,9 @@ export default AFRAME.registerComponent("al-trackball-control", {
 
         this.el.sceneEl.emit(
           AlControlEvents.INTERACTION,
-          { cameraState: this.getCameraState() },
+          {
+            cameraState: this.getCameraState()
+          },
           false
         );
       }

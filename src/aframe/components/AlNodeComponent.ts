@@ -98,7 +98,7 @@ export default AFRAME.registerComponent("al-node", {
       passive: true
     });
     this.el.addEventListener("raycaster-intersected", this.pointerOver, {
-      capture: false,
+      capture: true,
       once: false,
       passive: true
     });

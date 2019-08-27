@@ -29,7 +29,8 @@ export default AFRAME.registerComponent("al-edge", {
     node2: { type: "vec3" },
     length: { type: "number" },
     radius: { type: "number" },
-    nodeScale: { type: "number" }
+    nodeScale: { type: "number" },
+    scale: { type: "number" }
   },
 
   init(): void {
@@ -52,6 +53,7 @@ export default AFRAME.registerComponent("al-edge", {
     this.pointerOver = this.pointerOver.bind(this);
     this.pointerOut = this.pointerOut.bind(this);
     this.createMesh = this.createMesh.bind(this);
+    this.getMatrix = this.getMatrix.bind(this);
   },
 
   addEventListeners(): void {
@@ -61,7 +63,7 @@ export default AFRAME.registerComponent("al-edge", {
       passive: true
     });
     this.el.addEventListener("raycaster-intersected", this.pointerOver, {
-      capture: false,
+      capture: true,
       once: false,
       passive: true
     });
@@ -104,16 +106,28 @@ export default AFRAME.registerComponent("al-edge", {
     this.el.sceneEl.emit(AlGraphEvents.POINTER_OUT, {}, false);
   },
 
-  createMesh() {
+  getMatrix(): THREE.Matrix4 {
+    // Set up vector of cylinder to be direction from 1 to 2; so that scale works properly
     const node1Pos = ThreeUtils.objectToVector3(this.data.node1);
     const node2Pos = ThreeUtils.objectToVector3(this.data.node2);
 
+    const scale = new THREE.Matrix4();
+    scale.makeScale(this.data.scale, this.data.scale, 1);
+    // console.log(scale);
+
+    const mult = new THREE.Matrix4();
+    mult.set(1, 0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1);
+
     const orientation = new THREE.Matrix4();
     orientation.lookAt(node1Pos, node2Pos, new THREE.Object3D().up);
-    orientation.multiply(
-      new THREE.Matrix4().set(1, 0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1)
-    );
 
+    // 0 === x Scale, 5 === Y scale, 10 === Z scale
+    orientation.multiply(scale);
+    orientation.multiply(mult);
+    return orientation;
+  },
+
+  createMesh() {
     const geometry = new THREE.CylinderGeometry(
       this.data.radius,
       this.data.radius,
@@ -123,7 +137,7 @@ export default AFRAME.registerComponent("al-edge", {
     );
     const material = new THREE.MeshBasicMaterial();
     const mesh = new THREE.Mesh(geometry, material);
-    mesh.applyMatrix(orientation);
+    mesh.applyMatrix(this.getMatrix());
 
     this.state.geometry = geometry;
     this.state.material = material;
@@ -159,7 +173,8 @@ export default AFRAME.registerComponent("al-edge", {
     if (
       oldData &&
       (oldData.radius !== this.data.radius ||
-        oldData.length !== this.data.length)
+        oldData.length !== this.data.length ||
+        oldData.scale !== this.data.scale)
     ) {
       this.createMesh();
     }

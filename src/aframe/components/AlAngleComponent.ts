@@ -30,7 +30,8 @@ export default AFRAME.registerComponent("al-angle", {
     position: { type: "vec3" },
     length: { type: "number" },
     radius: { type: "number" },
-    angle: { type: "number" }
+    angle: { type: "number" },
+    scale: { type: "number" }
   },
 
   init(): void {
@@ -55,6 +56,7 @@ export default AFRAME.registerComponent("al-angle", {
     this.pointerOver = this.pointerOver.bind(this);
     this.pointerOut = this.pointerOut.bind(this);
     this.createMesh = this.createMesh.bind(this);
+    this.getMatrix = this.getMatrix.bind(this);
   },
 
   addEventListeners(): void {
@@ -64,7 +66,7 @@ export default AFRAME.registerComponent("al-angle", {
       passive: true
     });
     this.el.addEventListener("raycaster-intersected", this.pointerOver, {
-      capture: false,
+      capture: true,
       once: false,
       passive: true
     });
@@ -104,7 +106,8 @@ export default AFRAME.registerComponent("al-angle", {
     this.el.sceneEl.emit(AlGraphEvents.POINTER_OUT, {}, true);
   },
 
-  createMesh() {
+  getMatrix(): THREE.Matrix4 {
+    // Set up vector of cylinder to be direction from 1 to 2; so that scale works properly
     const edgePos0: THREE.Vector3 = ThreeUtils.objectToVector3(
       this.data.edge0Pos
     );
@@ -112,12 +115,23 @@ export default AFRAME.registerComponent("al-angle", {
       this.data.edge1Pos
     );
 
+    const scale = new THREE.Matrix4();
+    scale.makeScale(this.data.scale, this.data.scale, 1);
+    // console.log(scale);
+
+    const mult = new THREE.Matrix4();
+    mult.set(1, 0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1);
+
     const orientation = new THREE.Matrix4();
     orientation.lookAt(edgePos0, edgePos1, new THREE.Object3D().up);
-    orientation.multiply(
-      new THREE.Matrix4().set(1, 0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1)
-    );
 
+    // 0 === x Scale, 5 === Y scale, 10 === Z scale
+    orientation.multiply(scale);
+    orientation.multiply(mult);
+    return orientation;
+  },
+
+  createMesh() {
     const geometry = new THREE.CylinderGeometry(
       this.data.radius,
       this.data.radius,
@@ -128,7 +142,7 @@ export default AFRAME.registerComponent("al-angle", {
 
     const material = new THREE.MeshBasicMaterial();
     const mesh = new THREE.Mesh(geometry, material);
-    mesh.applyMatrix(orientation);
+    mesh.applyMatrix(this.getMatrix());
     mesh.position.copy(ThreeUtils.objectToVector3(this.data.position));
 
     this.state.geometry = geometry;
@@ -163,7 +177,10 @@ export default AFRAME.registerComponent("al-angle", {
     state.selected = this.data.selected;
 
     // If height or radius has changed, create a new mesh
-    if (oldData && oldData.angle !== this.data.angle) {
+    if (
+      oldData &&
+      (oldData.angle !== this.data.angle || oldData.scale !== this.data.scale)
+    ) {
       this.createMesh();
     }
   },

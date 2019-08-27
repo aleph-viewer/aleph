@@ -22,9 +22,9 @@ export class AlSettings {
   @Prop({ mutable: true }) public settingsTabEnabled: boolean = true;
   @Prop({ mutable: true }) public srcTabEnabled: boolean = true;
   @Prop({ mutable: true }) public stackhelper:
-  | AMI.StackHelper
-  | AMI.VolumeRenderHelper;
-  @Prop({ mutable: true }) public url:string | null = null;
+    | AMI.StackHelper
+    | AMI.VolumeRenderHelper;
+  @Prop({ mutable: true }) public url: string | null = null;
   @Prop({ mutable: true }) public urls: Map<string, string> | null = null;
 
   private _getGraphJson(): string {
@@ -104,16 +104,24 @@ export class AlSettings {
           ) : null}
           {this.settingsTabEnabled ? (
             <ion-tab tab="settings">
-              <al-settings display-mode={this.displayMode} stackhelper={this.stackhelper}></al-settings>
+              <al-settings
+                display-mode={this.displayMode}
+                stackhelper={this.stackhelper}
+              ></al-settings>
             </ion-tab>
           ) : null}
           {this.graphTabEnabled ? (
             <ion-tab tab="graph">
-              <al-node-list nodes={this.nodes} selected={this.selected}></al-node-list>
+              <al-node-list
+                nodes={this.nodes}
+                selected={this.selected}
+              ></al-node-list>
               <ion-item-divider> </ion-item-divider>
               <al-node-editor node={this._getSelectedNode()}></al-node-editor>
               <al-edge-editor edge={this._getSelectedEdge()}></al-edge-editor>
-              <al-angle-editor angle={this._getSelectedAngle()}></al-angle-editor>
+              <al-angle-editor
+                angle={this._getSelectedAngle()}
+              ></al-angle-editor>
             </ion-tab>
           ) : null}
           {this.consoleTabEnabled ? (
@@ -130,5 +138,4 @@ export class AlSettings {
   protected selectedChangedHandler(e: CustomEvent) {
     this.selected = e.detail;
   }
-
 }

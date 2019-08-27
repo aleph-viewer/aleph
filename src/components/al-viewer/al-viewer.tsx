@@ -616,8 +616,16 @@ export class Aleph {
   private _renderNodes() {
     return Array.from(this.nodes).map((n: [string, AlNode]) => {
       const [nodeId, node] = n;
+      const frustrumDistance = ThreeUtils.getFrustrumSpaceDistance(
+        this._scene.camera,
+        ThreeUtils.stringToVector3(node.position),
+        this.camera.position
+      );
+      const entityScale =
+        (frustrumDistance / this._boundingSphereRadius) *
+        Constants.frustrumScaleFactor;
 
-      const textOffset: THREE.Vector3 = new THREE.Vector3(0, 2.5, 0);
+      const textOffset: THREE.Vector3 = new THREE.Vector3(0, 4, 0);
       textOffset.multiplyScalar(node.scale);
 
       return (
@@ -630,6 +638,7 @@ export class Aleph {
             selected: ${this.selected === nodeId};
             graphEnabled: ${this.graphEnabled};
           `}
+          scale={` ${entityScale} ${entityScale} ${entityScale};`}
         >
           <a-entity
             text={`
@@ -639,34 +648,27 @@ export class Aleph {
               baseline: bottom;
               anchor: center;
               width: ${Constants.fontSizeMedium * this._boundingSphereRadius};
+              zOffset: ${0.0000001};
             `}
-            al-screen-space={`
-              position: ${ThreeUtils.vector3ToString(
-                ThreeUtils.stringToVector3(node.position).add(
-                  textOffset.clone()
-                )
-              )};
-              boundingRadius: ${this._boundingSphereRadius};
-              cameraPosition: ${ThreeUtils.vector3ToString(
-                this.camera.position
-              )};
-            `}
+            position={ThreeUtils.vector3ToString(textOffset)}
             al-render-overlaid
             visible={`${this.selected === nodeId}`}
             id={`${nodeId}-label`}
-          >
-            <a-plane
-              position={ThreeUtils.vector3ToString(textOffset)}
-              color={Constants.colorValues.black}
-              opacity="0.9"
-              al-background={`
+            al-billboard-baggins={`
+              controlsType: ${this.controlsType};
+              cameraPosition: ${ThreeUtils.vector3ToString(
+                this.camera.position
+              )};
+              worldPosition: ${ThreeUtils.vector3ToString(
+                ThreeUtils.stringToVector3(node.position).add(textOffset)
+              )}
+            `}
+            al-background={`
                 text: ${node.title};
                 boundingRadius: ${Constants.fontSizeMedium *
                   this._boundingSphereRadius};
-              `}
-              al-render-overlaid
-            />
-          </a-entity>
+            `}
+          ></a-entity>
         </a-entity>
       );
     });
@@ -694,6 +696,15 @@ export class Aleph {
 
         const textV = this._convertUnits(dist);
 
+        const frustrumDistance = ThreeUtils.getFrustrumSpaceDistance(
+          this._scene.camera,
+          centoid.clone(),
+          this.camera.position
+        );
+        const entityScale =
+          (frustrumDistance / this._boundingSphereRadius) *
+          Constants.frustrumScaleFactor;
+
         return (
           <a-entity
             class="collidable"
@@ -706,6 +717,7 @@ export class Aleph {
               selected: ${this.selected === edgeId};
               radius: ${radius};
               nodeScale: ${scale};
+              scale: ${entityScale};
             `}
           >
             <a-entity
@@ -720,29 +732,23 @@ export class Aleph {
               `}
               position={ThreeUtils.vector3ToString(textOffset)}
               visible={`${this.selected === edgeId}`}
-              al-screen-space={`
-                position: ${ThreeUtils.vector3ToString(
-                  centoid.clone().add(textOffset.clone())
-                )};
-                boundingRadius: ${this._boundingSphereRadius};
+              scale={` ${entityScale} ${entityScale} ${entityScale};`}
+              al-billboard-baggins={`
+                controlsType: ${this.controlsType};
                 cameraPosition: ${ThreeUtils.vector3ToString(
                   this.camera.position
                 )};
+                worldPosition: ${ThreeUtils.vector3ToString(
+                  centoid.clone().add(textOffset.clone())
+                )};
+              `}
+              al-background={`
+                  text: ${textV};
+                  boundingRadius: ${Constants.fontSizeSmall *
+                    this._boundingSphereRadius};
               `}
               al-render-overlaid
-            >
-              <a-plane
-                position={ThreeUtils.vector3ToString(textOffset)}
-                color={Constants.colorValues.black}
-                opacity="0.9"
-                al-background={`
-                text: ${textV};
-                boundingRadius: ${Constants.fontSizeSmall *
-                  this._boundingSphereRadius};
-              `}
-                al-render-overlaid
-              />
-            </a-entity>
+            ></a-entity>
           </a-entity>
         );
       }
@@ -756,7 +762,6 @@ export class Aleph {
       const edge2 = this.edges.get(angle.edge2Id);
 
       if (edge1 && edge2) {
-        const radius = this._boundingSphereRadius * Constants.edgeSize;
         let centralNode;
         let node1;
         let node2;
@@ -784,7 +789,7 @@ export class Aleph {
           node1 = this.nodes.get(edge1.node1Id);
           node2 = this.nodes.get(edge2.node1Id);
         }
-
+        const radius = this._boundingSphereRadius * Constants.edgeSize;
         const node1Pos = ThreeUtils.stringToVector3(node1.position);
         const node2Pos = ThreeUtils.stringToVector3(node2.position);
         const centralPos = ThreeUtils.stringToVector3(centralNode.position);
@@ -836,6 +841,15 @@ export class Aleph {
           THREE.Math.radToDeg(angl).toFixed(Constants.unitsDecimalPlaces) +
           " deg";
 
+        const frustrumDistance = ThreeUtils.getFrustrumSpaceDistance(
+          this._scene.camera,
+          centralPos.clone(),
+          this.camera.position
+        );
+        const entityScale =
+          (frustrumDistance / this._boundingSphereRadius) *
+          Constants.frustrumScaleFactor;
+
         return (
           <a-entity
             class="collidable"
@@ -849,10 +863,12 @@ export class Aleph {
               length: ${length};
               radius: ${radius};
               angle: ${angle};
+              scale: ${entityScale};
             `}
           >
             <a-entity
               id={`${angleId}-title`}
+              scale={` ${entityScale} ${entityScale} ${entityScale};`}
               text={`
                 value: ${textV};
                 side: double;
@@ -865,29 +881,24 @@ export class Aleph {
                 position.clone().add(textOffset)
               )}
               visible={`${this.selected === angleId}`}
-              al-screen-space={`
-                position: ${ThreeUtils.vector3ToString(
-                  centralPos.clone().add(textOffset.clone())
-                )};
-                boundingRadius: ${this._boundingSphereRadius};
+              al-billboard-baggins={`
+                controlsType: ${this.controlsType};
                 cameraPosition: ${ThreeUtils.vector3ToString(
                   this.camera.position
                 )};
+                worldPosition: ${ThreeUtils.vector3ToString(
+                  ThreeUtils.stringToVector3(centralNode.position).add(
+                    textOffset.clone()
+                  )
+                )};
               `}
-              al-render-overlaid
-            >
-              <a-plane
-                position={ThreeUtils.vector3ToString(textOffset)}
-                color={Constants.colorValues.black}
-                opacity="0.9"
-                al-background={`
+              al-background={`
                 text: ${textV};
                 boundingRadius: ${Constants.fontSizeSmall *
                   this._boundingSphereRadius};
               `}
-                al-render-overlaid
-              />
-            </a-entity>
+              al-render-overlaid
+            ></a-entity>
           </a-entity>
         );
       }
@@ -966,8 +977,9 @@ export class Aleph {
           screenTop: ${0};
           screenWidth: ${this._scene ? this._scene.canvas.width : 0};
           screenHeight: ${this._scene ? this._scene.canvas.height : 0};
-          rotateSpeed: ${Constants.cameraValues.rotateSpeed * 2};
-          zoomSpeed: ${Constants.cameraValues.zoomSpeed * 2};
+          rotateSpeed: ${Constants.cameraValues.rotateSpeed * 5};
+          zoomSpeed: ${Constants.cameraValues.zoomSpeed * 5};
+          panSpeed: ${Constants.cameraValues.panSpeed};
           dynamicDampingFactor: ${Constants.cameraValues.dampingFactor};
           controlTarget: ${ThreeUtils.vector3ToString(
             this.camera ? this.camera.target : new THREE.Vector3(0, 0, 0)
@@ -1209,22 +1221,34 @@ export class Aleph {
     animationStart: AlCamera,
     animationEndVec3: THREE.Vector3
   ): void {
+    const defaultCamera: AlCamera = GetUtils.getCameraStateFromMesh(
+      this._getMesh()
+    );
+
     const animationEnd = {
       position: animationEndVec3,
-      target: this.camera.target.clone()
+      target: defaultCamera.target.clone()
     } as AlCamera;
 
     if (animationEndVec3) {
-      const diffPos: number = animationEndVec3.distanceTo(this.camera.position);
+      const diffPos: number = animationEnd.position.distanceTo(
+        this.camera.position
+      );
+      const diffTarg: number = animationEnd.target.distanceTo(
+        this.camera.target
+      );
 
-      if (diffPos > 0) {
+      const needsPos = diffPos / Constants.maxAnimationSteps > Number.EPSILON;
+      const needsTarg = diffTarg / Constants.maxAnimationSteps > Number.EPSILON;
+
+      if (needsPos || needsTarg) {
         animationEnd.position.copy(animationEndVec3.clone());
 
         const slerpPath = ThreeUtils.getSlerpCameraPath(
           animationStart,
           animationEnd,
-          diffPos > 0,
-          false
+          needsPos,
+          needsTarg
         );
 
         this._scene.emit(

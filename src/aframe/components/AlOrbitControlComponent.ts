@@ -276,6 +276,7 @@ export default AFRAME.registerComponent("al-orbit-control", {
         controls.object.position.copy(nextFrame.position);
         this.el.getObject3D("camera").position.copy(nextFrame.position);
         controls.target.copy(nextFrame.target);
+
         this.el.sceneEl.emit(
           AlControlEvents.INTERACTION,
           { cameraState: this.getCameraState() },
