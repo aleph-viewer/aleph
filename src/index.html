@@ -52,8 +52,6 @@
         flex: 20%;
         min-width: 300px;
         padding: 1rem;
-        overflow-y: auto;
-        max-height: 100%;
         background-color: #f7f7f7;
       }
 
@@ -105,7 +103,7 @@
 
     <script>
 
-      let container, alControlPanel, alViewer, state;
+      let container, alControlPanel, alViewer, state, debug;
 
       let prevState = {};
 
@@ -141,6 +139,7 @@
         container = document.getElementById("container");
         alControlPanel = document.querySelector("al-control-panel");
         alViewer = document.querySelector("al-viewer");
+        debug = document.getElementById("debug");
 
         alControlPanel.urls = urls;
 
@@ -392,6 +391,7 @@
         if (alViewer.resize) {
           // scene will resize internally as it listens to window.onresize. however, it's useful to be able to force a resize if the window.onresize event isn't fired
           alViewer.resize();
+          alControlPanel.tabContentHeight = debug.clientHeight - 150 + "px";
         }
       }
 

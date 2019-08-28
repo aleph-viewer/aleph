@@ -1,7 +1,3 @@
-/* ion-item {
-  --padding-start: 0px;
-} */
-
 ion-item.selected {
-  --color: cornflowerblue;
+  color: var(--al-item-selected-color);
 }

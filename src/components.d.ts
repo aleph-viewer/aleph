@@ -50,6 +50,7 @@ export namespace Components {
     'srcTabEnabled': boolean;
     'stackhelper': | AMI.StackHelper
     | AMI.VolumeRenderHelper;
+    'tabContentHeight': string | null;
     'url': string | null;
     'urls': Map<string, string> | null;
   }
@@ -82,15 +83,17 @@ export namespace Components {
   }
   interface AlTabs {
     /**
-    * Get the currently selected tab
+    * Get the currently selected tab.
     */
     'getSelected': () => Promise<string>;
     /**
-    * Get the tab element given the tab name
+    * Get a specific tab by the value of its `tab` property or an element reference.
+    * @param tab The tab instance to select. If passed a string, it should be the value of the tab's `tab` property.
     */
     'getTab': (tab: any) => Promise<any>;
     /**
-    * Index or the Tab instance, of the tab to select.
+    * Select a tab by the value of its `tab` property or an element reference.
+    * @param tab The tab instance to select. If passed a string, it should be the value of the tab's `tab` property.
     */
     'select': (tab: any) => Promise<boolean>;
   }
@@ -230,6 +233,7 @@ declare namespace LocalJSX {
     'srcTabEnabled'?: boolean;
     'stackhelper'?: | AMI.StackHelper
     | AMI.VolumeRenderHelper;
+    'tabContentHeight'?: string | null;
     'url'?: string | null;
     'urls'?: Map<string, string> | null;
   }

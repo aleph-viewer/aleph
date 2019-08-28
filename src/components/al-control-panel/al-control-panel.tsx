@@ -1,5 +1,6 @@
-import { Component, h, Listen, Prop } from "@stencil/core";
+import { Component, Element, h, Listen, Prop } from "@stencil/core";
 import { DisplayMode } from "../../enums/index.js";
+import { Scroll } from "../../functional-components/Scroll";
 import { AlAngle, AlEdge, AlNode } from "../../interfaces/index.js";
 import i18n from "./al-control-panel.i18n.en.json";
 import { ContentStrings } from "./ContentStrings";
@@ -11,6 +12,8 @@ import { ContentStrings } from "./ContentStrings";
 })
 export class AlSettings {
   private _contentStrings: ContentStrings = i18n;
+
+  @Element() public el!: HTMLElement;
 
   @Prop({ mutable: true }) public angles: Map<string, AlAngle> | null = null;
   @Prop({ mutable: true }) public consoleTabEnabled: boolean = true;
@@ -24,6 +27,7 @@ export class AlSettings {
   @Prop({ mutable: true }) public stackhelper:
     | AMI.StackHelper
     | AMI.VolumeRenderHelper;
+  @Prop({ mutable: true }) public tabContentHeight: string | null = null;
   @Prop({ mutable: true }) public url: string | null = null;
   @Prop({ mutable: true }) public urls: Map<string, string> | null = null;
 
@@ -72,6 +76,9 @@ export class AlSettings {
   }
 
   public render() {
+    const tabContentHeight: string =
+      this.tabContentHeight || this.el.parentElement.clientHeight + "px";
+
     return (
       <ion-app>
         <al-tabs>
@@ -104,29 +111,35 @@ export class AlSettings {
           ) : null}
           {this.settingsTabEnabled ? (
             <ion-tab tab="settings">
-              <al-settings
-                display-mode={this.displayMode}
-                stackhelper={this.stackhelper}
-              ></al-settings>
+              <Scroll height={tabContentHeight}>
+                <al-settings
+                  display-mode={this.displayMode}
+                  stackhelper={this.stackhelper}
+                ></al-settings>
+              </Scroll>
             </ion-tab>
           ) : null}
           {this.graphTabEnabled ? (
             <ion-tab tab="graph">
-              <al-node-list
-                nodes={this.nodes}
-                selected={this.selected}
-              ></al-node-list>
-              <ion-item-divider> </ion-item-divider>
-              <al-node-editor node={this._getSelectedNode()}></al-node-editor>
-              <al-edge-editor edge={this._getSelectedEdge()}></al-edge-editor>
-              <al-angle-editor
-                angle={this._getSelectedAngle()}
-              ></al-angle-editor>
+              <Scroll height={tabContentHeight}>
+                <al-node-list
+                  nodes={this.nodes}
+                  selected={this.selected}
+                ></al-node-list>
+                <ion-item-divider></ion-item-divider>
+                <al-node-editor node={this._getSelectedNode()}></al-node-editor>
+                <al-edge-editor edge={this._getSelectedEdge()}></al-edge-editor>
+                <al-angle-editor
+                  angle={this._getSelectedAngle()}
+                ></al-angle-editor>
+              </Scroll>
             </ion-tab>
           ) : null}
           {this.consoleTabEnabled ? (
             <ion-tab tab="console">
-              <al-console graph={this._getGraphJson()}></al-console>
+              <Scroll height={tabContentHeight}>
+                <al-console graph={this._getGraphJson()}></al-console>
+              </Scroll>
             </ion-tab>
           ) : null}
         </al-tabs>

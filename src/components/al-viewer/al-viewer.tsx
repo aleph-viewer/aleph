@@ -545,7 +545,9 @@ export class Aleph {
       this._boundingBox.getSize(size);
       const mesh = this._getMesh();
 
-      if (!mesh) { return null; }
+      if (!mesh) {
+        return null;
+      }
 
       const meshGeom = mesh.geometry;
       let position: THREE.Vector3;

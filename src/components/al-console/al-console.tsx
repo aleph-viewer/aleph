@@ -17,6 +17,7 @@ export class AlConsole {
       <form onSubmit={e => e.preventDefault()}>
         <ion-item>
           <ion-textarea
+            class="al"
             value={this.graph}
             rows="10"
             required

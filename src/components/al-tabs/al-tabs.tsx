@@ -4,14 +4,15 @@ import {
   Event,
   EventEmitter,
   h,
-  Listen,
+  Host,
   Method,
-  Prop,
   State
 } from "@stencil/core";
 
 // tslint:disable-next-line: no-any
 type HTMLIonTabElement = any;
+// tslint:disable-next-line: no-any
+type HTMLIonTabsElement = any;
 // tslint:disable-next-line: no-any
 type TabButtonClickEventDetail = any;
 
@@ -29,12 +30,9 @@ export class Tabs {
   private transitioning = false;
   private leavingTab?: HTMLIonTabElement;
 
-  @Element() public el!: Element;
+  @Element() public el!: HTMLIonTabsElement;
 
-  @State() public tabs: HTMLIonTabElement[] = [];
   @State() public selectedTab?: HTMLIonTabElement;
-
-  @Prop({ context: "document" }) public doc!: Document;
 
   /**
    * Emitted when the navigation will load a component.
@@ -57,40 +55,23 @@ export class Tabs {
   }>;
 
   public async componentWillLoad() {
-    this.tabs = Array.from(this.el.querySelectorAll("ion-tab"));
+    const tabs = this.tabs;
+    await this.select(tabs[0]);
     this.ionNavWillLoad.emit();
-    this.componentWillUpdate();
   }
 
-  public componentDidLoad() {
-    this.initSelect();
-  }
-
-  public componentDidUnload() {
-    this.tabs.length = 0;
-    this.selectedTab = this.leavingTab = undefined;
-  }
-
-  public componentWillUpdate() {
-    // tslint:disable-next-line: no-any
-    const tabBar: any = this.el.querySelector("ion-tab-bar");
+  public componentWillRender() {
+    const tabBar = this.el.querySelector("ion-tab-bar");
     if (tabBar) {
       const tab = this.selectedTab ? this.selectedTab.tab : undefined;
       tabBar.selectedTab = tab;
     }
   }
 
-  @Listen("ionTabButtonClick")
-  protected onTabClicked(ev: CustomEvent<TabButtonClickEventDetail>) {
-    const { tab } = ev.detail;
-    const selectedTab = this.tabs.find(t => t.tab === tab);
-    if (selectedTab) {
-      this.select(selectedTab);
-    }
-  }
-
   /**
-   * Index or the Tab instance, of the tab to select.
+   * Select a tab by the value of its `tab` property or an element reference.
+   *
+   * @param tab The tab instance to select. If passed a string, it should be the value of the tab's `tab` property.
    */
   @Method()
   public async select(tab: string | HTMLIonTabElement): Promise<boolean> {
@@ -98,14 +79,16 @@ export class Tabs {
     if (!this.shouldSwitch(selectedTab)) {
       return false;
     }
-    await this.setActive(selectedTab);
+    this.setActive(selectedTab);
     this.tabSwitch();
 
     return true;
   }
 
   /**
-   * Get the tab element given the tab name
+   * Get a specific tab by the value of its `tab` property or an element reference.
+   *
+   * @param tab The tab instance to select. If passed a string, it should be the value of the tab's `tab` property.
    */
   @Method()
   public async getTab(
@@ -115,27 +98,20 @@ export class Tabs {
       typeof tab === "string" ? this.tabs.find(t => t.tab === tab) : tab;
 
     if (!tabEl) {
-      // tslint:disable-next-line: no-console
       console.error(`tab with id: "${tabEl}" does not exist`);
     }
     return tabEl;
   }
 
   /**
-   * Get the currently selected tab
+   * Get the currently selected tab.
    */
   @Method()
   public getSelected(): Promise<string | undefined> {
     return Promise.resolve(this.selectedTab ? this.selectedTab.tab : undefined);
   }
 
-  private async initSelect(): Promise<void> {
-    // wait for all tabs to be ready
-    await Promise.all(this.tabs.map(tab => tab.componentOnReady()));
-    await this.select(this.tabs[0]);
-  }
-
-  private setActive(selectedTab: HTMLIonTabElement): Promise<void> {
+  private setActive(selectedTab: HTMLIonTabElement) {
     if (this.transitioning) {
       return Promise.reject("transitioning already happening");
     }
@@ -144,7 +120,8 @@ export class Tabs {
     this.leavingTab = this.selectedTab;
     this.selectedTab = selectedTab;
     this.ionTabsWillChange.emit({ tab: selectedTab.tab });
-    return selectedTab.setActive();
+    selectedTab.setActive();
+    return true;
   }
 
   private tabSwitch() {
@@ -176,13 +153,24 @@ export class Tabs {
     );
   }
 
+  private get tabs(): any[] {
+    return Array.from(this.el.querySelectorAll("ion-tab"));
+  }
+
+  private onTabClicked = (ev: CustomEvent<TabButtonClickEventDetail>) => {
+    const { tab } = ev.detail;
+    this.select(tab);
+  };
+
   public render() {
-    return [
-      <slot name="top" />,
-      <div class="tabs-inner">
-        <slot />
-      </div>,
-      <slot name="bottom" />
-    ];
+    return (
+      <Host onIonTabButtonClick={this.onTabClicked}>
+        <slot name="top"></slot>
+        <div class="tabs-inner">
+          <slot></slot>
+        </div>
+        <slot name="bottom"></slot>
+      </Host>
+    );
   }
 }
