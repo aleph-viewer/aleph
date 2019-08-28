@@ -1,15 +1,21 @@
 :root {
-  --app-background-color: #f7f7f7;
-  --ion-background-color: #f7f7f7;
-  --mesh-viewport-background-color: #000;
-  --slices-viewport-background-color: #000;
-  --volume-viewport-background-color: #000;
-  --ion-font-size-base: 5px;
-  --color: #00b0ff;
-  --ion-item-color: #000;
+  --al-light-background-color: #f7f7f7;
+  --al-dark-background-color: #000;
+  --al-light-foreground-color: #00b0ff;
+  --al-dark-foreground-color: #00b0ff;
+  --al-input-background-color: blue;
+  --mesh-viewport-background-color: var(--al-dark-background-color);
+  --slices-viewport-background-color: var(--al-dark-background-color);
+  --volume-viewport-background-color: var(--al-dark-background-color);
 
-  --al-item-selected-color: var(--color);
-  /* --al-input-background-color: blue;
+  --ion-font-size-base: 5px;
+  --color: var(--al-light-foreground-color);
+  --ion-item-color: var(--al-dark-background-color);
+
+  --app-background-color: var(--al-light-background-color);
+  --ion-background-color: var(--al-light-background-color);
+
+  /*
   --al-input-padding: 0px 5px 0px 5px !important;
   --al-textarea-background-color: blue;
   --al-textarea-padding: 0px 0px 0px 5px !important; */
