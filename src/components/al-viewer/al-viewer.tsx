@@ -543,7 +543,11 @@ export class Aleph {
     if (this.srcLoaded) {
       const size: THREE.Vector3 = new THREE.Vector3();
       this._boundingBox.getSize(size);
-      const meshGeom = this._getMesh().geometry;
+      const mesh = this._getMesh();
+
+      if (!mesh) { return null; }
+
+      const meshGeom = mesh.geometry;
       let position: THREE.Vector3;
 
       let opacity;
@@ -1423,12 +1427,12 @@ export class Aleph {
   private _getMesh(): THREE.Mesh | null {
     let mesh: THREE.Mesh | null = null;
 
-    if (this.displayMode === DisplayMode.MESH) {
+    if (this._targetEntity && this.displayMode === DisplayMode.MESH) {
       const model = this._targetEntity.object3DMap.mesh;
 
       if (model instanceof THREE.Mesh) {
         mesh = model;
-      } else {
+      } else if (model) {
         model.traverse(child => {
           if (child instanceof THREE.Mesh && mesh === null) {
             mesh = child;
@@ -1467,8 +1471,6 @@ export class Aleph {
       this.appSetSrcLoaded(true);
       this._stateChanged();
       this.loaded.emit(ev.detail);
-    } else {
-      throw new Error("Unable to find a mesh in loaded object");
     }
   }
   //#endregion

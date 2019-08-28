@@ -3,7 +3,7 @@ export class Constants {
   public static edgeSize = 0.005;
   public static fontSizeLarge = 1.6;
   public static fontSizeMedium = 0.7;
-  public static fontSizeSmall = 0.4;
+  public static fontSizeSmall = 0.5;
   public static maxAnimationSteps = 50;
   public static minLoadingMS = 500;
   public static movedEventName = "-moved";

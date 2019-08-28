@@ -1,9 +1,9 @@
 import {
   Component,
-  h,
   Element,
   Event,
   EventEmitter,
+  h,
   Listen,
   Method,
   Prop,
