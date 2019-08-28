@@ -1,6 +1,6 @@
 import { AlAngle, AlCamera, AlEdge, AlNode } from ".";
-import { ControlsType } from "../enums/ControlsType";
 import { DisplayMode, Orientation } from "../enums";
+import { ControlsType } from "../enums/ControlsType";
 import { Material } from "../enums/Material";
 import { Units } from "../enums/Units";
 
