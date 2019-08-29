@@ -1,6 +1,6 @@
-import { KeyDown } from "@edsilv/key-codes";
-import { Action, Store } from "@edsilv/stencil-redux";
-import "@edsilv/stencil-redux";
+import { KeyDown } from '@edsilv/key-codes';
+import { Action, Store } from '@edsilv/stencil-redux';
+import '@edsilv/stencil-redux';
 import {
   Component,
   Event,
@@ -9,11 +9,11 @@ import {
   Method,
   Prop,
   State
-} from "@stencil/core";
-import "../../aframe";
-import { AlGltfModelEvents, AlNodeSpawnerEvents } from "../../aframe";
-import { AlVolumeEvents } from "../../aframe/components/AlVolumeComponent";
-import { Constants } from "../../Constants";
+} from '@stencil/core';
+import '../../aframe';
+import { AlGltfModelEvents, AlNodeSpawnerEvents } from '../../aframe';
+import { AlVolumeEvents } from '../../aframe/components/AlVolumeComponent';
+import { Constants } from '../../Constants';
 import {
   AlGraphEntryType,
   ControlsType,
@@ -21,8 +21,8 @@ import {
   Material,
   Orientation,
   Units
-} from "../../enums";
-import { AlAngle, AlCamera, AlEdge, AlGraph, AlNode } from "../../interfaces";
+} from '../../enums';
+import { AlAngle, AlCamera, AlEdge, AlGraph, AlNode } from '../../interfaces';
 import {
   appClearAngles,
   appClearEdges,
@@ -53,8 +53,8 @@ import {
   appSetVolumeSteps,
   appSetVolumeWindowCenter,
   appSetVolumeWindowWidth
-} from "../../redux/actions";
-import { configureStore } from "../../redux/store";
+} from '../../redux/actions';
+import { configureStore } from '../../redux/store';
 import {
   AlGraphEvents,
   AMIUtils,
@@ -62,16 +62,16 @@ import {
   GetUtils,
   GraphUtils,
   ThreeUtils
-} from "../../utils";
-import { AlControlEvents } from "../../utils/AlControlEvents";
+} from '../../utils';
+import { AlControlEvents } from '../../utils/AlControlEvents';
 
-type Entity = import("aframe").Entity;
-type Scene = import("aframe").Scene;
+type Entity = import('aframe').Entity;
+type Scene = import('aframe').Scene;
 //#endregion
 
 @Component({
-  tag: "al-viewer",
-  styleUrl: "al-viewer.css",
+  tag: 'al-viewer',
+  styleUrl: 'al-viewer.css',
   shadow: false
 })
 export class Aleph {
@@ -93,10 +93,10 @@ export class Aleph {
   //#endregion
 
   //#region props
-  @Prop({ context: "store" }) public store: Store;
+  @Prop({ context: 'store' }) public store: Store;
   @Prop() public dracoDecoderPath: string | null;
-  @Prop() public width: string = "640";
-  @Prop() public height: string = "480";
+  @Prop() public width: string = '640';
+  @Prop() public height: string = '480';
   //#endregion
 
   //#region actions
@@ -164,7 +164,7 @@ export class Aleph {
   public async load(src: string, displayMode?: DisplayMode): Promise<void> {
     // validate
     if (this.src) {
-      this._setSrc(null); // shows loading spinner and resets gltf-model
+      this._setSrc(null, displayMode); // shows loading spinner and resets gltf-model
       setTimeout(() => {
         this._setSrc(src, displayMode);
       }, Constants.minLoadingMS);
@@ -451,14 +451,16 @@ export class Aleph {
   private _renderSpinner() {
     if (this.src && !this.srcLoaded) {
       return (
-        <div id="spinner">
-          <div class="square" />
+        <div id='spinner'>
+          <div class='square' />
         </div>
       );
     }
   }
 
   private _renderSrc() {
+    console.log('al-viewer _renderSrc() src: ', this.src);
+
     if (!this.src) {
       return null;
     }
@@ -467,7 +469,7 @@ export class Aleph {
       case DisplayMode.MESH: {
         return (
           <a-entity
-            class="collidable"
+            class='collidable'
             al-node-spawner={`
               graphEnabled: ${this.graphEnabled};
             `}
@@ -475,46 +477,26 @@ export class Aleph {
               src: url(${this.src});
               dracoDecoderPath: ${this.dracoDecoderPath};
             `}
-            position="0 0 0"
-            scale="1 1 1"
+            position='0 0 0'
+            scale='1 1 1'
             ref={(el: Entity) => (this._targetEntity = el)}
           />
         );
       }
-      case DisplayMode.SLICES: {
-        return (
-          <a-entity
-            id="target-entity"
-            class="collidable"
-            al-node-spawner={`
-              graphEnabled: ${this.graphEnabled};
-            `}
-            al-volume={`
-              srcLoaded: ${this.srcLoaded};
-              src: ${this.src};
-              displayMode: ${this.displayMode};
-              slicesIndex: ${this.slicesIndex};
-              slicesOrientation: ${this.orientation};
-              slicesWindowWidth: ${this.slicesWindowWidth};
-              slicesWindowCenter: ${this.slicesWindowCenter};
-              volumeSteps: ${this.volumeSteps};
-              volumeWindowCenter: ${this.volumeWindowCenter};
-              volumeWindowWidth: ${this.volumeWindowWidth};
-              isWebGl2: ${this._isWebGl2};
-            `}
-            position="0 0 0"
-            ref={(el: Entity) => (this._targetEntity = el)}
-          />
-        );
-      }
-      // This is seperate from the slice entity as it will store the volume render,
-      // preventing long load times when switching mode
-      // Node spawner is on the bounding box in
-      // volume mode; as the "volume" is in a different scene
+      case DisplayMode.SLICES:
       case DisplayMode.VOLUME: {
         return (
           <a-entity
-            id="target-entity"
+            id='target-entity'
+            class='collidable'
+            // This is seperate from the slice entity as it will store the volume render,
+            // preventing long load times when switching mode
+            // Node spawner is on the bounding box in
+            // volume mode; as the "volume" is in a different scene
+            al-node-spawner={`
+              graphEnabled: ${this.graphEnabled &&
+                this.displayMode !== DisplayMode.VOLUME};
+            `}
             al-volume={`
               srcLoaded: ${this.srcLoaded};
               src: ${this.src};
@@ -528,11 +510,33 @@ export class Aleph {
               volumeWindowWidth: ${this.volumeWindowWidth};
               isWebGl2: ${this._isWebGl2};
             `}
-            position="0 0 0"
+            position='0 0 0'
             ref={(el: Entity) => (this._targetEntity = el)}
           />
         );
       }
+      // case DisplayMode.VOLUME: {
+      //   return (
+      //     <a-entity
+      //       id="target-entity"
+      //       al-volume={`
+      //         srcLoaded: ${this.srcLoaded};
+      //         src: ${this.src};
+      //         displayMode: ${this.displayMode};
+      //         slicesIndex: ${this.slicesIndex};
+      //         slicesOrientation: ${this.orientation};
+      //         slicesWindowWidth: ${this.slicesWindowWidth};
+      //         slicesWindowCenter: ${this.slicesWindowCenter};
+      //         volumeSteps: ${this.volumeSteps};
+      //         volumeWindowCenter: ${this.volumeWindowCenter};
+      //         volumeWindowWidth: ${this.volumeWindowWidth};
+      //         isWebGl2: ${this._isWebGl2};
+      //       `}
+      //       position="0 0 0"
+      //       ref={(el: Entity) => (this._targetEntity = el)}
+      //     />
+      //   );
+      // }
       default: {
         return;
       }
@@ -545,7 +549,9 @@ export class Aleph {
       this._boundingBox.getSize(size);
       const mesh = this._getMesh();
 
-      if (!mesh) { return null; }
+      if (!mesh) {
+        return null;
+      }
 
       const meshGeom = mesh.geometry;
       let position: THREE.Vector3;
@@ -573,7 +579,7 @@ export class Aleph {
             al-node-spawner={`
               graphEnabled: ${this.graphEnabled};
             `}
-            class="collidable"
+            class='collidable'
             ref={el => (this._boundingEntity = el)}
           />
         );
@@ -634,7 +640,7 @@ export class Aleph {
 
       return (
         <a-entity
-          class="collidable"
+          class='collidable'
           id={nodeId}
           position={node.position}
           al-node={`
@@ -711,7 +717,7 @@ export class Aleph {
 
         return (
           <a-entity
-            class="collidable"
+            class='collidable'
             id={edgeId}
             position={ThreeUtils.vector3ToString(centoid)}
             al-edge={`
@@ -843,7 +849,7 @@ export class Aleph {
 
         const textV =
           THREE.Math.radToDeg(angl).toFixed(Constants.unitsDecimalPlaces) +
-          " deg";
+          ' deg';
 
         const frustrumDistance = ThreeUtils.getFrustrumSpaceDistance(
           this._scene.camera,
@@ -856,7 +862,7 @@ export class Aleph {
 
         return (
           <a-entity
-            class="collidable"
+            class='collidable'
             id={angleId}
             position={centralNode.position}
             al-angle={`
@@ -912,20 +918,20 @@ export class Aleph {
   private _renderLights() {
     return [
       <a-entity
-        id="light-1"
-        light="type: directional; color: #ffffff; intensity: 0.5"
-        position="1 1 1"
+        id='light-1'
+        light='type: directional; color: #ffffff; intensity: 0.5'
+        position='1 1 1'
         ref={el => (this._lights[0] = el)}
       />,
       <a-entity
-        id="light-2"
-        light="type: directional; color: #ffffff; intensity: 0.5"
-        position="-1 -1 -1"
+        id='light-2'
+        light='type: directional; color: #ffffff; intensity: 0.5'
+        position='-1 -1 -1'
         ref={el => (this._lights[1] = el)}
       />,
       <a-entity
-        id="light-3"
-        light="type: ambient; color: #d0d0d0; intensity: 1"
+        id='light-3'
+        light='type: ambient; color: #d0d0d0; intensity: 1'
       />
     ];
   }
@@ -936,11 +942,11 @@ export class Aleph {
       <a-camera
         fov={Constants.cameraValues.fov}
         near={Constants.cameraValues.near}
-        look-controls="enabled: false"
+        look-controls='enabled: false'
         far={Constants.cameraValues.far}
-        id="mainCamera"
-        al-cursor="rayOrigin: mouse"
-        raycaster="objects: .collidable;"
+        id='mainCamera'
+        al-cursor='rayOrigin: mouse'
+        raycaster='objects: .collidable;'
         al-orbit-control={`
           maxPolarAngle: ${Constants.cameraValues.maxPolarAngle};
           minDistance: ${Constants.cameraValues.minDistance};
@@ -971,11 +977,11 @@ export class Aleph {
       <a-camera
         fov={Constants.cameraValues.fov}
         near={Constants.cameraValues.near}
-        look-controls="enabled: false"
+        look-controls='enabled: false'
         far={Constants.cameraValues.far}
-        id="mainCamera"
-        al-cursor="rayOrigin: mouse"
-        raycaster="objects: .collidable;"
+        id='mainCamera'
+        al-cursor='rayOrigin: mouse'
+        raycaster='objects: .collidable;'
         al-trackball-control={`
           screenLeft: ${0};
           screenTop: ${0};
@@ -1029,7 +1035,7 @@ export class Aleph {
           webgl2: ${this._isWebGl2};
           antialias: true;
         `}
-        vr-mode-ui="enabled: false"
+        vr-mode-ui='enabled: false'
         ref={el => (this._scene = el)}
       >
         {this._renderBoundingBox()}
@@ -1045,17 +1051,17 @@ export class Aleph {
   public render() {
     return (
       <div
-        id="al-container"
+        id='al-container'
         class={this.displayMode}
         style={{
           width: GetUtils.addCssUnits(this.width),
           height: GetUtils.addCssUnits(this.height)
         }}
       >
-        <div id="lut-container">
-          <div id="lut-min">0.0</div>
-          <div id="lut-canvases" />
-          <div id="lut-max">1.0</div>
+        <div id='lut-container'>
+          <div id='lut-min'>0.0</div>
+          <div id='lut-canvases' />
+          <div id='lut-max'>1.0</div>
         </div>
         {this._renderScene()}
         {this._renderSpinner()}
@@ -1133,7 +1139,7 @@ export class Aleph {
       this._setEdge([edgeId, newEdge]);
     } else {
       // tslint:disable-next-line: no-console
-      console.log("edge already exists");
+      console.log('edge already exists');
     }
   }
 
@@ -1168,10 +1174,10 @@ export class Aleph {
 
         this._setAngle([angleId, newAngle]);
       } else {
-        console.warn("cannot create angle: edges not connected");
+        console.warn('cannot create angle: edges not connected');
       }
     } else {
-      console.warn("cannot create angle: angle already exists");
+      console.warn('cannot create angle: angle already exists');
     }
   }
 
@@ -1451,6 +1457,7 @@ export class Aleph {
 
   // tslint:disable-next-line: no-any
   private _srcLoaded(ev: any): void {
+    console.log('al-viewer: Source Loaded!');
     this._loadedObject = ev.detail;
 
     const mesh: THREE.Mesh | null = this._getMesh();
@@ -1561,7 +1568,7 @@ export class Aleph {
         const rayResult = AMIUtils.volumeRay(
           this._getStackHelper(),
           this._camera.object3D.children[0].position.clone(),
-          this._camera.getAttribute("raycaster").direction,
+          this._camera.getAttribute('raycaster').direction,
           Constants.cameraValues.far,
           hitPosition,
           hitNormal
@@ -1576,7 +1583,7 @@ export class Aleph {
         }
       } else if (intersection) {
         newNode = {
-          targetId: "0",
+          targetId: '0',
           position: ThreeUtils.vector3ToString(intersection.point),
           scale: this._boundingSphereRadius / Constants.nodeSizeRatio,
           title: nodeId
@@ -1658,7 +1665,7 @@ export class Aleph {
     const nodeId: string = event.detail.id;
     // tslint:disable-next-line: no-any
     const raycaster = this._camera.components.raycaster as any;
-    const raycasterAttribute = this._camera.getAttribute("raycaster");
+    const raycasterAttribute = this._camera.getAttribute('raycaster');
     let intersection;
     const hitPosition = new THREE.Vector3();
     let validLocation = false;
@@ -1701,7 +1708,7 @@ export class Aleph {
     // IF not a valid location, dangle in space
     if (!validLocation) {
       const distance = orbitPosition.distanceTo(
-        this._targetEntity.getAttribute("position")
+        this._targetEntity.getAttribute('position')
       );
 
       hitPosition.copy(orbitPosition);
@@ -1729,8 +1736,8 @@ export class Aleph {
   }
 
   private _addEventListeners(): void {
-    window.addEventListener("keydown", this._keyDownHandler, false);
-    window.addEventListener("keyup", this._keyUpHandler, false);
+    window.addEventListener('keydown', this._keyDownHandler, false);
+    window.addEventListener('keyup', this._keyUpHandler, false);
 
     this._scene.addEventListener(
       AlControlEvents.ANIMATION_FINISHED,

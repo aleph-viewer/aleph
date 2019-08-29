@@ -1,13 +1,13 @@
-import { combineReducers } from "redux";
-import { MeshFileType } from "../enums";
-import { ControlsType } from "../enums/ControlsType";
-import { DisplayMode } from "../enums/DisplayMode";
-import { Material } from "../enums/Material";
-import { Orientation } from "../enums/Orientation";
-import { Units } from "../enums/Units";
-import { AlAngle, AlAppState, AlEdge, AlNode } from "../interfaces";
-import { GetUtils } from "../utils";
-import { ActionTypes, TypeKeys } from "./actions";
+import { combineReducers } from 'redux';
+import { MeshFileType } from '../enums';
+import { ControlsType } from '../enums/ControlsType';
+import { DisplayMode } from '../enums/DisplayMode';
+import { Material } from '../enums/Material';
+import { Orientation } from '../enums/Orientation';
+import { Units } from '../enums/Units';
+import { AlAngle, AlAppState, AlEdge, AlNode } from '../interfaces';
+import { GetUtils } from '../utils';
+import { ActionTypes, TypeKeys } from './actions';
 
 export const getInitialState = () => {
   return {
@@ -43,6 +43,8 @@ export const app = (
   switch (action.type) {
     //#region src
     case TypeKeys.APP_SET_SRC: {
+      console.log('reducer src: ', action.payload);
+
       const [src, plDisplayMode] = action.payload;
       let displayMode: DisplayMode;
 
