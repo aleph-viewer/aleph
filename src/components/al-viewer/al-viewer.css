@@ -10,15 +10,15 @@
 }
 
 #al-container.mesh a-scene {
-  background-color: var(--mesh-viewport-background-color);
+  background-color: var(--al-mesh-viewport-background-color);
 }
 
 #al-container.slices a-scene {
-  background-color: var(--slices-viewport-background-color);
+  background-color: var(--al-slices-viewport-background-color);
 }
 
 #al-container.volume a-scene {
-  background-color: var(--volume-viewport-background-color);
+  background-color: var(--al-volume-viewport-background-color);
 }
 
 /* @media only screen and (min-width: 500px) {

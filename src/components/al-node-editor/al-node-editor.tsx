@@ -26,18 +26,22 @@ export class AlNodeEditor {
         <form onSubmit={e => e.preventDefault()}>
           <ion-item>
             <ion-input
+              id="title"
               value={node.title}
               placeholder={this._contentStrings.title}
               required
               onIonChange={e => (node.title = e.detail.value)}
+              maxlength="30"
             />
           </ion-item>
           <ion-item>
             <ion-textarea
+              id="description"
               value={node.description}
               placeholder={this._contentStrings.description}
-              rows="10"
+              rows="5"
               onIonChange={e => (node.description = e.detail.value)}
+              maxlength="280"
             />
           </ion-item>
           <ion-button

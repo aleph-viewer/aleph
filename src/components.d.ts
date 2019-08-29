@@ -37,6 +37,7 @@ export namespace Components {
   }
   interface AlConsole {
     'graph': string;
+    'tabSize': number;
   }
   interface AlControlPanel {
     'angles': Map<string, AlAngle> | null;
@@ -220,6 +221,7 @@ declare namespace LocalJSX {
   interface AlConsole extends JSXBase.HTMLAttributes<HTMLAlConsoleElement> {
     'graph'?: string;
     'onGraphSubmitted'?: (event: CustomEvent<any>) => void;
+    'tabSize'?: number;
   }
   interface AlControlPanel extends JSXBase.HTMLAttributes<HTMLAlControlPanelElement> {
     'angles'?: Map<string, AlAngle> | null;

@@ -1,23 +1,35 @@
 :root {
-  --al-light-background-color: #f7f7f7;
-  --al-dark-background-color: #000;
-  --al-light-foreground-color: #00b0ff;
-  --al-dark-foreground-color: #00b0ff;
-  --mesh-viewport-background-color: var(--al-dark-background-color);
-  --slices-viewport-background-color: var(--al-dark-background-color);
-  --volume-viewport-background-color: var(--al-dark-background-color);
+  --al-color-primary: #00b0ff;
+  --al-color-dark: #222428;
+  --al-mesh-viewport-background-color: #000;
+  --al-slices-viewport-background-color: #000;
+  --al-volume-viewport-background-color: #000;
+  --al-item-color: #222428;
+  --al-item-selected-color: #00b0ff;
+  --al-item-border-color: #e9e9e9;
+  --al-app-background-color: #f7f7f7;
 
-  --al-input-background-color: var(--al-light-background-color);
-  --al-input-padding: 0px 5px 0px 5px !important;
-  --al-textarea-background-color: var(--al-light-background-color);
-  --al-textarea-padding: 0px 0px 0px 5px !important;
-  --al-item-selected-color: var(--al-light-foreground-color);
+  --al-input-background-color: transparent;
+  --al-input-font-size: 1rem;
+  --al-input-color: #222428;
+  --al-input-padding-start: 0px;
+  --al-input-padding-top: 0px;
+  --al-input-padding-end: 0px;
+  --al-input-padding-bottom: 0px;
 
-  --ion-font-size-base: 5px;
-  --color: var(--al-light-foreground-color);
-  --ion-item-color: var(--al-dark-background-color);
-  --app-background-color: var(--al-light-background-color);
-  --ion-background-color: var(--al-light-background-color);
+  --al-textarea-background-color: transparent;
+  --al-textarea-font-size: 1rem;
+  --al-textarea-color: #222428;
+  --al-textarea-padding-start: 0px;
+  --al-textarea-padding-top: 0px;
+  --al-textarea-padding-end: 0px;
+  --al-textarea-padding-bottom: 0px;
+
+  --color: var(--al-color-primary);
+  --ion-item-color: var(--al-item-color);
+  --ion-item-border-color: var(--al-item-border-color);
+  --app-background-color: var(--al-app-background-color);
+  --ion-background-color: var(--al-app-background-color);
 
   /*
   https://ionicframework.com/docs/theming/advanced/#color-language
@@ -25,17 +37,13 @@
   https://github.com/ionic-team/ionic-app-base/blob/master/www/lib/ionic/scss/_variables.scss
   */
 
-  /*--padding-start: 0px !important;*/
-  /*--ion-font-family: sans-serif;
-  --ion-text-color: #ffffff;*/
-
   --ion-color-primary: #00b0ff;
   --ion-color-primary-rgb: 0, 176, 255;
   --ion-color-primary-contrast: #ffffff;
   --ion-color-primary-contrast-rgb: 255, 255, 255;
   --ion-color-primary-shade: #00b0ff;
   --ion-color-primary-tint: #00b0ff;
-
+  /*
   --ion-color-secondary: #0cd1e8;
   --ion-color-secondary-rgb: 12, 209, 232;
   --ion-color-secondary-contrast: #ffffff;
@@ -91,8 +99,5 @@
   --ion-color-light-contrast-rgb: 0, 0, 0;
   --ion-color-light-shade: #d7d8da;
   --ion-color-light-tint: #f5f6f9;
+  */
 }
-
-/* ion-item.sc-ion-select-popover {
-  --padding-start: 16px;
-} */

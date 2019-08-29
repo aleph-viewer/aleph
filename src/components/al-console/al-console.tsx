@@ -11,16 +11,23 @@ export class AlConsole {
   @Event() public graphSubmitted: EventEmitter;
 
   @Prop({ mutable: true }) public graph: string;
+  @Prop({ mutable: true }) public tabSize: number = 2;
 
   public render() {
     return (
       <form onSubmit={e => e.preventDefault()}>
         <ion-item>
           <ion-textarea
-            value={this.graph}
+            id="graph"
+            value={JSON.stringify(
+              JSON.parse(this.graph),
+              undefined,
+              this.tabSize
+            )}
             rows="10"
             required
             onIonChange={e => (this.graph = e.detail.value)}
+            maxlength="5000"
             ref={el => (this._graph = el)}
           />
         </ion-item>

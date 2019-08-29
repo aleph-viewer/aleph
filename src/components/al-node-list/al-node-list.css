@@ -1,3 +1,7 @@
 ion-item[selected] {
-  color: var(--al-item-selected-color) !important;
+  --color: var(--al-item-selected-color);
+}
+
+ion-item {
+  --border-color: var(--al-item-border-color);
 }
