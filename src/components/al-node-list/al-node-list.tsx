@@ -23,7 +23,7 @@ export class AlNodeList {
           {Array.from(this.nodes).map(([nodeId, node]) => {
             return (
               <ion-item
-                class={this.selected === nodeId ? "selected" : null}
+                selected={this.selected === nodeId ? true : false}
                 onClick={() => this.selectedChanged.emit(nodeId)}
               >
                 {node.title}

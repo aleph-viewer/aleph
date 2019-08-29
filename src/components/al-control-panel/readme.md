@@ -19,6 +19,7 @@
 | `settingsTabEnabled` | `settings-tab-enabled` |             | `boolean`                                                      | `true`             |
 | `srcTabEnabled`      | `src-tab-enabled`      |             | `boolean`                                                      | `true`             |
 | `stackhelper`        | --                     |             | `StackHelper \| VolumeRenderHelper`                            | `undefined`        |
+| `tabContentHeight`   | `tab-content-height`   |             | `string`                                                       | `null`             |
 | `url`                | `url`                  |             | `string`                                                       | `null`             |
 | `urls`               | --                     |             | `Map<string, string>`                                          | `null`             |
 

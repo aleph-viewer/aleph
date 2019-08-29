@@ -17,7 +17,7 @@
 
 ### `getSelected() => Promise<string>`
 
-Get the currently selected tab
+Get the currently selected tab.
 
 #### Returns
 
@@ -27,7 +27,7 @@ Type: `Promise<string>`
 
 ### `getTab(tab: any) => Promise<any>`
 
-Get the tab element given the tab name
+Get a specific tab by the value of its `tab` property or an element reference.
 
 #### Returns
 
@@ -37,7 +37,7 @@ Type: `Promise<any>`
 
 ### `select(tab: any) => Promise<boolean>`
 
-Index or the Tab instance, of the tab to select.
+Select a tab by the value of its `tab` property or an element reference.
 
 #### Returns
 

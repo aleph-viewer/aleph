@@ -1,3 +1,3 @@
-ion-item.selected {
-  color: var(--al-light-foreground-color);
+ion-item[selected] {
+  color: var(--al-item-selected-color) !important;
 }

@@ -1,4 +1,4 @@
-ion-textarea.al {
+ion-textarea {
   background-color: var(--al-textarea-background-color);
   padding: var(--al-textarea-padding);
 }

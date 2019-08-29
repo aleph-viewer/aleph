@@ -1,9 +1,9 @@
-/* ion-input.al {
+ion-input input {
   background-color: var(--al-input-background-color);
   padding: var(--al-input-padding);
 }
 
-ion-textarea.al {
+ion-textarea textarea {
   background-color: var(--al-textarea-background-color);
   padding: var(--al-textarea-padding);
-} */
+}
