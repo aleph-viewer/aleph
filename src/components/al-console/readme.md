@@ -9,15 +9,28 @@
 
 | Property | Attribute | Description | Type     | Default     |
 | -------- | --------- | ----------- | -------- | ----------- |
-| `cmd`    | `cmd`     |             | `string` | `undefined` |
+| `graph`  | `graph`   |             | `string` | `undefined` |
 
 
 ## Events
 
-| Event        | Description | Type               |
-| ------------ | ----------- | ------------------ |
-| `runCommand` |             | `CustomEvent<any>` |
+| Event            | Description | Type               |
+| ---------------- | ----------- | ------------------ |
+| `graphSubmitted` |             | `CustomEvent<any>` |
 
+
+## Dependencies
+
+### Used by
+
+ - [al-control-panel](..\al-control-panel)
+
+### Graph
+```mermaid
+graph TD;
+  al-control-panel --> al-console
+  style al-console fill:#f9f,stroke:#333,stroke-width:4px
+```
 
 ----------------------------------------------
 

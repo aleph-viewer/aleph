@@ -55,6 +55,19 @@ Type: `Promise<boolean>`
 | `"top"`    | Content is placed at the top of the screen.                           |
 
 
+## Dependencies
+
+### Used by
+
+ - [al-control-panel](..\al-control-panel)
+
+### Graph
+```mermaid
+graph TD;
+  al-control-panel --> al-tabs
+  style al-tabs fill:#f9f,stroke:#333,stroke-width:4px
+```
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

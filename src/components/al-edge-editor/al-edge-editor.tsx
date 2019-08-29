@@ -8,7 +8,7 @@ import { AlEdge } from "../../interfaces";
   shadow: true
 })
 export class AlEdgeEditor {
-  @Event() public delete: EventEmitter;
+  @Event() public deleteEdge: EventEmitter;
 
   @Prop({ mutable: true }) public edge: [string, AlEdge];
 
@@ -21,7 +21,7 @@ export class AlEdgeEditor {
           <ion-button
             size="small"
             onClick={() => {
-              this.delete.emit(edgeId);
+              this.deleteEdge.emit(edgeId);
               this.edge = null;
             }}
           >

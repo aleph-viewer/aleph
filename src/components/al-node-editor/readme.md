@@ -14,11 +14,24 @@
 
 ## Events
 
-| Event    | Description | Type               |
-| -------- | ----------- | ------------------ |
-| `delete` |             | `CustomEvent<any>` |
-| `save`   |             | `CustomEvent<any>` |
+| Event        | Description | Type               |
+| ------------ | ----------- | ------------------ |
+| `deleteNode` |             | `CustomEvent<any>` |
+| `saveNode`   |             | `CustomEvent<any>` |
 
+
+## Dependencies
+
+### Used by
+
+ - [al-control-panel](..\al-control-panel)
+
+### Graph
+```mermaid
+graph TD;
+  al-control-panel --> al-node-editor
+  style al-node-editor fill:#f9f,stroke:#333,stroke-width:4px
+```
 
 ----------------------------------------------
 

@@ -13,8 +13,8 @@ import { ContentStrings } from "./ContentStrings";
 export class AlNodeEditor {
   private _contentStrings: ContentStrings = i18n;
 
-  @Event() public delete: EventEmitter;
-  @Event() public save: EventEmitter;
+  @Event() public deleteNode: EventEmitter;
+  @Event() public saveNode: EventEmitter;
 
   @Prop({ mutable: true }) public node: [string, AlNode];
 
@@ -43,7 +43,7 @@ export class AlNodeEditor {
           <ion-button
             size="small"
             onClick={() => {
-              this.delete.emit(nodeId);
+              this.deleteNode.emit(nodeId);
               this.node = null;
             }}
           >
@@ -54,7 +54,7 @@ export class AlNodeEditor {
             type="submit"
             onClick={() => {
               if (node.title) {
-                this.save.emit([nodeId, node]);
+                this.saveNode.emit([nodeId, node]);
               }
             }}
           >

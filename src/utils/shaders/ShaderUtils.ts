@@ -1,5 +1,5 @@
-import haloFragmentS from '../assets/shaders/halo/halo.frag';
-import haloVertexS from '../assets/shaders/halo/halo.vert';
+import haloFragmentS from "../../assets/shaders/halo/halo.frag";
+import haloVertexS from "../../assets/shaders/halo/halo.vert";
 
 export class ShaderUtils {
   public static getHaloMaterial(

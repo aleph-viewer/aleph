@@ -1,7 +1,8 @@
 import { Entity } from "aframe";
 import { Constants } from "../../Constants";
 import { AlGraphEntryType } from "../../enums";
-import { AlGraphEvents, ShaderUtils, ThreeUtils } from "../../utils";
+import { AlGraphEvents, ThreeUtils } from "../../utils";
+import { ShaderUtils } from "../../utils/shaders/ShaderUtils";
 import { BaseComponent } from "./BaseComponent";
 
 interface AlAngleState {

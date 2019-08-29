@@ -1,0 +1,27 @@
+/**
+ * @prop --display-mode-display: Display Mode Toggle Display
+ * @prop --graph-enabled-display: Graph Enabled Toggle Display
+ * @prop --bounding-box-enabled-display: Bounding Box Enabled Toggle Display
+ * @prop --slices-index-display: Slices Index Range Display
+ * @prop --slices-orientation-display: Slices Orientation Select Display
+ * @prop --slices-window-center-display: Slices Window Center Range Display
+ * @prop --slices-window-width-display: Slices Window Width Range Display
+ * @prop --volume-steps-display: Volume Steps Range Display
+ * @prop --volume-window-center-display: Volume Window Center Range Display
+ * @prop --volume-window-width-display: Volume Window Width Range Display
+ */
+
+ion-item {
+  --border-width: 0 0 0 0;
+  --inner-border-width: 0 0 0 0;
+}
+
+ion-item select {
+  padding: 5px;
+  min-width: 100px;
+}
+
+/* ion-label .icon-inner {
+  --color: grey;
+  font-size: 16px;
+} */

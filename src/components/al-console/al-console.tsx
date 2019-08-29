@@ -6,30 +6,30 @@ import RunIcon from "../../assets/svg/run.svg";
   shadow: true
 })
 export class AlConsole {
-  private _cmd: HTMLTextAreaElement;
+  private _graph: HTMLTextAreaElement;
 
-  @Event() public runCommand: EventEmitter;
+  @Event() public graphSubmitted: EventEmitter;
 
-  @Prop({ mutable: true }) public cmd: string;
+  @Prop({ mutable: true }) public graph: string;
 
   public render() {
     return (
       <form onSubmit={e => e.preventDefault()}>
         <ion-item>
           <ion-textarea
-            value={this.cmd}
+            value={this.graph}
             rows="10"
             required
-            onIonChange={e => (this.cmd = e.detail.value)}
-            ref={el => (this._cmd = el)}
+            onIonChange={e => (this.graph = e.detail.value)}
+            ref={el => (this._graph = el)}
           />
         </ion-item>
         <ion-button
           size="small"
           type="submit"
           onClick={() => {
-            if (this.cmd) {
-              this.runCommand.emit(this._cmd.value);
+            if (this.graph) {
+              this.graphSubmitted.emit(this._graph.value);
             }
           }}
         >

@@ -1,13 +1,13 @@
 export class Constants {
   public static controllerName = "-controller";
   public static edgeSize = 0.005;
-  public static fontSizeLarge = 2;
-  public static fontSizeMedium = 1.2;
-  public static fontSizeSmall = 0.9;
+  public static fontSizeLarge = 1.6;
+  public static fontSizeMedium = 0.7;
+  public static fontSizeSmall = 0.5;
   public static maxAnimationSteps = 50;
   public static minLoadingMS = 500;
   public static movedEventName = "-moved";
-  public static nodeSizeRatio = 75;
+  public static nodeSizeRatio = 100;
   public static stackSpaceMultiplier = { x: 10, y: 10, z: 10 };
   public static stepsIncrement = 8;
   public static stepsMax: number = 512;

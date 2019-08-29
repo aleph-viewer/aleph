@@ -8,19 +8,27 @@
 import { HTMLStencilElement, JSXBase } from '@stencil/core/internal';
 import {
   AlAngle,
-  AlEdge,
+  AlEdge as AlEdge1,
   AlGraph,
-  AlNode,
+  AlNode as AlNode1,
 } from './interfaces';
 import {
+  AlAngle as AlAngle1,
+  AlEdge,
+  AlNode,
+} from './interfaces/index.js';
+import {
+  DisplayMode,
+} from './enums/index.js';
+import {
   ControlsType,
-  DisplayMode as DisplayMode1,
+  DisplayMode as DisplayMode2,
   Material,
   Orientation,
   Units,
 } from './enums';
 import {
-  DisplayMode,
+  DisplayMode as DisplayMode1,
 } from './enums/DisplayMode';
 
 export namespace Components {
@@ -28,9 +36,34 @@ export namespace Components {
     'angle': [string, AlAngle];
   }
   interface AlConsole {
-    'cmd': string;
+    'graph': string;
   }
   interface AlControlPanel {
+    'angles': Map<string, AlAngle> | null;
+    'consoleTabEnabled': boolean;
+    'displayMode': DisplayMode;
+    'edges': Map<string, AlEdge> | null;
+    'graphTabEnabled': boolean;
+    'nodes': Map<string, AlNode> | null;
+    'selected': string | null;
+    'settingsTabEnabled': boolean;
+    'srcTabEnabled': boolean;
+    'stackhelper': | AMI.StackHelper
+    | AMI.VolumeRenderHelper;
+    'url': string | null;
+    'urls': Map<string, string> | null;
+  }
+  interface AlEdgeEditor {
+    'edge': [string, AlEdge];
+  }
+  interface AlNodeEditor {
+    'node': [string, AlNode];
+  }
+  interface AlNodeList {
+    'nodes': Map<string, AlNode> | null;
+    'selected': string | null;
+  }
+  interface AlSettings {
     'boundingBoxEnabled': boolean;
     'controlsType': ControlsType;
     'displayMode': DisplayMode;
@@ -46,16 +79,6 @@ export namespace Components {
     'volumeSteps': number;
     'volumeWindowCenter': number;
     'volumeWindowWidth': number;
-  }
-  interface AlEdgeEditor {
-    'edge': [string, AlEdge];
-  }
-  interface AlNodeEditor {
-    'node': [string, AlNode];
-  }
-  interface AlNodeList {
-    'nodes': Map<string, AlNode> | null;
-    'selected': string | null;
   }
   interface AlTabs {
     /**
@@ -75,7 +98,7 @@ export namespace Components {
     'url': string | null;
     'urls': Map<string, string> | null;
   }
-  interface UvAleph {
+  interface AlViewer {
     'clearGraph': () => Promise<void>;
     'deleteAngle': (angleId: string) => Promise<void>;
     'deleteEdge': (edgeId: string) => Promise<void>;
@@ -149,6 +172,12 @@ declare global {
     new (): HTMLAlNodeListElement;
   };
 
+  interface HTMLAlSettingsElement extends Components.AlSettings, HTMLStencilElement {}
+  var HTMLAlSettingsElement: {
+    prototype: HTMLAlSettingsElement;
+    new (): HTMLAlSettingsElement;
+  };
+
   interface HTMLAlTabsElement extends Components.AlTabs, HTMLStencilElement {}
   var HTMLAlTabsElement: {
     prototype: HTMLAlTabsElement;
@@ -161,10 +190,10 @@ declare global {
     new (): HTMLAlUrlPickerElement;
   };
 
-  interface HTMLUvAlephElement extends Components.UvAleph, HTMLStencilElement {}
-  var HTMLUvAlephElement: {
-    prototype: HTMLUvAlephElement;
-    new (): HTMLUvAlephElement;
+  interface HTMLAlViewerElement extends Components.AlViewer, HTMLStencilElement {}
+  var HTMLAlViewerElement: {
+    prototype: HTMLAlViewerElement;
+    new (): HTMLAlViewerElement;
   };
   interface HTMLElementTagNameMap {
     'al-angle-editor': HTMLAlAngleEditorElement;
@@ -173,22 +202,52 @@ declare global {
     'al-edge-editor': HTMLAlEdgeEditorElement;
     'al-node-editor': HTMLAlNodeEditorElement;
     'al-node-list': HTMLAlNodeListElement;
+    'al-settings': HTMLAlSettingsElement;
     'al-tabs': HTMLAlTabsElement;
     'al-url-picker': HTMLAlUrlPickerElement;
-    'uv-aleph': HTMLUvAlephElement;
+    'al-viewer': HTMLAlViewerElement;
   }
 }
 
 declare namespace LocalJSX {
   interface AlAngleEditor extends JSXBase.HTMLAttributes<HTMLAlAngleEditorElement> {
     'angle'?: [string, AlAngle];
-    'onDelete'?: (event: CustomEvent<any>) => void;
+    'onDeleteAngle'?: (event: CustomEvent<any>) => void;
   }
   interface AlConsole extends JSXBase.HTMLAttributes<HTMLAlConsoleElement> {
-    'cmd'?: string;
-    'onRunCommand'?: (event: CustomEvent<any>) => void;
+    'graph'?: string;
+    'onGraphSubmitted'?: (event: CustomEvent<any>) => void;
   }
   interface AlControlPanel extends JSXBase.HTMLAttributes<HTMLAlControlPanelElement> {
+    'angles'?: Map<string, AlAngle> | null;
+    'consoleTabEnabled'?: boolean;
+    'displayMode'?: DisplayMode;
+    'edges'?: Map<string, AlEdge> | null;
+    'graphTabEnabled'?: boolean;
+    'nodes'?: Map<string, AlNode> | null;
+    'selected'?: string | null;
+    'settingsTabEnabled'?: boolean;
+    'srcTabEnabled'?: boolean;
+    'stackhelper'?: | AMI.StackHelper
+    | AMI.VolumeRenderHelper;
+    'url'?: string | null;
+    'urls'?: Map<string, string> | null;
+  }
+  interface AlEdgeEditor extends JSXBase.HTMLAttributes<HTMLAlEdgeEditorElement> {
+    'edge'?: [string, AlEdge];
+    'onDeleteEdge'?: (event: CustomEvent<any>) => void;
+  }
+  interface AlNodeEditor extends JSXBase.HTMLAttributes<HTMLAlNodeEditorElement> {
+    'node'?: [string, AlNode];
+    'onDeleteNode'?: (event: CustomEvent<any>) => void;
+    'onSaveNode'?: (event: CustomEvent<any>) => void;
+  }
+  interface AlNodeList extends JSXBase.HTMLAttributes<HTMLAlNodeListElement> {
+    'nodes'?: Map<string, AlNode> | null;
+    'onSelectedChanged'?: (event: CustomEvent<any>) => void;
+    'selected'?: string | null;
+  }
+  interface AlSettings extends JSXBase.HTMLAttributes<HTMLAlSettingsElement> {
     'boundingBoxEnabled'?: boolean;
     'controlsType'?: ControlsType;
     'displayMode'?: DisplayMode;
@@ -219,20 +278,6 @@ declare namespace LocalJSX {
     'volumeWindowCenter'?: number;
     'volumeWindowWidth'?: number;
   }
-  interface AlEdgeEditor extends JSXBase.HTMLAttributes<HTMLAlEdgeEditorElement> {
-    'edge'?: [string, AlEdge];
-    'onDelete'?: (event: CustomEvent<any>) => void;
-  }
-  interface AlNodeEditor extends JSXBase.HTMLAttributes<HTMLAlNodeEditorElement> {
-    'node'?: [string, AlNode];
-    'onDelete'?: (event: CustomEvent<any>) => void;
-    'onSave'?: (event: CustomEvent<any>) => void;
-  }
-  interface AlNodeList extends JSXBase.HTMLAttributes<HTMLAlNodeListElement> {
-    'nodes'?: Map<string, AlNode> | null;
-    'onSelectedChanged'?: (event: CustomEvent<any>) => void;
-    'selected'?: string | null;
-  }
   interface AlTabs extends JSXBase.HTMLAttributes<HTMLAlTabsElement> {
     /**
     * Emitted when the navigation has finished transitioning to a new component.
@@ -252,7 +297,7 @@ declare namespace LocalJSX {
     'url'?: string | null;
     'urls'?: Map<string, string> | null;
   }
-  interface UvAleph extends JSXBase.HTMLAttributes<HTMLUvAlephElement> {
+  interface AlViewer extends JSXBase.HTMLAttributes<HTMLAlViewerElement> {
     'dracoDecoderPath'?: string | null;
     'height'?: string;
     /**
@@ -273,9 +318,10 @@ declare namespace LocalJSX {
     'al-edge-editor': AlEdgeEditor;
     'al-node-editor': AlNodeEditor;
     'al-node-list': AlNodeList;
+    'al-settings': AlSettings;
     'al-tabs': AlTabs;
     'al-url-picker': AlUrlPicker;
-    'uv-aleph': UvAleph;
+    'al-viewer': AlViewer;
   }
 }
 

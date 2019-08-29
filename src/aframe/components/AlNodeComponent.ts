@@ -1,8 +1,8 @@
 import { Entity } from "aframe";
 import { Constants } from "../../Constants";
 import { AlGraphEntryType } from "../../enums";
-import { ShaderUtils } from "../../utils";
 import { AlGraphEvents } from "../../utils";
+import { ShaderUtils } from "../../utils/shaders/ShaderUtils";
 import { BaseComponent } from "./BaseComponent";
 
 interface AlNodeState {
