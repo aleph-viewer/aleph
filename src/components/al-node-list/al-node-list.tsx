@@ -33,7 +33,11 @@ export class AlNodeList {
         </ion-list>
       );
     }
-    return <p>{this._contentStrings.noneExist}</p>;
+    return (
+      <ion-item>
+        <p>{this._contentStrings.noneExist}</p>
+      </ion-item>
+    );
   }
 
   // render(): JSX.ElementInterfaces {

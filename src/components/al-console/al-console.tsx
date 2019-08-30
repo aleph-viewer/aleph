@@ -1,11 +1,14 @@
 import { Component, Event, EventEmitter, h, Prop } from "@stencil/core";
 import RunIcon from "../../assets/svg/run.svg";
+import { ContentStrings } from "../al-control-panel/ContentStrings";
+import i18n from "./al-console.i18n.en.json";
 @Component({
   tag: "al-console",
   styleUrl: "al-console.css",
   shadow: true
 })
 export class AlConsole {
+  private _contentStrings: ContentStrings = i18n;
   private _graph: HTMLTextAreaElement;
 
   @Event() public graphSubmitted: EventEmitter;
@@ -31,17 +34,20 @@ export class AlConsole {
             ref={el => (this._graph = el)}
           />
         </ion-item>
-        <ion-button
-          size="small"
-          type="submit"
-          onClick={() => {
-            if (this.graph) {
-              this.graphSubmitted.emit(this._graph.value);
-            }
-          }}
-        >
-          <ion-icon src={RunIcon} />
-        </ion-button>
+        <ion-item>
+          <ion-button
+            size="small"
+            type="submit"
+            onClick={() => {
+              if (this.graph) {
+                this.graphSubmitted.emit(this._graph.value);
+              }
+            }}
+          >
+            <ion-icon src={RunIcon} />
+            &nbsp;{this._contentStrings.update}
+          </ion-button>
+        </ion-item>
       </form>
     );
   }

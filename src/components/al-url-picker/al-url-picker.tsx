@@ -42,6 +42,7 @@ export class AlUrlPicker {
             onClick={() => this.urlChanged.emit(this._input.value)}
           >
             <ion-icon src={RefreshIcon} />
+            &nbsp;Load
           </ion-button>
         </form>
       );

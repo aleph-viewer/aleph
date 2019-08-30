@@ -6,24 +6,25 @@
   --al-volume-viewport-background-color: #000;
   --al-item-color: #222428;
   --al-item-selected-color: #00b0ff;
-  --al-item-border-color: #e9e9e9;
+  --al-item-border-color: transparent;
   --al-app-background-color: #f7f7f7;
+  --al-console-font-size: 0.75rem;
 
-  --al-input-background-color: transparent;
+  --al-input-background-color: #fff;
   --al-input-font-size: 1rem;
   --al-input-color: #222428;
-  --al-input-padding-start: 0px;
-  --al-input-padding-top: 0px;
-  --al-input-padding-end: 0px;
-  --al-input-padding-bottom: 0px;
+  --al-input-padding-start: 10px;
+  --al-input-padding-top: 10px;
+  --al-input-padding-end: 10px;
+  --al-input-padding-bottom: 10px;
 
-  --al-textarea-background-color: transparent;
+  --al-textarea-background-color: #fff;
   --al-textarea-font-size: 1rem;
   --al-textarea-color: #222428;
-  --al-textarea-padding-start: 0px;
-  --al-textarea-padding-top: 0px;
-  --al-textarea-padding-end: 0px;
-  --al-textarea-padding-bottom: 0px;
+  --al-textarea-padding-start: 10px;
+  --al-textarea-padding-top: 10px;
+  --al-textarea-padding-end: 10px;
+  --al-textarea-padding-bottom: 10px;
 
   --color: var(--al-color-primary);
   --ion-item-color: var(--al-item-color);

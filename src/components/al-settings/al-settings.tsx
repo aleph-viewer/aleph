@@ -1,10 +1,10 @@
 import { Component, Event, EventEmitter, h, Prop, Watch } from "@stencil/core";
-import AnnotateIcon from "../../assets/svg/annotate.svg";
 import BoundingBoxIcon from "../../assets/svg/bounding-box.svg";
 import BrightnessIcon from "../../assets/svg/brightness.svg";
 import ContrastIcon from "../../assets/svg/contrast.svg";
 import ControlsTypeIcon from "../../assets/svg/controls-type.svg";
 import DisplayModeIcon from "../../assets/svg/display-mode.svg";
+import GraphIcon from "../../assets/svg/graph.svg";
 import MaterialIcon from "../../assets/svg/material.svg";
 import OrientationIcon from "../../assets/svg/orientation.svg";
 import RecenterIcon from "../../assets/svg/recenter.svg";
@@ -141,7 +141,11 @@ export class AlSettings {
             display: "var(--display-mode-display, block)"
           }}
         >
-          <ion-icon src={DisplayModeIcon} slot="start" />
+          <ion-icon
+            src={DisplayModeIcon}
+            slot="start"
+            title={this._contentStrings.displayMode}
+          />
           <select
             slot="end"
             onChange={e =>
@@ -169,14 +173,18 @@ export class AlSettings {
     return null;
   }
 
-  public renderNodesToggle() {
+  public renderGraphEnabled() {
     return (
       <ion-item
         style={{
           display: "var(--graph-enabled-display, block)"
         }}
       >
-        <ion-icon src={AnnotateIcon} slot="start" />
+        <ion-icon
+          src={GraphIcon}
+          slot="start"
+          title={this._contentStrings.graphEnabled}
+        />
         <ion-toggle
           slot="end"
           checked={this.graphEnabled}
@@ -193,7 +201,11 @@ export class AlSettings {
           display: "var(--bounding-box-enabled-display, block)"
         }}
       >
-        <ion-icon src={BoundingBoxIcon} slot="start" />
+        <ion-icon
+          src={BoundingBoxIcon}
+          slot="start"
+          title={this._contentStrings.boundingBoxEnabled}
+        />
         <ion-toggle
           slot="end"
           checked={this.boundingBoxEnabled}
@@ -210,7 +222,11 @@ export class AlSettings {
           display: "var(--controls-type-display, block)"
         }}
       >
-        <ion-icon src={ControlsTypeIcon} slot="start" />
+        <ion-icon
+          src={ControlsTypeIcon}
+          slot="start"
+          title={this._contentStrings.controlsType}
+        />
         <select
           slot="end"
           onChange={e =>
@@ -242,7 +258,11 @@ export class AlSettings {
           display: "var(--recenter-display, block)"
         }}
       >
-        <ion-icon src={RecenterIcon} slot="start" />
+        <ion-icon
+          src={RecenterIcon}
+          slot="start"
+          title={this._contentStrings.recenter}
+        />
         <ion-button
           slot="end"
           size="small"
@@ -263,7 +283,11 @@ export class AlSettings {
           display: "var(--units-display, block)"
         }}
       >
-        <ion-icon src={UnitsIcon} slot="start" />
+        <ion-icon
+          src={UnitsIcon}
+          slot="start"
+          title={this._contentStrings.units}
+        />
         <select
           slot="end"
           onChange={e =>
@@ -291,7 +315,11 @@ export class AlSettings {
           display: "var(--material-display, block)"
         }}
       >
-        <ion-icon src={MaterialIcon} slot="start" />
+        <ion-icon
+          src={MaterialIcon}
+          slot="start"
+          title={this._contentStrings.material}
+        />
         <select
           slot="end"
           onChange={e =>
@@ -445,7 +473,11 @@ export class AlSettings {
                 display: "var(--slices-index-display, block)"
               }}
             >
-              <ion-icon src={SliderIcon} slot="start" />
+              <ion-icon
+                src={SliderIcon}
+                slot="start"
+                title={this._contentStrings.sliceIndex}
+              />
               <ion-range
                 slot="end"
                 min="0"
@@ -460,7 +492,11 @@ export class AlSettings {
                 display: "var(--slices-orientation-display, block)"
               }}
             >
-              <ion-icon src={OrientationIcon} slot="start" />
+              <ion-icon
+                src={OrientationIcon}
+                slot="start"
+                title={this._contentStrings.orientation}
+              />
               <select
                 slot="end"
                 onChange={e =>
@@ -493,7 +529,11 @@ export class AlSettings {
                 display: "var(--slices-window-center-display, block)"
               }}
             >
-              <ion-icon src={BrightnessIcon} slot="start" />
+              <ion-icon
+                src={BrightnessIcon}
+                slot="start"
+                title={this._contentStrings.brightness}
+              />
               <ion-range
                 slot="end"
                 min={windowCenterMin}
@@ -519,7 +559,11 @@ export class AlSettings {
                 display: "var(--slices-window-width-display, block)"
               }}
             >
-              <ion-icon src={ContrastIcon} slot="start" />
+              <ion-icon
+                src={ContrastIcon}
+                slot="start"
+                title={this._contentStrings.contrast}
+              />
               <ion-range
                 slot="end"
                 min={windowWidthMin}
@@ -596,7 +640,11 @@ export class AlSettings {
                 display: "var(--volume-steps-display, block)"
               }}
             >
-              <ion-icon src={SliderIcon} slot="start" />
+              <ion-icon
+                src={SliderIcon}
+                slot="start"
+                title={this._contentStrings.renderSteps}
+              />
               <ion-range
                 slot="end"
                 min={Constants.stepsMin}
@@ -622,7 +670,11 @@ export class AlSettings {
                 display: "var(--volume-window-center-display, block)"
               }}
             >
-              <ion-icon src={BrightnessIcon} slot="start" />
+              <ion-icon
+                src={BrightnessIcon}
+                slot="start"
+                title={this._contentStrings.brightness}
+              />
               <ion-range
                 slot="end"
                 min={windowCenterMin}
@@ -648,7 +700,11 @@ export class AlSettings {
                 display: "var(--volume-window-width-display, block)"
               }}
             >
-              <ion-icon src={ContrastIcon} slot="start" />
+              <ion-icon
+                src={ContrastIcon}
+                slot="start"
+                title={this._contentStrings.contrast}
+              />
               <ion-range
                 slot="end"
                 min={windowWidthMin}
@@ -686,7 +742,7 @@ export class AlSettings {
   public render() {
     return [
       this.renderDisplayModeToggle(),
-      this.renderNodesToggle(),
+      this.renderGraphEnabled(),
       this.renderOptions()
     ];
   }

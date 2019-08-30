@@ -31,7 +31,7 @@ export class AlNodeEditor {
               placeholder={this._contentStrings.title}
               required
               onIonChange={e => (node.title = e.detail.value)}
-              maxlength="30"
+              maxlength="20"
             />
           </ion-item>
           <ion-item>
@@ -44,26 +44,30 @@ export class AlNodeEditor {
               maxlength="280"
             />
           </ion-item>
-          <ion-button
-            size="small"
-            onClick={() => {
-              this.deleteNode.emit(nodeId);
-              this.node = null;
-            }}
-          >
-            <ion-icon src={MinusIcon} />
-          </ion-button>
-          <ion-button
-            size="small"
-            type="submit"
-            onClick={() => {
-              if (node.title) {
-                this.saveNode.emit([nodeId, node]);
-              }
-            }}
-          >
-            <ion-icon src={TickIcon} />
-          </ion-button>
+          <ion-item>
+            <ion-button
+              size="small"
+              onClick={() => {
+                this.deleteNode.emit(nodeId);
+                this.node = null;
+              }}
+            >
+              <ion-icon src={MinusIcon} />
+              &nbsp;{this._contentStrings.delete}
+            </ion-button>
+            <ion-button
+              size="small"
+              type="submit"
+              onClick={() => {
+                if (node.title) {
+                  this.saveNode.emit([nodeId, node]);
+                }
+              }}
+            >
+              <ion-icon src={TickIcon} />
+              &nbsp;{this._contentStrings.update}
+            </ion-button>
+          </ion-item>
         </form>
       );
     }

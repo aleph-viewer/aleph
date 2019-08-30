@@ -5,5 +5,5 @@
   --padding-end: var(--al-textarea-padding-end);
   --padding-start: var(--al-textarea-padding-start);
   --padding-top: var(--al-textarea-padding-top);
-  font-size: var(--al-textarea-font-size);
+  font-size: var(--al-console-font-size);
 }
