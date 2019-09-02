@@ -19,13 +19,14 @@ import {
 } from './interfaces/index.js';
 import {
   DisplayMode,
+  Units,
 } from './enums/index.js';
 import {
   ControlsType,
   DisplayMode as DisplayMode2,
   Material,
   Orientation,
-  Units,
+  Units as Units1,
 } from './enums';
 import {
   DisplayMode as DisplayMode1,
@@ -41,6 +42,7 @@ export namespace Components {
   }
   interface AlControlPanel {
     'angles': Map<string, AlAngle> | null;
+    'boundingBoxEnabled': boolean;
     'consoleTabEnabled': boolean;
     'displayMode': DisplayMode;
     'edges': Map<string, AlEdge> | null;
@@ -52,6 +54,7 @@ export namespace Components {
     'stackhelper': | AMI.StackHelper
     | AMI.VolumeRenderHelper;
     'tabContentHeight': string | null;
+    'units': Units;
     'url': string | null;
     'urls': Map<string, string> | null;
   }
@@ -225,6 +228,7 @@ declare namespace LocalJSX {
   }
   interface AlControlPanel extends JSXBase.HTMLAttributes<HTMLAlControlPanelElement> {
     'angles'?: Map<string, AlAngle> | null;
+    'boundingBoxEnabled'?: boolean;
     'consoleTabEnabled'?: boolean;
     'displayMode'?: DisplayMode;
     'edges'?: Map<string, AlEdge> | null;
@@ -236,6 +240,7 @@ declare namespace LocalJSX {
     'stackhelper'?: | AMI.StackHelper
     | AMI.VolumeRenderHelper;
     'tabContentHeight'?: string | null;
+    'units'?: Units;
     'url'?: string | null;
     'urls'?: Map<string, string> | null;
   }

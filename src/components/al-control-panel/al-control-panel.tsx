@@ -1,5 +1,5 @@
 import { Component, Element, h, Listen, Prop } from "@stencil/core";
-import { DisplayMode } from "../../enums/index.js";
+import { DisplayMode, Units } from "../../enums/index.js";
 import { Scroll } from "../../functional-components/Scroll";
 import { AlAngle, AlEdge, AlNode } from "../../interfaces/index.js";
 import i18n from "./al-control-panel.i18n.en.json";
@@ -16,6 +16,7 @@ export class AlSettings {
   @Element() public el!: HTMLElement;
 
   @Prop({ mutable: true }) public angles: Map<string, AlAngle> | null = null;
+  @Prop({ mutable: true }) public boundingBoxEnabled: boolean = false;
   @Prop({ mutable: true }) public consoleTabEnabled: boolean = true;
   @Prop({ mutable: true }) public displayMode: DisplayMode = DisplayMode.MESH;
   @Prop({ mutable: true }) public edges: Map<string, AlEdge> | null = null;
@@ -28,6 +29,7 @@ export class AlSettings {
     | AMI.StackHelper
     | AMI.VolumeRenderHelper;
   @Prop({ mutable: true }) public tabContentHeight: string | null = null;
+  @Prop({ mutable: true }) public units: Units = Units.METERS;
   @Prop({ mutable: true }) public url: string | null = null;
   @Prop({ mutable: true }) public urls: Map<string, string> | null = null;
 
@@ -113,8 +115,10 @@ export class AlSettings {
             <ion-tab tab="settings">
               <Scroll height={tabContentHeight}>
                 <al-settings
+                  bounding-box-enabled={this.boundingBoxEnabled}
                   display-mode={this.displayMode}
                   stackhelper={this.stackhelper}
+                  units={this.units}
                 ></al-settings>
               </Scroll>
             </ion-tab>
