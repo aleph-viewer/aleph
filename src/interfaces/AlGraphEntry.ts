@@ -1,2 +1,4 @@
-// tslint:disable-next-line: no-empty-interface
-export interface AlGraphEntry {}
+export interface AlGraphEntry {
+  title?: string;
+  description?: string;
+}

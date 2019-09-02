@@ -1,3 +1,6 @@
 {
-  "delete": "Delete"
+  "delete": "Delete",
+  "description": "Description",
+  "title": "Title",
+  "update": "Update"
 }

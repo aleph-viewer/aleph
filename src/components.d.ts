@@ -220,6 +220,7 @@ declare namespace LocalJSX {
   interface AlAngleEditor extends JSXBase.HTMLAttributes<HTMLAlAngleEditorElement> {
     'angle'?: [string, AlAngle];
     'onDeleteAngle'?: (event: CustomEvent<any>) => void;
+    'onSaveAngle'?: (event: CustomEvent<any>) => void;
   }
   interface AlConsole extends JSXBase.HTMLAttributes<HTMLAlConsoleElement> {
     'graph'?: string;
@@ -247,6 +248,7 @@ declare namespace LocalJSX {
   interface AlEdgeEditor extends JSXBase.HTMLAttributes<HTMLAlEdgeEditorElement> {
     'edge'?: [string, AlEdge];
     'onDeleteEdge'?: (event: CustomEvent<any>) => void;
+    'onSaveEdge'?: (event: CustomEvent<any>) => void;
   }
   interface AlNodeEditor extends JSXBase.HTMLAttributes<HTMLAlNodeEditorElement> {
     'node'?: [string, AlNode];
