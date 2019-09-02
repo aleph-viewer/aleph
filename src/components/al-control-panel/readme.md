@@ -10,6 +10,7 @@
 | Property             | Attribute              | Description | Type                                                           | Default            |
 | -------------------- | ---------------------- | ----------- | -------------------------------------------------------------- | ------------------ |
 | `angles`             | --                     |             | `Map<string, AlAngle>`                                         | `null`             |
+| `boundingBoxEnabled` | `bounding-box-enabled` |             | `boolean`                                                      | `false`            |
 | `consoleTabEnabled`  | `console-tab-enabled`  |             | `boolean`                                                      | `true`             |
 | `displayMode`        | `display-mode`         |             | `DisplayMode.MESH \| DisplayMode.SLICES \| DisplayMode.VOLUME` | `DisplayMode.MESH` |
 | `edges`              | --                     |             | `Map<string, AlEdge>`                                          | `null`             |
@@ -20,6 +21,7 @@
 | `srcTabEnabled`      | `src-tab-enabled`      |             | `boolean`                                                      | `true`             |
 | `stackhelper`        | --                     |             | `StackHelper \| VolumeRenderHelper`                            | `undefined`        |
 | `tabContentHeight`   | `tab-content-height`   |             | `string`                                                       | `null`             |
+| `units`              | `units`                |             | `Units.METERS \| Units.MILLIMETERS`                            | `Units.METERS`     |
 | `url`                | `url`                  |             | `string`                                                       | `null`             |
 | `urls`               | --                     |             | `Map<string, string>`                                          | `null`             |
 
