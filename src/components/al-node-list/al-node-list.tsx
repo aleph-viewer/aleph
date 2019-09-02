@@ -35,7 +35,7 @@ export class AlNodeList {
     }
     return (
       <ion-item>
-        <p>{this._contentStrings.noneExist}</p>
+        <p>{this._contentStrings.graphEmpty}</p>
       </ion-item>
     );
   }

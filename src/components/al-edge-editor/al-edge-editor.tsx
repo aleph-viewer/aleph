@@ -22,16 +22,18 @@ export class AlEdgeEditor {
 
       return (
         <form onSubmit={e => e.preventDefault()}>
-          <ion-button
-            size="small"
-            onClick={() => {
-              this.deleteEdge.emit(edgeId);
-              this.edge = null;
-            }}
-          >
-            <ion-icon src={MinusIcon} />
-            &nbsp;{this._contentStrings.delete}
-          </ion-button>
+          <ion-item>
+            <ion-button
+              size="small"
+              onClick={() => {
+                this.deleteEdge.emit(edgeId);
+                this.edge = null;
+              }}
+            >
+              <ion-icon src={MinusIcon} />
+              &nbsp;{this._contentStrings.delete}
+            </ion-button>
+          </ion-item>
         </form>
       );
     }
