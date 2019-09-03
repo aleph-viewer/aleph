@@ -18,32 +18,43 @@ export class AlUrlPicker {
     if (this.urls) {
       return (
         <form onSubmit={e => e.preventDefault()}>
-          <ion-select
-            value={this.url}
-            interface="popover"
-            placeholder=""
-            onIonChange={e => this.urlChanged.emit(e.detail.value)}
-          >
-            {Array.from(this.urls).map(([url, title]) => {
-              return <ion-select-option value={url}>{title}</ion-select-option>;
-            })}
-          </ion-select>
-          <ion-input
-            type="url"
-            size="100"
-            placeholder="src"
-            required
-            value={this.url}
-            ref={el => (this._input = el)}
-          />
-          <ion-button
-            size="small"
-            type="submit"
-            onClick={() => this.urlChanged.emit(this._input.value)}
-          >
-            <ion-icon src={RefreshIcon} />
-            &nbsp;Load
-          </ion-button>
+          <ion-item>
+            <ion-select
+              id="select"
+              value={this.url}
+              interface="popover"
+              placeholder=""
+              onIonChange={e => this.urlChanged.emit(e.detail.value)}
+            >
+              {Array.from(this.urls).map(([url, title]) => {
+                return (
+                  <ion-select-option value={url}>{title}</ion-select-option>
+                );
+              })}
+            </ion-select>
+          </ion-item>
+          <ion-item>
+            <ion-input
+              id="input"
+              type="url"
+              size="100"
+              placeholder="src"
+              required
+              value={this.url}
+              ref={el => (this._input = el)}
+            />
+          </ion-item>
+          <ion-item>
+            <ion-button
+              id="submit"
+              size="small"
+              type="submit"
+              onClick={() => this.urlChanged.emit(this._input.value)}
+            >
+              <ion-icon src={RefreshIcon} />
+              &nbsp;Load
+            </ion-button>
+          </ion-item>
         </form>
       );
     }

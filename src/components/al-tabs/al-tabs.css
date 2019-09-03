@@ -13,6 +13,8 @@
 
   /* contain: layout size style; */
   z-index: var(--z-index-page-container);
+
+  --ion-tab-bar-color: var(--al-item-color);
 }
 
 .tabs-inner {

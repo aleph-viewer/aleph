@@ -19,6 +19,9 @@ ion-item {
 ion-item select {
   padding: 5px;
   min-width: 100px;
+  background-color: var(--al-select-background-color);
+  color: var(--al-item-color);
+  border: none;
 }
 
 /* ion-label .icon-inner {

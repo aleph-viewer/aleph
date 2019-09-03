@@ -17,6 +17,7 @@
 | Event        | Description | Type               |
 | ------------ | ----------- | ------------------ |
 | `deleteEdge` |             | `CustomEvent<any>` |
+| `saveEdge`   |             | `CustomEvent<any>` |
 
 
 ## Dependencies

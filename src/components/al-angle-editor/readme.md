@@ -17,6 +17,7 @@
 | Event         | Description | Type               |
 | ------------- | ----------- | ------------------ |
 | `deleteAngle` |             | `CustomEvent<any>` |
+| `saveAngle`   |             | `CustomEvent<any>` |
 
 
 ## Dependencies
