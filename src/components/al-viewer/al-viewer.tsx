@@ -660,7 +660,7 @@ export class Aleph {
             al-render-overlaid
             visible={`${this.selected === nodeId}`}
             id={`${nodeId}-label`}
-            al-billboard-baggins={`
+            al-billboard={`
               controlsType: ${this.controlsType};
               cameraPosition: ${ThreeUtils.vector3ToString(
                 this.camera.position
@@ -739,7 +739,7 @@ export class Aleph {
               position={ThreeUtils.vector3ToString(textOffset)}
               visible={`${this.selected === edgeId}`}
               scale={` ${entityScale} ${entityScale} ${entityScale};`}
-              al-billboard-baggins={`
+              al-billboard={`
                 controlsType: ${this.controlsType};
                 cameraPosition: ${ThreeUtils.vector3ToString(
                   this.camera.position
@@ -845,7 +845,7 @@ export class Aleph {
 
         const textV =
           THREE.Math.radToDeg(angl).toFixed(Constants.unitsDecimalPlaces) +
-          " deg";
+          " deg"; // todo: use i18n
 
         const frustrumDistance = ThreeUtils.getFrustrumSpaceDistance(
           this._scene.camera,
@@ -887,7 +887,7 @@ export class Aleph {
                 position.clone().add(textOffset)
               )}
               visible={`${this.selected === angleId}`}
-              al-billboard-baggins={`
+              al-billboard={`
                 controlsType: ${this.controlsType};
                 cameraPosition: ${ThreeUtils.vector3ToString(
                   this.camera.position
@@ -1034,8 +1034,8 @@ export class Aleph {
         vr-mode-ui="enabled: false"
         ref={el => (this._scene = el)}
       >
-        {this._renderBoundingBox()}
         {this._renderSrc()}
+        {this._renderBoundingBox()}
         {this._renderNodes()}
         {this._renderEdges()}
         {this._renderAngles()}

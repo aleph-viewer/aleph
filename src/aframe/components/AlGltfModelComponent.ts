@@ -10,6 +10,7 @@ export default AFRAME.registerComponent("al-gltf-model", {
   },
 
   init(): void {
+
     this.bindMethods();
     this.addEventListeners();
     this.model = null;

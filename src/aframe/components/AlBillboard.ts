@@ -7,7 +7,7 @@ interface AlLookToCameraComponent extends BaseComponent {
   tickFunction(): void;
 }
 
-export default AFRAME.registerComponent("al-billboard-baggins", {
+export default AFRAME.registerComponent("al-billboard", {
   schema: {
     controlsType: { type: "string", default: ControlsType.ORBIT },
     cameraPosition: { type: "string" },
