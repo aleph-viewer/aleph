@@ -89,7 +89,6 @@
   <body>
     <div id="container">
       <div id="debug" class="disabled">
-        <!-- <h1>ℵ</h1> -->
         <al-control-panel></al-control-panel>
       </div>
 
@@ -156,11 +155,13 @@
             function(e) {
               nextState({
                 angles: e.detail.angles,
+                boundingBoxEnabled: e.detail.boundingBoxEnabled,
                 displayMode: e.detail.displayMode,
                 edges: e.detail.edges,
                 nodes: e.detail.nodes,
                 selected: e.detail.selected,
-                srcLoaded: e.detail.srcLoaded
+                srcLoaded: e.detail.srcLoaded,
+                units: e.detail.units
               });
             },
             false
@@ -374,10 +375,12 @@
         }
 
         alControlPanel.angles = state.angles;
+        alControlPanel.boundingBoxEnabled =  state.boundingBoxEnabled;
         alControlPanel.displayMode = state.displayMode;
         alControlPanel.edges = state.edges;
         alControlPanel.nodes = state.nodes;
         alControlPanel.selected = state.selected;
+        alControlPanel.units = state.units;
 
         prevState = Object.assign({}, state);
       }

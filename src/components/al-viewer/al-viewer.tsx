@@ -1571,6 +1571,7 @@ export class Aleph {
 
         if (rayResult) {
           newNode = {
+            targetId: this.src,
             position: ThreeUtils.vector3ToString(hitPosition),
             scale: this._boundingSphereRadius / Constants.nodeSizeRatio,
             title: nodeId
@@ -1578,7 +1579,7 @@ export class Aleph {
         }
       } else if (intersection) {
         newNode = {
-          targetId: "0",
+          targetId: this.src,
           position: ThreeUtils.vector3ToString(intersection.point),
           scale: this._boundingSphereRadius / Constants.nodeSizeRatio,
           title: nodeId

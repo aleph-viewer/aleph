@@ -4,7 +4,6 @@ import { AlGraphEntryType } from "../../enums";
 import { AlGraphEvents, ThreeUtils } from "../../utils";
 import { ShaderUtils } from "../../utils/shaders/ShaderUtils";
 import { BaseComponent } from "./BaseComponent";
-
 interface AlEdgeState {
   selected: boolean;
   hovered: boolean;
@@ -15,7 +14,6 @@ interface AlEdgeState {
   outlineMaterial: THREE.MeshBasicMaterial;
   outlineMesh: THREE.Mesh;
 }
-
 interface AlEdgeComponent extends BaseComponent {
   tickFunction(): void;
   pointerDown(_event: CustomEvent): void;
