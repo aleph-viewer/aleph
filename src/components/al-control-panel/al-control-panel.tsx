@@ -47,36 +47,6 @@ export class AlSettings {
     return "";
   }
 
-  private _getSelectedNode(): [string, AlNode] | null {
-    if (this.selected && this.nodes) {
-      const n = this.nodes.get(this.selected);
-      if (n) {
-        return [this.selected, n];
-      }
-    }
-    return null;
-  }
-
-  private _getSelectedEdge(): [string, AlEdge] | null {
-    if (this.selected && this.edges) {
-      const e = this.edges.get(this.selected);
-      if (e) {
-        return [this.selected, e];
-      }
-    }
-    return null;
-  }
-
-  private _getSelectedAngle(): [string, AlAngle] | null {
-    if (this.selected && this.angles) {
-      const a = this.angles.get(this.selected);
-      if (a) {
-        return [this.selected, a];
-      }
-    }
-    return null;
-  }
-
   public render() {
     const tabContentHeight: string =
       this.tabContentHeight || this.el.parentElement.clientHeight + "px";
@@ -126,16 +96,7 @@ export class AlSettings {
           {this.graphTabEnabled ? (
             <ion-tab tab="graph">
               <Scroll height={tabContentHeight}>
-                <al-node-list
-                  nodes={this.nodes}
-                  selected={this.selected}
-                ></al-node-list>
-                <ion-item-divider></ion-item-divider>
-                <al-node-editor node={this._getSelectedNode()}></al-node-editor>
-                <al-edge-editor edge={this._getSelectedEdge()}></al-edge-editor>
-                <al-angle-editor
-                  angle={this._getSelectedAngle()}
-                ></al-angle-editor>
+                <al-graph-editor selected={this.selected} nodes={this.nodes} angles={this.angles} edges={this.edges}></al-graph-editor>
               </Scroll>
             </ion-tab>
           ) : null}

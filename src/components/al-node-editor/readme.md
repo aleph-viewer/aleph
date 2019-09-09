@@ -24,12 +24,12 @@
 
 ### Used by
 
- - [al-control-panel](..\al-control-panel)
+ - [al-graph-editor](..\al-graph-editor)
 
 ### Graph
 ```mermaid
 graph TD;
-  al-control-panel --> al-node-editor
+  al-graph-editor --> al-node-editor
   style al-node-editor fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

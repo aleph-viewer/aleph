@@ -61,6 +61,13 @@ export namespace Components {
   interface AlEdgeEditor {
     'edge': [string, AlEdge];
   }
+  interface AlGraphEditor {
+    'angles': Map<string, AlAngle> | null;
+    'edges': Map<string, AlEdge> | null;
+    'node': [string, AlNode];
+    'nodes': Map<string, AlNode> | null;
+    'selected': string | null;
+  }
   interface AlNodeEditor {
     'node': [string, AlNode];
   }
@@ -167,6 +174,12 @@ declare global {
     new (): HTMLAlEdgeEditorElement;
   };
 
+  interface HTMLAlGraphEditorElement extends Components.AlGraphEditor, HTMLStencilElement {}
+  var HTMLAlGraphEditorElement: {
+    prototype: HTMLAlGraphEditorElement;
+    new (): HTMLAlGraphEditorElement;
+  };
+
   interface HTMLAlNodeEditorElement extends Components.AlNodeEditor, HTMLStencilElement {}
   var HTMLAlNodeEditorElement: {
     prototype: HTMLAlNodeEditorElement;
@@ -207,6 +220,7 @@ declare global {
     'al-console': HTMLAlConsoleElement;
     'al-control-panel': HTMLAlControlPanelElement;
     'al-edge-editor': HTMLAlEdgeEditorElement;
+    'al-graph-editor': HTMLAlGraphEditorElement;
     'al-node-editor': HTMLAlNodeEditorElement;
     'al-node-list': HTMLAlNodeListElement;
     'al-settings': HTMLAlSettingsElement;
@@ -249,6 +263,13 @@ declare namespace LocalJSX {
     'edge'?: [string, AlEdge];
     'onDeleteEdge'?: (event: CustomEvent<any>) => void;
     'onSaveEdge'?: (event: CustomEvent<any>) => void;
+  }
+  interface AlGraphEditor extends JSXBase.HTMLAttributes<HTMLAlGraphEditorElement> {
+    'angles'?: Map<string, AlAngle> | null;
+    'edges'?: Map<string, AlEdge> | null;
+    'node'?: [string, AlNode];
+    'nodes'?: Map<string, AlNode> | null;
+    'selected'?: string | null;
   }
   interface AlNodeEditor extends JSXBase.HTMLAttributes<HTMLAlNodeEditorElement> {
     'node'?: [string, AlNode];
@@ -329,6 +350,7 @@ declare namespace LocalJSX {
     'al-console': AlConsole;
     'al-control-panel': AlControlPanel;
     'al-edge-editor': AlEdgeEditor;
+    'al-graph-editor': AlGraphEditor;
     'al-node-editor': AlNodeEditor;
     'al-node-list': AlNodeList;
     'al-settings': AlSettings;

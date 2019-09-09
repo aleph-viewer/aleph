@@ -33,10 +33,7 @@
 - [al-tabs](..\al-tabs)
 - [al-url-picker](..\al-url-picker)
 - [al-settings](..\al-settings)
-- [al-node-list](..\al-node-list)
-- [al-node-editor](..\al-node-editor)
-- [al-edge-editor](..\al-edge-editor)
-- [al-angle-editor](..\al-angle-editor)
+- [al-graph-editor](..\al-graph-editor)
 - [al-console](..\al-console)
 
 ### Graph
@@ -45,11 +42,12 @@ graph TD;
   al-control-panel --> al-tabs
   al-control-panel --> al-url-picker
   al-control-panel --> al-settings
-  al-control-panel --> al-node-list
-  al-control-panel --> al-node-editor
-  al-control-panel --> al-edge-editor
-  al-control-panel --> al-angle-editor
+  al-control-panel --> al-graph-editor
   al-control-panel --> al-console
+  al-graph-editor --> al-node-list
+  al-graph-editor --> al-node-editor
+  al-graph-editor --> al-edge-editor
+  al-graph-editor --> al-angle-editor
   style al-control-panel fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

@@ -1,6 +1,6 @@
 import "./components/AlAngleComponent";
 import "./components/AlBackgroundComponent";
-import "./components/AlBillboard";
+import "./components/AlBillboardComponent";
 import "./components/AlBoundingBoxComponent";
 import "./components/AlCursorComponent";
 import "./components/AlEdgeComponent";
