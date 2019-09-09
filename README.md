@@ -4,7 +4,9 @@
 </h1>
 </p>
 
-**Aleph** is a 3D object viewer and annotation tool made with [A-Frame](https://aframe.io), [AMI](https://github.com/FNNDSC/ami), and [Stenciljs](http://stenciljs.com).
+**Aleph** is a 3D object viewer and annotation/measurement tool built with [A-Frame](https://aframe.io), [AMI](https://github.com/FNNDSC/ami), and [StencilJS](http://stenciljs.com).
+
+It can be used to display GLTF and DICOM files. GLTF can be used in conjunction with DRACO compression. DICOM series must be [represented as a json array](https://www.morphosource.org/media/morphosource/dcm_sample/ptilocercus/dcm_multi_vf300_jpegQ95_16bit_allslices.json).
 
 ## Dev Builds
 
@@ -18,20 +20,43 @@
 
   npm start
 
-## Components
+## Design
 
-Aleph is comprised of several [web components](https://developer.mozilla.org/en-US/docs/Web/Web_Components):
+Aleph is highly componentised, using a combination of reusable [A-Frame components](https://aframe.io/docs/0.9.0/core/component.html) and [StencilJS Web Components](https://stenciljs.com/docs/decorators).
 
-  - [uv-aleph](/src/components/aleph/readme.md)
+[Redux](https://redux.js.org) is used to manage state, with A-Frame custom elements being rendered reactively.
+
+### A-Frame Components
+
+  - [al-angle](/src/aframe/components/AlAngleComponent.ts)
+  - [al-background](/src/aframe/components/AlBackgroundComponent.ts)
+  - [al-billboard](/src/aframe/components/AlBillboardComponent.ts)
+  - [al-bounding-box](/src/aframe/components/AlBoundingBoxComponent.ts)
+  - [al-cursor](/src/aframe/components/AlCursorComponent.ts)
+  - [al-edge](/src/aframe/components/AlEdgeComponent.ts)
+  - [al-fixed-to-orbit-camera](/src/aframe/components/AlFixedToOrbitCamera.ts)
+  - [al-gltf-model](/src/aframe/components/AlGltfModelComponent.ts)
+  - [al-node](/src/aframe/components/AlNodeComponent.ts)
+  - [al-node-spawner](/src/aframe/components/AlNodeSpawnerComponent.ts)
+  - [al-orbit-control](/src/aframe/components/AlOrbitControlComponent.ts)
+  - [al-render-order](/src/aframe/components/AlRenderOrderComponent.ts)
+  - [al-render-overlaid](/src/aframe/components/AlRenderOverlaidComponent.ts)
+  - [al-trackball-control](/src/aframe/components/AlTrackballControlComponent.ts)
+  - [al-volume](/src/aframe/components/AlVolumeComponent.ts)
+
+### StencilJS Web Components
+
   - [al-angle-editor](/src/components/al-angle-editor/readme.md)
   - [al-console](/src/components/al-console/readme.md)
   - [al-control-panel](/src/components/al-control-panel/readme.md)
   - [al-edge-editor](/src/components/al-edge-editor/readme.md)
   - [al-node-editor](/src/components/al-node-editor/readme.md)
   - [al-node-list](/src/components/al-node-list/readme.md)
+  - [al-settings](/src/components/al-settings/readme.md)
   - [al-tabs](/src/components/al-tabs/readme.md)
   - [al-url-picker](/src/components/al-url-picker/readme.md)
+  - [al-viewer](/src/components/al-viewer/readme.md)
 
-## Examples
+## Example
 
-https://aframe-viewer.netlify.com
+https://aframe-viewer.com

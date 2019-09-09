@@ -1,4 +1,4 @@
-# al-control-panel
+# al-settings
 
 
 

@@ -3,7 +3,7 @@ import { ControlsType } from "../../enums";
 import { ThreeUtils } from "../../utils";
 import { BaseComponent } from "./BaseComponent";
 
-interface AlLookToCameraComponent extends BaseComponent {
+interface AlBillboardComponent extends BaseComponent {
   tickFunction(): void;
 }
 
@@ -89,4 +89,4 @@ export default AFRAME.registerComponent("al-billboard", {
   remove(): void {
     this.removeEventListeners();
   }
-} as AlLookToCameraComponent);
+} as AlBillboardComponent);
