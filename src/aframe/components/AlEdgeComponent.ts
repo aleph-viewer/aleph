@@ -4,6 +4,7 @@ import { AlGraphEntryType } from "../../enums";
 import { AlGraphEvents, ThreeUtils } from "../../utils";
 import { ShaderUtils } from "../../utils/shaders/ShaderUtils";
 import { BaseComponent } from "./BaseComponent";
+
 interface AlEdgeState {
   selected: boolean;
   hovered: boolean;

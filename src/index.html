@@ -116,11 +116,6 @@
           "https://iiif-3d-manifests.netlify.com/collection/gltf/woody/_woody/assets/woody.gltf",
           "Fisherman (GLTF)"
         ],
-        ["http://files.blokdust.io/test/bowl-draco.glb", "Bowl (DRACO)"],
-        [
-          "https://aleph-fixtures.netlify.com/collection/dicom/brain/_brain/brain.json",
-          "Brain (DICOM)"
-        ],
         [
           "https://www.morphosource.org/media/morphosource/dcm_sample/platypus2/dcm_multi_vf300_jpegQ95_16bit_allslices.json",
           "Platypus (DICOM)"
@@ -128,10 +123,6 @@
         [
           "https://www.morphosource.org/media/morphosource/dcm_sample/ptilocercus/dcm_multi_vf300_jpegQ95_16bit_allslices.json",
           "Tree Shrew (DICOM)"
-        ],
-        [
-          "https://aleph-fixtures.netlify.com/collection/gltf/bunny/_bunny/bunny_default_materials.glb",
-          "Bunny Default Materials (GLB)"
         ]
       ]);
 
@@ -144,11 +135,6 @@
         alControlPanel.urls = urls;
 
         alViewer.componentOnReady().then(function() {
-
-          // load src when component ready
-          nextState({
-            src: Array.from(urls)[0][0]
-          });
 
           alViewer.addEventListener(
             "changed",
@@ -176,6 +162,11 @@
             },
             false
           );
+
+          // load src when component ready
+          nextState({
+            src: Array.from(urls)[0][0]
+          });
         });
 
         alControlPanel.componentOnReady().then(function() {
@@ -375,7 +366,7 @@
         }
 
         alControlPanel.angles = state.angles;
-        alControlPanel.boundingBoxEnabled =  state.boundingBoxEnabled;
+        alControlPanel.boundingBoxEnabled =  state.boundingBoxEnabled; // this can change when switching display mode
         alControlPanel.displayMode = state.displayMode;
         alControlPanel.edges = state.edges;
         alControlPanel.nodes = state.nodes;

@@ -53,12 +53,12 @@ export default AFRAME.registerComponent("al-trackball-control", {
   },
 
   bindMethods() {
-    this.mouseDown = this.mouseDown.bind(this);
-    this.mouseMove = this.mouseMove.bind(this);
-    this.mouseUp = this.mouseUp.bind(this);
     this.canvasWheel = this.canvasWheel.bind(this);
     this.getCameraState = this.getCameraState.bind(this);
     this.handleAnimationCache = this.handleAnimationCache.bind(this);
+    this.mouseDown = this.mouseDown.bind(this);
+    this.mouseMove = this.mouseMove.bind(this);
+    this.mouseUp = this.mouseUp.bind(this);
     this.onWheel = this.onWheel.bind(this);
   },
 
@@ -83,6 +83,9 @@ export default AFRAME.registerComponent("al-trackball-control", {
       once: false,
       passive: true
     });
+    this.el.sceneEl.oncontextmenu = (e) => {
+      e.preventDefault();
+    };
     this.el.sceneEl.addEventListener(
       AlControlEvents.ANIMATION_STARTED,
       this.handleAnimationCache,

@@ -96,7 +96,12 @@ export class AlSettings {
           {this.graphTabEnabled ? (
             <ion-tab tab="graph">
               <Scroll height={tabContentHeight}>
-                <al-graph-editor selected={this.selected} nodes={this.nodes} angles={this.angles} edges={this.edges}></al-graph-editor>
+                <al-graph-editor
+                  selected={this.selected}
+                  nodes={this.nodes}
+                  angles={this.angles}
+                  edges={this.edges}
+                ></al-graph-editor>
               </Scroll>
             </ion-tab>
           ) : null}

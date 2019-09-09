@@ -12,11 +12,19 @@ It can be used to display GLTF and DICOM files. GLTF can be used in conjunction 
 
 To annotate/measure an object, open the "graph" tab in the control panel and click the plus icon to enable the graph. Clicking on a 3D object creates a node which can be given a title and description. Nodes can be used as points of interest or can be connected via edges. With a node selected, SHIFT + Click to create an edge between that and another node. Edges can be used for measurement and can also be labeled with a title and description. Units of measurement can be changed in the control panel. SHIFT + Click between edges to measure angles.
 
+## Setup
+
+Clone the repository and run `npm install`
+
 ## Dev Builds
+
+For development with readable sources and hot reloading run:
 
   npm run build:dev
 
 ## Production Builds
+
+For minified builds run:
 
   npm run build
 

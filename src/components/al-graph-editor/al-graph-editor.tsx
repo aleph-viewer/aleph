@@ -7,7 +7,6 @@ import { AlAngle, AlEdge, AlNode } from "../../interfaces";
   shadow: true
 })
 export class AlGraphEditor {
-
   @Prop({ mutable: true }) public node: [string, AlNode];
   @Prop({ mutable: true }) public nodes: Map<string, AlNode> | null = null;
   @Prop({ mutable: true }) public angles: Map<string, AlAngle> | null = null;
@@ -46,16 +45,11 @@ export class AlGraphEditor {
 
   public render() {
     return [
-      <al-node-list
-        nodes={this.nodes}
-        selected={this.selected}
-      ></al-node-list>,
+      <al-node-list nodes={this.nodes} selected={this.selected}></al-node-list>,
       <ion-item-divider></ion-item-divider>,
       <al-node-editor node={this._getSelectedNode()}></al-node-editor>,
       <al-edge-editor edge={this._getSelectedEdge()}></al-edge-editor>,
-      <al-angle-editor
-        angle={this._getSelectedAngle()}
-      ></al-angle-editor>
+      <al-angle-editor angle={this._getSelectedAngle()}></al-angle-editor>
     ];
   }
 }
