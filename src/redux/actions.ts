@@ -57,7 +57,7 @@ export enum TypeKeys {
   APP_SELECT_EDGE = "APP_SELECT_EDGE",
   APP_SELECT_NODE = "APP_SELECT_NODE",
   APP_SET_ANGLE = "APP_SET_ANGLE",
-  APP_SET_BOUNDINGBOX_VISIBLE = "APP_SET_BOUNDINGBOX_VISIBLE",
+  APP_SET_BOUNDINGBOX_ENABLED = "APP_SET_BOUNDINGBOX_ENABLED",
   APP_SET_CAMERA = "APP_SET_CAMERA",
   APP_SET_CONTROLS_ENABLED = "APP_SET_CONTROLS_ENABLED",
   APP_SET_CONTROLS_TYPE = "APP_SET_CONTROLS_TYPE",
@@ -301,7 +301,7 @@ export const appClearAngles = (payload: void) => async (
 //#region control panel
 
 export interface AppSetBoundingBoxEnabledAction {
-  type: TypeKeys.APP_SET_BOUNDINGBOX_VISIBLE;
+  type: TypeKeys.APP_SET_BOUNDINGBOX_ENABLED;
   payload: boolean;
 }
 
@@ -310,7 +310,7 @@ export const appSetBoundingBoxEnabled = (payload: boolean) => async (
   _getState
 ) => {
   return dispatch({
-    type: TypeKeys.APP_SET_BOUNDINGBOX_VISIBLE,
+    type: TypeKeys.APP_SET_BOUNDINGBOX_ENABLED,
     payload
   });
 };

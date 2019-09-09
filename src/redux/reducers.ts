@@ -270,7 +270,7 @@ export const app = (
         graphEnabled: action.payload
       };
     }
-    case TypeKeys.APP_SET_BOUNDINGBOX_VISIBLE: {
+    case TypeKeys.APP_SET_BOUNDINGBOX_ENABLED: {
       return {
         ...state,
         boundingBoxEnabled: action.payload
