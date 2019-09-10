@@ -497,7 +497,6 @@ export class Aleph {
               slicesOrientation: ${this.orientation};
               slicesWindowWidth: ${this.slicesWindowWidth};
               slicesWindowCenter: ${this.slicesWindowCenter};
-              volumeSteps: ${this.volumeSteps};
               volumeWindowCenter: ${this.volumeWindowCenter};
               volumeWindowWidth: ${this.volumeWindowWidth};
               isWebGl2: ${this._isWebGl2};
@@ -523,7 +522,6 @@ export class Aleph {
               slicesOrientation: ${this.orientation};
               slicesWindowWidth: ${this.slicesWindowWidth};
               slicesWindowCenter: ${this.slicesWindowCenter};
-              volumeSteps: ${this.volumeSteps};
               volumeWindowCenter: ${this.volumeWindowCenter};
               volumeWindowWidth: ${this.volumeWindowWidth};
               isWebGl2: ${this._isWebGl2};

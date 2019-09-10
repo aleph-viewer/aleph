@@ -83,7 +83,7 @@ export default AFRAME.registerComponent("al-trackball-control", {
       once: false,
       passive: true
     });
-    this.el.sceneEl.oncontextmenu = (e) => {
+    this.el.sceneEl.oncontextmenu = e => {
       e.preventDefault();
     };
     this.el.sceneEl.addEventListener(

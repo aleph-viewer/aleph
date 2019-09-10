@@ -43,17 +43,21 @@ export default AFRAME.registerComponent("al-volume", {
     slicesWindowWidth: { type: "number" },
     src: { type: "string" },
     srcLoaded: { type: "boolean" },
-    volumeSteps: { type: "number" },
     volumeWindowCenter: { type: "number" },
     volumeWindowWidth: { type: "number" }
   },
 
   init(): void {
+    this.perf = window.performance.now();
+
+    this.volumeSteps = 512;
+
     this.tickFunction = AFRAME.utils.throttle(
       this.tickFunction,
       Constants.minFrameMS,
       this
     );
+
     this.loader = new VolumetricLoader();
 
     this.state = {
@@ -137,7 +141,7 @@ export default AFRAME.registerComponent("al-volume", {
 
   onInteractionFinished(_event: CustomEvent): void {
     if (this.state.stackhelper) {
-      this.state.stackhelper.steps = this.data.volumeSteps;
+      this.state.stackhelper.steps = this.volumeSteps;
       this.debouncedRenderBufferScene();
     }
   },
@@ -253,6 +257,16 @@ export default AFRAME.registerComponent("al-volume", {
   },
 
   tickFunction(): void {
+    const perf = window.performance.now();
+
+    const perfDelta = perf - this.perf;
+
+    if (perfDelta > 2000) {
+      console.warn("performance", perfDelta);
+    }
+
+    this.perf = perf;
+
     if (!this.state.stackhelper) {
       return;
     }
