@@ -1,4 +1,9 @@
 export class Constants {
+  // 24 FPS
+  public static targetFrameTime = 1000 / 24;
+  public static stepPowerMinMax = [1, 10];
+  public static movingStepCount = 2;
+  // public static stepArray = [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024];
   public static controllerName = "-controller";
   public static edgeSize = 0.005;
   public static fontSizeLarge = 1.6;
