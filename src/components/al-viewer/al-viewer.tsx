@@ -499,6 +499,7 @@ export class Aleph {
               slicesWindowCenter: ${this.slicesWindowCenter};
               volumeWindowCenter: ${this.volumeWindowCenter};
               volumeWindowWidth: ${this.volumeWindowWidth};
+              isHighRes: false;
               isWebGl2: ${this._isWebGl2};
             `}
             position="0 0 0"
@@ -524,6 +525,7 @@ export class Aleph {
               slicesWindowCenter: ${this.slicesWindowCenter};
               volumeWindowCenter: ${this.volumeWindowCenter};
               volumeWindowWidth: ${this.volumeWindowWidth};
+              isHighRes: false;
               isWebGl2: ${this._isWebGl2};
             `}
             position="0 0 0"
