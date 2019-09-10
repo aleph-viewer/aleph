@@ -50,7 +50,7 @@ export default AFRAME.registerComponent("al-volume", {
   init(): void {
     this.perf = window.performance.now();
 
-    this.volumeSteps = 512;
+    this.volumeSteps = 8;
 
     this.tickFunction = AFRAME.utils.throttle(
       this.tickFunction,
@@ -262,7 +262,11 @@ export default AFRAME.registerComponent("al-volume", {
     const perfDelta = perf - this.perf;
 
     if (perfDelta > 2000) {
-      console.warn("performance", perfDelta);
+      this.volumeSteps = this.volumeSteps / 2;
+      console.warn("halved volume steps", perfDelta);
+    } else if (perfDelta < 15) {
+      this.volumeSteps = this.volumeSteps * 2;
+      console.warn("doubled volume steps", perfDelta);
     }
 
     this.perf = perf;
