@@ -1,15 +1,15 @@
-import { Constants } from "../../Constants";
-import { DisplayMode } from "../../enums";
-import { EventUtils } from "../../utils";
-import { AlControlEvents } from "../../utils/AlControlEvents";
-import { VolumetricLoader } from "../../utils/VolumetricLoader";
-import { BaseComponent } from "./BaseComponent";
+import { Constants } from '../../Constants';
+import { DisplayMode } from '../../enums';
+import { EventUtils } from '../../utils';
+import { AlControlEvents } from '../../utils/AlControlEvents';
+import { VolumetricLoader } from '../../utils/VolumetricLoader';
+import { BaseComponent } from './BaseComponent';
 
 export class AlVolumeEvents {
-  public static LOADED: string = "al-volume-loaded";
-  public static ERROR: string = "al-volume-error";
-  public static RENDER_LOW: string = "al-volume-render-low";
-  public static RENDER_FULL: string = "al-volume-render-full";
+  public static LOADED: string = 'al-volume-loaded';
+  public static ERROR: string = 'al-volume-error';
+  public static RENDER_LOW: string = 'al-volume-render-low';
+  public static RENDER_FULL: string = 'al-volume-render-full';
 }
 
 interface AlVolumeState {
@@ -21,6 +21,10 @@ interface AlVolumeState {
   bufferSceneTextureHeight: number;
   bufferSceneTextureWidth: number;
   stackhelper: AMI.StackHelper | AMI.VolumeRenderHelper;
+  frameTime: number;
+  volumePower: number;
+  prevRenderTime: number;
+  renderTask: number;
 }
 
 interface AlVolumeComponent extends BaseComponent {
@@ -33,25 +37,21 @@ interface AlVolumeComponent extends BaseComponent {
   createBufferTexture(): void;
 }
 
-export default AFRAME.registerComponent("al-volume", {
+export default AFRAME.registerComponent('al-volume', {
   schema: {
-    displayMode: { type: "string" },
-    isWebGl2: { type: "boolean" },
-    slicesIndex: { type: "number" },
-    slicesOrientation: { type: "string" },
-    slicesWindowCenter: { type: "number" },
-    slicesWindowWidth: { type: "number" },
-    src: { type: "string" },
-    srcLoaded: { type: "boolean" },
-    volumeWindowCenter: { type: "number" },
-    volumeWindowWidth: { type: "number" }
+    displayMode: { type: 'string' },
+    isWebGl2: { type: 'boolean' },
+    slicesIndex: { type: 'number' },
+    slicesOrientation: { type: 'string' },
+    slicesWindowCenter: { type: 'number' },
+    slicesWindowWidth: { type: 'number' },
+    src: { type: 'string' },
+    srcLoaded: { type: 'boolean' },
+    volumeWindowCenter: { type: 'number' },
+    volumeWindowWidth: { type: 'number' }
   },
 
   init(): void {
-    this.perf = window.performance.now();
-
-    this.volumeSteps = 8;
-
     this.tickFunction = AFRAME.utils.throttle(
       this.tickFunction,
       Constants.minFrameMS,
@@ -63,7 +63,11 @@ export default AFRAME.registerComponent("al-volume", {
     this.state = {
       bufferScene: new THREE.Scene(),
       bufferSceneTextureHeight: this.el.sceneEl.canvas.clientHeight,
-      bufferSceneTextureWidth: this.el.sceneEl.canvas.clientWidth
+      bufferSceneTextureWidth: this.el.sceneEl.canvas.clientWidth,
+      volumePower: 9,
+      prevRenderTime: 0,
+      renderTask: 0,
+      frameTime: window.performance.now()
     } as AlVolumeState;
 
     this.bindMethods();
@@ -90,7 +94,7 @@ export default AFRAME.registerComponent("al-volume", {
 
   addEventListeners() {
     this.el.sceneEl.addEventListener(
-      "rendererresize",
+      'rendererresize',
       this.rendererResize,
       false
     );
@@ -109,7 +113,7 @@ export default AFRAME.registerComponent("al-volume", {
   },
 
   removeEventListeners(): void {
-    this.el.sceneEl.removeEventListener("rendererresize", this.rendererResize);
+    this.el.sceneEl.removeEventListener('rendererresize', this.rendererResize);
 
     this.el.sceneEl.removeEventListener(
       AlControlEvents.INTERACTION,
@@ -134,15 +138,13 @@ export default AFRAME.registerComponent("al-volume", {
 
   onInteraction(_event: CustomEvent): void {
     if (this.state.stackhelper) {
-      this.state.stackhelper.steps = 2;
-      this.renderBufferScene();
+      this.state.renderTask = 2;
     }
   },
 
   onInteractionFinished(_event: CustomEvent): void {
     if (this.state.stackhelper) {
-      this.state.stackhelper.steps = this.volumeSteps;
-      this.debouncedRenderBufferScene();
+      this.state.renderTask = Math.pow(2, this.state.volumePower);
     }
   },
 
@@ -158,17 +160,46 @@ export default AFRAME.registerComponent("al-volume", {
       state.bufferSceneTextureHeight = this.el.sceneEl.canvas.clientHeight;
 
       this.createBufferTexture();
-      this.renderBufferScene();
+      this.state.renderTask = Math.pow(2, this.state.volumePower);
     }
   },
 
   renderBufferScene(): void {
+    const curTime = window.performance.now();
+    const timeDelta = (curTime - this.state.frameTime) / this.state.frameCount;
+    if (timeDelta > Constants.targetFrameTime) {
+      window.console.warn(
+        'Frame time higher than expected: ',
+        timeDelta,
+        ' / ',
+        Constants.targetFrameTime
+      );
+    }
+
     if (this.data.displayMode === DisplayMode.VOLUME) {
+      this.state.stackhelper.steps = this.state.renderTask;
+
+      const prev = window.performance.now();
+
       this.el.sceneEl.renderer.render(
         this.state.bufferScene,
         this.el.sceneEl.camera,
         this.state.bufferSceneTexture
       );
+
+      const post = window.performance.now();
+
+      this.state.prevRenderTime = post - prev;
+      console.warn(
+        'Buffer render time: ',
+        this.state.prevRenderTime,
+        ' ms @ ',
+        this.state.stackhelper.steps,
+        ' steps |',
+        this.state.renderTask
+      );
+
+      this.state.renderTask = 0;
     }
   },
 
@@ -190,7 +221,7 @@ export default AFRAME.registerComponent("al-volume", {
       case DisplayMode.VOLUME: {
         // Get LUT Canvas
         const lutCanvases: HTMLElement = el.sceneEl.parentEl.querySelector(
-          "#lut-canvases"
+          '#lut-canvases'
         );
         // Create the LUT Helper
         state.lutHelper = new AMI.LutHelper(lutCanvases);
@@ -198,6 +229,7 @@ export default AFRAME.registerComponent("al-volume", {
         state.lutHelper.lutsO = AMI.LutHelper.presetLutsO();
         state.stackhelper = new AMI.VolumeRenderHelper(state.stack);
         state.stackhelper.textureLUT = state.lutHelper.texture;
+        state.stackhelper.steps = state.volumePower;
         break;
       }
       default: {
@@ -207,12 +239,12 @@ export default AFRAME.registerComponent("al-volume", {
 
     // If a hot reload of the display, reset the mesh
     if (el.object3DMap.mesh) {
-      el.removeObject3D("mesh");
+      el.removeObject3D('mesh');
     }
 
     // If slices mode, set stackhelper as the mesh
     if (this.data.displayMode === DisplayMode.SLICES) {
-      el.setObject3D("mesh", this.state.stackhelper);
+      el.setObject3D('mesh', this.state.stackhelper);
     } else {
       // Else place it in the buffer scene
       if (this.state.bufferScene.children.length) {
@@ -248,7 +280,7 @@ export default AFRAME.registerComponent("al-volume", {
       if (this.data.displayMode === DisplayMode.VOLUME) {
         this.createBufferTexture();
         setTimeout(() => {
-          this.renderBufferScene();
+          this.state.renderTask = Math.pow(2, this.state.volumePower);
         }, 250); // allow some time for the stackhelper to reorient itself
       } else {
         (this.el.sceneEl.object3D as THREE.Scene).background = null;
@@ -257,32 +289,16 @@ export default AFRAME.registerComponent("al-volume", {
   },
 
   tickFunction(): void {
-    const perf = window.performance.now();
-
-    const perfDelta = perf - this.perf;
-
-    if (perfDelta > 2000) {
-      this.volumeSteps = this.volumeSteps / 2;
-      console.warn("halved volume steps", perfDelta);
-    } else if (perfDelta < 15) {
-      this.volumeSteps = this.volumeSteps * 2;
-      console.warn("doubled volume steps", perfDelta);
-    }
-
-    this.perf = perf;
-
     if (!this.state.stackhelper) {
       return;
     }
 
-    switch (this.data.displayMode) {
-      case DisplayMode.SLICES: {
-        this.el.setObject3D("mesh", this.state.stackhelper);
-        break;
-      }
-      default: {
-        break;
-      }
+    if (this.data.displayMode === DisplayMode.SLICES) {
+      this.el.setObject3D('mesh', this.state.stackhelper);
+    }
+
+    if (this.state.renderTask > 0) {
+      this.renderBufferScene();
     }
   },
 
@@ -291,7 +307,7 @@ export default AFRAME.registerComponent("al-volume", {
   },
 
   remove(): void {
-    this.el.removeObject3D("mesh");
+    this.el.removeObject3D('mesh');
     this.removeEventListeners();
 
     (this.el.sceneEl.object3D as THREE.Scene).background = null;
