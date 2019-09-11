@@ -10,7 +10,7 @@ import OrientationIcon from "../../assets/svg/orientation.svg";
 import RecenterIcon from "../../assets/svg/recenter.svg";
 import SliderIcon from "../../assets/svg/slider.svg";
 import UnitsIcon from "../../assets/svg/units.svg";
-import { Constants } from "../../Constants";
+//import { Constants } from "../../Constants";
 import { ControlsType, Material, Orientation, Units } from "../../enums";
 import { DisplayMode } from "../../enums/DisplayMode";
 import i18n from "./al-settings.i18n.en.json";
@@ -118,10 +118,10 @@ export class AlSettings {
     this.unitsChanged.emit(units);
   }
 
-  private _volumeSteps(steps: number) {
-    this.volumeSteps = steps;
-    this.volumeStepsChanged.emit(steps);
-  }
+  // private _volumeSteps(steps: number) {
+  //   this.volumeSteps = steps;
+  //   this.volumeStepsChanged.emit(steps);
+  // }
 
   private _volumeWindowCenter(center: number) {
     this.volumeWindowCenter = center;
@@ -635,7 +635,7 @@ export class AlSettings {
         return (
           <div>
             {this.renderGenericOptions()}
-            <ion-item
+            {/* <ion-item
               style={{
                 display: "var(--volume-steps-display, block)"
               }}
@@ -654,7 +654,7 @@ export class AlSettings {
                 pin={true}
                 onIonChange={e => this._volumeSteps(e.detail.value)}
               />
-            </ion-item>
+            </ion-item> */}
             {/* <ion-item>
                 <ion-label>LUT</ion-label>
                 <select onChange={ (e) => this.onVolumeLutChanged.emit(e.detail.value) }>
