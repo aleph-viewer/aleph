@@ -637,46 +637,55 @@ export class Aleph {
       textOffset.multiplyScalar(node.scale);
 
       return (
-        <a-entity
-          class='collidable'
-          id={nodeId}
-          position={node.position}
-          al-node={`
-            scale: ${node.scale};
-            selected: ${this.selected === nodeId};
-            graphEnabled: ${this.graphEnabled};
-          `}
-          scale={` ${entityScale} ${entityScale} ${entityScale};`}
-        >
+        <a-entity al-child-hover-visible id={nodeId + '-parent'}>
           <a-entity
-            text={`
-              value: ${node.title};
-              side: double;
-              align: center;
-              baseline: bottom;
-              anchor: center;
-              width: ${Constants.fontSizeMedium * this._boundingSphereRadius};
-              zOffset: ${0.0000001};
-            `}
-            position={ThreeUtils.vector3ToString(textOffset)}
-            al-render-overlaid
-            visible={`${this.selected === nodeId}`}
-            id={`${nodeId}-label`}
+            position={node.position}
+            id={nodeId + '-title-anchor'}
             al-billboard={`
               controlsType: ${this.controlsType};
               cameraPosition: ${ThreeUtils.vector3ToString(
                 this.camera.position
               )};
               worldPosition: ${ThreeUtils.vector3ToString(
-                ThreeUtils.stringToVector3(node.position).add(textOffset)
-              )}
+                ThreeUtils.stringToVector3(node.position).add(
+                  textOffset.clone()
+                )
+              )};
             `}
-            al-background={`
-                text: ${node.title};
-                boundingRadius: ${Constants.fontSizeMedium *
-                  this._boundingSphereRadius};
+          >
+            <a-entity
+              text={`
+                value: ${node.title};
+                side: double;
+                align: center;
+                baseline: bottom;
+                anchor: center;
+                width: ${Constants.fontSizeMedium * this._boundingSphereRadius};
+                zOffset: ${0.0000001};
+              `}
+              position={ThreeUtils.vector3ToString(textOffset)}
+              al-render-overlaid
+              visible={`${this.selected === nodeId}`}
+              id={`${nodeId}-label`}
+              al-background={`
+                  text: ${node.title};
+                  boundingRadius: ${Constants.fontSizeMedium *
+                    this._boundingSphereRadius};
+              `}
+              scale={` ${entityScale} ${entityScale} ${entityScale};`}
+            />
+          </a-entity>
+          <a-entity
+            class='collidable'
+            id={nodeId}
+            position={node.position}
+            al-node={`
+              scale: ${node.scale};
+              selected: ${this.selected === nodeId};
+              graphEnabled: ${this.graphEnabled};
             `}
-          ></a-entity>
+            scale={` ${entityScale} ${entityScale} ${entityScale};`}
+          />
         </a-entity>
       );
     });
@@ -714,49 +723,55 @@ export class Aleph {
           Constants.frustrumScaleFactor;
 
         return (
-          <a-entity
-            class='collidable'
-            id={edgeId}
-            position={ThreeUtils.vector3ToString(centoid)}
-            al-edge={`
-              length: ${dist};
-              node1: ${node1.position};
-              node2: ${node2.position};
-              selected: ${this.selected === edgeId};
-              radius: ${radius};
-              nodeScale: ${scale};
-              scale: ${entityScale};
-            `}
-          >
+          <a-entity al-child-hover-visible id={edgeId + '-parent'}>
             <a-entity
-              id={`${edgeId}-title`}
-              text={`
-                value: ${textV};
-                side: double;
-                align: center;
-                baseline: bottom;
-                anchor: center;
-                width: ${Constants.fontSizeSmall * this._boundingSphereRadius}
-              `}
-              position={ThreeUtils.vector3ToString(textOffset)}
-              visible={`${this.selected === edgeId}`}
-              scale={` ${entityScale} ${entityScale} ${entityScale};`}
+              position={ThreeUtils.vector3ToString(centoid)}
+              id={edgeId + '-title-anchor'}
               al-billboard={`
-                controlsType: ${this.controlsType};
-                cameraPosition: ${ThreeUtils.vector3ToString(
-                  this.camera.position
-                )};
-                worldPosition: ${ThreeUtils.vector3ToString(
-                  centoid.clone().add(textOffset.clone())
-                )};
-              `}
-              al-background={`
+              controlsType: ${this.controlsType};
+              cameraPosition: ${ThreeUtils.vector3ToString(
+                this.camera.position
+              )};
+              worldPosition: ${ThreeUtils.vector3ToString(
+                centoid.clone().add(textOffset.clone())
+              )};
+            `}
+            >
+              <a-entity
+                id={`${edgeId}-title`}
+                text={`
+                  value: ${textV};
+                  side: double;
+                  align: center;
+                  baseline: bottom;
+                  anchor: center;
+                  width: ${Constants.fontSizeSmall * this._boundingSphereRadius}
+                `}
+                position={ThreeUtils.vector3ToString(textOffset)}
+                visible={`${this.selected === edgeId}`}
+                scale={` ${entityScale} ${entityScale} ${entityScale};`}
+                al-background={`
                   text: ${textV};
                   boundingRadius: ${Constants.fontSizeSmall *
                     this._boundingSphereRadius};
+                `}
+                al-render-overlaid
+              />
+            </a-entity>
+            <a-entity
+              class='collidable'
+              id={edgeId}
+              position={ThreeUtils.vector3ToString(centoid)}
+              al-edge={`
+                length: ${dist};
+                node1: ${node1.position};
+                node2: ${node2.position};
+                selected: ${this.selected === edgeId};
+                radius: ${radius};
+                nodeScale: ${scale};
+                scale: ${entityScale};
               `}
-              al-render-overlaid
-            ></a-entity>
+            />
           </a-entity>
         );
       }
@@ -859,54 +874,56 @@ export class Aleph {
           Constants.frustrumScaleFactor;
 
         return (
-          <a-entity
-            class='collidable'
-            id={angleId}
-            position={centralNode.position}
-            al-angle={`
-              selected: ${this.selected === angleId};
-              edge0Pos: ${ThreeUtils.vector3ToString(edge1Pos)};
-              edge1Pos: ${ThreeUtils.vector3ToString(edge2Pos)};
-              position: ${ThreeUtils.vector3ToString(position)};
-              length: ${length};
-              radius: ${radius};
-              angle: ${angle};
-              scale: ${entityScale};
-            `}
-          >
+          <a-entity al-child-hover-visible id={angleId + '-parent'}>
             <a-entity
-              id={`${angleId}-title`}
-              scale={` ${entityScale} ${entityScale} ${entityScale};`}
-              text={`
-                value: ${textV};
-                side: double;
-                align: center;
-                baseline: bottom;
-                anchor: center;
-                width: ${Constants.fontSizeSmall * this._boundingSphereRadius}
-              `}
-              position={ThreeUtils.vector3ToString(
-                position.clone().add(textOffset)
-              )}
-              visible={`${this.selected === angleId}`}
+              position={ThreeUtils.vector3ToString(centralPos)}
+              id={angleId + '-title-anchor'}
               al-billboard={`
-                controlsType: ${this.controlsType};
-                cameraPosition: ${ThreeUtils.vector3ToString(
-                  this.camera.position
-                )};
-                worldPosition: ${ThreeUtils.vector3ToString(
-                  ThreeUtils.stringToVector3(centralNode.position).add(
-                    textOffset.clone()
-                  )
-                )};
+              controlsType: ${this.controlsType};
+              cameraPosition: ${ThreeUtils.vector3ToString(
+                this.camera.position
+              )};
+              worldPosition: ${ThreeUtils.vector3ToString(
+                centralPos.clone().add(textOffset.clone())
+              )};
+            `}
+            >
+              <a-entity
+                id={`${angleId}-title`}
+                text={`
+                  value: ${textV};
+                  side: double;
+                  align: center;
+                  baseline: bottom;
+                  anchor: center;
+                  width: ${Constants.fontSizeSmall * this._boundingSphereRadius}
+                `}
+                position={ThreeUtils.vector3ToString(textOffset)}
+                visible={`${this.selected === angleId}`}
+                scale={` ${entityScale} ${entityScale} ${entityScale};`}
+                al-background={`
+                    text: ${textV};
+                    boundingRadius: ${Constants.fontSizeSmall *
+                      this._boundingSphereRadius};
+                `}
+                al-render-overlaid
+              />
+            </a-entity>
+            <a-entity
+              class='collidable'
+              id={angleId}
+              position={centralNode.position}
+              al-angle={`
+                selected: ${this.selected === angleId};
+                edge0Pos: ${ThreeUtils.vector3ToString(edge1Pos)};
+                edge1Pos: ${ThreeUtils.vector3ToString(edge2Pos)};
+                position: ${ThreeUtils.vector3ToString(position)};
+                length: ${length};
+                radius: ${radius};
+                angle: ${angle};
+                scale: ${entityScale};
               `}
-              al-background={`
-                text: ${textV};
-                boundingRadius: ${Constants.fontSizeSmall *
-                  this._boundingSphereRadius};
-              `}
-              al-render-overlaid
-            ></a-entity>
+            />
           </a-entity>
         );
       }
