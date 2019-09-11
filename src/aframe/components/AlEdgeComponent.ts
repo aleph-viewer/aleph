@@ -113,7 +113,6 @@ export default AFRAME.registerComponent("al-edge", {
 
     const scale = new THREE.Matrix4();
     scale.makeScale(this.data.scale, this.data.scale, 1);
-    // console.log(scale);
 
     const mult = new THREE.Matrix4();
     mult.set(1, 0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1);

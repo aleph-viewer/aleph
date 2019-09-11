@@ -7,6 +7,6 @@ uniform float c;
 
 void main()
 {
-    float intensity = pow( c - dot( vNormal, vec3( 0.0, 0.0, 1.0 ) ), 4.0 );
+    float intensity = pow( abs(c) - dot( vNormal, vec3( 0.0, 0.0, 1.0 ) ), 4.0 );
     gl_FragColor = vec4(r, g, b, a) * intensity;
 }
