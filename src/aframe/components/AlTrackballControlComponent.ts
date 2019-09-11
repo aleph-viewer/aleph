@@ -143,7 +143,10 @@ export default AFRAME.registerComponent('al-trackball-control', {
     if (this.state.mouseDown) {
       this.el.sceneEl.emit(
         AlControlEvents.INTERACTION,
-        { cameraState: this.getCameraState() },
+        {
+          cameraState: this.getCameraState(),
+          needsRender: this.state.mouseDown
+        },
         false
       );
     }
@@ -185,7 +188,10 @@ export default AFRAME.registerComponent('al-trackball-control', {
 
     this.el.sceneEl.emit(
       AlControlEvents.INTERACTION,
-      { cameraState: this.getCameraState() },
+      {
+        cameraState: this.getCameraState(),
+        needsRender: true
+      },
       false
     );
   },
@@ -235,7 +241,10 @@ export default AFRAME.registerComponent('al-trackball-control', {
     ThreeUtils.waitOneFrame(() => {
       this.el.sceneEl.emit(
         AlControlEvents.INTERACTION,
-        { cameraState: this.getCameraState() },
+        {
+          cameraState: this.getCameraState(),
+          needsRender: false
+        },
         false
       );
     });
@@ -301,7 +310,8 @@ export default AFRAME.registerComponent('al-trackball-control', {
         this.el.sceneEl.emit(
           AlControlEvents.INTERACTION,
           {
-            cameraState: this.getCameraState()
+            cameraState: this.getCameraState(),
+            needsRender: true
           },
           false
         );
