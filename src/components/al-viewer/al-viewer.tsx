@@ -1135,9 +1135,6 @@ export class Aleph {
       );
 
       this._setEdge([edgeId, newEdge]);
-    } else {
-      // tslint:disable-next-line: no-console
-      console.log('edge already exists');
     }
   }
 

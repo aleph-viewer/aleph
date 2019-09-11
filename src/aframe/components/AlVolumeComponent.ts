@@ -149,7 +149,6 @@ export default AFRAME.registerComponent('al-volume', {
 
   onInteractionFinished(_event: CustomEvent): void {
     if (this.state.stackhelper && _event.detail.needsRender) {
-      window.console.log('INTERACTION_FINISHED');
       this.state.renderTask = Math.pow(2, this.state.volumePower);
     }
 
@@ -158,7 +157,6 @@ export default AFRAME.registerComponent('al-volume', {
 
   getVolumePower(): number {
     // 128 steps for desktop (7), 32 steps for mobile (5)
-
     let power;
 
     if (AFRAME.utils.device.isMobile()) {
@@ -188,8 +186,6 @@ export default AFRAME.registerComponent('al-volume', {
 
   renderBufferScene(): void {
     if (this.data.displayMode === DisplayMode.VOLUME) {
-      console.log('Rendering!: ', this.state.renderTask);
-
       this.state.stackhelper.steps = this.state.renderTask;
 
       const prev = window.performance.now();
@@ -299,7 +295,6 @@ export default AFRAME.registerComponent('al-volume', {
       oldData.controlsType &&
       oldData.controlsType !== this.data.controlsType
     ) {
-      console.log('Control type changed!, ', this.state.debounce);
       this.state.renderTask = Math.pow(2, this.state.volumePower);
     }
 
