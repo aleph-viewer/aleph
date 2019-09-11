@@ -25,6 +25,7 @@ interface AlVolumeState {
   volumePower: number;
   prevRenderTime: number;
   renderTask: number;
+  startInCanvas: boolean;
 }
 
 interface AlVolumeComponent extends BaseComponent {
@@ -48,7 +49,8 @@ export default AFRAME.registerComponent('al-volume', {
     src: { type: 'string' },
     srcLoaded: { type: 'boolean' },
     volumeWindowCenter: { type: 'number' },
-    volumeWindowWidth: { type: 'number' }
+    volumeWindowWidth: { type: 'number' },
+    controlsType: { type: 'string' }
   },
 
   init(): void {
@@ -64,10 +66,11 @@ export default AFRAME.registerComponent('al-volume', {
       bufferScene: new THREE.Scene(),
       bufferSceneTextureHeight: this.el.sceneEl.canvas.clientHeight,
       bufferSceneTextureWidth: this.el.sceneEl.canvas.clientWidth,
-      volumePower: 9,
+      volumePower: 5,
       prevRenderTime: 0,
       renderTask: 0,
-      frameTime: window.performance.now()
+      frameTime: window.performance.now(),
+      startInCanvas: false
     } as AlVolumeState;
 
     this.bindMethods();
@@ -143,7 +146,8 @@ export default AFRAME.registerComponent('al-volume', {
   },
 
   onInteractionFinished(_event: CustomEvent): void {
-    if (this.state.stackhelper) {
+    if (this.state.stackhelper && _event.detail.needsRender) {
+      window.console.log('INTERACTION_FINISHED');
       this.state.renderTask = Math.pow(2, this.state.volumePower);
     }
   },
@@ -190,14 +194,14 @@ export default AFRAME.registerComponent('al-volume', {
       const post = window.performance.now();
 
       this.state.prevRenderTime = post - prev;
-      console.warn(
-        'Buffer render time: ',
-        this.state.prevRenderTime,
-        ' ms @ ',
-        this.state.stackhelper.steps,
-        ' steps |',
-        this.state.renderTask
-      );
+      // console.warn(
+      //   'Buffer render time: ',
+      //   this.state.prevRenderTime,
+      //   ' ms @ ',
+      //   this.state.stackhelper.steps,
+      //   ' steps |',
+      //   this.state.renderTask
+      // );
 
       this.state.renderTask = 0;
     }
@@ -264,7 +268,9 @@ export default AFRAME.registerComponent('al-volume', {
 
     if (!this.data.src) {
       return;
-    } else if (oldData && oldData.src !== this.data.src) {
+    }
+
+    if (oldData && oldData.src !== this.data.src) {
       this.loader.load(this.data.src, el).then(stack => {
         this.handleStack(stack);
       });
@@ -279,12 +285,21 @@ export default AFRAME.registerComponent('al-volume', {
 
       if (this.data.displayMode === DisplayMode.VOLUME) {
         this.createBufferTexture();
+        // allow some time for the stackhelper to reorient itself
         setTimeout(() => {
           this.state.renderTask = Math.pow(2, this.state.volumePower);
-        }, 250); // allow some time for the stackhelper to reorient itself
+        }, 250);
       } else {
         (this.el.sceneEl.object3D as THREE.Scene).background = null;
       }
+    }
+
+    if (
+      oldData &&
+      oldData.controlsType &&
+      oldData.controlsType !== this.data.controlsType
+    ) {
+      this.state.renderTask = Math.pow(2, this.state.volumePower);
     }
   },
 
