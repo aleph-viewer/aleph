@@ -41,6 +41,7 @@ interface AlVolumeComponent extends BaseComponent {
 export default AFRAME.registerComponent('al-volume', {
   schema: {
     displayMode: { type: 'string' },
+    isHighRes: { type: 'boolean', default: false },
     isWebGl2: { type: 'boolean' },
     slicesIndex: { type: 'number' },
     slicesOrientation: { type: 'string' },
@@ -86,13 +87,14 @@ export default AFRAME.registerComponent('al-volume', {
 
   bindMethods(): void {
     this.addEventListeners = this.addEventListeners.bind(this);
+    this.createBufferTexture = this.createBufferTexture.bind(this);
+    this.getVolumePower = this.getVolumePower.bind(this);
     this.handleStack = this.handleStack.bind(this);
     this.onInteraction = this.onInteraction.bind(this);
     this.onInteractionFinished = this.onInteractionFinished.bind(this);
     this.removeEventListeners = this.removeEventListeners.bind(this);
     this.renderBufferScene = this.renderBufferScene.bind(this);
     this.rendererResize = this.rendererResize.bind(this);
-    this.createBufferTexture = this.createBufferTexture.bind(this);
   },
 
   addEventListeners() {
@@ -152,6 +154,21 @@ export default AFRAME.registerComponent('al-volume', {
     }
   },
 
+  getVolumePower(): number {
+
+    // 256 steps for desktop (8), 32 steps for mobile (5)
+
+    let power;
+
+    if (AFRAME.utils.device.isMobile()) {
+      power = 5;
+    } else {
+      power = 8;
+    }
+
+    return Math.pow(2, (power + (this.data.isHighRes ? 1 : 0)));
+  },
+
   rendererResize(): void {
     const state = this.state as AlVolumeState;
 
@@ -164,7 +181,7 @@ export default AFRAME.registerComponent('al-volume', {
       state.bufferSceneTextureHeight = this.el.sceneEl.canvas.clientHeight;
 
       this.createBufferTexture();
-      this.state.renderTask = Math.pow(2, this.state.volumePower);
+      this.state.renderTask = this.getVolumePower();
     }
   },
 
@@ -233,7 +250,7 @@ export default AFRAME.registerComponent('al-volume', {
         state.lutHelper.lutsO = AMI.LutHelper.presetLutsO();
         state.stackhelper = new AMI.VolumeRenderHelper(state.stack);
         state.stackhelper.textureLUT = state.lutHelper.texture;
-        state.stackhelper.steps = state.volumePower;
+        state.stackhelper.steps = this.getVolumePower();
         break;
       }
       default: {
