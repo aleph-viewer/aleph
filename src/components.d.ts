@@ -342,6 +342,10 @@ declare namespace LocalJSX {
     * Fires when an object is loaded passing either the object or a stackhelper for volumetric data.
     */
     'onLoaded'?: (event: CustomEvent<any>) => void;
+    /**
+    * Fires when the volume display mode changes passing the new stackhelper.
+    */
+    'onVolumeModeChanged'?: (event: CustomEvent<any>) => void;
     'width'?: string;
   }
 

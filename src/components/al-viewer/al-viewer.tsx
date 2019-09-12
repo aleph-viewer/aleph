@@ -313,6 +313,9 @@ export class Aleph {
 
   /** Fires when an object is loaded passing either the object or a stackhelper for volumetric data. */
   @Event() public loaded: EventEmitter;
+
+  /** Fires when the volume display mode changes passing the new stackhelper. */
+  @Event() public volumeModeChanged: EventEmitter;
   //#endregion
 
   protected async componentWillLoad() {
@@ -438,6 +441,7 @@ export class Aleph {
     );
     this._spawnNodeHandler = this._spawnNodeHandler.bind(this);
     this._srcLoaded = this._srcLoaded.bind(this);
+    this._volumeModeChanged = this._volumeModeChanged.bind(this);
 
     // debounced event handlers
     this._debouncedAppSetCamera = EventUtils.debounce(
@@ -1206,6 +1210,7 @@ export class Aleph {
   }
 
   private _clearGraph(): void {
+    // todo: can this be a single appClearGraph action?
     this.appClearNodes();
     this.appClearEdges();
     this.appClearAngles();
@@ -1466,9 +1471,6 @@ export class Aleph {
       const cameraState: AlCamera = GetUtils.getCameraStateFromMesh(mesh);
       this._updateLights(cameraState);
 
-      console.log("mesh", mesh);
-
-      // only update camera if switching away from or to mesh
       if (cameraState) {
         this.appSetCamera(cameraState);
       }
@@ -1478,6 +1480,12 @@ export class Aleph {
       this.loaded.emit(ev.detail);
     }
   }
+
+  // tslint:disable-next-line: no-any
+  private _volumeModeChanged(ev: any): void {
+    this.volumeModeChanged.emit(ev.detail);
+  }
+
   //#endregion
 
   //#region Event Handlers
@@ -1799,6 +1807,8 @@ export class Aleph {
     );
 
     this._scene.addEventListener(AlVolumeEvents.LOADED, this._srcLoaded, false);
+
+    this._scene.addEventListener(AlVolumeEvents.MODE_CHANGED, this._volumeModeChanged, false);
 
     this._scene.addEventListener(
       AlGraphEvents.POINTER_OVER,

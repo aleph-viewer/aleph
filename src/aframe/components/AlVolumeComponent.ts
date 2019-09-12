@@ -6,26 +6,26 @@ import { VolumetricLoader } from "../../utils/VolumetricLoader";
 import { BaseComponent } from "./BaseComponent";
 
 export class AlVolumeEvents {
-  public static LOADED: string = "al-volume-loaded";
   public static ERROR: string = "al-volume-error";
-  public static RENDER_LOW: string = "al-volume-render-low";
-  public static RENDER_FULL: string = "al-volume-render-full";
+  public static LOADED: string = "al-volume-loaded";
+  public static MODE_CHANGED: string = "al-volume-mode-changed";
 }
 
 interface AlVolumeState {
   bufferScene: THREE.Scene;
   bufferSceneTexture: THREE.WebGLRenderTarget;
-  lutHelper: AMI.LutHelper;
-  // tslint:disable-next-line: no-any
-  stack: any;
   bufferSceneTextureHeight: number;
   bufferSceneTextureWidth: number;
-  stackhelper: AMI.StackHelper | AMI.VolumeRenderHelper;
+  debounce: boolean;
   frameTime: number;
-  volumePower: number;
+  loaded: boolean;
+  lutHelper: AMI.LutHelper;
   prevRenderTime: number;
   renderTask: number;
-  debounce: boolean;
+  // tslint:disable-next-line: no-any
+  stack: any;
+  stackhelper: AMI.StackHelper | AMI.VolumeRenderHelper;
+  volumePower: number;
 }
 
 interface AlVolumeComponent extends BaseComponent {
@@ -67,11 +67,12 @@ export default AFRAME.registerComponent("al-volume", {
       bufferScene: new THREE.Scene(),
       bufferSceneTextureHeight: this.el.sceneEl.canvas.clientHeight,
       bufferSceneTextureWidth: this.el.sceneEl.canvas.clientWidth,
-      volumePower: 5,
+      debounce: false,
+      frameTime: window.performance.now(),
+      loaded: false,
       prevRenderTime: 0,
       renderTask: 0,
-      frameTime: window.performance.now(),
-      debounce: false
+      volumePower: 5,
     } as AlVolumeState;
 
     this.bindMethods();
@@ -254,7 +255,12 @@ export default AFRAME.registerComponent("al-volume", {
       this.state.bufferScene.add(this.state.stackhelper);
     }
 
-    el.sceneEl.emit(AlVolumeEvents.LOADED, state.stackhelper, false);
+    if (!this.state.loaded) {
+      el.sceneEl.emit(AlVolumeEvents.LOADED, state.stackhelper, false);
+      this.state.loaded = true;
+    }
+
+    el.sceneEl.emit(AlVolumeEvents.MODE_CHANGED, state.stackhelper, false);
   },
 
   // tslint:disable-next-line: no-any
