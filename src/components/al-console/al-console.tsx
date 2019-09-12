@@ -13,8 +13,25 @@ export class AlConsole {
 
   @Event() public graphSubmitted: EventEmitter;
 
-  @Prop({ mutable: true }) public graph: string;
+  @Prop({ mutable: true }) public graph: string | null = null;
   @Prop({ mutable: true }) public tabSize: number = 2;
+
+  private _getGraphJson(): string {
+
+    let json: string = "";
+
+    try {
+      json = JSON.stringify(
+        JSON.parse(this.graph),
+        undefined,
+        this.tabSize
+      );
+    } catch {
+      // do nothing
+    }
+
+    return json;
+  }
 
   public render() {
     return (
@@ -22,11 +39,7 @@ export class AlConsole {
         <ion-item>
           <ion-textarea
             id="graph"
-            value={JSON.stringify(
-              JSON.parse(this.graph),
-              undefined,
-              this.tabSize
-            )}
+            value={this._getGraphJson()}
             rows="10"
             required
             onIonChange={e => (this.graph = e.detail.value)}
