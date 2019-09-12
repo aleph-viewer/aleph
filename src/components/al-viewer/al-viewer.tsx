@@ -985,6 +985,7 @@ export class Aleph {
         al-cursor="rayOrigin: mouse"
         raycaster="objects: .collidable;"
         al-trackball-control={`
+          resetWhenChanged: ${this.src};
           screenLeft: ${0};
           screenTop: ${0};
           screenWidth: ${this._scene ? this._scene.canvas.width : 0};

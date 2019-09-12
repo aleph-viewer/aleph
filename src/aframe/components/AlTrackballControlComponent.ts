@@ -43,6 +43,7 @@ export default AFRAME.registerComponent("al-trackball-control", {
     noRotate: { type: "boolean", default: false },
     noZoom: { type: "boolean", default: false },
     panSpeed: { type: "number", default: 0.3 },
+    resetWhenChanged: { type: "string", default: false },
     rotateSpeed: { type: "number", default: 1.0 },
     screenHeight: { type: "number", default: 0 },
     screenLeft: { type: "number", default: 0 },
@@ -258,9 +259,14 @@ export default AFRAME.registerComponent("al-trackball-control", {
   },
 
   // tslint:disable-next-line: no-any
-  update(_oldData: any) {
+  update(oldData: any) {
+
     const controls = this.state.controls;
     const data = this.data;
+
+    if (oldData.resetWhenChanged !== data.resetWhenChanged) {
+      controls.reset();
+    }
 
     controls.target = ThreeUtils.objectToVector3(data.controlTarget);
     controls.dynamicDampingFactor = data.dynamicDampingFactor;
