@@ -291,7 +291,7 @@ export default AFRAME.registerComponent("al-volume", {
         // allow some time for the stackhelper to reorient itself
         setTimeout(() => {
           this.state.renderTask = Math.pow(2, this.state.volumePower);
-        }, 350);
+        }, 500);
       } else {
         (this.el.sceneEl.object3D as THREE.Scene).background = null;
       }
