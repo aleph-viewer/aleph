@@ -1,4 +1,5 @@
 export class Constants {
+  public static lightIntensity = 0.5;
   public static BoundingBoxWidth = 2;
   // 24 FPS
   public static targetFrameTime = 1000 / 24;

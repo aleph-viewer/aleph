@@ -15,7 +15,8 @@ export default AFRAME.registerComponent('al-bounding-box', {
   schema: {
     color: { type: 'string', default: '#f50057' },
     scale: { type: 'string' },
-    opacity: { type: 'number', default: 1 }
+    opacity: { type: 'number', default: 1 },
+    enabled: { type: 'boolean', default: true }
   },
 
   init(): void {
@@ -75,9 +76,9 @@ export default AFRAME.registerComponent('al-bounding-box', {
       // - camera far clip plane distance (REQUIRED if sizeAttenuation set to false)
       far: this.el.sceneEl.camera.far
     });
-    MeshLineMat.transparent = this.data.opacity === 0;
-    // - alpha value from 0 to 1 (requires transparent set to true)
-    MeshLineMat.opacity = this.data.opactiy;
+    // MeshLineMat.transparent = this.data.opacity === 0;
+    // // - alpha value from 0 to 1 (requires transparent set to true)
+    // MeshLineMat.opacity = this.data.opactiy;
 
     const TopLeftFront = new THREE.Vector3(
       scale.x,
@@ -230,7 +231,12 @@ export default AFRAME.registerComponent('al-bounding-box', {
 
     state.mesh = BboxLineController;
     state.material = MeshLineMat;
-    el.setObject3D('mesh', BboxLineController);
+
+    if (this.data.enabled) {
+      el.setObject3D('bbox', BboxLineController);
+    } else if (el.object3DMap.bbox) {
+      el.removeObject3D('bbox');
+    }
   },
 
   remove(): void {

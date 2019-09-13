@@ -573,6 +573,7 @@ export class Aleph {
               scale: ${ThreeUtils.vector3ToString(size)};
               color: ${Constants.colorValues.white};
               opacity: ${opacity};
+              enabled: ${this.boundingBoxEnabled};
             `}
             al-node-spawner={`
               graphEnabled: ${this.graphEnabled};
@@ -613,6 +614,7 @@ export class Aleph {
                 scale: ${ThreeUtils.vector3ToString(size)};
                 color: ${Constants.colorValues.white};
                 opacity: ${opacity};
+                enabled: ${this.boundingBoxEnabled};
               `}
             ref={el => (this._boundingEntity = el)}
           />
@@ -932,18 +934,18 @@ export class Aleph {
 
   private _renderLights() {
     return [
-      <a-entity
-        id='light-1'
-        light='type: directional; color: #ffffff; intensity: 0.5'
-        position='1 1 1'
-        ref={el => (this._lights[0] = el)}
-      />,
-      <a-entity
-        id='light-2'
-        light='type: directional; color: #ffffff; intensity: 0.5'
-        position='-1 -1 -1'
-        ref={el => (this._lights[1] = el)}
-      />,
+      // <a-entity
+      //   id='light-1'
+      //   light='type: directional; color: #ffffff; intensity: 0.5'
+      //   position='1 1 1'
+      //   ref={el => (this._lights[0] = el)}
+      // />,
+      // <a-entity
+      //   id='light-2'
+      //   light='type: directional; color: #ffffff; intensity: 0.5'
+      //   position='-1 -1 -1'
+      //   ref={el => (this._lights[1] = el)}
+      // />,
       <a-entity
         id='light-3'
         light='type: ambient; color: #d0d0d0; intensity: 1'
@@ -981,6 +983,7 @@ export class Aleph {
             this.camera && this.camera.animating ? this.camera.animating : false
           }
         `}
+        al-control-lights
         ref={el => (this._camera = el)}
       />
     );
@@ -1017,6 +1020,7 @@ export class Aleph {
             this.camera && this.camera.animating ? this.camera.animating : false
           }
         `}
+        al-control-lights
         ref={el => (this._camera = el)}
       />
     );

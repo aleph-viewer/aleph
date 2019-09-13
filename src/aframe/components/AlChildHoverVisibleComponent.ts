@@ -2,7 +2,7 @@ import { Entity } from 'aframe';
 import { Constants } from '../../Constants';
 import { BaseComponent } from './BaseComponent';
 
-interface AlChildHoverVisible extends BaseComponent {
+interface AlChildHoverVisibleComponent extends BaseComponent {
   tickFunction(): void;
   pointerOver(_event: CustomEvent): void;
   pointerOut(_event: CustomEvent): void;
@@ -80,4 +80,4 @@ export default AFRAME.registerComponent('al-child-hover-visible', {
   remove(): void {
     this.removeEventListeners();
   }
-} as AlChildHoverVisible);
+} as AlChildHoverVisibleComponent);
