@@ -645,6 +645,7 @@ export class Aleph {
                   textOffset.clone()
                 )
               )};
+              cameraTarget: ${ThreeUtils.vector3ToString(this.camera.target)};
             `}
           >
             <a-entity
@@ -729,6 +730,7 @@ export class Aleph {
               worldPosition: ${ThreeUtils.vector3ToString(
                 centoid.clone().add(textOffset.clone())
               )};
+              cameraTarget: ${ThreeUtils.vector3ToString(this.camera.target)};
             `}
             >
               <a-entity
@@ -880,6 +882,7 @@ export class Aleph {
               worldPosition: ${ThreeUtils.vector3ToString(
                 centralPos.clone().add(textOffset.clone())
               )};
+              cameraTarget: ${ThreeUtils.vector3ToString(this.camera.target)};
             `}
             >
               <a-entity
