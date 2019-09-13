@@ -645,7 +645,6 @@ export class Aleph {
                   textOffset.clone()
                 )
               )};
-              cameraTarget: ${ThreeUtils.vector3ToString(this.camera.target)};
             `}
           >
             <a-entity
@@ -730,7 +729,6 @@ export class Aleph {
               worldPosition: ${ThreeUtils.vector3ToString(
                 centoid.clone().add(textOffset.clone())
               )};
-              cameraTarget: ${ThreeUtils.vector3ToString(this.camera.target)};
             `}
             >
               <a-entity
@@ -882,7 +880,6 @@ export class Aleph {
               worldPosition: ${ThreeUtils.vector3ToString(
                 centralPos.clone().add(textOffset.clone())
               )};
-              cameraTarget: ${ThreeUtils.vector3ToString(this.camera.target)};
             `}
             >
               <a-entity
@@ -1371,6 +1368,7 @@ export class Aleph {
 
   private _setControlsType(type: ControlsType): void {
     this.appSetControlsType(type);
+    this._scene.camera.up.copy(this._targetEntity.object3D.up);
     this._stateChanged();
   }
 

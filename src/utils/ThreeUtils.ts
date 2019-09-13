@@ -164,13 +164,12 @@ export class ThreeUtils {
     object: THREE.Object3D,
     camera: THREE.PerspectiveCamera,
     worldPosition: THREE.Vector3,
-    cameraPosition: THREE.Vector3,
-    cameraTarget: THREE.Vector3
+    cameraPosition: THREE.Vector3
   ) {
     const cameraDirection = new THREE.Vector3();
     camera.getWorldDirection(cameraDirection);
 
-    const distance = cameraPosition.distanceTo(cameraTarget);
+    const distance = cameraPosition.distanceTo(new THREE.Vector3(0, 0, 0));
     const lookPlane = new THREE.Plane(cameraDirection, distance);
 
     const frustrumDirection = new THREE.Vector3();
