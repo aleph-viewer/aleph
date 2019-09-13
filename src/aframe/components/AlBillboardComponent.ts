@@ -1,17 +1,17 @@
-import { Constants } from "../../Constants";
-import { ControlsType } from "../../enums";
-import { ThreeUtils } from "../../utils";
-import { BaseComponent } from "./BaseComponent";
+import { Constants } from '../../Constants';
+import { ControlsType } from '../../enums';
+import { ThreeUtils } from '../../utils';
+import { BaseComponent } from './BaseComponent';
 
 interface AlBillboardComponent extends BaseComponent {
   tickFunction(): void;
 }
 
-export default AFRAME.registerComponent("al-billboard", {
+export default AFRAME.registerComponent('al-billboard', {
   schema: {
-    controlsType: { type: "string", default: ControlsType.ORBIT },
-    cameraPosition: { type: "string" },
-    worldPosition: { type: "string" }
+    controlsType: { type: 'string', default: ControlsType.ORBIT },
+    cameraPosition: { type: 'string' },
+    worldPosition: { type: 'string' }
   },
 
   init() {
@@ -33,17 +33,6 @@ export default AFRAME.registerComponent("al-billboard", {
   // tslint:disable-next-line: no-empty
   removeEventListeners(): void {},
 
-  // tslint:disable-next-line: no-any
-  //update(oldData: any): void {
-    // Reset the up vector if we change camera mode
-    // if (this.data.controlsType !== oldData.controlsType) {
-    //   (this.el.object3D as THREE.Object3D).up.copy(
-    //     this.el.sceneEl.camera.up.clone()
-    //   );
-    // }
-    //console.log("up", this.el.object3D.up);
-  //},
-
   // tslint:disable-next-line: no-empty
   tickFunction() {
     const camera = this.el.sceneEl.camera as THREE.PerspectiveCamera;
@@ -57,10 +46,7 @@ export default AFRAME.registerComponent("al-billboard", {
       worldPosition,
       cameraPosition
     );
-
-    if (this.data.controlsType === ControlsType.TRACKBALL) {
-      object.up.copy(this.el.sceneEl.camera.up.clone());
-    }
+    object.up.copy(this.el.sceneEl.camera.up);
   },
 
   tick() {

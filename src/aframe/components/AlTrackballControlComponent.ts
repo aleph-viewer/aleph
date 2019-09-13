@@ -1,9 +1,9 @@
-import { ComponentDefinition } from "aframe";
-import { Constants } from "../../Constants";
-import { AlCamera } from "../../interfaces";
-import { ThreeUtils } from "../../utils";
-import { AlControlEvents } from "../../utils/AlControlEvents";
-import { AlTrackballControls } from "../../utils/AlTrackballControls";
+import { ComponentDefinition } from 'aframe';
+import { Constants } from '../../Constants';
+import { AlCamera } from '../../interfaces';
+import { ThreeUtils } from '../../utils';
+import { AlControlEvents } from '../../utils/AlControlEvents';
+import { AlTrackballControls } from '../../utils/AlTrackballControls';
 
 interface AlTrackballControlState {
   animationCache: AlCamera[];
@@ -28,29 +28,29 @@ interface AlTrackballControlComponent extends ComponentDefinition {
   handleAnimationCache(event: CustomEvent): void;
 }
 
-export default AFRAME.registerComponent("al-trackball-control", {
-  dependencies: ["camera"],
+export default AFRAME.registerComponent('al-trackball-control', {
+  dependencies: ['camera'],
 
   schema: {
-    animating: { type: "boolean", default: false },
-    controlPosition: { type: "vec3" },
-    controlTarget: { type: "vec3" },
+    animating: { type: 'boolean', default: false },
+    controlPosition: { type: 'vec3' },
+    controlTarget: { type: 'vec3' },
     dynamicDampingFactor: { default: 0.1 },
-    enabled: { type: "boolean", default: true },
-    maxDistance: { type: "number", default: 8000 },
-    minDistance: { type: "number", default: 0 },
-    noPan: { type: "boolean", default: false },
-    noRotate: { type: "boolean", default: false },
-    noZoom: { type: "boolean", default: false },
-    panSpeed: { type: "number", default: 0.3 },
-    resetWhenChanged: { type: "string", default: false },
-    rotateSpeed: { type: "number", default: 1.0 },
-    screenHeight: { type: "number", default: 0 },
-    screenLeft: { type: "number", default: 0 },
-    screenTop: { type: "number", default: 0 },
-    screenWidth: { type: "number", default: 0 },
-    staticMoving: { type: "boolean", default: true },
-    zoomSpeed: { type: "number", default: 0.5 }
+    enabled: { type: 'boolean', default: true },
+    maxDistance: { type: 'number', default: 8000 },
+    minDistance: { type: 'number', default: 0 },
+    noPan: { type: 'boolean', default: false },
+    noRotate: { type: 'boolean', default: false },
+    noZoom: { type: 'boolean', default: false },
+    panSpeed: { type: 'number', default: 0.3 },
+    resetWhenChanged: { type: 'string', default: '' },
+    rotateSpeed: { type: 'number', default: 1.0 },
+    screenHeight: { type: 'number', default: 0 },
+    screenLeft: { type: 'number', default: 0 },
+    screenTop: { type: 'number', default: 0 },
+    screenWidth: { type: 'number', default: 0 },
+    staticMoving: { type: 'boolean', default: true },
+    zoomSpeed: { type: 'number', default: 0.5 }
   },
 
   bindMethods() {
@@ -64,22 +64,22 @@ export default AFRAME.registerComponent("al-trackball-control", {
   },
 
   addListeners() {
-    window.addEventListener("mouseup", this.mouseUp, {
+    window.addEventListener('mouseup', this.mouseUp, {
       capture: false,
       once: false,
       passive: true
     });
-    window.addEventListener("mousemove", this.mouseMove, {
+    window.addEventListener('mousemove', this.mouseMove, {
       capture: false,
       once: false,
       passive: true
     });
-    this.el.sceneEl.canvas.addEventListener("mousedown", this.mouseDown, {
+    this.el.sceneEl.canvas.addEventListener('mousedown', this.mouseDown, {
       capture: false,
       once: false,
       passive: true
     });
-    this.el.sceneEl.canvas.addEventListener("wheel", this.canvasWheel, {
+    this.el.sceneEl.canvas.addEventListener('wheel', this.canvasWheel, {
       capture: false,
       once: false,
       passive: true
@@ -95,10 +95,10 @@ export default AFRAME.registerComponent("al-trackball-control", {
   },
 
   removeListeners() {
-    window.removeEventListener("mouseup", this.mouseUp);
-    window.removeEventListener("mousemove", this.mouseMove),
-      this.el.sceneEl.canvas.removeEventListener("mousedown", this.mouseDown);
-    this.el.sceneEl.canvas.removeEventListener("wheel", this.canvasWheel);
+    window.removeEventListener('mouseup', this.mouseUp);
+    window.removeEventListener('mousemove', this.mouseMove),
+      this.el.sceneEl.canvas.removeEventListener('mousedown', this.mouseDown);
+    this.el.sceneEl.canvas.removeEventListener('wheel', this.canvasWheel);
     this.el.sceneEl.removeEventListener(
       AlControlEvents.ANIMATION_STARTED,
       this.handleAnimationCache,
@@ -109,7 +109,7 @@ export default AFRAME.registerComponent("al-trackball-control", {
   handleAnimationCache(event: CustomEvent) {
     this.state.animationCache = event.detail.slerpPath;
 
-    const camera = this.el.getObject3D("camera") as THREE.Camera;
+    const camera = this.el.getObject3D('camera') as THREE.Camera;
 
     this.state.cameraAnimationCache = ThreeUtils.getSlerp3Path(
       camera.up.clone(),
@@ -118,7 +118,7 @@ export default AFRAME.registerComponent("al-trackball-control", {
   },
 
   mouseUp(_event: MouseEvent) {
-    document.body.style.cursor = "grab";
+    document.body.style.cursor = 'grab';
     const controls = this.state.controls;
 
     if (controls.enabled) {
@@ -137,7 +137,7 @@ export default AFRAME.registerComponent("al-trackball-control", {
 
   mouseDown(_event: MouseEvent) {
     this.state.mouseDown = true;
-    document.body.style.cursor = "grabbing";
+    document.body.style.cursor = 'grabbing';
   },
 
   mouseMove(_event: MouseEvent) {
@@ -200,7 +200,7 @@ export default AFRAME.registerComponent("al-trackball-control", {
   init() {
     const el = this.el;
     const data = this.data;
-    document.body.style.cursor = "grab";
+    document.body.style.cursor = 'grab';
 
     this.tickFunction = AFRAME.utils.throttle(
       this.tickFunction,
@@ -210,7 +210,7 @@ export default AFRAME.registerComponent("al-trackball-control", {
 
     // tslint:disable-next-line: no-any
     const controls = new AlTrackballControls(
-      el.getObject3D("camera"),
+      el.getObject3D('camera'),
       el.sceneEl.renderer.domElement
     );
 
@@ -219,7 +219,7 @@ export default AFRAME.registerComponent("al-trackball-control", {
     const controlTarget = ThreeUtils.objectToVector3(data.controlTarget);
 
     controls.object.position.copy(controlPosition);
-    el.getObject3D("camera").position.copy(controlPosition);
+    el.getObject3D('camera').position.copy(controlPosition);
     controls.target.copy(controlTarget);
 
     const animationCache = [];
@@ -285,7 +285,7 @@ export default AFRAME.registerComponent("al-trackball-control", {
     controls.zoomSpeed = data.zoomSpeed;
 
     this.el
-      .getObject3D("camera")
+      .getObject3D('camera')
       .position.copy(ThreeUtils.objectToVector3(data.controlPosition));
   },
 
@@ -300,7 +300,7 @@ export default AFRAME.registerComponent("al-trackball-control", {
       const nextCamera: THREE.Vector3 = this.state.cameraAnimationCache.shift();
 
       if (nextFrame && nextFrame.position && nextFrame.target) {
-        const camera = this.el.getObject3D("camera") as THREE.Camera;
+        const camera = this.el.getObject3D('camera') as THREE.Camera;
 
         controls.object.position.copy(nextFrame.position);
         camera.position.copy(nextFrame.position);

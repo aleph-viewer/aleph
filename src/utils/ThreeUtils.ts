@@ -1,16 +1,16 @@
-import { Constants } from "../Constants";
-import { ControlsType } from "../enums";
-import { AlCamera } from "../interfaces";
+import { Constants } from '../Constants';
+import { ControlsType } from '../enums';
+import { AlCamera } from '../interfaces';
 
-type Entity = import("aframe").Entity;
+type Entity = import('aframe').Entity;
 
 export class ThreeUtils {
   public static isWebGL2Available() {
     try {
       // tslint:disable-next-line: no-any
-      const canvas: any = document.createElement("canvas");
+      const canvas: any = document.createElement('canvas');
       return !!// tslint:disable-next-line: no-any
-      ((window as any).WebGL2RenderingContext && canvas.getContext("webgl2"));
+      ((window as any).WebGL2RenderingContext && canvas.getContext('webgl2'));
     } catch (e) {
       return false;
     }
@@ -23,8 +23,8 @@ export class ThreeUtils {
     type: ControlsType
   ) {
     type === ControlsType.TRACKBALL
-      ? camEntity.setAttribute("al-trackball-control", `enabled: ${enabled}`)
-      : camEntity.setAttribute("al-orbit-control", `enabled: ${enabled}`);
+      ? camEntity.setAttribute('al-trackball-control', `enabled: ${enabled}`)
+      : camEntity.setAttribute('al-orbit-control', `enabled: ${enabled}`);
   }
 
   public static waitOneFrame(func: () => void) {
@@ -66,11 +66,11 @@ export class ThreeUtils {
   }
 
   public static vector3ToString(vec: THREE.Vector3): string {
-    return vec.toArray().join(" ");
+    return vec.toArray().join(' ');
   }
 
   public static stringToVector3(vec: string): THREE.Vector3 {
-    const res = vec.split(" ");
+    const res = vec.split(' ');
     const vect = new THREE.Vector3();
     vect.x = Number(res[0]);
     vect.y = Number(res[1]);
@@ -169,7 +169,7 @@ export class ThreeUtils {
     const cameraDirection = new THREE.Vector3();
     camera.getWorldDirection(cameraDirection);
 
-    const distance = cameraPosition.distanceTo(new THREE.Vector3(0, 0, 0));
+    const distance = cameraPosition.distanceTo(worldPosition);
     const lookPlane = new THREE.Plane(cameraDirection, distance);
 
     const frustrumDirection = new THREE.Vector3();
