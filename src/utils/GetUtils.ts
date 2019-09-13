@@ -1,25 +1,25 @@
-import { Mesh } from "three";
-import { ThreeUtils } from ".";
-import { Constants } from "../Constants";
-import { AlCamera, AlNode } from "../interfaces";
+import { Mesh } from 'three';
+import { ThreeUtils } from '.';
+import { Constants } from '../Constants';
+import { AlCamera, AlNode } from '../interfaces';
 
 export class GetUtils {
   public static cssUnits: string[] = [
-    "%",
-    "ch",
-    "cm",
-    "em",
-    "ex",
-    "in",
-    "mm",
-    "pc",
-    "pt",
-    "px",
-    "rem",
-    "vh",
-    "vmax",
-    "vmin",
-    "vw"
+    '%',
+    'ch',
+    'cm',
+    'em',
+    'ex',
+    'in',
+    'mm',
+    'pc',
+    'pt',
+    'px',
+    'rem',
+    'vh',
+    'vmax',
+    'vmin',
+    'vw'
   ];
 
   public static addCssUnits(d: string): string {
@@ -28,13 +28,13 @@ export class GetUtils {
         return d.includes(u);
       })
     ) {
-      d += "px"; // default to px
+      d += 'px'; // default to px
     }
     return d;
   }
 
   public static getFileExtension(file: string): string {
-    return file.substring(file.lastIndexOf(".") + 1);
+    return file.substring(file.lastIndexOf('.') + 1);
   }
 
   public static getGeometryCenter(
@@ -118,4 +118,22 @@ export class GetUtils {
     return Math.abs(area / 2);
   }
   */
+
+  // public static getFontWidth(
+  //   canvasWidth: number,
+  //   boundingRadius: number,
+  //   fontSize: number
+  // ): number {
+  //   const mult = canvasWidth * boundingRadius;
+  //   const div = canvasWidth / boundingRadius;
+  //   const ratio = mult / div;
+
+  //   const logged = Math.log2(ratio);
+  //   const abs = Math.abs(logged);
+  //   const modded = (abs % 2) % 1;
+  //   const final =
+  //     (modded + 1) * fontSize * (boundingRadius * 0.5) * (1 / canvasWidth);
+
+  //   return final;
+  // }
 }
