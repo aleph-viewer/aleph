@@ -558,13 +558,6 @@ export class Aleph {
       const meshGeom = mesh.geometry;
       let position: THREE.Vector3;
 
-      let opacity;
-      if (this.boundingBoxEnabled) {
-        opacity = 1;
-      } else {
-        opacity = 0;
-      }
-
       if (this.displayMode === DisplayMode.VOLUME) {
         position = this._targetEntity.object3D.position
           .clone()
@@ -576,7 +569,6 @@ export class Aleph {
             al-bounding-box={`
               scale: ${ThreeUtils.vector3ToString(size)};
               color: ${Constants.colorValues.white};
-              opacity: ${opacity};
               enabled: ${this.boundingBoxEnabled};
             `}
             al-node-spawner={`
@@ -617,7 +609,6 @@ export class Aleph {
             al-bounding-box={`
                 scale: ${ThreeUtils.vector3ToString(size)};
                 color: ${Constants.colorValues.white};
-                opacity: ${opacity};
                 enabled: ${this.boundingBoxEnabled};
               `}
             ref={el => (this._boundingEntity = el)}
