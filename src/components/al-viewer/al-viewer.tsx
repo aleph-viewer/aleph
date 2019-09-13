@@ -627,7 +627,11 @@ export class Aleph {
         (frustrumDistance / this._boundingSphereRadius) *
         Constants.frustrumScaleFactor;
 
-      const textOffset: THREE.Vector3 = new THREE.Vector3(0, 22 * frustrumDistance, 0);
+      const textOffset: THREE.Vector3 = new THREE.Vector3(
+        0,
+        22 * frustrumDistance,
+        0
+      );
       textOffset.multiplyScalar(node.scale);
 
       return (
