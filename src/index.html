@@ -20,8 +20,6 @@
     ></script>
 
     <script src="/assets/ami.min.js"></script>
-    <script type="module" src="/build/aleph.esm.js"></script>
-    <script nomodule src="/build/aleph.js"></script>
 
     <link rel="stylesheet" href="/build/aleph.css" />
     <style>
@@ -103,9 +101,9 @@
 
     <script>
 
-      let container, alControlPanel, alViewer, state, debug;
+      var container, alControlPanel, alViewer, state, debug;
 
-      let prevState = {};
+      var prevState = {};
 
       const urls = new Map([
         [
@@ -127,222 +125,230 @@
       ]);
 
       function init() {
-        container = document.getElementById("container");
-        alControlPanel = document.querySelector("al-control-panel");
-        alViewer = document.querySelector("al-viewer");
-        debug = document.getElementById("debug");
 
-        alControlPanel.urls = urls;
+        // applyPolyfills().then(() => {
+        //     defineCustomElements(window);
 
-        alViewer.componentOnReady().then(function() {
+            container = document.getElementById("container");
+            alControlPanel = document.querySelector("al-control-panel");
+            alViewer = document.querySelector("al-viewer");
+            debug = document.getElementById("debug");
 
-          alViewer.addEventListener(
-            "changed",
-            function(e) {
+            alControlPanel.urls = urls;
+
+            var promises = [alControlPanel, alViewer].map(function(customElement) {
+              return customElements.whenDefined(customElement.localName);
+            });
+
+            // Wait for all the social-buttons to be upgraded.
+            Promise.all(promises).then(function() {
               nextState({
-                angles: e.detail.angles,
-                boundingBoxEnabled: e.detail.boundingBoxEnabled,
-                displayMode: e.detail.displayMode,
-                edges: e.detail.edges,
-                nodes: e.detail.nodes,
-                selected: e.detail.selected,
-                srcLoaded: e.detail.srcLoaded,
-                units: e.detail.units
+                src: Array.from(urls)[0][0]
               });
-            },
-            false
-          );
+            });
 
-          alViewer.addEventListener(
-            "volumeModeChanged",
-            function(ev) {
-              alControlPanel.stackhelper = ev.detail;
-            },
-            false
-          );
+            alViewer.addEventListener(
+              "changed",
+              function(e) {
+                nextState({
+                  angles: e.detail.angles,
+                  boundingBoxEnabled: e.detail.boundingBoxEnabled,
+                  displayMode: e.detail.displayMode,
+                  edges: e.detail.edges,
+                  nodes: e.detail.nodes,
+                  selected: e.detail.selected,
+                  srcLoaded: e.detail.srcLoaded,
+                  units: e.detail.units
+                });
+              },
+              false
+            );
 
-          // load src when component ready
-          nextState({
-            src: Array.from(urls)[0][0]
-          });
-        });
+            alViewer.addEventListener(
+              "volumeModeChanged",
+              function(ev) {
+                alControlPanel.stackhelper = ev.detail;
+              },
+              false
+            );
 
-        alControlPanel.componentOnReady().then(function() {
+            alControlPanel.addEventListener(
+              "boundingBoxEnabledChanged",
+              function(e) {
+                alViewer.setBoundingBoxEnabled(e.detail);
+              },
+              false
+            );
 
-          alControlPanel.addEventListener(
-            "boundingBoxEnabledChanged",
-            function(e) {
-              alViewer.setBoundingBoxEnabled(e.detail);
-            },
-            false
-          );
+            alControlPanel.addEventListener(
+              "controlsTypeChanged",
+              function(e) {
+                alViewer.setControlsType(e.detail);
+              },
+              false
+            );
 
-          alControlPanel.addEventListener(
-            "controlsTypeChanged",
-            function(e) {
-              alViewer.setControlsType(e.detail);
-            },
-            false
-          );
+            alControlPanel.addEventListener(
+              "deleteAngle",
+              function(e) {
+                alViewer.deleteAngle(e.detail);
+              },
+              false
+            );
 
-          alControlPanel.addEventListener(
-            "deleteAngle",
-            function(e) {
-              alViewer.deleteAngle(e.detail);
-            },
-            false
-          );
+            alControlPanel.addEventListener(
+              "deleteEdge",
+              function(e) {
+                alViewer.deleteEdge(e.detail);
+              },
+              false
+            );
 
-          alControlPanel.addEventListener(
-            "deleteEdge",
-            function(e) {
-              alViewer.deleteEdge(e.detail);
-            },
-            false
-          );
+            alControlPanel.addEventListener(
+              "deleteNode",
+              function(e) {
+                alViewer.deleteNode(e.detail);
+              },
+              false
+            );
 
-          alControlPanel.addEventListener(
-            "deleteNode",
-            function(e) {
-              alViewer.deleteNode(e.detail);
-            },
-            false
-          );
+            alControlPanel.addEventListener(
+              "displayModeChanged",
+              function(e) {
+                alViewer.setDisplayMode(e.detail);
+              },
+              false
+            );
 
-          alControlPanel.addEventListener(
-            "displayModeChanged",
-            function(e) {
-              alViewer.setDisplayMode(e.detail);
-            },
-            false
-          );
+            alControlPanel.addEventListener(
+              "graphEnabledChanged",
+              function(e) {
+                alViewer.setGraphEnabled(e.detail);
+              },
+              false
+            );
 
-          alControlPanel.addEventListener(
-            "graphEnabledChanged",
-            function(e) {
-              alViewer.setGraphEnabled(e.detail);
-            },
-            false
-          );
+            alControlPanel.addEventListener(
+              "materialChanged",
+              function(e) {
+                alViewer.setMaterial(e.detail);
+              },
+              false
+            );
 
-          alControlPanel.addEventListener(
-            "materialChanged",
-            function(e) {
-              alViewer.setMaterial(e.detail);
-            },
-            false
-          );
+            alControlPanel.addEventListener(
+              "orientationChanged",
+              function(e) {
+                alViewer.setOrientation(e.detail);
+              },
+              false
+            );
 
-          alControlPanel.addEventListener(
-            "orientationChanged",
-            function(e) {
-              alViewer.setOrientation(e.detail);
-            },
-            false
-          );
+            alControlPanel.addEventListener(
+              "recenter",
+              function(e) {
+                alViewer.recenter();
+              },
+              false
+            );
 
-          alControlPanel.addEventListener(
-            "recenter",
-            function(e) {
-              alViewer.recenter();
-            },
-            false
-          );
+            alControlPanel.addEventListener(
+              "graphSubmitted",
+              function(e) {
+                const graph = JSON.parse(e.detail);
+                if (graph) {
+                  alViewer.clearGraph();
+                  alViewer.setGraph(graph);
+                }
+              },
+              false
+            );
 
-          alControlPanel.addEventListener(
-            "graphSubmitted",
-            function(e) {
-              const graph = JSON.parse(e.detail);
-              if (graph) {
-                alViewer.clearGraph();
-                alViewer.setGraph(graph);
-              }
-            },
-            false
-          );
+            alControlPanel.addEventListener(
+              "saveNode",
+              function(e) {
+                alViewer.setNode(e.detail);
+              },
+              false
+            );
 
-          alControlPanel.addEventListener(
-            "saveNode",
-            function(e) {
-              alViewer.setNode(e.detail);
-            },
-            false
-          );
+            alControlPanel.addEventListener(
+              "selectedChanged",
+              function(e) {
+                alViewer.selectNode(e.detail);
+              },
+              false
+            );
 
-          alControlPanel.addEventListener(
-            "selectedChanged",
-            function(e) {
-              alViewer.selectNode(e.detail);
-            },
-            false
-          );
+            alControlPanel.addEventListener(
+              "slicesIndexChanged",
+              function(e) {
+                alViewer.setSlicesIndex(e.detail);
+              },
+              false
+            );
 
-          alControlPanel.addEventListener(
-            "slicesIndexChanged",
-            function(e) {
-              alViewer.setSlicesIndex(e.detail);
-            },
-            false
-          );
+            alControlPanel.addEventListener(
+              "slicesWindowCenterChanged",
+              function(e) {
+                alViewer.setSlicesWindowCenter(e.detail);
+              },
+              false
+            );
 
-          alControlPanel.addEventListener(
-            "slicesWindowCenterChanged",
-            function(e) {
-              alViewer.setSlicesWindowCenter(e.detail);
-            },
-            false
-          );
+            alControlPanel.addEventListener(
+              "slicesWindowWidthChanged",
+              function(e) {
+                alViewer.setSlicesWindowWidth(e.detail);
+              },
+              false
+            );
 
-          alControlPanel.addEventListener(
-            "slicesWindowWidthChanged",
-            function(e) {
-              alViewer.setSlicesWindowWidth(e.detail);
-            },
-            false
-          );
+            alControlPanel.addEventListener(
+              "unitsChanged",
+              function(e) {
+                alViewer.setUnits(e.detail);
+              },
+              false
+            );
 
-          alControlPanel.addEventListener(
-            "unitsChanged",
-            function(e) {
-              alViewer.setUnits(e.detail);
-            },
-            false
-          );
+            alControlPanel.addEventListener(
+              "urlChanged",
+              function(e) {
+                nextState({
+                  src: e.detail
+                });
+              },
+              false
+            );
 
-          alControlPanel.addEventListener(
-            "urlChanged",
-            function(e) {
-              nextState({
-                src: e.detail
-              });
-            },
-            false
-          );
+            alControlPanel.addEventListener(
+              "volumeStepsChanged",
+              function(e) {
+                alViewer.setVolumeSteps(e.detail);
+              },
+              false
+            );
 
-          alControlPanel.addEventListener(
-            "volumeStepsChanged",
-            function(e) {
-              alViewer.setVolumeSteps(e.detail);
-            },
-            false
-          );
+            alControlPanel.addEventListener(
+              "volumeWindowCenterChanged",
+              function(e) {
+                alViewer.setVolumeWindowCenter(e.detail);
+              },
+              false
+            );
 
-          alControlPanel.addEventListener(
-            "volumeWindowCenterChanged",
-            function(e) {
-              alViewer.setVolumeWindowCenter(e.detail);
-            },
-            false
-          );
+            alControlPanel.addEventListener(
+              "volumeWindowWidthChanged",
+              function(e) {
+                alViewer.setVolumeWindowWidth(e.detail);
+              },
+              false
+            );
 
-          alControlPanel.addEventListener(
-            "volumeWindowWidthChanged",
-            function(e) {
-              alViewer.setVolumeWindowWidth(e.detail);
-            },
-            false
-          );
-        });
+            resize();
+
+        //});
       }
 
       function nextState(s) {
@@ -374,11 +380,6 @@
         prevState = Object.assign({}, state);
       }
 
-      document.addEventListener("DOMContentLoaded", function(event) {
-        init();
-        resize();
-      });
-
       function resize() {
         container.style.height = window.innerHeight + "px";
         if (alViewer.resize) {
@@ -393,6 +394,10 @@
       });
 
     </script>
+
+
+    <script type="module" src="/build/aleph.esm.js" onload="init()"></script>
+    <script nomodule src="/build/aleph.js" onload="init()"></script>
 
   </body>
 </html>

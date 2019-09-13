@@ -7,10 +7,10 @@
 
 ## Properties
 
-| Property  | Attribute  | Description | Type     | Default     |
-| --------- | ---------- | ----------- | -------- | ----------- |
-| `graph`   | `graph`    |             | `string` | `undefined` |
-| `tabSize` | `tab-size` |             | `number` | `2`         |
+| Property  | Attribute  | Description | Type     | Default |
+| --------- | ---------- | ----------- | -------- | ------- |
+| `graph`   | `graph`    |             | `string` | `null`  |
+| `tabSize` | `tab-size` |             | `number` | `2`     |
 
 
 ## Events

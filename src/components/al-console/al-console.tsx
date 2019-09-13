@@ -17,15 +17,10 @@ export class AlConsole {
   @Prop({ mutable: true }) public tabSize: number = 2;
 
   private _getGraphJson(): string {
-
     let json: string = "";
 
     try {
-      json = JSON.stringify(
-        JSON.parse(this.graph),
-        undefined,
-        this.tabSize
-      );
+      json = JSON.stringify(JSON.parse(this.graph), undefined, this.tabSize);
     } catch {
       // do nothing
     }

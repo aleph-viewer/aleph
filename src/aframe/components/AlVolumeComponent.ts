@@ -72,7 +72,7 @@ export default AFRAME.registerComponent("al-volume", {
       loaded: false,
       prevRenderTime: 0,
       renderTask: 0,
-      volumePower: 5,
+      volumePower: 5
     } as AlVolumeState;
 
     this.bindMethods();
@@ -261,7 +261,6 @@ export default AFRAME.registerComponent("al-volume", {
     }
 
     el.sceneEl.emit(AlVolumeEvents.MODE_CHANGED, state.stackhelper, false);
-
   },
 
   // tslint:disable-next-line: no-any
