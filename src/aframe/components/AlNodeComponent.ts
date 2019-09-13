@@ -56,6 +56,8 @@ export default AFRAME.registerComponent("al-node", {
     const outlineMesh = new THREE.Mesh(outlineGeometry, outlineMaterial);
     mesh.add(outlineMesh);
 
+    console.log("up", mesh.up);
+
     el.setObject3D("mesh", mesh);
     (el.object3D as THREE.Object3D).renderOrder =
       Constants.topLayerRenderOrder - 1;

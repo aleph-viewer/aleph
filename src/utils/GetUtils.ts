@@ -1,25 +1,25 @@
-import { Mesh } from 'three';
-import { ThreeUtils } from '.';
-import { Constants } from '../Constants';
-import { AlCamera, AlNode } from '../interfaces';
+import { Mesh } from "three";
+import { ThreeUtils } from ".";
+import { Constants } from "../Constants";
+import { AlCamera, AlNode } from "../interfaces";
 
 export class GetUtils {
   public static cssUnits: string[] = [
-    '%',
-    'ch',
-    'cm',
-    'em',
-    'ex',
-    'in',
-    'mm',
-    'pc',
-    'pt',
-    'px',
-    'rem',
-    'vh',
-    'vmax',
-    'vmin',
-    'vw'
+    "%",
+    "ch",
+    "cm",
+    "em",
+    "ex",
+    "in",
+    "mm",
+    "pc",
+    "pt",
+    "px",
+    "rem",
+    "vh",
+    "vmax",
+    "vmin",
+    "vw"
   ];
 
   public static addCssUnits(d: string): string {
@@ -28,13 +28,13 @@ export class GetUtils {
         return d.includes(u);
       })
     ) {
-      d += 'px'; // default to px
+      d += "px"; // default to px
     }
     return d;
   }
 
   public static getFileExtension(file: string): string {
-    return file.substring(file.lastIndexOf('.') + 1);
+    return file.substring(file.lastIndexOf(".") + 1);
   }
 
   public static getGeometryCenter(

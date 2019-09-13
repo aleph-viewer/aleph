@@ -1,7 +1,7 @@
-import { Constants } from '../../Constants';
-import { BaseComponent } from './BaseComponent';
+import { Constants } from "../../Constants";
+import { BaseComponent } from "./BaseComponent";
 
-export default AFRAME.registerComponent('al-control-lights', {
+export default AFRAME.registerComponent("al-control-lights", {
   schema: {},
 
   init() {
@@ -13,7 +13,7 @@ export default AFRAME.registerComponent('al-control-lights', {
       this
     );
 
-    const parent: THREE.Object3D = this.el.getObject3D('camera');
+    const parent: THREE.Object3D = this.el.getObject3D("camera");
 
     const light1 = new THREE.DirectionalLight(
       new THREE.Color(Constants.colorValues.white),

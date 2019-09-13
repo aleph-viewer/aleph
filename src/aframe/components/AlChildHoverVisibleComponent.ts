@@ -1,6 +1,6 @@
-import { Entity } from 'aframe';
-import { Constants } from '../../Constants';
-import { BaseComponent } from './BaseComponent';
+import { Entity } from "aframe";
+import { Constants } from "../../Constants";
+import { BaseComponent } from "./BaseComponent";
 
 interface AlChildHoverVisibleComponent extends BaseComponent {
   tickFunction(): void;
@@ -8,7 +8,7 @@ interface AlChildHoverVisibleComponent extends BaseComponent {
   pointerOut(_event: CustomEvent): void;
 }
 
-export default AFRAME.registerComponent('al-child-hover-visible', {
+export default AFRAME.registerComponent("al-child-hover-visible", {
   schema: {},
 
   init(): void {
@@ -29,12 +29,12 @@ export default AFRAME.registerComponent('al-child-hover-visible', {
   },
 
   addEventListeners(): void {
-    this.el.addEventListener('raycaster-intersected', this.pointerOver, {
+    this.el.addEventListener("raycaster-intersected", this.pointerOver, {
       capture: true,
       once: false,
       passive: true
     });
-    this.el.addEventListener('raycaster-intersected-cleared', this.pointerOut, {
+    this.el.addEventListener("raycaster-intersected-cleared", this.pointerOut, {
       capture: false,
       once: false,
       passive: true
@@ -42,9 +42,9 @@ export default AFRAME.registerComponent('al-child-hover-visible', {
   },
 
   removeEventListeners(): void {
-    this.el.removeEventListener('raycaster-intersected', this.pointerOver);
+    this.el.removeEventListener("raycaster-intersected", this.pointerOver);
     this.el.removeEventListener(
-      'raycaster-intersected-cleared',
+      "raycaster-intersected-cleared",
       this.pointerOut
     );
   },

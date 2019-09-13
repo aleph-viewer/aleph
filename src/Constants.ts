@@ -5,21 +5,20 @@ export class Constants {
   public static targetFrameTime = 1000 / 24;
   public static stepPowerMinMax = [1, 10];
   public static movingStepCount = 2;
-  // public static stepArray = [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024];
-  public static controllerName = '-controller';
+  public static controllerName = "-controller";
   public static edgeSize = 0.005;
-  public static fontSizeLarge = 1.6;
-  public static fontSizeMedium = 1.3;
-  public static fontSizeSmall = 1;
+  public static fontSizeLarge = 1;
+  public static fontSizeMedium = 0.7;
+  public static fontSizeSmall = 0.4;
   public static maxAnimationSteps = 50;
   public static minLoadingMS = 500;
-  public static movedEventName = '-moved';
+  public static movedEventName = "-moved";
   public static nodeSizeRatio = 100;
   public static stackSpaceMultiplier = { x: 10, y: 10, z: 10 };
   public static stepsIncrement = 8;
   public static stepsMax: number = 512;
   public static stepsMin: number = 1;
-  public static titleIdName = '-title';
+  public static titleIdName = "-title";
   public static topLayerRenderOrder = 999;
   public static unitsDecimalPlaces = 2;
   public static zoomFactor = 2.5;
@@ -34,20 +33,20 @@ export class Constants {
   public static minTimeForThrottle = Constants.minFrameMS * 5;
 
   public static buttonColors = {
-    active: '#f50057',
-    hover: '#f50057',
-    up: '#00b0ff'
+    active: "#f50057",
+    hover: "#f50057",
+    up: "#00b0ff"
   };
 
   public static colorValues = {
-    red: '#f50057',
-    blue: '#00b0ff',
-    black: '#000000',
-    grey: '#222222',
-    white: '#ffffff',
-    yellow: '#ffeb3b',
-    green: '#76ff03',
-    lightRed: '#f77777'
+    red: "#f50057",
+    blue: "#00b0ff",
+    black: "#000000",
+    grey: "#222222",
+    white: "#ffffff",
+    yellow: "#ffeb3b",
+    green: "#76ff03",
+    lightRed: "#f77777"
   };
 
   public static lightValues = {
@@ -63,6 +62,7 @@ export class Constants {
     near: 0.05,
     far: 10000,
     fov: 45,
+    minPolarAngle: 5,
     maxPolarAngle: 175,
     rotateSpeed: 0.5,
     zoomSpeed: 1,
