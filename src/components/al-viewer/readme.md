@@ -16,10 +16,11 @@
 
 ## Events
 
-| Event     | Description                                                                                    | Type               |
-| --------- | ---------------------------------------------------------------------------------------------- | ------------------ |
-| `changed` | Fires whenever the internal state changes passing an object describing the state.              | `CustomEvent<any>` |
-| `loaded`  | Fires when an object is loaded passing either the object or a stackhelper for volumetric data. | `CustomEvent<any>` |
+| Event               | Description                                                                                    | Type               |
+| ------------------- | ---------------------------------------------------------------------------------------------- | ------------------ |
+| `changed`           | Fires whenever the internal state changes passing an object describing the state.              | `CustomEvent<any>` |
+| `loaded`            | Fires when an object is loaded passing either the object or a stackhelper for volumetric data. | `CustomEvent<any>` |
+| `volumeModeChanged` | Fires when the volume display mode changes passing the new stackhelper.                        | `CustomEvent<any>` |
 
 
 ## Methods

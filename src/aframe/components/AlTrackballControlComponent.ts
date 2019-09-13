@@ -260,7 +260,6 @@ export default AFRAME.registerComponent("al-trackball-control", {
 
   // tslint:disable-next-line: no-any
   update(oldData: any) {
-
     const controls = this.state.controls;
     const data = this.data;
 

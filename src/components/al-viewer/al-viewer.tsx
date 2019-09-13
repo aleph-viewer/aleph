@@ -1458,7 +1458,6 @@ export class Aleph {
 
   // tslint:disable-next-line: no-any
   private _srcLoaded(ev: any): void {
-
     this._loadedObject = ev.detail;
 
     const mesh: THREE.Mesh | null = this._getMesh();
@@ -1809,7 +1808,11 @@ export class Aleph {
 
     this._scene.addEventListener(AlVolumeEvents.LOADED, this._srcLoaded, false);
 
-    this._scene.addEventListener(AlVolumeEvents.MODE_CHANGED, this._volumeModeChanged, false);
+    this._scene.addEventListener(
+      AlVolumeEvents.MODE_CHANGED,
+      this._volumeModeChanged,
+      false
+    );
 
     this._scene.addEventListener(
       AlGraphEvents.POINTER_OVER,
