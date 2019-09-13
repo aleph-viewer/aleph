@@ -1,6 +1,6 @@
-import { MeshLine, MeshLineMaterial } from 'three.meshline';
-import { Constants } from '../../Constants';
-import { ThreeUtils } from '../../utils';
+import { MeshLine, MeshLineMaterial } from "three.meshline";
+import { Constants } from "../../Constants";
+import { ThreeUtils } from "../../utils";
 
 interface AlBoundingBoxState {
   box: THREE.Box3;
@@ -11,7 +11,7 @@ interface AlBoundingBoxState {
   mesh: THREE.Mesh;
 }
 
-export default AFRAME.registerComponent('al-bounding-box', {
+export default AFRAME.registerComponent("al-bounding-box", {
   schema: {
     color: { type: 'string', default: '#f50057' },
     scale: { type: 'string' },
@@ -51,7 +51,7 @@ export default AFRAME.registerComponent('al-bounding-box', {
       visible: false
     });
     const mesh = new THREE.Mesh(geometry, material);
-    el.setObject3D('raycastMesh', mesh);
+    el.setObject3D("raycastMesh", mesh);
 
     // Parent of all MeshLines that form the bounding box
     const BboxLineController = new THREE.Mesh();
@@ -241,7 +241,7 @@ export default AFRAME.registerComponent('al-bounding-box', {
 
   remove(): void {
     this.removeEventListeners();
-    this.el.removeObject3D('mesh');
-    this.el.removeObject3D('raycastMesh');
+    this.el.removeObject3D("mesh");
+    this.el.removeObject3D("raycastMesh");
   }
 });

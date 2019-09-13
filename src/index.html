@@ -154,11 +154,9 @@
           );
 
           alViewer.addEventListener(
-            "loaded",
+            "volumeModeChanged",
             function(ev) {
-              if (state.displayMode !== "mesh") {
-                alControlPanel.stackhelper = ev.detail;
-              }
+              alControlPanel.stackhelper = ev.detail;
             },
             false
           );
