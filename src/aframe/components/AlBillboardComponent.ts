@@ -40,14 +40,12 @@ export default AFRAME.registerComponent("al-billboard", {
     const object = this.el.object3D as THREE.Object3D;
     const worldPosition = ThreeUtils.stringToVector3(this.data.worldPosition);
     const cameraPosition = ThreeUtils.stringToVector3(this.data.cameraPosition);
-    const cameraTarget = ThreeUtils.stringToVector3(this.data.cameraTarget);
 
     ThreeUtils.lookToFrustrumSpace(
       object,
       camera,
       worldPosition,
-      cameraPosition,
-      cameraTarget
+      cameraPosition
     );
     object.up.copy(this.el.sceneEl.camera.up);
   },
