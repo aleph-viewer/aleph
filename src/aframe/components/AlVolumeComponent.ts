@@ -25,7 +25,6 @@ interface AlVolumeState {
   // tslint:disable-next-line: no-any
   stack: any;
   stackhelper: AMI.StackHelper | AMI.VolumeRenderHelper;
-  volumePower: number;
 }
 
 interface AlVolumeComponent extends BaseComponent {
@@ -71,8 +70,7 @@ export default AFRAME.registerComponent("al-volume", {
       frameTime: window.performance.now(),
       loaded: false,
       prevRenderTime: 0,
-      renderTask: 0,
-      volumePower: 5
+      renderTask: 0
     } as AlVolumeState;
 
     this.bindMethods();
@@ -150,7 +148,7 @@ export default AFRAME.registerComponent("al-volume", {
 
   onInteractionFinished(_event: CustomEvent): void {
     if (this.state.stackhelper && _event.detail.needsRender) {
-      this.state.renderTask = Math.pow(2, this.state.volumePower);
+      this.state.renderTask = this.getVolumePower();
     }
 
     this.state.debounce = false;
@@ -166,7 +164,9 @@ export default AFRAME.registerComponent("al-volume", {
       power = 7;
     }
 
-    return Math.pow(2, power + (this.data.isHighRes ? 1 : 0));
+    const res = Math.pow(2, power + (this.data.isHighRes ? 1 : 0));
+
+    return res;
   },
 
   rendererResize(): void {
@@ -180,13 +180,14 @@ export default AFRAME.registerComponent("al-volume", {
       state.bufferSceneTextureWidth = this.el.sceneEl.canvas.clientWidth;
       state.bufferSceneTextureHeight = this.el.sceneEl.canvas.clientHeight;
 
-      this.createBufferTexture();
       this.state.renderTask = this.getVolumePower();
     }
   },
 
   renderBufferScene(): void {
     if (this.data.displayMode === DisplayMode.VOLUME) {
+      this.createBufferTexture();
+
       this.state.stackhelper.steps = this.state.renderTask;
 
       const prev = window.performance.now();
@@ -289,7 +290,7 @@ export default AFRAME.registerComponent("al-volume", {
         this.createBufferTexture();
         // allow some time for the stackhelper to reorient itself
         setTimeout(() => {
-          this.state.renderTask = Math.pow(2, this.state.volumePower);
+          this.state.renderTask = this.getVolumePower();
         }, 500);
       } else {
         (this.el.sceneEl.object3D as THREE.Scene).background = null;
@@ -301,7 +302,7 @@ export default AFRAME.registerComponent("al-volume", {
       oldData.controlsType &&
       oldData.controlsType !== this.data.controlsType
     ) {
-      this.state.renderTask = Math.pow(2, this.state.volumePower);
+      this.state.renderTask = this.getVolumePower();
     }
 
     if (
@@ -310,7 +311,7 @@ export default AFRAME.registerComponent("al-volume", {
       oldData.volumeWindowCenter !== this.data.volumeWindowCenter
     ) {
       this.state.debounce = true;
-      this.state.renderTask = Math.pow(2, this.state.volumePower);
+      this.state.renderTask = this.getVolumePower();
     }
 
     if (
@@ -319,7 +320,7 @@ export default AFRAME.registerComponent("al-volume", {
       oldData.volumeWindowWidth !== this.data.volumeWindowWidth
     ) {
       this.state.debounce = true;
-      this.state.renderTask = Math.pow(2, this.state.volumePower);
+      this.state.renderTask = this.getVolumePower();
     }
   },
 
