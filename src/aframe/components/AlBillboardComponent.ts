@@ -1,18 +1,18 @@
-import { Constants } from '../../Constants';
-import { ControlsType } from '../../enums';
-import { ThreeUtils } from '../../utils';
-import { BaseComponent } from './BaseComponent';
+import { Constants } from "../../Constants";
+import { ControlsType } from "../../enums";
+import { ThreeUtils } from "../../utils";
+import { BaseComponent } from "./BaseComponent";
 
 interface AlBillboardComponent extends BaseComponent {
   tickFunction(): void;
 }
 
-export default AFRAME.registerComponent('al-billboard', {
+export default AFRAME.registerComponent("al-billboard", {
   schema: {
-    controlsType: { type: 'string', default: ControlsType.ORBIT },
-    cameraPosition: { type: 'string' },
-    worldPosition: { type: 'string' },
-    cameraTarget: { type: 'string', default: '0 0 0' }
+    controlsType: { type: "string", default: ControlsType.ORBIT },
+    cameraPosition: { type: "string" },
+    worldPosition: { type: "string" },
+    cameraTarget: { type: "string", default: "0 0 0" }
   },
 
   init() {
