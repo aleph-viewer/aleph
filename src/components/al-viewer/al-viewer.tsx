@@ -1562,6 +1562,11 @@ export class Aleph {
       this._validTarget && // Target is valid
       this._hovered === null // Not intersecting a Node already
     ) {
+      let newNode: AlNode;
+      const nodeId: string = GraphUtils.getNextId(
+        AlGraphEntryType.NODE,
+        this.nodes
+      );
       const intersection: THREE.Intersection =
         event.detail.aframeEvent.detail.intersection;
 
@@ -1571,13 +1576,32 @@ export class Aleph {
           cameraDirection: this._camera.getAttribute("raycaster").direction,
           intersection
         });
+      } else if (intersection) {
+        newNode = {
+          targetId: this.src,
+          position: ThreeUtils.vector3ToString(intersection.point),
+          scale: this._boundingSphereRadius / Constants.nodeSizeRatio,
+          title: nodeId
+        };
+      }
+
+      if (newNode) {
+        const previousSelected = this.selected;
+        this._setNode([nodeId, newNode]);
+
+        if (
+          this._isShiftDown && // Shift is down
+          this.nodes.has(previousSelected) // A Node is already selected
+        ) {
+          this._createEdge(previousSelected, nodeId);
+          this._selectNode(nodeId);
+        }
       }
     }
   }
 
   private _volumeRaycastHandler(event: CustomEvent): void {
     const hitPosition = event.detail.hitPosition;
-    const intersection = event.detail.intersection;
     const rayResult = event.detail.rayResult;
 
     const nodeId: string = GraphUtils.getNextId(
@@ -1591,13 +1615,6 @@ export class Aleph {
       newNode = {
         targetId: this.src,
         position: ThreeUtils.vector3ToString(hitPosition),
-        scale: this._boundingSphereRadius / Constants.nodeSizeRatio,
-        title: nodeId
-      };
-    } else if (intersection) {
-      newNode = {
-        targetId: this.src,
-        position: ThreeUtils.vector3ToString(intersection.point),
         scale: this._boundingSphereRadius / Constants.nodeSizeRatio,
         title: nodeId
       };
