@@ -50,7 +50,7 @@ export default AFRAME.registerComponent("al-bounding-box", {
       visible: false
     });
     const mesh = new THREE.Mesh(geometry, material);
-    el.setObject3D("raycastMesh", mesh);
+    el.setObject3D("mesh", mesh);
 
     // Parent of all MeshLines that form the bounding box
     const BboxLineController = new THREE.Mesh();
@@ -241,6 +241,5 @@ export default AFRAME.registerComponent("al-bounding-box", {
   remove(): void {
     this.removeEventListeners();
     this.el.removeObject3D("mesh");
-    this.el.removeObject3D("raycastMesh");
   }
 });

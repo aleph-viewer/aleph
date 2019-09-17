@@ -382,7 +382,9 @@ export default AFRAME.registerComponent("al-volume", {
   },
 
   remove(): void {
-    this.el.removeObject3D("mesh");
+    if (this.data.displayMode === DisplayMode.SLICES) {
+      this.el.removeObject3D("mesh");
+    }
     this.removeEventListeners();
 
     (this.el.sceneEl.object3D as THREE.Scene).background = null;
