@@ -1,6 +1,6 @@
 {
   "axial": "Axial",
-  "boundingBoxEnabled": "Bounding Box Enabled",
+  "boundingBoxEnabled": "Bounding Box",
   "brightness": "Brightness",
   "clay": "Clay",
   "contrast": "Contrast",
@@ -8,7 +8,7 @@
   "coronal": "Coronal",
   "default": "Default",
   "displayMode": "Display Mode",
-  "graphEnabled": "Graph Enabled",
+  "graphEnabled": "Graph",
   "material": "Material",
   "meters": "Meters",
   "millimeters": "Millimeters",
