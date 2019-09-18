@@ -326,6 +326,7 @@ export default AFRAME.registerComponent("al-orbit-control", {
   },
 
   remove() {
+    this.state.controls.reset();
     this.removeListeners();
     let state = this.state as AlOrbitControlState;
     state.controls.dispose();

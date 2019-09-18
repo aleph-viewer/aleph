@@ -43,7 +43,6 @@ export default AFRAME.registerComponent("al-trackball-control", {
     noRotate: { type: "boolean", default: false },
     noZoom: { type: "boolean", default: false },
     panSpeed: { type: "number", default: 0.3 },
-    resetWhenChanged: { type: "string", default: "" },
     rotateSpeed: { type: "number", default: 1.0 },
     screenHeight: { type: "number", default: 0 },
     screenLeft: { type: "number", default: 0 },
@@ -263,11 +262,6 @@ export default AFRAME.registerComponent("al-trackball-control", {
     const controls = this.state.controls;
     const data = this.data;
 
-    if (oldData.resetWhenChanged !== data.resetWhenChanged) {
-      console.log("reset");
-      controls.reset();
-    }
-
     controls.target = ThreeUtils.objectToVector3(data.controlTarget);
     controls.dynamicDampingFactor = data.dynamicDampingFactor;
     controls.enabled = data.enabled;
@@ -296,7 +290,7 @@ export default AFRAME.registerComponent("al-trackball-control", {
       return;
     }
 
-    if (this.data.animating) {
+    if (this.data.animating && this.state.cameraAnimationCache) {
       const nextFrame: AlCamera = this.state.animationCache.shift();
       const nextCamera: THREE.Vector3 = this.state.cameraAnimationCache.shift();
 
@@ -346,6 +340,7 @@ export default AFRAME.registerComponent("al-trackball-control", {
   },
 
   remove() {
+    this.state.controls.reset();
     this.removeListeners();
     let state = this.state as AlTrackballControlState;
     state.controls.dispose();
