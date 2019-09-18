@@ -16,6 +16,7 @@ The aim of this project is to satisfy the following top-level design goals:
 - The viewer and control panel are straight-forward to debug, using a single source of truth and unidirectional data flow
 - The viewer encapsulates 3D rendering logic in a well-defined component model, with existing community support/adoption
 - The viewer utilises a component model to extensibly display various 3D file types (initially GLTF+DRACO, DICOM)
+- The viewer renders 3D scenes declaratively as markup, decoupling the presentation layer from the application layer
 - The viewer allows annotation of points on a 3D mesh or volume with a title and description
 - The viewer allows measurement of lengths and angles, with the potential to be extended to areas and volumes
 - The viewer allows annotation/measurement data to be stored/retrieved as json
