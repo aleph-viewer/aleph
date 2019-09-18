@@ -58,6 +58,8 @@ export namespace Components {
     'units': Units;
     'url': string | null;
     'urls': Map<string, string> | null;
+    'volumeBrightness': number;
+    'volumeContrast': number;
   }
   interface AlEdgeEditor {
     'edge': [string, AlEdge];
@@ -256,6 +258,8 @@ declare namespace LocalJSX {
     'units'?: Units;
     'url'?: string | null;
     'urls'?: Map<string, string> | null;
+    'volumeBrightness'?: number;
+    'volumeContrast'?: number;
   }
   interface AlEdgeEditor extends JSXBase.HTMLAttributes<HTMLAlEdgeEditorElement> {
     'edge'?: [string, AlEdge];

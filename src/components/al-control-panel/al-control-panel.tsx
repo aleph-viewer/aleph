@@ -32,6 +32,8 @@ export class AlSettings {
   @Prop({ mutable: true }) public units: Units = Units.METERS;
   @Prop({ mutable: true }) public url: string | null = null;
   @Prop({ mutable: true }) public urls: Map<string, string> | null = null;
+  @Prop({ mutable: true }) public volumeBrightness: number;
+  @Prop({ mutable: true }) public volumeContrast: number;
 
   private _getGraphJson(): string {
     if (this.nodes && this.edges && this.angles) {
@@ -90,6 +92,8 @@ export class AlSettings {
                   slices-index={this.slicesIndex}
                   slices-brightness={this.slicesBrightness}
                   slices-contrast={this.slicesContrast}
+                  volume-brightness={this.volumeBrightness}
+                  volume-contrast={this.volumeContrast}
                   units={this.units}
                 ></al-settings>
               </Scroll>

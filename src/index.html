@@ -161,7 +161,9 @@
                   slicesWindowCenter: e.detail.slicesWindowCenter,
                   slicesWindowWidth: e.detail.slicesWindowWidth,
                   srcLoaded: e.detail.srcLoaded,
-                  units: e.detail.units
+                  units: e.detail.units,
+                  volumeWindowCenter: e.detail.volumeWindowCenter,
+                  volumeWindowWidth: e.detail.volumeWindowWidth
                 });
               },
               false
@@ -374,6 +376,8 @@
         alControlPanel.slicesIndex = state.slicesIndex;
         alControlPanel.slicesBrightness = state.slicesWindowCenter;
         alControlPanel.slicesContrast = state.slicesWindowWidth;
+        alControlPanel.volumeBrightness = state.volumeWindowCenter;
+        alControlPanel.volumeContrast = state.volumeWindowWidth;
 
         prevState = Object.assign({}, state);
       }

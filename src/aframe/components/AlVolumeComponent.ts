@@ -358,76 +358,40 @@ export default AFRAME.registerComponent("al-volume", {
 
     this._lastStackOrientationIndex = stackOrientationIndex;
 
-    // const windowWidthMin: number = 1;
+    // brightness
+    const windowCenterMax: number = this.state.stackhelper.stack.minMax[1];
+    const windowCenter: number = Math.floor(Utils.reverseNumber(windowCenterMax * this.data.slicesWindowCenter, 0, windowCenterMax));
+
+    // contrast
     const windowWidthMax: number =
       this.state.stackhelper.stack.minMax[1] - this.state.stackhelper.stack.minMax[0];
-    let windowWidth: number;
-
-    // if (this.data.slicesWindowWidth === undefined) {
-    //   // set default
-    //   windowWidth = Math.floor(Utils.reverseNumber(windowWidthMax * 0.5, 0, windowWidthMax));
-    // } else {
-      windowWidth = Math.floor(Utils.reverseNumber(windowWidthMax * this.data.slicesWindowWidth, 0, windowWidthMax));
-    //}
-
-    // const windowCenterMin: number = this.state.stackhelper.stack.minMax[0];
-    const windowCenterMax: number = this.state.stackhelper.stack.minMax[1];
-    let windowCenter: number;
-
-    // if (this.data.slicesWindowCenter === undefined) {
-    //   // set default
-    //   windowCenter = Math.floor(Utils.reverseNumber(windowCenterMax * 0.5, 0, windowCenterMax));
-    // } else {
-      windowCenter = Math.floor(Utils.reverseNumber(windowCenterMax * this.data.slicesWindowCenter, 0, windowCenterMax));
-    //}
+    const windowWidth: number = Math.floor(Utils.reverseNumber(windowWidthMax * this.data.slicesWindowWidth, 0, windowWidthMax));
 
     // update the stackhelper
     (this.state.stackhelper as AMI.StackHelper).orientation = displayOrientationIndex;
     (this.state.stackhelper as AMI.StackHelper).index = index;
-    (this.state.stackhelper as AMI.StackHelper).slice.windowWidth = windowWidth;
     (this.state.stackhelper as AMI.StackHelper).slice.windowCenter = windowCenter;
+    (this.state.stackhelper as AMI.StackHelper).slice.windowWidth = windowWidth;
   },
 
   updateVolumeStack(): void {
-  //   let steps: number;
 
-  //       if (this.volumeSteps === undefined) {
-  //         // set default
-  //         steps = 16;
-  //       } else {
-  //         steps = this.volumeSteps;
-  //       }
+    if (!this.state.stackhelper) {
+      return;
+    }
 
-  //       const windowWidthMin: number = 1;
-  //       const windowWidthMax: number =
-  //         this.stackhelper.stack.minMax[1] - this.stackhelper.stack.minMax[0];
-  //       let windowWidth: number;
+    // brightness
+    const windowCenterMax: number = this.state.stackhelper.stack.minMax[1];
+    const windowCenter: number = Math.floor(Utils.reverseNumber(windowCenterMax * this.data.volumeWindowCenter, 0, windowCenterMax));
 
-  //       if (this.volumeWindowWidth === undefined) {
-  //         // set default
-  //         windowWidth = windowWidthMax / 2;
-  //       } else {
-  //         windowWidth = this.volumeWindowWidth;
-  //       }
+    // contrast
+    const windowWidthMax: number =
+      this.state.stackhelper.stack.minMax[1] - this.state.stackhelper.stack.minMax[0];
+    const windowWidth: number = Math.floor(Utils.reverseNumber(windowWidthMax * this.data.volumeWindowWidth, 0, windowWidthMax));
 
-  //       const windowCenterMin: number = this.stackhelper.stack.minMax[0];
-  //       const windowCenterMax: number = this.stackhelper.stack.minMax[1];
-  //       let windowCenter: number;
-
-  //       if (this.volumeWindowCenter === undefined) {
-  //         // set default
-  //         windowCenter = windowCenterMax / 2;
-  //       } else {
-  //         windowCenter = this.volumeWindowCenter;
-  //       }
-
-  //       // const volumeLuts: string = this._lut.lutsAvailable().join(',');
-
-  //       // update the stackhelper
-  //       (this.stackhelper as AMI.VolumeRenderHelper).steps = steps;
-  //       (this.stackhelper as AMI.VolumeRenderHelper).windowWidth = windowWidth;
-  //       (this
-  //         .stackhelper as AMI.VolumeRenderHelper).windowCenter = windowCenter;
+    // update the stackhelper
+    (this.state.stackhelper as AMI.VolumeRenderHelper).windowCenter = windowCenter;
+    (this.state.stackhelper as AMI.VolumeRenderHelper).windowWidth = windowWidth;
   },
 
   // tslint:disable-next-line: no-any

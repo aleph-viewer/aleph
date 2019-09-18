@@ -533,6 +533,7 @@ export class AlSettings {
                 slot="end"
                 min="0"
                 max="1"
+                step=".1"
                 value={this.volumeContrast}
                 onIonChange={e =>
                   this._volumeContrast(e.detail.value)

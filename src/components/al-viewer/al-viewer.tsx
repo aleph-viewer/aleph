@@ -489,18 +489,18 @@ export class Aleph {
               graphEnabled: ${this.graphEnabled};
             `}
             al-volume={`
-              srcLoaded: ${this.srcLoaded};
-              src: ${this.src};
+              controlsType: ${this.controlsType};
               displayMode: ${this.displayMode};
-              slicesIndex: ${this.slicesIndex};
-              slicesOrientation: ${this.orientation};
-              slicesWindowWidth: ${this.slicesWindowWidth};
-              slicesWindowCenter: ${this.slicesWindowCenter};
-              volumeWindowCenter: ${this.volumeWindowCenter};
-              volumeWindowWidth: ${this.volumeWindowWidth};
               isHighRes: false;
               isWebGl2: ${this._isWebGl2};
-              controlsType: ${this.controlsType};
+              slicesIndex: ${this.slicesIndex};
+              slicesOrientation: ${this.orientation};
+              slicesWindowCenter: ${this.slicesWindowCenter};
+              slicesWindowWidth: ${this.slicesWindowWidth};
+              src: ${this.src};
+              srcLoaded: ${this.srcLoaded};
+              volumeWindowCenter: ${this.volumeWindowCenter};
+              volumeWindowWidth: ${this.volumeWindowWidth};
             `}
             position="0 0 0"
             ref={(el: Entity) => (this._targetEntity = el)}
@@ -516,18 +516,18 @@ export class Aleph {
           <a-entity
             id="target-entity"
             al-volume={`
-              srcLoaded: ${this.srcLoaded};
-              src: ${this.src};
+              controlsType: ${this.controlsType};
               displayMode: ${this.displayMode};
-              slicesIndex: ${this.slicesIndex};
-              slicesOrientation: ${this.orientation};
-              slicesWindowWidth: ${this.slicesWindowWidth};
-              slicesWindowCenter: ${this.slicesWindowCenter};
-              volumeWindowCenter: ${this.volumeWindowCenter};
-              volumeWindowWidth: ${this.volumeWindowWidth};
               isHighRes: false;
               isWebGl2: ${this._isWebGl2};
-              controlsType: ${this.controlsType};
+              slicesIndex: ${this.slicesIndex};
+              slicesOrientation: ${this.orientation};
+              slicesWindowCenter: ${this.slicesWindowCenter};
+              slicesWindowWidth: ${this.slicesWindowWidth};
+              src: ${this.src};
+              srcLoaded: ${this.srcLoaded};
+              volumeWindowCenter: ${this.volumeWindowCenter};
+              volumeWindowWidth: ${this.volumeWindowWidth};
             `}
             position="0 0 0"
             ref={(el: Entity) => (this._targetEntity = el)}
