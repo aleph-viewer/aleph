@@ -18,11 +18,12 @@ import {
   AlNode,
 } from './interfaces/index.js';
 import {
+  ControlsType,
   DisplayMode,
   Units,
 } from './enums/index.js';
 import {
-  ControlsType,
+  ControlsType as ControlsType1,
   DisplayMode as DisplayMode2,
   Material,
   Orientation,
@@ -44,6 +45,7 @@ export namespace Components {
     'angles': Map<string, AlAngle> | null;
     'boundingBoxEnabled': boolean;
     'consoleTabEnabled': boolean;
+    'controlsType': ControlsType;
     'displayMode': DisplayMode;
     'edges': Map<string, AlEdge> | null;
     'graphTabEnabled': boolean;
@@ -244,6 +246,7 @@ declare namespace LocalJSX {
     'angles'?: Map<string, AlAngle> | null;
     'boundingBoxEnabled'?: boolean;
     'consoleTabEnabled'?: boolean;
+    'controlsType'?: ControlsType;
     'displayMode'?: DisplayMode;
     'edges'?: Map<string, AlEdge> | null;
     'graphTabEnabled'?: boolean;

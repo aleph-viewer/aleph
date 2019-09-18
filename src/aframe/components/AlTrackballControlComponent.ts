@@ -264,6 +264,7 @@ export default AFRAME.registerComponent("al-trackball-control", {
     const data = this.data;
 
     if (oldData.resetWhenChanged !== data.resetWhenChanged) {
+      console.log("reset");
       controls.reset();
     }
 

@@ -140,7 +140,6 @@
               return customElements.whenDefined(customElement.localName);
             });
 
-            // Wait for all the social-buttons to be upgraded.
             Promise.all(promises).then(function() {
               nextState({
                 src: Array.from(urls)[0][0]
@@ -150,21 +149,10 @@
             alViewer.addEventListener(
               "changed",
               function(e) {
-                nextState({
-                  angles: e.detail.angles,
-                  boundingBoxEnabled: e.detail.boundingBoxEnabled,
-                  displayMode: e.detail.displayMode,
-                  edges: e.detail.edges,
-                  nodes: e.detail.nodes,
-                  selected: e.detail.selected,
-                  slicesIndex: e.detail.slicesIndex,
-                  slicesWindowCenter: e.detail.slicesWindowCenter,
-                  slicesWindowWidth: e.detail.slicesWindowWidth,
-                  srcLoaded: e.detail.srcLoaded,
-                  units: e.detail.units,
-                  volumeWindowCenter: e.detail.volumeWindowCenter,
-                  volumeWindowWidth: e.detail.volumeWindowWidth
-                });
+                // update everything except src (this can't be changed from within al-viewer)
+                nextState(Object.assign({}, e.detail, {
+                  src: prevState.src
+                }));
               },
               false
             );
@@ -367,7 +355,8 @@
         }
 
         alControlPanel.angles = state.angles;
-        alControlPanel.boundingBoxEnabled =  state.boundingBoxEnabled; // this can change when switching display mode
+        alControlPanel.boundingBoxEnabled =  state.boundingBoxEnabled;
+        alControlPanel.controlsType = state.controlsType;
         alControlPanel.displayMode = state.displayMode;
         alControlPanel.edges = state.edges;
         alControlPanel.nodes = state.nodes;
