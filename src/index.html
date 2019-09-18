@@ -157,17 +157,12 @@
                   edges: e.detail.edges,
                   nodes: e.detail.nodes,
                   selected: e.detail.selected,
+                  slicesIndex: e.detail.slicesIndex,
+                  slicesWindowCenter: e.detail.slicesWindowCenter,
+                  slicesWindowWidth: e.detail.slicesWindowWidth,
                   srcLoaded: e.detail.srcLoaded,
                   units: e.detail.units
                 });
-              },
-              false
-            );
-
-            alViewer.addEventListener(
-              "volumeModeChanged",
-              function(ev) {
-                alControlPanel.stackhelper = ev.detail;
               },
               false
             );
@@ -289,17 +284,17 @@
             );
 
             alControlPanel.addEventListener(
-              "slicesWindowCenterChanged",
+              "slicesBrightnessChanged",
               function(e) {
-                alViewer.setSlicesWindowCenter(e.detail);
+                alViewer.setSlicesBrightness(e.detail);
               },
               false
             );
 
             alControlPanel.addEventListener(
-              "slicesWindowWidthChanged",
+              "slicesContrastChanged",
               function(e) {
-                alViewer.setSlicesWindowWidth(e.detail);
+                alViewer.setSlicesContrast(e.detail);
               },
               false
             );
@@ -331,17 +326,17 @@
             );
 
             alControlPanel.addEventListener(
-              "volumeWindowCenterChanged",
+              "volumeBrightnessChanged",
               function(e) {
-                alViewer.setVolumeWindowCenter(e.detail);
+                alViewer.setVolumeBrightness(e.detail);
               },
               false
             );
 
             alControlPanel.addEventListener(
-              "volumeWindowWidthChanged",
+              "volumeContrastChanged",
               function(e) {
-                alViewer.setVolumeWindowWidth(e.detail);
+                alViewer.setVolumeContrast(e.detail);
               },
               false
             );
@@ -376,6 +371,9 @@
         alControlPanel.nodes = state.nodes;
         alControlPanel.selected = state.selected;
         alControlPanel.units = state.units;
+        alControlPanel.slicesIndex = state.slicesIndex;
+        alControlPanel.slicesBrightness = state.slicesWindowCenter;
+        alControlPanel.slicesContrast = state.slicesWindowWidth;
 
         prevState = Object.assign({}, state);
       }

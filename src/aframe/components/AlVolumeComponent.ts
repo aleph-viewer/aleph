@@ -1,6 +1,6 @@
 import { Constants } from "../../Constants";
-import { DisplayMode } from "../../enums";
-import { AMIUtils, EventUtils } from "../../utils";
+import { DisplayMode, Orientation } from "../../enums";
+import { AMIUtils, EventUtils, Utils } from "../../utils";
 import { AlControlEvents } from "../../utils/AlControlEvents";
 import { VolumetricLoader } from "../../utils/VolumetricLoader";
 import { BaseComponent } from "./BaseComponent";
@@ -8,7 +8,6 @@ import { BaseComponent } from "./BaseComponent";
 export class AlVolumeEvents {
   public static ERROR: string = "al-volume-error";
   public static LOADED: string = "al-volume-loaded";
-  public static MODE_CHANGED: string = "al-volume-mode-changed";
   public static VOLUME_RAY_REQUEST: string = "al-volume-ray-requested";
   public static VOLUME_RAY_CAST: string = "al-volume-ray-cast";
 }
@@ -22,8 +21,8 @@ interface AlVolumeState {
   frameTime: number;
   loaded: boolean;
   lutHelper: AMI.LutHelper;
-  prevRenderTime: number;
-  renderTask: number;
+  lastRenderTime: number;
+  renderSteps: number;
   // tslint:disable-next-line: no-any
   stack: any;
   stackhelper: AMI.StackHelper | AMI.VolumeRenderHelper;
@@ -42,6 +41,7 @@ interface AlVolumeComponent extends BaseComponent {
 
 export default AFRAME.registerComponent("al-volume", {
   schema: {
+    controlsType: { type: "string" },
     displayMode: { type: "string" },
     isHighRes: { type: "boolean", default: false },
     isWebGl2: { type: "boolean" },
@@ -52,8 +52,7 @@ export default AFRAME.registerComponent("al-volume", {
     src: { type: "string" },
     srcLoaded: { type: "boolean" },
     volumeWindowCenter: { type: "number" },
-    volumeWindowWidth: { type: "number" },
-    controlsType: { type: "string" }
+    volumeWindowWidth: { type: "number" }
   },
 
   init(): void {
@@ -72,8 +71,8 @@ export default AFRAME.registerComponent("al-volume", {
       debounce: false,
       frameTime: window.performance.now(),
       loaded: false,
-      prevRenderTime: 0,
-      renderTask: 0
+      lastRenderTime: 0,
+      renderSteps: 0
     } as AlVolumeState;
 
     this.bindMethods();
@@ -89,15 +88,17 @@ export default AFRAME.registerComponent("al-volume", {
 
   bindMethods(): void {
     this.addEventListeners = this.addEventListeners.bind(this);
+    this.castVolumeRay = this.castVolumeRay.bind(this);
     this.createBufferTexture = this.createBufferTexture.bind(this);
-    this.getVolumePower = this.getVolumePower.bind(this);
+    this.getRenderSteps = this.getRenderSteps.bind(this);
     this.handleStack = this.handleStack.bind(this);
     this.onInteraction = this.onInteraction.bind(this);
     this.onInteractionFinished = this.onInteractionFinished.bind(this);
     this.removeEventListeners = this.removeEventListeners.bind(this);
     this.renderBufferScene = this.renderBufferScene.bind(this);
     this.rendererResize = this.rendererResize.bind(this);
-    this.castVolumeRay = this.castVolumeRay.bind(this);
+    this.updateSlicesStack = this.updateSlicesStack.bind(this);
+    this.updateVolumeStack = this.updateVolumeStack.bind(this);
   },
 
   addEventListeners() {
@@ -179,19 +180,19 @@ export default AFRAME.registerComponent("al-volume", {
 
   onInteraction(_event: CustomEvent): void {
     if (this.state.stackhelper && _event.detail.needsRender) {
-      this.state.renderTask = 2;
+      this.state.renderSteps = 2;
     }
   },
 
   onInteractionFinished(_event: CustomEvent): void {
     if (this.state.stackhelper && _event.detail.needsRender) {
-      this.state.renderTask = this.getVolumePower();
+      this.state.renderSteps = this.getRenderSteps();
     }
 
     this.state.debounce = false;
   },
 
-  getVolumePower(): number {
+  getRenderSteps(): number {
     // 128 steps for desktop (7), 32 steps for mobile (5)
     let power;
 
@@ -217,7 +218,7 @@ export default AFRAME.registerComponent("al-volume", {
       state.bufferSceneTextureWidth = this.el.sceneEl.canvas.clientWidth;
       state.bufferSceneTextureHeight = this.el.sceneEl.canvas.clientHeight;
 
-      this.state.renderTask = this.getVolumePower();
+      this.state.renderSteps = this.getRenderSteps();
     }
   },
 
@@ -225,7 +226,7 @@ export default AFRAME.registerComponent("al-volume", {
     if (this.data.displayMode === DisplayMode.VOLUME) {
       this.createBufferTexture();
 
-      this.state.stackhelper.steps = this.state.renderTask;
+      this.state.stackhelper.steps = this.state.renderSteps;
 
       const prev = window.performance.now();
 
@@ -236,9 +237,10 @@ export default AFRAME.registerComponent("al-volume", {
       );
 
       const post = window.performance.now();
+      const renderTime: number = post - prev;
 
-      this.state.prevRenderTime = post - prev;
-      this.state.renderTask = 0;
+      this.state.lastRenderTime = renderTime;
+      this.state.renderSteps = 0;
     }
   },
 
@@ -252,7 +254,6 @@ export default AFRAME.registerComponent("al-volume", {
     switch (this.data.displayMode) {
       case DisplayMode.SLICES: {
         state.stackhelper = new AMI.StackHelper(state.stack);
-
         state.stackhelper.bbox.visible = false;
         state.stackhelper.border.color = Constants.colorValues.blue;
         break;
@@ -268,7 +269,7 @@ export default AFRAME.registerComponent("al-volume", {
         state.lutHelper.lutsO = AMI.LutHelper.presetLutsO();
         state.stackhelper = new AMI.VolumeRenderHelper(state.stack);
         state.stackhelper.textureLUT = state.lutHelper.texture;
-        state.stackhelper.steps = this.getVolumePower();
+        state.stackhelper.steps = this.getRenderSteps();
         break;
       }
       default: {
@@ -297,8 +298,136 @@ export default AFRAME.registerComponent("al-volume", {
       el.sceneEl.emit(AlVolumeEvents.LOADED, state.stackhelper, false);
       this.state.loaded = true;
     }
+  },
 
-    el.sceneEl.emit(AlVolumeEvents.MODE_CHANGED, state.stackhelper, false);
+  updateSlicesStack(): void {
+    if (
+      !this.state.stackhelper ||
+      (this.state.stackhelper && !(this.state.stackhelper as AMI.StackHelper).slice)
+    ) {
+      return;
+    }
+
+    const orientationIndex: number = Object.keys(Orientation).indexOf(
+      this.data.slicesOrientation.toUpperCase()
+    );
+
+    // based off zCosine, x:1 = saggital, y:1 = coronal, z:1 = axial
+    const zCosine: THREE.Vector3 = this.state.stackhelper.stack
+      .zCosine as THREE.Vector3;
+
+    let orientationOffset;
+    // If DICOM's up axis is X, offset the viewer's orientation by 1
+    if (Math.round(zCosine.x) === 1) {
+      orientationOffset = 1;
+    }
+    // If the DICOM's up is Y, offset the viewer's orientation by 2
+    else if (Math.round(zCosine.y) === 1) {
+      orientationOffset = 2;
+    }
+    // Else Orientation matches viewer orientation, no offset
+    else {
+      orientationOffset = 0;
+    }
+
+    // Wrap the orientationIndex so that it may never exceed 2
+    const displayOrientationIndex = Math.round(
+      (orientationIndex + orientationOffset) % 3
+    );
+    const stackOrientationIndex = Math.round(
+      (orientationIndex + orientationOffset + 2) % 3
+    );
+
+    const slicesIndexMax: number =
+      this.state.stackhelper.stack.dimensionsIJK[
+        Object.keys(this.state.stackhelper.stack.dimensionsIJK)[
+          stackOrientationIndex
+        ]
+      ] - 1;
+    let index: number;
+
+    if (
+      stackOrientationIndex !== this._lastStackOrientationIndex ||
+      this.data.slicesIndex === undefined
+    ) {
+      // set default
+      index = Math.floor(slicesIndexMax * 0.5);
+    } else {
+      index = slicesIndexMax * this.data.slicesIndex;
+    }
+
+    this._lastStackOrientationIndex = stackOrientationIndex;
+
+    // const windowWidthMin: number = 1;
+    const windowWidthMax: number =
+      this.state.stackhelper.stack.minMax[1] - this.state.stackhelper.stack.minMax[0];
+    let windowWidth: number;
+
+    // if (this.data.slicesWindowWidth === undefined) {
+    //   // set default
+    //   windowWidth = Math.floor(Utils.reverseNumber(windowWidthMax * 0.5, 0, windowWidthMax));
+    // } else {
+      windowWidth = Math.floor(Utils.reverseNumber(windowWidthMax * this.data.slicesWindowWidth, 0, windowWidthMax));
+    //}
+
+    // const windowCenterMin: number = this.state.stackhelper.stack.minMax[0];
+    const windowCenterMax: number = this.state.stackhelper.stack.minMax[1];
+    let windowCenter: number;
+
+    // if (this.data.slicesWindowCenter === undefined) {
+    //   // set default
+    //   windowCenter = Math.floor(Utils.reverseNumber(windowCenterMax * 0.5, 0, windowCenterMax));
+    // } else {
+      windowCenter = Math.floor(Utils.reverseNumber(windowCenterMax * this.data.slicesWindowCenter, 0, windowCenterMax));
+    //}
+
+    // update the stackhelper
+    (this.state.stackhelper as AMI.StackHelper).orientation = displayOrientationIndex;
+    (this.state.stackhelper as AMI.StackHelper).index = index;
+    (this.state.stackhelper as AMI.StackHelper).slice.windowWidth = windowWidth;
+    (this.state.stackhelper as AMI.StackHelper).slice.windowCenter = windowCenter;
+  },
+
+  updateVolumeStack(): void {
+  //   let steps: number;
+
+  //       if (this.volumeSteps === undefined) {
+  //         // set default
+  //         steps = 16;
+  //       } else {
+  //         steps = this.volumeSteps;
+  //       }
+
+  //       const windowWidthMin: number = 1;
+  //       const windowWidthMax: number =
+  //         this.stackhelper.stack.minMax[1] - this.stackhelper.stack.minMax[0];
+  //       let windowWidth: number;
+
+  //       if (this.volumeWindowWidth === undefined) {
+  //         // set default
+  //         windowWidth = windowWidthMax / 2;
+  //       } else {
+  //         windowWidth = this.volumeWindowWidth;
+  //       }
+
+  //       const windowCenterMin: number = this.stackhelper.stack.minMax[0];
+  //       const windowCenterMax: number = this.stackhelper.stack.minMax[1];
+  //       let windowCenter: number;
+
+  //       if (this.volumeWindowCenter === undefined) {
+  //         // set default
+  //         windowCenter = windowCenterMax / 2;
+  //       } else {
+  //         windowCenter = this.volumeWindowCenter;
+  //       }
+
+  //       // const volumeLuts: string = this._lut.lutsAvailable().join(',');
+
+  //       // update the stackhelper
+  //       (this.stackhelper as AMI.VolumeRenderHelper).steps = steps;
+  //       (this.stackhelper as AMI.VolumeRenderHelper).windowWidth = windowWidth;
+  //       (this
+  //         .stackhelper as AMI.VolumeRenderHelper).windowCenter = windowCenter;
   },
 
   // tslint:disable-next-line: no-any
@@ -311,6 +440,7 @@ export default AFRAME.registerComponent("al-volume", {
     }
 
     if (oldData && oldData.src !== this.data.src) {
+      // loading
       this.loader.load(this.data.src, el).then(stack => {
         this.handleStack(stack);
       });
@@ -319,47 +449,69 @@ export default AFRAME.registerComponent("al-volume", {
       oldData.displayMode !== this.data.displayMode &&
       state.stack
     ) {
+      // switching display mode
       this.removeEventListeners();
       this.handleStack(state.stack);
       this.addEventListeners();
 
+      // if in volume mode, create a buffer texture
       if (this.data.displayMode === DisplayMode.VOLUME) {
         this.createBufferTexture();
-        // allow some time for the stackhelper to reorient itself
+        // allow some time for the stackhelper to update
         setTimeout(() => {
-          this.state.renderTask = this.getVolumePower();
-        }, 500);
+          this.state.renderSteps = this.getRenderSteps();
+        }, 800);
       } else {
         (this.el.sceneEl.object3D as THREE.Scene).background = null;
       }
     }
 
-    if (
-      oldData &&
-      oldData.controlsType &&
-      oldData.controlsType !== this.data.controlsType
-    ) {
-      this.state.renderTask = this.getVolumePower();
-    }
+    switch (this.data.displayMode) {
 
-    if (
-      oldData &&
-      oldData.volumeWindowCenter &&
-      oldData.volumeWindowCenter !== this.data.volumeWindowCenter
-    ) {
-      this.state.debounce = true;
-      this.state.stackhelper.stack.windowCenter = this.data.volumeWindowCenter;
-      this.state.renderTask = this.getVolumePower();
-    }
+      case DisplayMode.SLICES : {
+        this.updateSlicesStack();
+        break;
+      }
+      case DisplayMode.VOLUME : {
 
-    if (
-      oldData &&
-      oldData.volumeWindowWidth &&
-      oldData.volumeWindowWidth !== this.data.volumeWindowWidth
-    ) {
-      this.state.debounce = true;
-      this.state.stackhelper.stack.windowWidth = this.data.volumeWindowWidth;
-      this.state.renderTask = this.getVolumePower();
+        this.updateVolumeStack();
+
+        // if the controls type has changed, re-render the buffer scene
+        if (
+          oldData &&
+          oldData.controlsType &&
+          oldData.controlsType !== this.data.controlsType
+        ) {
+          this.state.renderSteps = this.getRenderSteps();
+        }
+
+        // if the volumeWindowCenter changed
+        if (
+          oldData &&
+          oldData.volumeWindowCenter &&
+          oldData.volumeWindowCenter !== this.data.volumeWindowCenter
+        ) {
+          this.state.debounce = true;
+          this.state.stackhelper.stack.windowCenter = this.data.volumeWindowCenter;
+          this.state.renderSteps = this.getRenderSteps();
+        }
+
+        // if the volumeWindowWidth changed
+        if (
+          oldData &&
+          oldData.volumeWindowWidth &&
+          oldData.volumeWindowWidth !== this.data.volumeWindowWidth
+        ) {
+          this.state.debounce = true;
+          this.state.stackhelper.stack.windowWidth = this.data.volumeWindowWidth;
+          this.state.renderSteps = this.getRenderSteps();
+        }
+
+        break;
+      }
+      default : {
+        break;
+      }
     }
   },
 
@@ -372,7 +524,7 @@ export default AFRAME.registerComponent("al-volume", {
       this.el.setObject3D("mesh", this.state.stackhelper);
     }
 
-    if (this.state.renderTask > 0 && !this.state.debounce) {
+    if (this.state.renderSteps > 0 && !this.state.debounce) {
       this.renderBufferScene();
     }
   },

@@ -50,9 +50,10 @@ export namespace Components {
     'nodes': Map<string, AlNode> | null;
     'selected': string | null;
     'settingsTabEnabled': boolean;
+    'slicesBrightness': number;
+    'slicesContrast': number;
+    'slicesIndex': number;
     'srcTabEnabled': boolean;
-    'stackhelper': | AMI.StackHelper
-    | AMI.VolumeRenderHelper;
     'tabContentHeight': string | null;
     'units': Units;
     'url': string | null;
@@ -80,17 +81,13 @@ export namespace Components {
     'controlsType': ControlsType;
     'displayMode': DisplayMode;
     'graphEnabled': boolean;
-    'material': Material;
     'orientation': Orientation;
+    'slicesBrightness': number;
+    'slicesContrast': number;
     'slicesIndex': number;
-    'slicesWindowCenter': number;
-    'slicesWindowWidth': number;
-    'stackhelper': | AMI.StackHelper
-    | AMI.VolumeRenderHelper;
     'units': Units;
-    'volumeSteps': number;
-    'volumeWindowCenter': number;
-    'volumeWindowWidth': number;
+    'volumeBrightness': number;
+    'volumeContrast': number;
   }
   interface AlTabs {
     /**
@@ -136,13 +133,13 @@ export namespace Components {
     'setMaterial': (material: Material) => Promise<void>;
     'setNode': (node: [string, AlNode]) => Promise<void>;
     'setOrientation': (orientation: Orientation) => Promise<void>;
+    'setSlicesBrightness': (brightness: number) => Promise<void>;
+    'setSlicesContrast': (contrast: number) => Promise<void>;
     'setSlicesIndex': (index: number) => Promise<void>;
-    'setSlicesWindowCenter': (center: number) => Promise<void>;
-    'setSlicesWindowWidth': (width: number) => Promise<void>;
     'setUnits': (units: Units) => Promise<void>;
+    'setVolumeBrightness': (brightness: number) => Promise<void>;
+    'setVolumeContrast': (contrast: number) => Promise<void>;
     'setVolumeSteps': (steps: number) => Promise<void>;
-    'setVolumeWindowCenter': (center: number) => Promise<void>;
-    'setVolumeWindowWidth': (width: number) => Promise<void>;
     'width': string;
   }
 }
@@ -251,9 +248,10 @@ declare namespace LocalJSX {
     'nodes'?: Map<string, AlNode> | null;
     'selected'?: string | null;
     'settingsTabEnabled'?: boolean;
+    'slicesBrightness'?: number;
+    'slicesContrast'?: number;
+    'slicesIndex'?: number;
     'srcTabEnabled'?: boolean;
-    'stackhelper'?: | AMI.StackHelper
-    | AMI.VolumeRenderHelper;
     'tabContentHeight'?: string | null;
     'units'?: Units;
     'url'?: string | null;
@@ -286,31 +284,25 @@ declare namespace LocalJSX {
     'controlsType'?: ControlsType;
     'displayMode'?: DisplayMode;
     'graphEnabled'?: boolean;
-    'material'?: Material;
     'onBoundingBoxEnabledChanged'?: (event: CustomEvent<any>) => void;
     'onControlsTypeChanged'?: (event: CustomEvent<any>) => void;
     'onDisplayModeChanged'?: (event: CustomEvent<any>) => void;
     'onGraphEnabledChanged'?: (event: CustomEvent<any>) => void;
-    'onMaterialChanged'?: (event: CustomEvent<any>) => void;
     'onOrientationChanged'?: (event: CustomEvent<any>) => void;
     'onRecenter'?: (event: CustomEvent<any>) => void;
+    'onSlicesBrightnessChanged'?: (event: CustomEvent<any>) => void;
+    'onSlicesContrastChanged'?: (event: CustomEvent<any>) => void;
     'onSlicesIndexChanged'?: (event: CustomEvent<any>) => void;
-    'onSlicesWindowCenterChanged'?: (event: CustomEvent<any>) => void;
-    'onSlicesWindowWidthChanged'?: (event: CustomEvent<any>) => void;
     'onUnitsChanged'?: (event: CustomEvent<any>) => void;
-    'onVolumeStepsChanged'?: (event: CustomEvent<any>) => void;
-    'onVolumeWindowCenterChanged'?: (event: CustomEvent<any>) => void;
-    'onVolumeWindowWidthChanged'?: (event: CustomEvent<any>) => void;
+    'onVolumeBrightnessChanged'?: (event: CustomEvent<any>) => void;
+    'onVolumeContrastChanged'?: (event: CustomEvent<any>) => void;
     'orientation'?: Orientation;
+    'slicesBrightness'?: number;
+    'slicesContrast'?: number;
     'slicesIndex'?: number;
-    'slicesWindowCenter'?: number;
-    'slicesWindowWidth'?: number;
-    'stackhelper'?: | AMI.StackHelper
-    | AMI.VolumeRenderHelper;
     'units'?: Units;
-    'volumeSteps'?: number;
-    'volumeWindowCenter'?: number;
-    'volumeWindowWidth'?: number;
+    'volumeBrightness'?: number;
+    'volumeContrast'?: number;
   }
   interface AlTabs extends JSXBase.HTMLAttributes<HTMLAlTabsElement> {
     /**
@@ -342,10 +334,6 @@ declare namespace LocalJSX {
     * Fires when an object is loaded passing either the object or a stackhelper for volumetric data.
     */
     'onLoaded'?: (event: CustomEvent<any>) => void;
-    /**
-    * Fires when the volume display mode changes passing the new stackhelper.
-    */
-    'onVolumeModeChanged'?: (event: CustomEvent<any>) => void;
     'width'?: string;
   }
 

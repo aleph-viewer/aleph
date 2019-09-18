@@ -24,10 +24,10 @@ export class AlSettings {
   @Prop({ mutable: true }) public nodes: Map<string, AlNode> | null = null;
   @Prop({ mutable: true }) public selected: string | null = null;
   @Prop({ mutable: true }) public settingsTabEnabled: boolean = true;
+  @Prop({ mutable: true }) public slicesBrightness: number;
+  @Prop({ mutable: true }) public slicesContrast: number;
+  @Prop({ mutable: true }) public slicesIndex: number;
   @Prop({ mutable: true }) public srcTabEnabled: boolean = true;
-  @Prop({ mutable: true }) public stackhelper:
-    | AMI.StackHelper
-    | AMI.VolumeRenderHelper;
   @Prop({ mutable: true }) public tabContentHeight: string | null = null;
   @Prop({ mutable: true }) public units: Units = Units.METERS;
   @Prop({ mutable: true }) public url: string | null = null;
@@ -87,7 +87,9 @@ export class AlSettings {
                 <al-settings
                   bounding-box-enabled={this.boundingBoxEnabled}
                   display-mode={this.displayMode}
-                  stackhelper={this.stackhelper}
+                  slices-index={this.slicesIndex}
+                  slices-brightness={this.slicesBrightness}
+                  slices-contrast={this.slicesContrast}
                   units={this.units}
                 ></al-settings>
               </Scroll>

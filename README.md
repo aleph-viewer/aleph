@@ -12,7 +12,7 @@ The aim of this project is to satisfy the following top-level design goals:
 
 - The viewer is usable as a web component e.g. `<al-viewer src="object.gltf" />` within any page/framework
 - The viewer has a supporting control panel (also a web component) that can be used separately or not at all
-- The control panel reacts to the viewer's context, showing associated settings for a given mesh or volume
+- The control panel shows associated settings for a given mesh or volume
 - The viewer and control panel are straight-forward to debug, using a single source of truth and unidirectional data flow
 - The viewer encapsulates 3D rendering logic in a well-defined component model, with existing community support/adoption
 - The viewer utilises a component model to extensibly display various 3D file types (initially GLTF+DRACO, DICOM)

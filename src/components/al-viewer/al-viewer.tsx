@@ -1,6 +1,6 @@
 import { KeyDown } from "@edsilv/key-codes";
-import { Action, Store } from "@edsilv/stencil-redux";
 import "@edsilv/stencil-redux";
+import { Action, Store } from "@edsilv/stencil-redux";
 import {
   Component,
   Event,
@@ -59,9 +59,9 @@ import {
   AlGraphEvents,
   AMIUtils,
   EventUtils,
-  GetUtils,
   GraphUtils,
-  ThreeUtils
+  ThreeUtils,
+  Utils
 } from "../../utils";
 import { AlControlEvents } from "../../utils/AlControlEvents";
 
@@ -275,13 +275,13 @@ export class Aleph {
   }
 
   @Method()
-  public async setSlicesWindowCenter(center: number): Promise<void> {
-    this._setSlicesWindowCenter(center);
+  public async setSlicesBrightness(brightness: number): Promise<void> {
+    this._setSlicesWindowCenter(brightness);
   }
 
   @Method()
-  public async setSlicesWindowWidth(width: number): Promise<void> {
-    this._setSlicesWindowWidth(width);
+  public async setSlicesContrast(contrast: number): Promise<void> {
+    this._setSlicesWindowWidth(contrast);
   }
 
   @Method()
@@ -295,13 +295,13 @@ export class Aleph {
   }
 
   @Method()
-  public async setVolumeWindowCenter(center: number): Promise<void> {
-    this._setVolumeWindowCenter(center);
+  public async setVolumeBrightness(brightness: number): Promise<void> {
+    this._setVolumeWindowCenter(brightness);
   }
 
   @Method()
-  public async setVolumeWindowWidth(width: number): Promise<void> {
-    this._setVolumeWindowWidth(width);
+  public async setVolumeContrast(contrast: number): Promise<void> {
+    this._setVolumeWindowWidth(contrast);
   }
 
   //#endregion
@@ -313,8 +313,6 @@ export class Aleph {
   /** Fires when an object is loaded passing either the object or a stackhelper for volumetric data. */
   @Event() public loaded: EventEmitter;
 
-  /** Fires when the volume display mode changes passing the new stackhelper. */
-  @Event() public volumeModeChanged: EventEmitter;
   //#endregion
 
   protected async componentWillLoad() {
@@ -440,7 +438,6 @@ export class Aleph {
     );
     this._spawnNodeHandler = this._spawnNodeHandler.bind(this);
     this._srcLoaded = this._srcLoaded.bind(this);
-    this._volumeModeChanged = this._volumeModeChanged.bind(this);
     this._volumeRaycastHandler = this._volumeRaycastHandler.bind(this);
 
     // debounced event handlers
@@ -559,7 +556,7 @@ export class Aleph {
       if (this.displayMode === DisplayMode.VOLUME) {
         position = this._targetEntity.object3D.position
           .clone()
-          .add(GetUtils.getGeometryCenter(meshGeom));
+          .add(Utils.getGeometryCenter(meshGeom));
 
         return (
           <a-entity
@@ -593,7 +590,7 @@ export class Aleph {
           case DisplayMode.SLICES: {
             position = this._targetEntity.object3D.position
               .clone()
-              .add(GetUtils.getGeometryCenter(meshGeom));
+              .add(Utils.getGeometryCenter(meshGeom));
             break;
           }
           default: {
@@ -1072,8 +1069,8 @@ export class Aleph {
         id="al-container"
         class={this.displayMode}
         style={{
-          width: GetUtils.addCssUnits(this.width),
-          height: GetUtils.addCssUnits(this.height)
+          width: Utils.addCssUnits(this.width),
+          height: Utils.addCssUnits(this.height)
         }}
       >
         <div id="lut-container">
@@ -1247,7 +1244,7 @@ export class Aleph {
     animationStart: AlCamera,
     animationEndVec3: THREE.Vector3
   ): void {
-    const defaultCamera: AlCamera = GetUtils.getCameraStateFromMesh(
+    const defaultCamera: AlCamera = Utils.getCameraStateFromMesh(
       this._getMesh()
     );
 
@@ -1299,7 +1296,7 @@ export class Aleph {
         target: this.camera.target.clone()
       } as AlCamera;
 
-      const animationEndVec3: THREE.Vector3 = GetUtils.getCameraPositionFromNode(
+      const animationEndVec3: THREE.Vector3 = Utils.getCameraPositionFromNode(
         this.nodes.get(nodeId),
         this._boundingSphereRadius,
         this.camera.target
@@ -1324,7 +1321,7 @@ export class Aleph {
   }
 
   private _recenter(): void {
-    const cameraState: AlCamera = GetUtils.getCameraStateFromMesh(
+    const cameraState: AlCamera = Utils.getCameraStateFromMesh(
       this._getMesh()
     );
 
@@ -1483,8 +1480,8 @@ export class Aleph {
       mesh.geometry.computeBoundingSphere();
       mesh.geometry.computeBoundingBox();
       this._boundingSphereRadius = mesh.geometry.boundingSphere.radius;
-      this._boundingBox = GetUtils.getBoundingBox(mesh);
-      const cameraState: AlCamera = GetUtils.getCameraStateFromMesh(mesh);
+      this._boundingBox = Utils.getBoundingBox(mesh);
+      const cameraState: AlCamera = Utils.getCameraStateFromMesh(mesh);
 
       if (cameraState) {
         this.appSetCamera(cameraState);
@@ -1494,11 +1491,6 @@ export class Aleph {
       this._stateChanged();
       this.loaded.emit(ev.detail);
     }
-  }
-
-  // tslint:disable-next-line: no-any
-  private _volumeModeChanged(ev: any): void {
-    this.volumeModeChanged.emit(ev.detail);
   }
 
   //#endregion
@@ -1827,12 +1819,6 @@ export class Aleph {
     );
 
     this._scene.addEventListener(AlVolumeEvents.LOADED, this._srcLoaded, false);
-
-    this._scene.addEventListener(
-      AlVolumeEvents.MODE_CHANGED,
-      this._volumeModeChanged,
-      false
-    );
 
     this._scene.addEventListener(
       AlGraphEvents.POINTER_OVER,

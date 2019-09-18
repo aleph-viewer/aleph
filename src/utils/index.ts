@@ -1,15 +1,15 @@
 import { AMIUtils } from "./AMIUtils";
 import { EventUtils } from "./EventUtils";
-import { GetUtils } from "./GetUtils";
 import { AlGraphEvents, GraphUtils } from "./GraphUtils";
 import { RaycasterUtils } from "./RaycasterUtils";
 import { ThreeUtils } from "./ThreeUtils";
+import { Utils } from "./Utils";
 
 export {
   AlGraphEvents,
   AMIUtils,
   EventUtils,
-  GetUtils,
+  Utils,
   GraphUtils,
   RaycasterUtils,
   ThreeUtils

@@ -1,17 +1,16 @@
-import { Component, Event, EventEmitter, h, Prop, Watch } from "@stencil/core";
+import { Component, Event, EventEmitter, h, Prop } from "@stencil/core";
 import BoundingBoxIcon from "../../assets/svg/bounding-box.svg";
 import BrightnessIcon from "../../assets/svg/brightness.svg";
 import ContrastIcon from "../../assets/svg/contrast.svg";
 import ControlsTypeIcon from "../../assets/svg/controls-type.svg";
 import DisplayModeIcon from "../../assets/svg/display-mode.svg";
 import GraphIcon from "../../assets/svg/graph.svg";
-import MaterialIcon from "../../assets/svg/material.svg";
+// import MaterialIcon from "../../assets/svg/material.svg";
 import OrientationIcon from "../../assets/svg/orientation.svg";
 import RecenterIcon from "../../assets/svg/recenter.svg";
 import SliderIcon from "../../assets/svg/slider.svg";
 import UnitsIcon from "../../assets/svg/units.svg";
-//import { Constants } from "../../Constants";
-import { ControlsType, Material, Orientation, Units } from "../../enums";
+import { ControlsType, Orientation, Units } from "../../enums";
 import { DisplayMode } from "../../enums/DisplayMode";
 import i18n from "./al-settings.i18n.en.json";
 import { ContentStrings } from "./ContentStrings";
@@ -23,50 +22,37 @@ import { ContentStrings } from "./ContentStrings";
 })
 export class AlSettings {
   private _contentStrings: ContentStrings = i18n;
-  private _lastStackOrientationIndex: number;
 
   @Event() public boundingBoxEnabledChanged: EventEmitter;
   @Event() public controlsTypeChanged: EventEmitter;
   @Event() public displayModeChanged: EventEmitter;
-  @Event() public materialChanged: EventEmitter;
+  // @Event() public materialChanged: EventEmitter;
   @Event() public orientationChanged: EventEmitter;
   @Event() public recenter: EventEmitter;
   @Event() public slicesIndexChanged: EventEmitter;
-  @Event() public slicesWindowCenterChanged: EventEmitter;
-  @Event() public slicesWindowWidthChanged: EventEmitter;
+  @Event() public slicesBrightnessChanged: EventEmitter;
+  @Event() public slicesContrastChanged: EventEmitter;
   @Event() public unitsChanged: EventEmitter;
   @Event() public graphEnabledChanged: EventEmitter;
-  @Event() public volumeStepsChanged: EventEmitter;
-  @Event() public volumeWindowCenterChanged: EventEmitter;
-  @Event() public volumeWindowWidthChanged: EventEmitter;
+  // @Event() public volumeStepsChanged: EventEmitter;
+  @Event() public volumeBrightnessChanged: EventEmitter;
+  @Event() public volumeContrastChanged: EventEmitter;
 
   @Prop({ mutable: true }) public boundingBoxEnabled: boolean = false;
   @Prop({ mutable: true }) public controlsType: ControlsType =
     ControlsType.ORBIT;
   @Prop({ mutable: true }) public displayMode: DisplayMode = DisplayMode.MESH;
-  @Prop({ mutable: true }) public material: Material = Material.DEFAULT;
+  // @Prop({ mutable: true }) public material: Material = Material.DEFAULT;
   @Prop({ mutable: true }) public orientation: Orientation =
     Orientation.CORONAL;
   @Prop({ mutable: true }) public slicesIndex: number;
-  @Prop({ mutable: true }) public slicesWindowCenter: number;
-  @Prop({ mutable: true }) public slicesWindowWidth: number;
-  @Prop({ mutable: true }) public stackhelper:
-    | AMI.StackHelper
-    | AMI.VolumeRenderHelper;
-  @Watch("stackhelper")
-  public watchStackhelper() {
-    this.slicesIndex = undefined;
-    this.slicesWindowCenter = undefined;
-    this.slicesWindowWidth = undefined;
-    this.volumeSteps = undefined;
-    this.volumeWindowCenter = undefined;
-    this.volumeWindowWidth = undefined;
-  }
+  @Prop({ mutable: true }) public slicesBrightness: number; // window center
+  @Prop({ mutable: true }) public slicesContrast: number; // window width
   @Prop({ mutable: true }) public graphEnabled: boolean = false;
   @Prop({ mutable: true }) public units: Units = Units.METERS;
-  @Prop({ mutable: true }) public volumeSteps: number;
-  @Prop({ mutable: true }) public volumeWindowCenter: number;
-  @Prop({ mutable: true }) public volumeWindowWidth: number;
+  // @Prop({ mutable: true }) public volumeSteps: number;
+  @Prop({ mutable: true }) public volumeBrightness: number; // window center
+  @Prop({ mutable: true }) public volumeContrast: number; // window width
 
   private _boundingBoxEnabled(enabled: boolean) {
     this.boundingBoxEnabled = enabled;
@@ -88,10 +74,10 @@ export class AlSettings {
     this.graphEnabledChanged.emit(enabled);
   }
 
-  private _material(material: Material) {
-    this.material = material;
-    this.materialChanged.emit(material);
-  }
+  // private _material(material: Material) {
+  //   this.material = material;
+  //   this.materialChanged.emit(material);
+  // }
 
   private _orientation(orientation: Orientation) {
     this.orientation = orientation;
@@ -103,14 +89,14 @@ export class AlSettings {
     this.slicesIndexChanged.emit(index);
   }
 
-  private _slicesWindowCenter(center: number) {
-    this.slicesWindowCenter = center;
-    this.slicesWindowCenterChanged.emit(center);
+  private _slicesBrightness(brightness: number) {
+    this.slicesBrightness = brightness;
+    this.slicesBrightnessChanged.emit(brightness);
   }
 
-  private _slicesWindowWidth(width: number) {
-    this.slicesWindowWidth = width;
-    this.slicesWindowWidthChanged.emit(width);
+  private _slicesContrast(contrast: number) {
+    this.slicesContrast = contrast;
+    this.slicesContrastChanged.emit(contrast);
   }
 
   private _units(units: Units) {
@@ -123,14 +109,14 @@ export class AlSettings {
   //   this.volumeStepsChanged.emit(steps);
   // }
 
-  private _volumeWindowCenter(center: number) {
-    this.volumeWindowCenter = center;
-    this.volumeWindowCenterChanged.emit(center);
+  private _volumeBrightness(brightness: number) {
+    this.volumeBrightness = brightness;
+    this.volumeBrightnessChanged.emit(brightness);
   }
 
-  private _volumeWindowWidth(width: number) {
-    this.volumeWindowWidth = width;
-    this.volumeWindowWidthChanged.emit(width);
+  private _volumeContrast(contrast: number) {
+    this.volumeContrast = contrast;
+    this.volumeContrastChanged.emit(contrast);
   }
 
   public renderDisplayModeToggle() {
@@ -308,59 +294,59 @@ export class AlSettings {
     );
   }
 
-  public renderMaterialSelect() {
-    return (
-      <ion-item
-        style={{
-          display: "var(--material-display, block)"
-        }}
-      >
-        <ion-icon
-          src={MaterialIcon}
-          slot="start"
-          title={this._contentStrings.material}
-        />
-        <select
-          slot="end"
-          onChange={e =>
-            this._material((e.srcElement as HTMLSelectElement)
-              .value as Material)
-          }
-        >
-          <option
-            selected={this.material === Material.DEFAULT}
-            value={Material.DEFAULT}
-          >
-            {this._contentStrings.default}
-          </option>
-          <option
-            selected={this.material === Material.CLAY}
-            value={Material.CLAY}
-          >
-            {this._contentStrings.clay}
-          </option>
-          <option
-            selected={this.material === Material.NORMALS}
-            value={Material.NORMALS}
-          >
-            {this._contentStrings.normals}
-          </option>
-          <option
-            selected={this.material === Material.WIREFRAME}
-            value={Material.WIREFRAME}
-          >
-            {this._contentStrings.wireframe}
-          </option>
-          <option
-            selected={this.material === Material.XRAY}
-            value={Material.XRAY}
-          >
-            {this._contentStrings.xray}
-          </option>
-        </select>
-      </ion-item>
-    );
-  }
+  // public renderMaterialSelect() {
+  //   return (
+  //     <ion-item
+  //       style={{
+  //         display: "var(--material-display, block)"
+  //       }}
+  //     >
+  //       <ion-icon
+  //         src={MaterialIcon}
+  //         slot="start"
+  //         title={this._contentStrings.material}
+  //       />
+  //       <select
+  //         slot="end"
+  //         onChange={e =>
+  //           this._material((e.srcElement as HTMLSelectElement)
+  //             .value as Material)
+  //         }
+  //       >
+  //         <option
+  //           selected={this.material === Material.DEFAULT}
+  //           value={Material.DEFAULT}
+  //         >
+  //           {this._contentStrings.default}
+  //         </option>
+  //         <option
+  //           selected={this.material === Material.CLAY}
+  //           value={Material.CLAY}
+  //         >
+  //           {this._contentStrings.clay}
+  //         </option>
+  //         <option
+  //           selected={this.material === Material.NORMALS}
+  //           value={Material.NORMALS}
+  //         >
+  //           {this._contentStrings.normals}
+  //         </option>
+  //         <option
+  //           selected={this.material === Material.WIREFRAME}
+  //           value={Material.WIREFRAME}
+  //         >
+  //           {this._contentStrings.wireframe}
+  //         </option>
+  //         <option
+  //           selected={this.material === Material.XRAY}
+  //           value={Material.XRAY}
+  //         >
+  //           {this._contentStrings.xray}
+  //         </option>
+  //       </select>
+  //     </ion-item>
+  //   );
+  // }
 
   public renderGenericOptions() {
     return [
@@ -371,100 +357,9 @@ export class AlSettings {
     ];
   }
 
-  private _reverseNumber(num: number, min: number, max: number): number {
-    return max + min - num;
-  }
-
   public renderOptions() {
     switch (this.displayMode) {
       case DisplayMode.SLICES: {
-        if (
-          !this.stackhelper ||
-          (this.stackhelper && !(this.stackhelper as AMI.StackHelper).slice)
-        ) {
-          break;
-        }
-
-        const orientationIndex: number = Object.keys(Orientation).indexOf(
-          this.orientation.toUpperCase()
-        );
-
-        // based off zCosine, x:1 = saggital, y:1 = coronal, z:1 = axial
-        const zCosine: THREE.Vector3 = this.stackhelper.stack
-          .zCosine as THREE.Vector3;
-
-        let orientationOffset;
-        // If DICOM's up axis is X, offset the viewer's orientation by 1
-        if (Math.round(zCosine.x) === 1) {
-          orientationOffset = 1;
-        }
-        // If the DICOM's up is Y, offset the viewer's orientation by 2
-        else if (Math.round(zCosine.y) === 1) {
-          orientationOffset = 2;
-        }
-        // Else Orientation matches viewer orientation, no offset
-        else {
-          orientationOffset = 0;
-        }
-
-        // Wrap the orientationIndex so that it may never exceed 2
-        const displayOrientationIndex = Math.round(
-          (orientationIndex + orientationOffset) % 3
-        );
-        const stackOrientationIndex = Math.round(
-          (orientationIndex + orientationOffset + 2) % 3
-        );
-
-        const indexMax: number =
-          this.stackhelper.stack.dimensionsIJK[
-            Object.keys(this.stackhelper.stack.dimensionsIJK)[
-              stackOrientationIndex
-            ]
-          ] - 1;
-        let index: number;
-
-        if (
-          stackOrientationIndex !== this._lastStackOrientationIndex ||
-          this.slicesIndex === undefined
-        ) {
-          // set default
-          index = Math.floor(indexMax / 2);
-        } else {
-          index = this.slicesIndex;
-        }
-
-        this._lastStackOrientationIndex = stackOrientationIndex;
-
-        const windowWidthMin: number = 1;
-        const windowWidthMax: number =
-          this.stackhelper.stack.minMax[1] - this.stackhelper.stack.minMax[0];
-        let windowWidth: number;
-
-        if (this.slicesWindowWidth === undefined) {
-          // set default
-          windowWidth = windowWidthMax / 2;
-        } else {
-          windowWidth = this.slicesWindowWidth;
-        }
-
-        const windowCenterMin: number = this.stackhelper.stack.minMax[0];
-        const windowCenterMax: number = this.stackhelper.stack.minMax[1];
-        let windowCenter: number;
-
-        if (this.slicesWindowCenter === undefined) {
-          // set default
-          windowCenter = windowCenterMax / 2;
-        } else {
-          windowCenter = this.slicesWindowCenter;
-        }
-
-        // update the stackhelper
-        (this
-          .stackhelper as AMI.StackHelper).orientation = displayOrientationIndex;
-        (this.stackhelper as AMI.StackHelper).index = index;
-        (this.stackhelper as AMI.StackHelper).slice.windowWidth = windowWidth;
-        (this.stackhelper as AMI.StackHelper).slice.windowCenter = windowCenter;
-
         return (
           <div>
             {this.renderGenericOptions()}
@@ -481,9 +376,9 @@ export class AlSettings {
               <ion-range
                 slot="end"
                 min="0"
-                max={indexMax}
-                value={index}
-                pin={true}
+                max="1"
+                step=".1"
+                value={this.slicesIndex}
                 onIonChange={e => this._slicesIndex(e.detail.value)}
               />
             </ion-item>
@@ -526,7 +421,7 @@ export class AlSettings {
             </ion-item>
             <ion-item
               style={{
-                display: "var(--slices-window-center-display, block)"
+                display: "var(--slices-brightness-display, block)"
               }}
             >
               <ion-icon
@@ -536,27 +431,18 @@ export class AlSettings {
               />
               <ion-range
                 slot="end"
-                min={windowCenterMin}
-                max={windowCenterMax}
-                value={this._reverseNumber(
-                  windowCenter,
-                  windowCenterMin,
-                  windowCenterMax
-                )}
+                min="0"
+                max="1"
+                step=".1"
+                value={this.slicesBrightness}
                 onIonChange={e =>
-                  this._slicesWindowCenter(
-                    this._reverseNumber(
-                      e.detail.value,
-                      windowCenterMin,
-                      windowCenterMax
-                    )
-                  )
+                  this._slicesBrightness(e.detail.value)
                 }
               />
             </ion-item>
             <ion-item
               style={{
-                display: "var(--slices-window-width-display, block)"
+                display: "var(--slices-contrast-display, block)"
               }}
             >
               <ion-icon
@@ -566,21 +452,12 @@ export class AlSettings {
               />
               <ion-range
                 slot="end"
-                min={windowWidthMin}
-                max={windowWidthMax}
-                value={this._reverseNumber(
-                  windowWidth,
-                  windowWidthMin,
-                  windowWidthMax
-                )}
+                min="0"
+                max="1"
+                step=".1"
+                value={this.slicesContrast}
                 onIonChange={e =>
-                  this._slicesWindowWidth(
-                    this._reverseNumber(
-                      e.detail.value,
-                      windowWidthMin,
-                      windowWidthMax
-                    )
-                  )
+                  this._slicesContrast(e.detail.value)
                 }
               />
             </ion-item>
@@ -588,50 +465,6 @@ export class AlSettings {
         );
       }
       case DisplayMode.VOLUME: {
-        if (!this.stackhelper) {
-          break;
-        }
-
-        let steps: number;
-
-        if (this.volumeSteps === undefined) {
-          // set default
-          steps = 16;
-        } else {
-          steps = this.volumeSteps;
-        }
-
-        const windowWidthMin: number = 1;
-        const windowWidthMax: number =
-          this.stackhelper.stack.minMax[1] - this.stackhelper.stack.minMax[0];
-        let windowWidth: number;
-
-        if (this.volumeWindowWidth === undefined) {
-          // set default
-          windowWidth = windowWidthMax / 2;
-        } else {
-          windowWidth = this.volumeWindowWidth;
-        }
-
-        const windowCenterMin: number = this.stackhelper.stack.minMax[0];
-        const windowCenterMax: number = this.stackhelper.stack.minMax[1];
-        let windowCenter: number;
-
-        if (this.volumeWindowCenter === undefined) {
-          // set default
-          windowCenter = windowCenterMax / 2;
-        } else {
-          windowCenter = this.volumeWindowCenter;
-        }
-
-        // const volumeLuts: string = this._lut.lutsAvailable().join(',');
-
-        // update the stackhelper
-        (this.stackhelper as AMI.VolumeRenderHelper).steps = steps;
-        (this.stackhelper as AMI.VolumeRenderHelper).windowWidth = windowWidth;
-        (this
-          .stackhelper as AMI.VolumeRenderHelper).windowCenter = windowCenter;
-
         return (
           <div>
             {this.renderGenericOptions()}
@@ -667,7 +500,7 @@ export class AlSettings {
               </ion-item> */}
             <ion-item
               style={{
-                display: "var(--volume-window-center-display, block)"
+                display: "var(--volume-brightness-display, block)"
               }}
             >
               <ion-icon
@@ -677,27 +510,18 @@ export class AlSettings {
               />
               <ion-range
                 slot="end"
-                min={windowCenterMin}
-                max={windowCenterMax}
-                value={this._reverseNumber(
-                  windowCenter,
-                  windowCenterMin,
-                  windowCenterMax
-                )}
+                min="0"
+                max="1"
+                step=".1"
+                value={this.volumeBrightness}
                 onIonChange={e => {
-                  this._volumeWindowCenter(
-                    this._reverseNumber(
-                      e.detail.value,
-                      windowCenterMin,
-                      windowCenterMax
-                    )
-                  );
+                  this._volumeBrightness(e.detail.value)
                 }}
               />
             </ion-item>
             <ion-item
               style={{
-                display: "var(--volume-window-width-display, block)"
+                display: "var(--volume-contrast-display, block)"
               }}
             >
               <ion-icon
@@ -707,21 +531,11 @@ export class AlSettings {
               />
               <ion-range
                 slot="end"
-                min={windowWidthMin}
-                max={windowWidthMax}
-                value={this._reverseNumber(
-                  windowWidth,
-                  windowWidthMin,
-                  windowWidthMax
-                )}
+                min="0"
+                max="1"
+                value={this.volumeContrast}
                 onIonChange={e =>
-                  this._volumeWindowWidth(
-                    this._reverseNumber(
-                      e.detail.value,
-                      windowWidthMin,
-                      windowWidthMax
-                    )
-                  )
+                  this._volumeContrast(e.detail.value)
                 }
               />
             </ion-item>
@@ -735,8 +549,6 @@ export class AlSettings {
         return;
       }
     }
-
-    return null;
   }
 
   public render() {

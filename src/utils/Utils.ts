@@ -3,7 +3,7 @@ import { ThreeUtils } from ".";
 import { Constants } from "../Constants";
 import { AlCamera, AlNode } from "../interfaces";
 
-export class GetUtils {
+export class Utils {
   public static cssUnits: string[] = [
     "%",
     "ch",
@@ -103,6 +103,14 @@ export class GetUtils {
 
   public static getBoundingBox(obj: THREE.Object3D): THREE.Box3 {
     return new THREE.Box3().setFromObject(obj);
+  }
+
+  public static normalise(num: number, min: number, max: number): number {
+    return (num - min) / (max - min);
+  }
+
+  public static reverseNumber(num: number, min: number, max: number): number {
+    return max + min - num;
   }
 
   /*

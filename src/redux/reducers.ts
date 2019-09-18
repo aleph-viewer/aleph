@@ -6,7 +6,7 @@ import { Material } from "../enums/Material";
 import { Orientation } from "../enums/Orientation";
 import { Units } from "../enums/Units";
 import { AlAngle, AlAppState, AlEdge, AlNode } from "../interfaces";
-import { GetUtils } from "../utils";
+import { Utils } from "../utils";
 import { ActionTypes, TypeKeys } from "./actions";
 
 export const getInitialState = () => {
@@ -23,15 +23,15 @@ export const getInitialState = () => {
     graphEnabled: false,
     orientation: Orientation.CORONAL,
     selected: null,
-    slicesIndex: 0,
-    slicesWindowCenter: 0,
-    slicesWindowWidth: 0,
+    slicesIndex: 0.5,
+    slicesWindowCenter: 0.5,
+    slicesWindowWidth: 0.5,
     src: null,
     srcLoaded: false,
     units: Units.METERS,
-    volumeSteps: 16,
-    volumeWindowCenter: 0,
-    volumeWindowWidth: 0
+    volumeSteps: 1, // leaving this here in case we want to allow manual step count slider in future
+    volumeWindowCenter: 0.5,
+    volumeWindowWidth: 0.5
   } as AlAppState;
 };
 
@@ -49,8 +49,8 @@ export const app = (
       if (plDisplayMode) {
         displayMode = plDisplayMode;
       } else if (src) {
-        const fileExtension: string = GetUtils.getFileExtension(src);
-        if (Object.values(MeshFileType).includes(fileExtension)) {
+        const fileExtension: string = Utils.getFileExtension(src);
+        if (Object.values(MeshFileType).includes(fileExtension as MeshFileType)) {
           displayMode = DisplayMode.MESH;
         } else {
           displayMode = DisplayMode.SLICES; // if not a mesh, default to slices
@@ -60,22 +60,9 @@ export const app = (
       }
 
       return {
-        ...state,
-        angles: new Map<string, AlAngle>(),
-        controlsEnabled: false,
+        ...getInitialState(),
         displayMode,
-        edges: new Map<string, AlEdge>(),
-        nodes: new Map<string, AlNode>(),
-        orientation: Orientation.CORONAL,
-        selected: null,
-        slicesIndex: 0,
-        slicesWindowCenter: 0,
-        slicesWindowWidth: 0,
-        src,
-        srcLoaded: false,
-        volumeSteps: 16,
-        volumeWindowCenter: 0,
-        volumeWindowWidth: 0
+        src
       };
     }
     case TypeKeys.APP_SET_SRC_LOADED: {
@@ -254,7 +241,7 @@ export const app = (
     case TypeKeys.APP_SET_ORIENTATION: {
       return {
         ...state,
-        slicesIndex: undefined,
+        slicesIndex: 0.5,
         orientation: action.payload
       };
     }
