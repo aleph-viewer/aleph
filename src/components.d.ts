@@ -48,6 +48,7 @@ export namespace Components {
     'controlsType': ControlsType;
     'displayMode': DisplayMode;
     'edges': Map<string, AlEdge> | null;
+    'graphEnabled': boolean;
     'graphTabEnabled': boolean;
     'nodes': Map<string, AlNode> | null;
     'selected': string | null;
@@ -249,6 +250,7 @@ declare namespace LocalJSX {
     'controlsType'?: ControlsType;
     'displayMode'?: DisplayMode;
     'edges'?: Map<string, AlEdge> | null;
+    'graphEnabled'?: boolean;
     'graphTabEnabled'?: boolean;
     'nodes'?: Map<string, AlNode> | null;
     'selected'?: string | null;

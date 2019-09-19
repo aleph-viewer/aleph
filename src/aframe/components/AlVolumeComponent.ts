@@ -303,7 +303,8 @@ export default AFRAME.registerComponent("al-volume", {
   updateSlicesStack(): void {
     if (
       !this.state.stackhelper ||
-      (this.state.stackhelper && !(this.state.stackhelper as AMI.StackHelper).slice)
+      (this.state.stackhelper &&
+        !(this.state.stackhelper as AMI.StackHelper).slice)
     ) {
       return;
     }
@@ -360,38 +361,67 @@ export default AFRAME.registerComponent("al-volume", {
 
     // brightness
     const windowCenterMax: number = this.state.stackhelper.stack.minMax[1];
-    const windowCenter: number = Math.floor(Utils.reverseNumber(windowCenterMax * this.data.slicesWindowCenter, 0, windowCenterMax));
+    const windowCenter: number = Math.floor(
+      Utils.reverseNumber(
+        windowCenterMax * this.data.slicesWindowCenter,
+        0,
+        windowCenterMax
+      )
+    );
 
     // contrast
     const windowWidthMax: number =
-      this.state.stackhelper.stack.minMax[1] - this.state.stackhelper.stack.minMax[0];
-    const windowWidth: number = Math.floor(Utils.reverseNumber(windowWidthMax * this.data.slicesWindowWidth, 0, windowWidthMax));
+      this.state.stackhelper.stack.minMax[1] -
+      this.state.stackhelper.stack.minMax[0];
+    const windowWidth: number = Math.floor(
+      Utils.reverseNumber(
+        windowWidthMax * this.data.slicesWindowWidth,
+        0,
+        windowWidthMax
+      )
+    );
 
     // update the stackhelper
-    (this.state.stackhelper as AMI.StackHelper).orientation = displayOrientationIndex;
+    (this.state
+      .stackhelper as AMI.StackHelper).orientation = displayOrientationIndex;
     (this.state.stackhelper as AMI.StackHelper).index = index;
-    (this.state.stackhelper as AMI.StackHelper).slice.windowCenter = windowCenter;
+    (this.state
+      .stackhelper as AMI.StackHelper).slice.windowCenter = windowCenter;
     (this.state.stackhelper as AMI.StackHelper).slice.windowWidth = windowWidth;
   },
 
   updateVolumeStack(): void {
-
     if (!this.state.stackhelper) {
       return;
     }
 
     // brightness
     const windowCenterMax: number = this.state.stackhelper.stack.minMax[1];
-    const windowCenter: number = Math.floor(Utils.reverseNumber(windowCenterMax * this.data.volumeWindowCenter, 0, windowCenterMax));
+    const windowCenter: number = Math.floor(
+      Utils.reverseNumber(
+        windowCenterMax * this.data.volumeWindowCenter,
+        0,
+        windowCenterMax
+      )
+    );
 
     // contrast
     const windowWidthMax: number =
-      this.state.stackhelper.stack.minMax[1] - this.state.stackhelper.stack.minMax[0];
-    const windowWidth: number = Math.floor(Utils.reverseNumber(windowWidthMax * this.data.volumeWindowWidth, 0, windowWidthMax));
+      this.state.stackhelper.stack.minMax[1] -
+      this.state.stackhelper.stack.minMax[0];
+    const windowWidth: number = Math.floor(
+      Utils.reverseNumber(
+        windowWidthMax * this.data.volumeWindowWidth,
+        0,
+        windowWidthMax
+      )
+    );
 
     // update the stackhelper
-    (this.state.stackhelper as AMI.VolumeRenderHelper).windowCenter = windowCenter;
-    (this.state.stackhelper as AMI.VolumeRenderHelper).windowWidth = windowWidth;
+    (this.state
+      .stackhelper as AMI.VolumeRenderHelper).windowCenter = windowCenter;
+    (this.state
+      .stackhelper as AMI.VolumeRenderHelper).windowWidth = windowWidth;
   },
 
   // tslint:disable-next-line: no-any
@@ -431,13 +461,11 @@ export default AFRAME.registerComponent("al-volume", {
     }
 
     switch (this.data.displayMode) {
-
-      case DisplayMode.SLICES : {
+      case DisplayMode.SLICES: {
         this.updateSlicesStack();
         break;
       }
-      case DisplayMode.VOLUME : {
-
+      case DisplayMode.VOLUME: {
         this.updateVolumeStack();
 
         // if the controls type has changed, re-render the buffer scene
@@ -473,7 +501,7 @@ export default AFRAME.registerComponent("al-volume", {
 
         break;
       }
-      default : {
+      default: {
         break;
       }
     }

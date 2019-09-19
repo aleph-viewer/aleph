@@ -1320,9 +1320,7 @@ export class Aleph {
   }
 
   private _recenter(): void {
-    const cameraState: AlCamera = Utils.getCameraStateFromMesh(
-      this._getMesh()
-    );
+    const cameraState: AlCamera = Utils.getCameraStateFromMesh(this._getMesh());
 
     const animationStart = {
       position: this.camera.position.clone(),

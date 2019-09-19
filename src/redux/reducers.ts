@@ -50,7 +50,9 @@ export const app = (
         displayMode = plDisplayMode;
       } else if (src) {
         const fileExtension: string = Utils.getFileExtension(src);
-        if (Object.values(MeshFileType).includes(fileExtension as MeshFileType)) {
+        if (
+          Object.values(MeshFileType).includes(fileExtension as MeshFileType)
+        ) {
           displayMode = DisplayMode.MESH;
         } else {
           displayMode = DisplayMode.SLICES; // if not a mesh, default to slices
@@ -62,6 +64,7 @@ export const app = (
       return {
         ...getInitialState(),
         displayMode,
+        graphEnabled: state.graphEnabled,
         src
       };
     }

@@ -16,11 +16,10 @@
 
 ## Events
 
-| Event               | Description                                                                                    | Type               |
-| ------------------- | ---------------------------------------------------------------------------------------------- | ------------------ |
-| `changed`           | Fires whenever the internal state changes passing an object describing the state.              | `CustomEvent<any>` |
-| `loaded`            | Fires when an object is loaded passing either the object or a stackhelper for volumetric data. | `CustomEvent<any>` |
-| `volumeModeChanged` | Fires when the volume display mode changes passing the new stackhelper.                        | `CustomEvent<any>` |
+| Event     | Description                                                                                    | Type               |
+| --------- | ---------------------------------------------------------------------------------------------- | ------------------ |
+| `changed` | Fires whenever the internal state changes passing an object describing the state.              | `CustomEvent<any>` |
+| `loaded`  | Fires when an object is loaded passing either the object or a stackhelper for volumetric data. | `CustomEvent<any>` |
 
 
 ## Methods
@@ -205,27 +204,27 @@ Type: `Promise<void>`
 
 
 
+### `setSlicesBrightness(brightness: number) => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `setSlicesContrast(contrast: number) => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `setSlicesIndex(index: number) => Promise<void>`
-
-
-
-#### Returns
-
-Type: `Promise<void>`
-
-
-
-### `setSlicesWindowCenter(center: number) => Promise<void>`
-
-
-
-#### Returns
-
-Type: `Promise<void>`
-
-
-
-### `setSlicesWindowWidth(width: number) => Promise<void>`
 
 
 
@@ -245,27 +244,27 @@ Type: `Promise<void>`
 
 
 
+### `setVolumeBrightness(brightness: number) => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `setVolumeContrast(contrast: number) => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `setVolumeSteps(steps: number) => Promise<void>`
-
-
-
-#### Returns
-
-Type: `Promise<void>`
-
-
-
-### `setVolumeWindowCenter(center: number) => Promise<void>`
-
-
-
-#### Returns
-
-Type: `Promise<void>`
-
-
-
-### `setVolumeWindowWidth(width: number) => Promise<void>`
 
 
 
