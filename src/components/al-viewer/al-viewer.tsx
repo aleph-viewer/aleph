@@ -64,6 +64,7 @@ import {
   Utils
 } from "../../utils";
 import { AlControlEvents } from "../../utils/AlControlEvents";
+import { OrbitCamera } from "../../functional-components/OrbitCamera";
 
 type Entity = import("aframe").Entity;
 type Scene = import("aframe").Scene;
@@ -927,60 +928,36 @@ export class Aleph {
   }
 
   private _renderLights() {
-    return [
-      // <a-entity
-      //   id='light-1'
-      //   light='type: directional; color: #ffffff; intensity: 0.5'
-      //   position='1 1 1'
-      //   ref={el => (this._lights[0] = el)}
-      // />,
-      // <a-entity
-      //   id='light-2'
-      //   light='type: directional; color: #ffffff; intensity: 0.5'
-      //   position='-1 -1 -1'
-      //   ref={el => (this._lights[1] = el)}
-      // />,
+    return (
       <a-entity
-        id="light-3"
+        id="ambient-light"
         light="type: ambient; color: #d0d0d0; intensity: 1"
       />
-    ];
+    );
   }
 
   // tslint:disable-next-line: no-any
   private _renderOrbitCamera(): any {
     return (
-      <a-camera
+      this._camera = <OrbitCamera
         fov={Constants.cameraValues.fov}
         near={Constants.cameraValues.near}
-        look-controls="enabled: false"
         far={Constants.cameraValues.far}
-        id="mainCamera"
-        al-cursor="rayOrigin: mouse"
-        raycaster="objects: .collidable;"
-        al-orbit-control={`
-          minPolarAngle: ${Constants.cameraValues.minPolarAngle};
-          maxPolarAngle: ${Constants.cameraValues.maxPolarAngle};
-          minDistance: ${Constants.cameraValues.minDistance};
-          screenSpacePanning: true;
-          rotateSpeed: ${Constants.cameraValues.rotateSpeed};
-          zoomSpeed: ${Constants.cameraValues.zoomSpeed};
-          enableDamping: true;
-          dampingFactor: ${Constants.cameraValues.dampingFactor};
-          controlTarget: ${ThreeUtils.vector3ToString(
-            this.camera ? this.camera.target : new THREE.Vector3(0, 0, 0)
-          )};
-          controlPosition: ${ThreeUtils.vector3ToString(
-            this.camera ? this.camera.position : new THREE.Vector3(0, 0, 0)
-          )};
-          enabled: ${this.controlsEnabled};
-          animating: ${
-            this.camera && this.camera.animating ? this.camera.animating : false
-          }
-        `}
-        al-control-lights
-        ref={el => (this._camera = el)}
-      />
+        minPolarAngle={Constants.cameraValues.minPolarAngle}
+        maxPolarAngle={Constants.cameraValues.maxPolarAngle}
+        minDistance={Constants.cameraValues.minDistance}
+        rotateSpeed={Constants.cameraValues.rotateSpeed}
+        zoomSpeed={Constants.cameraValues.zoomSpeed}
+        dampingFactor={Constants.cameraValues.dampingFactor}
+        controlTarget={ThreeUtils.vector3ToString(
+          this.camera ? this.camera.target : new THREE.Vector3(0, 0, 0)
+        )}
+        controlPosition={ThreeUtils.vector3ToString(
+          this.camera ? this.camera.position : new THREE.Vector3(0, 0, 0)
+        )}
+        enabled={this.controlsEnabled}
+        animating={this.camera && this.camera.animating ? this.camera.animating : false}
+        />
     );
   }
 

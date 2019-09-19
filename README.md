@@ -10,18 +10,19 @@ https://aleph-viewer.com
 
 The aim of this project is to satisfy the following top-level design goals:
 
-- The viewer is usable as a web component e.g. `<al-viewer src="object.gltf" />` within any page/framework
-- The viewer has a supporting control panel (also a web component) that can be used separately or not at all
-- The control panel shows associated settings for a given mesh or volume
-- The viewer and control panel are straight-forward to debug, using a single source of truth and unidirectional data flow
-- The viewer encapsulates 3D rendering logic in a well-defined component model, with existing community support/adoption
-- The viewer utilises a component model to extensibly display various 3D file types (initially GLTF+DRACO, DICOM)
-- The viewer renders 3D scenes declaratively as markup, decoupling the presentation layer from the application layer
-- The viewer allows annotation of points on a 3D mesh or volume with a title and description
-- The viewer allows measurement of lengths and angles, with the potential to be extended to areas and volumes
-- The viewer allows annotation/measurement data to be stored/retrieved as json
-- The viewer allows panning, rotating, and animated transitions between annotations/measurements
-- The viewer annotation/measurement tools are "in-scene" as opposed to overlaid, permitting future AR/VR/XR use cases
+- Viewer is usable as a web component e.g. `<al-viewer src="object.gltf" />` within any page/framework
+- Viewer has a supporting control panel (also a web component) that can be used separately or not at all
+- Control panel shows associated settings for a given mesh or volume
+- Viewer and control panel are straight-forward to debug, using a single source of truth and unidirectional data flow
+- Viewer and control panel are themable to allow customised colour schemes
+- Viewer encapsulates 3D rendering logic in a well-defined component model, with pre-existing community support/adoption
+- Viewer utilises a component model to extensibly display various 3D file types (initially GLTF+DRACO, DICOM)
+- Viewer renders 3D scenes declaratively, decoupling the presentation layer from the application layer
+- Viewer allows annotation of points on a 3D mesh or volume with a title and description
+- Viewer allows measurement of lengths and angles, with the potential to be extended to areas and volumes
+- Viewer allows annotation/measurement data to be stored/retrieved as json
+- Viewer allows panning, rotating, and animated transitions between annotations/measurements
+- Viewer annotation/measurement tools are "in-scene" as opposed to overlaid, permitting future AR/VR/XR use cases
 
 Aleph can be used to display GLTF files and DICOM series. GLTF can be used in conjunction with DRACO compression. DICOM series must be [represented as a json array](https://www.morphosource.org/media/morphosource/dcm_sample/ptilocercus/dcm_multi_vf300_jpegQ95_16bit_allslices.json).
 

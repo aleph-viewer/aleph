@@ -1,5 +1,5 @@
 import { Component, Element, h, Listen, Prop } from "@stencil/core";
-import { DisplayMode, Units, ControlsType } from "../../enums/index.js";
+import { ControlsType, DisplayMode, Units } from "../../enums/index.js";
 import { Scroll } from "../../functional-components/Scroll";
 import { AlAngle, AlEdge, AlNode } from "../../interfaces/index.js";
 import i18n from "./al-control-panel.i18n.en.json";
