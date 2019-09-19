@@ -7,28 +7,29 @@
 
 ## Properties
 
-| Property             | Attribute              | Description | Type                                                           | Default              |
-| -------------------- | ---------------------- | ----------- | -------------------------------------------------------------- | -------------------- |
-| `angles`             | --                     |             | `Map<string, AlAngle>`                                         | `null`               |
-| `boundingBoxEnabled` | `bounding-box-enabled` |             | `boolean`                                                      | `false`              |
-| `consoleTabEnabled`  | `console-tab-enabled`  |             | `boolean`                                                      | `true`               |
-| `controlsType`       | `controls-type`        |             | `ControlsType.ORBIT \| ControlsType.TRACKBALL`                 | `ControlsType.ORBIT` |
-| `displayMode`        | `display-mode`         |             | `DisplayMode.MESH \| DisplayMode.SLICES \| DisplayMode.VOLUME` | `DisplayMode.MESH`   |
-| `edges`              | --                     |             | `Map<string, AlEdge>`                                          | `null`               |
-| `graphTabEnabled`    | `graph-tab-enabled`    |             | `boolean`                                                      | `true`               |
-| `nodes`              | --                     |             | `Map<string, AlNode>`                                          | `null`               |
-| `selected`           | `selected`             |             | `string`                                                       | `null`               |
-| `settingsTabEnabled` | `settings-tab-enabled` |             | `boolean`                                                      | `true`               |
-| `slicesBrightness`   | `slices-brightness`    |             | `number`                                                       | `undefined`          |
-| `slicesContrast`     | `slices-contrast`      |             | `number`                                                       | `undefined`          |
-| `slicesIndex`        | `slices-index`         |             | `number`                                                       | `undefined`          |
-| `srcTabEnabled`      | `src-tab-enabled`      |             | `boolean`                                                      | `true`               |
-| `tabContentHeight`   | `tab-content-height`   |             | `string`                                                       | `null`               |
-| `units`              | `units`                |             | `Units.METERS \| Units.MILLIMETERS`                            | `Units.METERS`       |
-| `url`                | `url`                  |             | `string`                                                       | `null`               |
-| `urls`               | --                     |             | `Map<string, string>`                                          | `null`               |
-| `volumeBrightness`   | `volume-brightness`    |             | `number`                                                       | `undefined`          |
-| `volumeContrast`     | `volume-contrast`      |             | `number`                                                       | `undefined`          |
+| Property             | Attribute              | Description | Type                                                           | Default     |
+| -------------------- | ---------------------- | ----------- | -------------------------------------------------------------- | ----------- |
+| `angles`             | --                     |             | `Map<string, AlAngle>`                                         | `null`      |
+| `boundingBoxEnabled` | `bounding-box-enabled` |             | `boolean`                                                      | `undefined` |
+| `consoleTabEnabled`  | `console-tab-enabled`  |             | `boolean`                                                      | `true`      |
+| `controlsType`       | `controls-type`        |             | `ControlsType.ORBIT \| ControlsType.TRACKBALL`                 | `undefined` |
+| `displayMode`        | `display-mode`         |             | `DisplayMode.MESH \| DisplayMode.SLICES \| DisplayMode.VOLUME` | `undefined` |
+| `edges`              | --                     |             | `Map<string, AlEdge>`                                          | `null`      |
+| `graphEnabled`       | `graph-enabled`        |             | `boolean`                                                      | `undefined` |
+| `graphTabEnabled`    | `graph-tab-enabled`    |             | `boolean`                                                      | `true`      |
+| `nodes`              | --                     |             | `Map<string, AlNode>`                                          | `null`      |
+| `selected`           | `selected`             |             | `string`                                                       | `null`      |
+| `settingsTabEnabled` | `settings-tab-enabled` |             | `boolean`                                                      | `true`      |
+| `slicesBrightness`   | `slices-brightness`    |             | `number`                                                       | `undefined` |
+| `slicesContrast`     | `slices-contrast`      |             | `number`                                                       | `undefined` |
+| `slicesIndex`        | `slices-index`         |             | `number`                                                       | `undefined` |
+| `srcTabEnabled`      | `src-tab-enabled`      |             | `boolean`                                                      | `true`      |
+| `tabContentHeight`   | `tab-content-height`   |             | `string`                                                       | `null`      |
+| `units`              | `units`                |             | `Units.METERS \| Units.MILLIMETERS`                            | `undefined` |
+| `url`                | `url`                  |             | `string`                                                       | `null`      |
+| `urls`               | --                     |             | `Map<string, string>`                                          | `null`      |
+| `volumeBrightness`   | `volume-brightness`    |             | `number`                                                       | `undefined` |
+| `volumeContrast`     | `volume-contrast`      |             | `number`                                                       | `undefined` |
 
 
 ## Dependencies

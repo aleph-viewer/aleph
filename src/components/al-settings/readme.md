@@ -7,19 +7,19 @@
 
 ## Properties
 
-| Property             | Attribute              | Description | Type                                                               | Default               |
-| -------------------- | ---------------------- | ----------- | ------------------------------------------------------------------ | --------------------- |
-| `boundingBoxEnabled` | `bounding-box-enabled` |             | `boolean`                                                          | `false`               |
-| `controlsType`       | `controls-type`        |             | `ControlsType.ORBIT \| ControlsType.TRACKBALL`                     | `ControlsType.ORBIT`  |
-| `displayMode`        | `display-mode`         |             | `DisplayMode.MESH \| DisplayMode.SLICES \| DisplayMode.VOLUME`     | `DisplayMode.MESH`    |
-| `graphEnabled`       | `graph-enabled`        |             | `boolean`                                                          | `false`               |
-| `orientation`        | `orientation`          |             | `Orientation.AXIAL \| Orientation.CORONAL \| Orientation.SAGGITAL` | `Orientation.CORONAL` |
-| `slicesBrightness`   | `slices-brightness`    |             | `number`                                                           | `undefined`           |
-| `slicesContrast`     | `slices-contrast`      |             | `number`                                                           | `undefined`           |
-| `slicesIndex`        | `slices-index`         |             | `number`                                                           | `undefined`           |
-| `units`              | `units`                |             | `Units.METERS \| Units.MILLIMETERS`                                | `Units.METERS`        |
-| `volumeBrightness`   | `volume-brightness`    |             | `number`                                                           | `undefined`           |
-| `volumeContrast`     | `volume-contrast`      |             | `number`                                                           | `undefined`           |
+| Property             | Attribute              | Description | Type                                                               | Default     |
+| -------------------- | ---------------------- | ----------- | ------------------------------------------------------------------ | ----------- |
+| `boundingBoxEnabled` | `bounding-box-enabled` |             | `boolean`                                                          | `undefined` |
+| `controlsType`       | `controls-type`        |             | `ControlsType.ORBIT \| ControlsType.TRACKBALL`                     | `undefined` |
+| `displayMode`        | `display-mode`         |             | `DisplayMode.MESH \| DisplayMode.SLICES \| DisplayMode.VOLUME`     | `undefined` |
+| `graphEnabled`       | `graph-enabled`        |             | `boolean`                                                          | `undefined` |
+| `orientation`        | `orientation`          |             | `Orientation.AXIAL \| Orientation.CORONAL \| Orientation.SAGGITAL` | `undefined` |
+| `slicesBrightness`   | `slices-brightness`    |             | `number`                                                           | `undefined` |
+| `slicesContrast`     | `slices-contrast`      |             | `number`                                                           | `undefined` |
+| `slicesIndex`        | `slices-index`         |             | `number`                                                           | `undefined` |
+| `units`              | `units`                |             | `Units.METERS \| Units.MILLIMETERS`                                | `undefined` |
+| `volumeBrightness`   | `volume-brightness`    |             | `number`                                                           | `undefined` |
+| `volumeContrast`     | `volume-contrast`      |             | `number`                                                           | `undefined` |
 
 
 ## Events
