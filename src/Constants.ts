@@ -59,15 +59,17 @@ export class Constants {
   };
 
   public static camera = {
-    near: 0.05,
+    dampingFactor: 0.25,
     far: 10000,
     fov: 45,
-    minPolarAngle: 5,
     maxPolarAngle: 175,
-    rotateSpeed: 0.5,
-    zoomSpeed: 1,
+    minDistance: 0,
+    minPolarAngle: 5,
+    near: 0.05,
+    orbitRotateSpeed: 0.5,
+    orbitZoomSpeed: 1,
     panSpeed: 0.9,
-    dampingFactor: 0.25,
-    minDistance: 0
+    trackballRotateSpeed: 2.5,
+    trackballZoomSpeed: 5
   };
 }

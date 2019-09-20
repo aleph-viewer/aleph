@@ -22,7 +22,7 @@ import {
   Orientation,
   Units
 } from "../../enums";
-import { OrbitCamera, Src, Nodes, Edges } from "../../functional-components/aframe";
+import { OrbitCamera, Src, Nodes, Edges, Angles, Lights, TrackballCamera } from "../../functional-components/aframe";
 import { AlAngle, AlCamera, AlEdge, AlGraph, AlNode } from "../../interfaces";
 import {
   appClearAngles,
@@ -533,163 +533,25 @@ export class Aleph {
   }
 
   private _renderAngles() {
-    return Array.from(this.angles).map((n: [string, AlAngle]) => {
-      const [angleId, angle] = n;
-      const edge1 = this.edges.get(angle.edge1Id);
-      const edge2 = this.edges.get(angle.edge2Id);
-
-      if (edge1 && edge2) {
-        let centralNode;
-        let node1;
-        let node2;
-        // IF E1N1 === E2N1
-        if (edge1.node1Id === edge2.node1Id) {
-          centralNode = this.nodes.get(edge2.node1Id);
-          node1 = this.nodes.get(edge1.node2Id);
-          node2 = this.nodes.get(edge2.node2Id);
-        }
-        // IF E1N1 === E2N2
-        else if (edge1.node1Id === edge2.node2Id) {
-          centralNode = this.nodes.get(edge2.node2Id);
-          node1 = this.nodes.get(edge1.node2Id);
-          node2 = this.nodes.get(edge2.node1Id);
-        }
-        // IF E1N2 === E2N1
-        else if (edge1.node2Id === edge2.node1Id) {
-          centralNode = this.nodes.get(edge2.node1Id);
-          node1 = this.nodes.get(edge1.node1Id);
-          node2 = this.nodes.get(edge2.node2Id);
-        }
-        // IF E1N2 === E2N2
-        else if (edge1.node2Id === edge2.node2Id) {
-          centralNode = this.nodes.get(edge2.node2Id);
-          node1 = this.nodes.get(edge1.node1Id);
-          node2 = this.nodes.get(edge2.node1Id);
-        }
-        const radius = this._boundingSphereRadius * Constants.edgeSize;
-        const node1Pos = ThreeUtils.stringToVector3(node1.position);
-        const node2Pos = ThreeUtils.stringToVector3(node2.position);
-        const centralPos = ThreeUtils.stringToVector3(centralNode.position);
-
-        const dir1: THREE.Vector3 = node1Pos
-          .clone()
-          .sub(centralPos)
-          .normalize();
-        const dir2: THREE.Vector3 = node2Pos
-          .clone()
-          .sub(centralPos)
-          .normalize();
-        const angl = dir2.angleTo(dir1);
-
-        // get the edge with the smallest length
-        // set the distance from the connecting node to be 20% of the smallest length, unless it exceeds a max
-        const smallestLength: number = Math.min(
-          centralPos.distanceTo(node1Pos),
-          centralPos.distanceTo(node2Pos)
-        );
-
-        let distanceFromCentralNode: number = Math.min(
-          smallestLength * 0.25,
-          radius * 25
-        );
-
-        distanceFromCentralNode = Math.max(
-          distanceFromCentralNode,
-          radius * 10
-        );
-
-        const edge1Pos: THREE.Vector3 = dir1
-          .clone()
-          .multiplyScalar(distanceFromCentralNode);
-        const edge2Pos: THREE.Vector3 = dir2
-          .clone()
-          .multiplyScalar(distanceFromCentralNode);
-        const length = edge1Pos.clone().distanceTo(edge2Pos.clone());
-        const position: THREE.Vector3 = edge1Pos
-          .clone()
-          .add(edge2Pos.clone())
-          .divideScalar(2);
-
-        const textOffset: THREE.Vector3 = new THREE.Vector3(0, 2.5, 0);
-        const scale = (node1.scale + node2.scale + centralNode.scale) / 3;
-        textOffset.multiplyScalar(scale);
-
-        const textV =
-          THREE.Math.radToDeg(angl).toFixed(Constants.unitsDecimalPlaces) +
-          " deg"; // todo: use i18n
-
-        const frustrumDistance = ThreeUtils.getFrustrumSpaceDistance(
-          this._scene.camera,
-          centralPos.clone(),
-          this.camera.position
-        );
-        const entityScale =
-          (frustrumDistance / this._boundingSphereRadius) *
-          Constants.frustrumScaleFactor;
-
-        return (
-          <a-entity al-child-hover-visible id={angleId + "-parent"}>
-            <a-entity
-              position={ThreeUtils.vector3ToString(centralPos)}
-              id={angleId + "-title-anchor"}
-              al-billboard={`
-              controlsType: ${this.controlsType};
-              cameraPosition: ${ThreeUtils.vector3ToString(
-                this.camera.position
-              )};
-              worldPosition: ${ThreeUtils.vector3ToString(
-                centralPos.clone().add(textOffset.clone())
-              )};
-            `}
-            >
-              <a-entity
-                id={`${angleId}-title`}
-                text={`
-                  value: ${textV};
-                  side: double;
-                  align: center;
-                  baseline: bottom;
-                  anchor: center;
-                  width: ${Constants.fontSizeSmall * this._boundingSphereRadius}
-                `}
-                position={ThreeUtils.vector3ToString(textOffset)}
-                visible={`${this.selected === angleId}`}
-                scale={` ${entityScale} ${entityScale} ${entityScale};`}
-                al-background={`
-                    text: ${textV};
-                    boundingRadius: ${Constants.fontSizeSmall *
-                      this._boundingSphereRadius};
-                `}
-                al-render-overlaid
-              />
-            </a-entity>
-            <a-entity
-              class="collidable"
-              id={angleId}
-              position={centralNode.position}
-              al-angle={`
-                selected: ${this.selected === angleId};
-                edge0Pos: ${ThreeUtils.vector3ToString(edge1Pos)};
-                edge1Pos: ${ThreeUtils.vector3ToString(edge2Pos)};
-                position: ${ThreeUtils.vector3ToString(position)};
-                length: ${length};
-                radius: ${radius};
-                angle: ${angle};
-                scale: ${entityScale};
-              `}
-            />
-          </a-entity>
-        );
-      }
-    });
+    return (
+      <Angles
+        angles={this.angles}
+        boundingSphereRadius={this._boundingSphereRadius}
+        camera={this._scene ? this._scene.camera : null}
+        cameraPosition={this.camera ? this.camera.position : null}
+        controlsType={this.controlsType}
+        edges={this.edges}
+        edgeSize={Constants.edgeSize}
+        fontSize={Constants.fontSizeSmall}
+        nodes={this.nodes}
+        selected={this.selected}
+      />
+    );
   }
 
   private _renderLights() {
     return (
-      <a-entity
-        id="ambient-light"
-        light="type: ambient; color: #d0d0d0; intensity: 1"
-      />
+      <Lights />
     );
   }
 
@@ -700,25 +562,19 @@ export class Aleph {
         cb={(ref) => {
           this._camera = ref;
         }}
-        fov={Constants.camera.fov}
-        near={Constants.camera.near}
+        animating={this.camera && this.camera.animating ? this.camera.animating : false}
+        controlPosition={ThreeUtils.vector3ToString(this.camera ? this.camera.position : new THREE.Vector3(0, 0, 0))}
+        controlTarget={ThreeUtils.vector3ToString(this.camera ? this.camera.target : new THREE.Vector3(0, 0, 0))}
+        dampingFactor={Constants.camera.dampingFactor}
+        enabled={this.controlsEnabled}
         far={Constants.camera.far}
-        minPolarAngle={Constants.camera.minPolarAngle}
+        fov={Constants.camera.fov}
         maxPolarAngle={Constants.camera.maxPolarAngle}
         minDistance={Constants.camera.minDistance}
-        rotateSpeed={Constants.camera.rotateSpeed}
-        zoomSpeed={Constants.camera.zoomSpeed}
-        dampingFactor={Constants.camera.dampingFactor}
-        controlTarget={ThreeUtils.vector3ToString(
-          this.camera ? this.camera.target : new THREE.Vector3(0, 0, 0)
-        )}
-        controlPosition={ThreeUtils.vector3ToString(
-          this.camera ? this.camera.position : new THREE.Vector3(0, 0, 0)
-        )}
-        enabled={this.controlsEnabled}
-        animating={
-          this.camera && this.camera.animating ? this.camera.animating : false
-        }
+        minPolarAngle={Constants.camera.minPolarAngle}
+        near={Constants.camera.near}
+        rotateSpeed={Constants.camera.orbitRotateSpeed}
+        zoomSpeed={Constants.camera.orbitZoomSpeed}
       />
     )
   }
@@ -726,36 +582,23 @@ export class Aleph {
   // tslint:disable-next-line: no-any
   private _renderTrackballCamera(): any {
     return (
-      <a-camera
+      <TrackballCamera
+        cb={(ref) => {
+          this._camera = ref;
+        }}
+        animating={this.camera && this.camera.animating ? this.camera.animating : false}
+        controlPosition={ThreeUtils.vector3ToString(this.camera ? this.camera.position : new THREE.Vector3(0, 0, 0))}
+        controlTarget={ThreeUtils.vector3ToString(this.camera ? this.camera.target : new THREE.Vector3(0, 0, 0))}
+        dampingFactor={Constants.camera.dampingFactor}
+        enabled={this.controlsEnabled}
+        far={Constants.camera.far}
         fov={Constants.camera.fov}
         near={Constants.camera.near}
-        look-controls="enabled: false"
-        far={Constants.camera.far}
-        id="mainCamera"
-        al-cursor="rayOrigin: mouse"
-        raycaster="objects: .collidable;"
-        al-trackball-control={`
-          screenLeft: ${0};
-          screenTop: ${0};
-          screenWidth: ${this._scene ? this._scene.canvas.width : 0};
-          screenHeight: ${this._scene ? this._scene.canvas.height : 0};
-          rotateSpeed: ${Constants.camera.rotateSpeed * 5};
-          zoomSpeed: ${Constants.camera.zoomSpeed * 5};
-          panSpeed: ${Constants.camera.panSpeed};
-          dynamicDampingFactor: ${Constants.camera.dampingFactor};
-          controlTarget: ${ThreeUtils.vector3ToString(
-            this.camera ? this.camera.target : new THREE.Vector3(0, 0, 0)
-          )};
-          controlPosition: ${ThreeUtils.vector3ToString(
-            this.camera ? this.camera.position : new THREE.Vector3(0, 0, 0)
-          )};
-          enabled: ${this.controlsEnabled};
-          animating: ${
-            this.camera && this.camera.animating ? this.camera.animating : false
-          }
-        `}
-        al-control-lights
-        ref={el => (this._camera = el)}
+        panSpeed={Constants.camera.panSpeed}
+        rotateSpeed={Constants.camera.trackballRotateSpeed}
+        screenHeight={this._scene ? this._scene.canvas.height : 0}
+        screenWidth={this._scene ? this._scene.canvas.width : 0}
+        zoomSpeed={Constants.camera.trackballZoomSpeed}
       />
     );
   }
