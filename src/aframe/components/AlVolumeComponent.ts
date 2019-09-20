@@ -155,7 +155,7 @@ export default AFRAME.registerComponent("al-volume", {
       this.state.stackhelper,
       camPos,
       camDir,
-      Constants.cameraValues.far,
+      Constants.camera.far,
       hitPosition,
       hitNormal
     );
@@ -255,7 +255,7 @@ export default AFRAME.registerComponent("al-volume", {
       case DisplayMode.SLICES: {
         state.stackhelper = new AMI.StackHelper(state.stack);
         state.stackhelper.bbox.visible = false;
-        state.stackhelper.border.color = Constants.colorValues.blue;
+        state.stackhelper.border.color = Constants.colors.blue;
         break;
       }
       case DisplayMode.VOLUME: {

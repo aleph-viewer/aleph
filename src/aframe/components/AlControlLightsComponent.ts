@@ -16,14 +16,14 @@ export default AFRAME.registerComponent("al-control-lights", {
     const parent: THREE.Object3D = this.el.getObject3D("camera");
 
     const light1 = new THREE.DirectionalLight(
-      new THREE.Color(Constants.colorValues.white),
+      new THREE.Color(Constants.colors.white),
       Constants.lightIntensity
     );
     light1.position.copy(new THREE.Vector3(1, 1, 1));
     parent.add(light1);
 
     const light2 = new THREE.DirectionalLight(
-      new THREE.Color(Constants.colorValues.white),
+      new THREE.Color(Constants.colors.white),
       Constants.lightIntensity
     );
     light2.position.copy(new THREE.Vector3(-1, -1, -1));

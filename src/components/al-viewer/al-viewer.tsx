@@ -65,6 +65,7 @@ import {
   Utils
 } from "../../utils";
 import { AlControlEvents } from "../../utils/AlControlEvents";
+import { BoundingBox } from "../../functional-components/aframe/BoundingBox";
 
 type Entity = import("aframe").Entity;
 type Scene = import("aframe").Scene;
@@ -481,6 +482,23 @@ export class Aleph {
   }
 
   private _renderBoundingBox() {
+    return (
+      <BoundingBox
+        cb={(ref) => {
+          this._boundingEntity = ref;
+        }}
+        boundingBox={this._boundingBox}
+        boundingBoxEnabled={this.boundingBoxEnabled}
+        color={Constants.colors.white}
+        displayMode={this.displayMode}
+        graphEnabled={this.graphEnabled}
+        mesh={this._getMesh()}
+        srcLoaded={this.srcLoaded}
+        targetEntity={this._targetEntity}
+      />
+    );
+
+    /*
     if (this.srcLoaded) {
       const size: THREE.Vector3 = new THREE.Vector3();
       this._boundingBox.getSize(size);
@@ -551,6 +569,7 @@ export class Aleph {
         );
       }
     }
+    */
   }
 
   private _renderNodes() {
@@ -882,15 +901,15 @@ export class Aleph {
         cb={(ref) => {
           this._camera = ref;
         }}
-        fov={Constants.cameraValues.fov}
-        near={Constants.cameraValues.near}
-        far={Constants.cameraValues.far}
-        minPolarAngle={Constants.cameraValues.minPolarAngle}
-        maxPolarAngle={Constants.cameraValues.maxPolarAngle}
-        minDistance={Constants.cameraValues.minDistance}
-        rotateSpeed={Constants.cameraValues.rotateSpeed}
-        zoomSpeed={Constants.cameraValues.zoomSpeed}
-        dampingFactor={Constants.cameraValues.dampingFactor}
+        fov={Constants.camera.fov}
+        near={Constants.camera.near}
+        far={Constants.camera.far}
+        minPolarAngle={Constants.camera.minPolarAngle}
+        maxPolarAngle={Constants.camera.maxPolarAngle}
+        minDistance={Constants.camera.minDistance}
+        rotateSpeed={Constants.camera.rotateSpeed}
+        zoomSpeed={Constants.camera.zoomSpeed}
+        dampingFactor={Constants.camera.dampingFactor}
         controlTarget={ThreeUtils.vector3ToString(
           this.camera ? this.camera.target : new THREE.Vector3(0, 0, 0)
         )}
@@ -909,10 +928,10 @@ export class Aleph {
   private _renderTrackballCamera(): any {
     return (
       <a-camera
-        fov={Constants.cameraValues.fov}
-        near={Constants.cameraValues.near}
+        fov={Constants.camera.fov}
+        near={Constants.camera.near}
         look-controls="enabled: false"
-        far={Constants.cameraValues.far}
+        far={Constants.camera.far}
         id="mainCamera"
         al-cursor="rayOrigin: mouse"
         raycaster="objects: .collidable;"
@@ -921,10 +940,10 @@ export class Aleph {
           screenTop: ${0};
           screenWidth: ${this._scene ? this._scene.canvas.width : 0};
           screenHeight: ${this._scene ? this._scene.canvas.height : 0};
-          rotateSpeed: ${Constants.cameraValues.rotateSpeed * 5};
-          zoomSpeed: ${Constants.cameraValues.zoomSpeed * 5};
-          panSpeed: ${Constants.cameraValues.panSpeed};
-          dynamicDampingFactor: ${Constants.cameraValues.dampingFactor};
+          rotateSpeed: ${Constants.camera.rotateSpeed * 5};
+          zoomSpeed: ${Constants.camera.zoomSpeed * 5};
+          panSpeed: ${Constants.camera.panSpeed};
+          dynamicDampingFactor: ${Constants.camera.dampingFactor};
           controlTarget: ${ThreeUtils.vector3ToString(
             this.camera ? this.camera.target : new THREE.Vector3(0, 0, 0)
           )};
@@ -1378,9 +1397,9 @@ export class Aleph {
           }
         });
       }
-    } else if (this._loadedObject._bBox) {
+    } else if (this._loadedObject && this._loadedObject._bBox) {
       mesh = this._loadedObject._bBox._mesh;
-    } else {
+    } else if (this._loadedObject) {
       mesh = this._loadedObject._mesh;
     }
 
@@ -1623,7 +1642,7 @@ export class Aleph {
           this._getStackHelper(),
           orbitPosition.clone(),
           raycasterAttribute.direction,
-          Constants.cameraValues.far,
+          Constants.camera.far,
           hitPosition,
           hitNormal
         );

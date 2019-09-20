@@ -60,7 +60,7 @@ export class Utils {
       meshCenter = this.getGeometryCenter(geom);
       sceneDistance =
         (Constants.zoomFactor * geom.boundingSphere.radius) /
-        Math.tan((Constants.cameraValues.fov * Math.PI) / 180);
+        Math.tan((Constants.camera.fov * Math.PI) / 180);
 
       initialPosition = new THREE.Vector3();
       initialPosition.copy(meshCenter);

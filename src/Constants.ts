@@ -38,7 +38,7 @@ export class Constants {
     up: "#00b0ff"
   };
 
-  public static colorValues = {
+  public static colors = {
     red: "#f50057",
     blue: "#00b0ff",
     black: "#000000",
@@ -49,7 +49,7 @@ export class Constants {
     lightRed: "#f77777"
   };
 
-  public static lightValues = {
+  public static lights = {
     ambientLightColor: 0xd0d0d0,
     ambientLightIntensity: 1,
     directionalLight1Color: 0xffffff,
@@ -58,7 +58,7 @@ export class Constants {
     directionalLight2Intensity: 0.5
   };
 
-  public static cameraValues = {
+  public static camera = {
     near: 0.05,
     far: 10000,
     fov: 45,

@@ -70,7 +70,7 @@ export default AFRAME.registerComponent("al-background", {
 
           const planeGeom = new THREE.PlaneGeometry(1, 1, 1, 1);
           const planeMat = new THREE.MeshStandardMaterial();
-          planeMat.color = new THREE.Color(Constants.colorValues.black);
+          planeMat.color = new THREE.Color(Constants.colors.black);
           planeMat.transparent = true;
           planeMat.opacity = 0.9;
           planeMat.flatShading = true;

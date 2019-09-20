@@ -46,7 +46,7 @@ export default AFRAME.registerComponent("al-bounding-box", {
     // Add a second mesh for raycasting in volume mode
     const geometry = new THREE.BoxGeometry(scale.x, scale.y, scale.z);
     const material = new THREE.MeshBasicMaterial({
-      color: Constants.colorValues.red,
+      color: Constants.colors.red,
       visible: false
     });
     const mesh = new THREE.Mesh(geometry, material);
@@ -58,7 +58,7 @@ export default AFRAME.registerComponent("al-bounding-box", {
 
     const MeshLineMat = new MeshLineMaterial({
       // - THREE.Color to paint the line width, or tint the texture with
-      color: new THREE.Color(Constants.colorValues.white),
+      color: new THREE.Color(Constants.colors.white),
       // - cutoff value from 0 to 1
       alphaTest: 0,
       // - THREE.Vector2 specifying the canvas size (REQUIRED)
