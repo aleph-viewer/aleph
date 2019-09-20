@@ -22,7 +22,7 @@ import {
   Orientation,
   Units
 } from "../../enums";
-import { OrbitCamera, Src } from "../../functional-components/aframe";
+import { OrbitCamera, Src, Nodes } from "../../functional-components/aframe";
 import { AlAngle, AlCamera, AlEdge, AlGraph, AlNode } from "../../interfaces";
 import {
   appClearAngles,
@@ -497,153 +497,21 @@ export class Aleph {
         targetEntity={this._targetEntity}
       />
     );
-
-    /*
-    if (this.srcLoaded) {
-      const size: THREE.Vector3 = new THREE.Vector3();
-      this._boundingBox.getSize(size);
-      const mesh = this._getMesh();
-
-      if (!mesh) {
-        return null;
-      }
-
-      const meshGeom = mesh.geometry;
-      let position: THREE.Vector3;
-
-      if (this.displayMode === DisplayMode.VOLUME) {
-        position = this._targetEntity.object3D.position
-          .clone()
-          .add(Utils.getGeometryCenter(meshGeom));
-
-        return (
-          <a-entity
-            position={ThreeUtils.vector3ToString(position)}
-            al-bounding-box={`
-              scale: ${ThreeUtils.vector3ToString(size)};
-              color: ${Constants.colorValues.white};
-              enabled: ${this.boundingBoxEnabled};
-            `}
-            al-node-spawner={`
-              graphEnabled: ${this.graphEnabled};
-            `}
-            class="collidable"
-            ref={el => (this._boundingEntity = el)}
-          />
-        );
-      } else {
-        switch (this.displayMode) {
-          case DisplayMode.MESH: {
-            if (this._boundingBox.intersectsBox(meshGeom.boundingBox)) {
-              // Check if mesh intersects bounding box; if it does apply the offset
-              const offset = meshGeom.boundingSphere.center.clone();
-              position = this._targetEntity.object3D.position
-                .clone()
-                .add(offset);
-            } else {
-              position = this._targetEntity.object3D.position.clone();
-            }
-            break;
-          }
-          case DisplayMode.SLICES: {
-            position = this._targetEntity.object3D.position
-              .clone()
-              .add(Utils.getGeometryCenter(meshGeom));
-            break;
-          }
-          default: {
-            break;
-          }
-        }
-
-        return (
-          <a-entity
-            position={ThreeUtils.vector3ToString(position)}
-            al-bounding-box={`
-                scale: ${ThreeUtils.vector3ToString(size)};
-                color: ${Constants.colorValues.white};
-                enabled: ${this.boundingBoxEnabled};
-              `}
-            ref={el => (this._boundingEntity = el)}
-          />
-        );
-      }
-    }
-    */
   }
 
   private _renderNodes() {
-    return Array.from(this.nodes).map((n: [string, AlNode]) => {
-      const [nodeId, node] = n;
-      const frustrumDistance = ThreeUtils.getFrustrumSpaceDistance(
-        this._scene.camera,
-        ThreeUtils.stringToVector3(node.position),
-        this.camera.position
-      );
-      const entityScale =
-        (frustrumDistance / this._boundingSphereRadius) *
-        Constants.frustrumScaleFactor;
-
-      const textOffset: THREE.Vector3 = new THREE.Vector3(
-        0,
-        3 * entityScale,
-        0
-      );
-      textOffset.multiplyScalar(node.scale);
-
-      return (
-        <a-entity al-child-hover-visible id={nodeId + "-parent"}>
-          <a-entity
-            position={node.position}
-            id={nodeId + "-title-anchor"}
-            al-billboard={`
-              controlsType: ${this.controlsType};
-              cameraPosition: ${ThreeUtils.vector3ToString(
-                this.camera.position
-              )};
-              worldPosition: ${ThreeUtils.vector3ToString(
-                ThreeUtils.stringToVector3(node.position).add(
-                  textOffset.clone()
-                )
-              )};
-            `}
-          >
-            <a-entity
-              text={`
-                value: ${node.title};
-                side: double;
-                align: center;
-                baseline: bottom;
-                anchor: center;
-                width: ${Constants.fontSizeMedium * this._boundingSphereRadius};
-                zOffset: ${0.0000001};
-              `}
-              position={ThreeUtils.vector3ToString(textOffset)}
-              al-render-overlaid
-              visible={`${this.selected === nodeId}`}
-              id={`${nodeId}-label`}
-              al-background={`
-                  text: ${node.title};
-                  boundingRadius: ${Constants.fontSizeMedium *
-                    this._boundingSphereRadius};
-              `}
-              scale={` ${entityScale} ${entityScale} ${entityScale};`}
-            />
-          </a-entity>
-          <a-entity
-            class="collidable"
-            id={nodeId}
-            position={node.position}
-            al-node={`
-              scale: ${node.scale};
-              selected: ${this.selected === nodeId};
-              graphEnabled: ${this.graphEnabled};
-            `}
-            scale={` ${entityScale} ${entityScale} ${entityScale};`}
-          />
-        </a-entity>
-      );
-    });
+    return (
+      <Nodes
+        boundingSphereRadius={this._boundingSphereRadius}
+        camera={this._scene ? this._scene.camera : null}
+        cameraPosition={this.camera ? this.camera.position : null}
+        controlsType={this.controlsType}
+        fontSize={Constants.fontSizeMedium}
+        graphEnabled={this.graphEnabled}
+        nodes={this.nodes}
+        selected={this.selected}
+      />
+    );
   }
 
   private _renderEdges() {
