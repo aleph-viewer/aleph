@@ -27,12 +27,11 @@ export const BoundingBox: FunctionalComponent<BoundingBoxProps> = (
     targetEntity
   },
   _children
-) => (
+) =>
   (() => {
     if (!srcLoaded) {
       return null;
     } else {
-
       if (!mesh) {
         return null;
       }
@@ -69,9 +68,7 @@ export const BoundingBox: FunctionalComponent<BoundingBoxProps> = (
             if (boundingBox.intersectsBox(meshGeom.boundingBox)) {
               // Check if mesh intersects bounding box; if it does apply the offset
               const offset = meshGeom.boundingSphere.center.clone();
-              position = targetEntity.object3D.position
-                .clone()
-                .add(offset);
+              position = targetEntity.object3D.position.clone().add(offset);
             } else {
               position = targetEntity.object3D.position.clone();
             }
@@ -101,5 +98,4 @@ export const BoundingBox: FunctionalComponent<BoundingBoxProps> = (
         );
       }
     }
-  })()
-);
+  })();

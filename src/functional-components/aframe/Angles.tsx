@@ -31,7 +31,7 @@ export const Angles: FunctionalComponent<AnglesProps> = (
     selected
   },
   _children
-) => (
+) =>
   (() => {
     return Array.from(angles).map((n: [string, AlAngle]) => {
       const [angleId, angle] = n;
@@ -135,9 +135,7 @@ export const Angles: FunctionalComponent<AnglesProps> = (
               id={angleId + "-title-anchor"}
               al-billboard={`
               controlsType: ${controlsType};
-              cameraPosition: ${ThreeUtils.vector3ToString(
-                camera.position
-              )};
+              cameraPosition: ${ThreeUtils.vector3ToString(camera.position)};
               worldPosition: ${ThreeUtils.vector3ToString(
                 centralPos.clone().add(textOffset.clone())
               )};
@@ -158,8 +156,7 @@ export const Angles: FunctionalComponent<AnglesProps> = (
                 scale={` ${entityScale} ${entityScale} ${entityScale};`}
                 al-background={`
                     text: ${textV};
-                    boundingRadius: ${fontSize *
-                      boundingSphereRadius};
+                    boundingRadius: ${fontSize * boundingSphereRadius};
                 `}
                 al-render-overlaid
               />
@@ -183,5 +180,4 @@ export const Angles: FunctionalComponent<AnglesProps> = (
         );
       }
     });
-})()
-);
+  })();

@@ -27,7 +27,7 @@ export const Nodes: FunctionalComponent<NodesProps> = (
     selected
   },
   _children
-) => (
+) =>
   (() => {
     return Array.from(nodes).map((n: [string, AlNode]) => {
       const [nodeId, node] = n;
@@ -54,9 +54,7 @@ export const Nodes: FunctionalComponent<NodesProps> = (
             id={nodeId + "-title-anchor"}
             al-billboard={`
               controlsType: ${controlsType};
-              cameraPosition: ${ThreeUtils.vector3ToString(
-                camera.position
-              )};
+              cameraPosition: ${ThreeUtils.vector3ToString(camera.position)};
               worldPosition: ${ThreeUtils.vector3ToString(
                 ThreeUtils.stringToVector3(node.position).add(
                   textOffset.clone()
@@ -80,8 +78,7 @@ export const Nodes: FunctionalComponent<NodesProps> = (
               id={`${nodeId}-label`}
               al-background={`
                   text: ${node.title};
-                  boundingRadius: ${fontSize *
-                    boundingSphereRadius};
+                  boundingRadius: ${fontSize * boundingSphereRadius};
               `}
               scale={` ${entityScale} ${entityScale} ${entityScale};`}
             />
@@ -100,5 +97,4 @@ export const Nodes: FunctionalComponent<NodesProps> = (
         </a-entity>
       );
     });
-  })()
-);
+  })();

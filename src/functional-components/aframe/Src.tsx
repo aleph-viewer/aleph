@@ -2,19 +2,19 @@ import { FunctionalComponent, h } from "@stencil/core";
 import { ControlsType, DisplayMode, Orientation } from "../../enums";
 
 interface SrcProps extends FunctionalComponentProps {
-  controlsType: ControlsType,
-  displayMode: DisplayMode,
-  dracoDecoderPath: string,
-  graphEnabled: boolean,
-  isWebGl2: boolean,
-  orientation: Orientation,
-  slicesIndex: number,
-  slicesWindowCenter: number,
-  slicesWindowWidth: number,
-  src: string,
-  srcLoaded: boolean,
-  volumeWindowCenter: number,
-  volumeWindowWidth: number
+  controlsType: ControlsType;
+  displayMode: DisplayMode;
+  dracoDecoderPath: string;
+  graphEnabled: boolean;
+  isWebGl2: boolean;
+  orientation: Orientation;
+  slicesIndex: number;
+  slicesWindowCenter: number;
+  slicesWindowWidth: number;
+  src: string;
+  srcLoaded: boolean;
+  volumeWindowCenter: number;
+  volumeWindowWidth: number;
 }
 
 export const Src: FunctionalComponent<SrcProps> = (
@@ -35,7 +35,7 @@ export const Src: FunctionalComponent<SrcProps> = (
     volumeWindowWidth
   },
   _children
-) => (
+) =>
   (() => {
     if (!src) {
       return null;
@@ -117,5 +117,4 @@ export const Src: FunctionalComponent<SrcProps> = (
         }
       }
     }
-})()
-);
+  })();

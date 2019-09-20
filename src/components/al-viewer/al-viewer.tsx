@@ -461,12 +461,13 @@ export class Aleph {
   private _renderScene() {
     return (
       <Scene
-        cb={(ref) => {
+        cb={ref => {
           this._scene = ref as AScene;
         }}
-        isWebGl2={this._isWebGl2}>
+        isWebGl2={this._isWebGl2}
+      >
         <Src
-          cb={(ref) => {
+          cb={ref => {
             this._targetEntity = ref;
           }}
           controlsType={this.controlsType}
@@ -484,7 +485,7 @@ export class Aleph {
           volumeWindowWidth={this.volumeWindowWidth}
         />
         <BoundingBox
-          cb={(ref) => {
+          cb={ref => {
             this._boundingEntity = ref;
           }}
           boundingBox={this._boundingBox}
@@ -536,12 +537,24 @@ export class Aleph {
             case ControlsType.TRACKBALL: {
               return (
                 <TrackballCamera
-                  cb={(ref) => {
+                  cb={ref => {
                     this._camera = ref;
                   }}
-                  animating={this.camera && this.camera.animating ? this.camera.animating : false}
-                  controlPosition={ThreeUtils.vector3ToString(this.camera ? this.camera.position : new THREE.Vector3(0, 0, 0))}
-                  controlTarget={ThreeUtils.vector3ToString(this.camera ? this.camera.target : new THREE.Vector3(0, 0, 0))}
+                  animating={
+                    this.camera && this.camera.animating
+                      ? this.camera.animating
+                      : false
+                  }
+                  controlPosition={ThreeUtils.vector3ToString(
+                    this.camera
+                      ? this.camera.position
+                      : new THREE.Vector3(0, 0, 0)
+                  )}
+                  controlTarget={ThreeUtils.vector3ToString(
+                    this.camera
+                      ? this.camera.target
+                      : new THREE.Vector3(0, 0, 0)
+                  )}
                   dampingFactor={Constants.camera.dampingFactor}
                   enabled={this.controlsEnabled}
                   far={Constants.camera.far}
@@ -553,17 +566,29 @@ export class Aleph {
                   screenWidth={this._scene ? this._scene.canvas.width : 0}
                   zoomSpeed={Constants.camera.trackballZoomSpeed}
                 />
-              )
+              );
             }
             case ControlsType.ORBIT: {
               return (
                 <OrbitCamera
-                  cb={(ref) => {
+                  cb={ref => {
                     this._camera = ref;
                   }}
-                  animating={this.camera && this.camera.animating ? this.camera.animating : false}
-                  controlPosition={ThreeUtils.vector3ToString(this.camera ? this.camera.position : new THREE.Vector3(0, 0, 0))}
-                  controlTarget={ThreeUtils.vector3ToString(this.camera ? this.camera.target : new THREE.Vector3(0, 0, 0))}
+                  animating={
+                    this.camera && this.camera.animating
+                      ? this.camera.animating
+                      : false
+                  }
+                  controlPosition={ThreeUtils.vector3ToString(
+                    this.camera
+                      ? this.camera.position
+                      : new THREE.Vector3(0, 0, 0)
+                  )}
+                  controlTarget={ThreeUtils.vector3ToString(
+                    this.camera
+                      ? this.camera.target
+                      : new THREE.Vector3(0, 0, 0)
+                  )}
                   dampingFactor={Constants.camera.dampingFactor}
                   enabled={this.controlsEnabled}
                   far={Constants.camera.far}
@@ -575,7 +600,7 @@ export class Aleph {
                   rotateSpeed={Constants.camera.orbitRotateSpeed}
                   zoomSpeed={Constants.camera.orbitZoomSpeed}
                 />
-              )
+              );
             }
             default: {
               return null;
@@ -584,7 +609,7 @@ export class Aleph {
         })()}
         <Lights />
       </Scene>
-    )
+    );
   }
 
   public render() {
@@ -603,13 +628,11 @@ export class Aleph {
           <div id="lut-max">1.0</div>
         </div>
         {this._renderScene()}
-        {
-          (this.src && !this.srcLoaded) && (
-            <div id="spinner">
-              <div class="square" />
-            </div>
-          )
-        }
+        {this.src && !this.srcLoaded && (
+          <div id="spinner">
+            <div class="square" />
+          </div>
+        )}
       </div>
     );
   }

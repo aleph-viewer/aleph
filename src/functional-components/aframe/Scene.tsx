@@ -5,10 +5,7 @@ interface SceneProps extends FunctionalComponentProps {
 }
 
 export const Scene: FunctionalComponent<SceneProps> = (
-  {
-    cb,
-    isWebGl2
-  },
+  { cb, isWebGl2 },
   children
 ) => (
   <a-scene

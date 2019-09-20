@@ -18,7 +18,11 @@ interface EdgesProps extends FunctionalComponentProps {
   units: Units;
 }
 
-const convertUnits = (dist: number, displayMode: DisplayMode, units: Units): string => {
+const convertUnits = (
+  dist: number,
+  displayMode: DisplayMode,
+  units: Units
+): string => {
   if (displayMode === DisplayMode.MESH) {
     // if in mesh mode, units are always meters by default
     switch (units) {
@@ -27,9 +31,7 @@ const convertUnits = (dist: number, displayMode: DisplayMode, units: Units): str
       }
       case Units.MILLIMETERS: {
         // convert m to mm
-        return (
-          (dist / 0.001).toFixed(Constants.unitsDecimalPlaces) + units
-        );
+        return (dist / 0.001).toFixed(Constants.unitsDecimalPlaces) + units;
       }
       default: {
         break;
@@ -40,9 +42,7 @@ const convertUnits = (dist: number, displayMode: DisplayMode, units: Units): str
     switch (units) {
       case Units.METERS: {
         // convert mm to m
-        return (
-          (dist / 1000.0).toFixed(Constants.unitsDecimalPlaces) + units
-        );
+        return (dist / 1000.0).toFixed(Constants.unitsDecimalPlaces) + units;
       }
       case Units.MILLIMETERS: {
         return dist.toFixed(Constants.unitsDecimalPlaces) + units;
@@ -52,7 +52,7 @@ const convertUnits = (dist: number, displayMode: DisplayMode, units: Units): str
       }
     }
   }
-}
+};
 
 export const Edges: FunctionalComponent<EdgesProps> = (
   {
@@ -69,7 +69,7 @@ export const Edges: FunctionalComponent<EdgesProps> = (
     units
   },
   _children
-) => (
+) =>
   (() => {
     return Array.from(edges).map((n: [string, AlEdge]) => {
       const [edgeId, edge] = n;
@@ -108,9 +108,7 @@ export const Edges: FunctionalComponent<EdgesProps> = (
               id={edgeId + "-title-anchor"}
               al-billboard={`
               controlsType: ${controlsType};
-              cameraPosition: ${ThreeUtils.vector3ToString(
-                camera.position
-              )};
+              cameraPosition: ${ThreeUtils.vector3ToString(camera.position)};
               worldPosition: ${ThreeUtils.vector3ToString(
                 centoid.clone().add(textOffset.clone())
               )};
@@ -131,8 +129,7 @@ export const Edges: FunctionalComponent<EdgesProps> = (
                 scale={` ${entityScale} ${entityScale} ${entityScale};`}
                 al-background={`
                   text: ${textV};
-                  boundingRadius: ${fontSize *
-                    boundingSphereRadius};
+                  boundingRadius: ${fontSize * boundingSphereRadius};
                 `}
                 al-render-overlaid
               />
@@ -155,5 +152,4 @@ export const Edges: FunctionalComponent<EdgesProps> = (
         );
       }
     });
-})()
-);
+  })();
