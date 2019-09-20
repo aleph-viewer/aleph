@@ -126,214 +126,209 @@
 
       function init() {
 
-        // applyPolyfills().then(() => {
-        //     defineCustomElements(window);
+        container = document.getElementById("container");
+        alControlPanel = document.querySelector("al-control-panel");
+        alViewer = document.querySelector("al-viewer");
+        debug = document.getElementById("debug");
 
-            container = document.getElementById("container");
-            alControlPanel = document.querySelector("al-control-panel");
-            alViewer = document.querySelector("al-viewer");
-            debug = document.getElementById("debug");
+        alControlPanel.urls = urls;
 
-            alControlPanel.urls = urls;
+        var promises = [alControlPanel, alViewer].map(function(customElement) {
+          return customElements.whenDefined(customElement.localName);
+        });
 
-            var promises = [alControlPanel, alViewer].map(function(customElement) {
-              return customElements.whenDefined(customElement.localName);
+        Promise.all(promises).then(function() {
+          nextState({
+            src: Array.from(urls)[0][0]
+          });
+        });
+
+        alViewer.addEventListener(
+          "changed",
+          function(e) {
+            // update everything except src (this can't be changed from within al-viewer)
+            nextState(Object.assign({}, e.detail, {
+              src: prevState.src
+            }));
+          },
+          false
+        );
+
+        alControlPanel.addEventListener(
+          "boundingBoxEnabledChanged",
+          function(e) {
+            alViewer.setBoundingBoxEnabled(e.detail);
+          },
+          false
+        );
+
+        alControlPanel.addEventListener(
+          "controlsTypeChanged",
+          function(e) {
+            alViewer.setControlsType(e.detail);
+          },
+          false
+        );
+
+        alControlPanel.addEventListener(
+          "deleteAngle",
+          function(e) {
+            alViewer.deleteAngle(e.detail);
+          },
+          false
+        );
+
+        alControlPanel.addEventListener(
+          "deleteEdge",
+          function(e) {
+            alViewer.deleteEdge(e.detail);
+          },
+          false
+        );
+
+        alControlPanel.addEventListener(
+          "deleteNode",
+          function(e) {
+            alViewer.deleteNode(e.detail);
+          },
+          false
+        );
+
+        alControlPanel.addEventListener(
+          "displayModeChanged",
+          function(e) {
+            alViewer.setDisplayMode(e.detail);
+          },
+          false
+        );
+
+        alControlPanel.addEventListener(
+          "graphEnabledChanged",
+          function(e) {
+            alViewer.setGraphEnabled(e.detail);
+          },
+          false
+        );
+
+        alControlPanel.addEventListener(
+          "materialChanged",
+          function(e) {
+            alViewer.setMaterial(e.detail);
+          },
+          false
+        );
+
+        alControlPanel.addEventListener(
+          "orientationChanged",
+          function(e) {
+            alViewer.setOrientation(e.detail);
+          },
+          false
+        );
+
+        alControlPanel.addEventListener(
+          "recenter",
+          function(e) {
+            alViewer.recenter();
+          },
+          false
+        );
+
+        alControlPanel.addEventListener(
+          "graphSubmitted",
+          function(e) {
+            const graph = JSON.parse(e.detail);
+            if (graph) {
+              alViewer.clearGraph();
+              alViewer.setGraph(graph);
+            }
+          },
+          false
+        );
+
+        alControlPanel.addEventListener(
+          "saveNode",
+          function(e) {
+            alViewer.setNode(e.detail);
+          },
+          false
+        );
+
+        alControlPanel.addEventListener(
+          "selectedChanged",
+          function(e) {
+            alViewer.selectNode(e.detail);
+          },
+          false
+        );
+
+        alControlPanel.addEventListener(
+          "slicesIndexChanged",
+          function(e) {
+            alViewer.setSlicesIndex(e.detail);
+          },
+          false
+        );
+
+        alControlPanel.addEventListener(
+          "slicesBrightnessChanged",
+          function(e) {
+            alViewer.setSlicesBrightness(e.detail);
+          },
+          false
+        );
+
+        alControlPanel.addEventListener(
+          "slicesContrastChanged",
+          function(e) {
+            alViewer.setSlicesContrast(e.detail);
+          },
+          false
+        );
+
+        alControlPanel.addEventListener(
+          "unitsChanged",
+          function(e) {
+            alViewer.setUnits(e.detail);
+          },
+          false
+        );
+
+        alControlPanel.addEventListener(
+          "urlChanged",
+          function(e) {
+            nextState({
+              src: e.detail
             });
+          },
+          false
+        );
 
-            Promise.all(promises).then(function() {
-              nextState({
-                src: Array.from(urls)[0][0]
-              });
-            });
+        alControlPanel.addEventListener(
+          "volumeStepsChanged",
+          function(e) {
+            alViewer.setVolumeSteps(e.detail);
+          },
+          false
+        );
 
-            alViewer.addEventListener(
-              "changed",
-              function(e) {
-                // update everything except src (this can't be changed from within al-viewer)
-                nextState(Object.assign({}, e.detail, {
-                  src: prevState.src
-                }));
-              },
-              false
-            );
+        alControlPanel.addEventListener(
+          "volumeBrightnessChanged",
+          function(e) {
+            alViewer.setVolumeBrightness(e.detail);
+          },
+          false
+        );
 
-            alControlPanel.addEventListener(
-              "boundingBoxEnabledChanged",
-              function(e) {
-                alViewer.setBoundingBoxEnabled(e.detail);
-              },
-              false
-            );
+        alControlPanel.addEventListener(
+          "volumeContrastChanged",
+          function(e) {
+            alViewer.setVolumeContrast(e.detail);
+          },
+          false
+        );
 
-            alControlPanel.addEventListener(
-              "controlsTypeChanged",
-              function(e) {
-                alViewer.setControlsType(e.detail);
-              },
-              false
-            );
-
-            alControlPanel.addEventListener(
-              "deleteAngle",
-              function(e) {
-                alViewer.deleteAngle(e.detail);
-              },
-              false
-            );
-
-            alControlPanel.addEventListener(
-              "deleteEdge",
-              function(e) {
-                alViewer.deleteEdge(e.detail);
-              },
-              false
-            );
-
-            alControlPanel.addEventListener(
-              "deleteNode",
-              function(e) {
-                alViewer.deleteNode(e.detail);
-              },
-              false
-            );
-
-            alControlPanel.addEventListener(
-              "displayModeChanged",
-              function(e) {
-                alViewer.setDisplayMode(e.detail);
-              },
-              false
-            );
-
-            alControlPanel.addEventListener(
-              "graphEnabledChanged",
-              function(e) {
-                alViewer.setGraphEnabled(e.detail);
-              },
-              false
-            );
-
-            alControlPanel.addEventListener(
-              "materialChanged",
-              function(e) {
-                alViewer.setMaterial(e.detail);
-              },
-              false
-            );
-
-            alControlPanel.addEventListener(
-              "orientationChanged",
-              function(e) {
-                alViewer.setOrientation(e.detail);
-              },
-              false
-            );
-
-            alControlPanel.addEventListener(
-              "recenter",
-              function(e) {
-                alViewer.recenter();
-              },
-              false
-            );
-
-            alControlPanel.addEventListener(
-              "graphSubmitted",
-              function(e) {
-                const graph = JSON.parse(e.detail);
-                if (graph) {
-                  alViewer.clearGraph();
-                  alViewer.setGraph(graph);
-                }
-              },
-              false
-            );
-
-            alControlPanel.addEventListener(
-              "saveNode",
-              function(e) {
-                alViewer.setNode(e.detail);
-              },
-              false
-            );
-
-            alControlPanel.addEventListener(
-              "selectedChanged",
-              function(e) {
-                alViewer.selectNode(e.detail);
-              },
-              false
-            );
-
-            alControlPanel.addEventListener(
-              "slicesIndexChanged",
-              function(e) {
-                alViewer.setSlicesIndex(e.detail);
-              },
-              false
-            );
-
-            alControlPanel.addEventListener(
-              "slicesBrightnessChanged",
-              function(e) {
-                alViewer.setSlicesBrightness(e.detail);
-              },
-              false
-            );
-
-            alControlPanel.addEventListener(
-              "slicesContrastChanged",
-              function(e) {
-                alViewer.setSlicesContrast(e.detail);
-              },
-              false
-            );
-
-            alControlPanel.addEventListener(
-              "unitsChanged",
-              function(e) {
-                alViewer.setUnits(e.detail);
-              },
-              false
-            );
-
-            alControlPanel.addEventListener(
-              "urlChanged",
-              function(e) {
-                nextState({
-                  src: e.detail
-                });
-              },
-              false
-            );
-
-            alControlPanel.addEventListener(
-              "volumeStepsChanged",
-              function(e) {
-                alViewer.setVolumeSteps(e.detail);
-              },
-              false
-            );
-
-            alControlPanel.addEventListener(
-              "volumeBrightnessChanged",
-              function(e) {
-                alViewer.setVolumeBrightness(e.detail);
-              },
-              false
-            );
-
-            alControlPanel.addEventListener(
-              "volumeContrastChanged",
-              function(e) {
-                alViewer.setVolumeContrast(e.detail);
-              },
-              false
-            );
-
-            resize();
-
-        //});
+        resize();
       }
 
       function nextState(s) {
@@ -387,9 +382,14 @@
 
     </script>
 
-
-    <script type="module" src="/build/aleph.esm.js" onload="init()"></script>
-    <script nomodule src="/build/aleph.js" onload="init()"></script>
+    <script>
+      if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
+        document.write("<script type=\"module\" src=\"/build/aleph.esm.js\" onload=\"init()\"><\/script>");
+        document.write("<script nomodule src=\"/build/aleph.js\" onload=\"init()\"><\/script>");
+      } else {
+        document.write("<script src=\"https://unpkg.com/@universalviewer/aleph/dist/aleph/aleph.js\" onload=\"init()\"><\/script>");
+      }
+    </script>
 
   </body>
 </html>
