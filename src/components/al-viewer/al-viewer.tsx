@@ -22,7 +22,7 @@ import {
   Orientation,
   Units
 } from "../../enums";
-import { OrbitCamera, Src, Nodes } from "../../functional-components/aframe";
+import { OrbitCamera, Src, Nodes, Edges } from "../../functional-components/aframe";
 import { AlAngle, AlCamera, AlEdge, AlGraph, AlNode } from "../../interfaces";
 import {
   appClearAngles,
@@ -515,90 +515,21 @@ export class Aleph {
   }
 
   private _renderEdges() {
-    return Array.from(this.edges).map((n: [string, AlEdge]) => {
-      const [edgeId, edge] = n;
-      const node1 = this.nodes.get(edge.node1Id);
-      const node2 = this.nodes.get(edge.node2Id);
-
-      if (node1 && node2) {
-        const sv = ThreeUtils.stringToVector3(node1.position);
-        const ev = ThreeUtils.stringToVector3(node2.position);
-
-        let dir = ev.clone().sub(sv);
-        const dist = dir.length();
-        dir = dir.normalize().multiplyScalar(dist * 0.5);
-        const centoid = sv.clone().add(dir);
-
-        const textOffset: THREE.Vector3 = new THREE.Vector3(0, 2.5, 0);
-        const scale = (node1.scale + node2.scale) / 2;
-        const radius = this._boundingSphereRadius * Constants.edgeSize;
-        textOffset.multiplyScalar(scale);
-
-        const textV = this._convertUnits(dist);
-
-        const frustrumDistance = ThreeUtils.getFrustrumSpaceDistance(
-          this._scene.camera,
-          centoid.clone(),
-          this.camera.position
-        );
-        const entityScale =
-          (frustrumDistance / this._boundingSphereRadius) *
-          Constants.frustrumScaleFactor;
-
-        return (
-          <a-entity al-child-hover-visible id={edgeId + "-parent"}>
-            <a-entity
-              position={ThreeUtils.vector3ToString(centoid)}
-              id={edgeId + "-title-anchor"}
-              al-billboard={`
-              controlsType: ${this.controlsType};
-              cameraPosition: ${ThreeUtils.vector3ToString(
-                this.camera.position
-              )};
-              worldPosition: ${ThreeUtils.vector3ToString(
-                centoid.clone().add(textOffset.clone())
-              )};
-            `}
-            >
-              <a-entity
-                id={`${edgeId}-title`}
-                text={`
-                  value: ${textV};
-                  side: double;
-                  align: center;
-                  baseline: bottom;
-                  anchor: center;
-                  width: ${Constants.fontSizeSmall * this._boundingSphereRadius}
-                `}
-                position={ThreeUtils.vector3ToString(textOffset)}
-                visible={`${this.selected === edgeId}`}
-                scale={` ${entityScale} ${entityScale} ${entityScale};`}
-                al-background={`
-                  text: ${textV};
-                  boundingRadius: ${Constants.fontSizeSmall *
-                    this._boundingSphereRadius};
-                `}
-                al-render-overlaid
-              />
-            </a-entity>
-            <a-entity
-              class="collidable"
-              id={edgeId}
-              position={ThreeUtils.vector3ToString(centoid)}
-              al-edge={`
-                length: ${dist};
-                node1: ${node1.position};
-                node2: ${node2.position};
-                selected: ${this.selected === edgeId};
-                radius: ${radius};
-                nodeScale: ${scale};
-                scale: ${entityScale};
-              `}
-            />
-          </a-entity>
-        );
-      }
-    });
+    return (
+      <Edges
+        boundingSphereRadius={this._boundingSphereRadius}
+        camera={this._scene ? this._scene.camera : null}
+        cameraPosition={this.camera ? this.camera.position : null}
+        controlsType={this.controlsType}
+        displayMode={this.displayMode}
+        edges={this.edges}
+        edgeSize={Constants.edgeSize}
+        fontSize={Constants.fontSizeSmall}
+        nodes={this.nodes}
+        selected={this.selected}
+        units={this.units}
+      />
+    );
   }
 
   private _renderAngles() {
@@ -898,42 +829,6 @@ export class Aleph {
     if (this._scene) {
       // tslint:disable-next-line: no-any
       (this._scene as any).resize();
-    }
-  }
-
-  private _convertUnits(dist: number): string {
-    if (this.displayMode === DisplayMode.MESH) {
-      // if in mesh mode, units are always meters by default
-      switch (this.units) {
-        case Units.METERS: {
-          return dist.toFixed(Constants.unitsDecimalPlaces) + this.units;
-        }
-        case Units.MILLIMETERS: {
-          // convert m to mm
-          return (
-            (dist / 0.001).toFixed(Constants.unitsDecimalPlaces) + this.units
-          );
-        }
-        default: {
-          break;
-        }
-      }
-    } else {
-      // if in volume mode, units are always millimeters by default
-      switch (this.units) {
-        case Units.METERS: {
-          // convert mm to m
-          return (
-            (dist / 1000.0).toFixed(Constants.unitsDecimalPlaces) + this.units
-          );
-        }
-        case Units.MILLIMETERS: {
-          return dist.toFixed(Constants.unitsDecimalPlaces) + this.units;
-        }
-        default: {
-          break;
-        }
-      }
     }
   }
 
