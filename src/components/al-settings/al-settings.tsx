@@ -38,18 +38,16 @@ export class AlSettings {
   @Event() public volumeBrightnessChanged: EventEmitter;
   @Event() public volumeContrastChanged: EventEmitter;
 
-  @Prop({ mutable: true }) public boundingBoxEnabled: boolean = false;
-  @Prop({ mutable: true }) public controlsType: ControlsType =
-    ControlsType.ORBIT;
-  @Prop({ mutable: true }) public displayMode: DisplayMode = DisplayMode.MESH;
+  @Prop({ mutable: true }) public boundingBoxEnabled: boolean;
+  @Prop({ mutable: true }) public controlsType: ControlsType;
+  @Prop({ mutable: true }) public displayMode: DisplayMode;
+  @Prop({ mutable: true }) public graphEnabled: boolean;
   // @Prop({ mutable: true }) public material: Material = Material.DEFAULT;
-  @Prop({ mutable: true }) public orientation: Orientation =
-    Orientation.CORONAL;
+  @Prop({ mutable: true }) public orientation: Orientation;
   @Prop({ mutable: true }) public slicesIndex: number;
   @Prop({ mutable: true }) public slicesBrightness: number; // window center
   @Prop({ mutable: true }) public slicesContrast: number; // window width
-  @Prop({ mutable: true }) public graphEnabled: boolean = false;
-  @Prop({ mutable: true }) public units: Units = Units.METERS;
+  @Prop({ mutable: true }) public units: Units;
   // @Prop({ mutable: true }) public volumeSteps: number;
   @Prop({ mutable: true }) public volumeBrightness: number; // window center
   @Prop({ mutable: true }) public volumeContrast: number; // window width
@@ -435,9 +433,7 @@ export class AlSettings {
                 max="1"
                 step=".1"
                 value={this.slicesBrightness}
-                onIonChange={e =>
-                  this._slicesBrightness(e.detail.value)
-                }
+                onIonChange={e => this._slicesBrightness(e.detail.value)}
               />
             </ion-item>
             <ion-item
@@ -456,9 +452,7 @@ export class AlSettings {
                 max="1"
                 step=".1"
                 value={this.slicesContrast}
-                onIonChange={e =>
-                  this._slicesContrast(e.detail.value)
-                }
+                onIonChange={e => this._slicesContrast(e.detail.value)}
               />
             </ion-item>
           </div>
@@ -515,7 +509,7 @@ export class AlSettings {
                 step=".1"
                 value={this.volumeBrightness}
                 onIonChange={e => {
-                  this._volumeBrightness(e.detail.value)
+                  this._volumeBrightness(e.detail.value);
                 }}
               />
             </ion-item>
@@ -535,9 +529,7 @@ export class AlSettings {
                 max="1"
                 step=".1"
                 value={this.volumeContrast}
-                onIonChange={e =>
-                  this._volumeContrast(e.detail.value)
-                }
+                onIonChange={e => this._volumeContrast(e.detail.value)}
               />
             </ion-item>
           </div>

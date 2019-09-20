@@ -1,4 +1,4 @@
-import { Component, Element, h, Listen, Prop } from "@stencil/core";
+import { Component, Element, h, Prop } from "@stencil/core";
 import { ControlsType, DisplayMode, Units } from "../../enums/index.js";
 import { Scroll } from "../../functional-components/Scroll";
 import { AlAngle, AlEdge, AlNode } from "../../interfaces/index.js";
@@ -16,11 +16,12 @@ export class AlSettings {
   @Element() public el!: HTMLElement;
 
   @Prop({ mutable: true }) public angles: Map<string, AlAngle> | null = null;
-  @Prop({ mutable: true }) public boundingBoxEnabled: boolean = false;
+  @Prop({ mutable: true }) public boundingBoxEnabled: boolean;
   @Prop({ mutable: true }) public consoleTabEnabled: boolean = true;
-  @Prop({ mutable: true }) public controlsType: ControlsType = ControlsType.ORBIT;
-  @Prop({ mutable: true }) public displayMode: DisplayMode = DisplayMode.MESH;
+  @Prop({ mutable: true }) public controlsType: ControlsType;
+  @Prop({ mutable: true }) public displayMode: DisplayMode;
   @Prop({ mutable: true }) public edges: Map<string, AlEdge> | null = null;
+  @Prop({ mutable: true }) public graphEnabled: boolean;
   @Prop({ mutable: true }) public graphTabEnabled: boolean = true;
   @Prop({ mutable: true }) public nodes: Map<string, AlNode> | null = null;
   @Prop({ mutable: true }) public selected: string | null = null;
@@ -30,7 +31,7 @@ export class AlSettings {
   @Prop({ mutable: true }) public slicesIndex: number;
   @Prop({ mutable: true }) public srcTabEnabled: boolean = true;
   @Prop({ mutable: true }) public tabContentHeight: string | null = null;
-  @Prop({ mutable: true }) public units: Units = Units.METERS;
+  @Prop({ mutable: true }) public units: Units;
   @Prop({ mutable: true }) public url: string | null = null;
   @Prop({ mutable: true }) public urls: Map<string, string> | null = null;
   @Prop({ mutable: true }) public volumeBrightness: number;
@@ -91,6 +92,7 @@ export class AlSettings {
                   bounding-box-enabled={this.boundingBoxEnabled}
                   controls-type={this.controlsType}
                   display-mode={this.displayMode}
+                  graph-enabled={this.graphEnabled}
                   slices-index={this.slicesIndex}
                   slices-brightness={this.slicesBrightness}
                   slices-contrast={this.slicesContrast}
@@ -123,10 +125,5 @@ export class AlSettings {
         </al-tabs>
       </ion-app>
     );
-  }
-
-  @Listen("selectedChanged")
-  protected selectedChangedHandler(e: CustomEvent) {
-    this.selected = e.detail;
   }
 }

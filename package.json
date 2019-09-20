@@ -23,8 +23,9 @@
     "start:prod": "stencil build --serve",
     "test": "stencil test --spec --e2e",
     "test.watch": "stencil test --spec --e2e --watchAll",
-    "netlify": "netlify deploy --dir=www --prod",
-    "prepublishOnly": "npm run test && npm run build"
+    "deploy": "npm run testAndBuild && netlify deploy --dir=www --prod",
+    "testAndBuild": "npm run test && npm run build",
+    "prepublishOnly": "npm run testAndBuild"
   },
   "dependencies": {
     "@edsilv/key-codes": "0.1.1",

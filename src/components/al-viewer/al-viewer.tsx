@@ -1,6 +1,6 @@
 import { KeyDown } from "@edsilv/key-codes";
-import "@edsilv/stencil-redux";
 import { Action, Store } from "@edsilv/stencil-redux";
+import "@edsilv/stencil-redux";
 import {
   Component,
   Event,
@@ -22,6 +22,7 @@ import {
   Orientation,
   Units
 } from "../../enums";
+import { OrbitCamera, Src } from "../../functional-components/aframe";
 import { AlAngle, AlCamera, AlEdge, AlGraph, AlNode } from "../../interfaces";
 import {
   appClearAngles,
@@ -64,7 +65,6 @@ import {
   Utils
 } from "../../utils";
 import { AlControlEvents } from "../../utils/AlControlEvents";
-import { OrbitCamera } from "../../functional-components/OrbitCamera";
 
 type Entity = import("aframe").Entity;
 type Scene = import("aframe").Scene;
@@ -459,86 +459,25 @@ export class Aleph {
   }
 
   private _renderSrc() {
-    if (!this.src) {
-      return null;
-    }
-
-    switch (this.displayMode) {
-      case DisplayMode.MESH: {
-        return (
-          <a-entity
-            class="collidable"
-            al-node-spawner={`
-              graphEnabled: ${this.graphEnabled};
-            `}
-            al-gltf-model={`
-              src: url(${this.src});
-              dracoDecoderPath: ${this.dracoDecoderPath};
-            `}
-            position="0 0 0"
-            scale="1 1 1"
-            ref={(el: Entity) => (this._targetEntity = el)}
-          />
-        );
-      }
-      case DisplayMode.SLICES: {
-        return (
-          <a-entity
-            id="target-entity"
-            class="collidable"
-            al-node-spawner={`
-              graphEnabled: ${this.graphEnabled};
-            `}
-            al-volume={`
-              controlsType: ${this.controlsType};
-              displayMode: ${this.displayMode};
-              isHighRes: false;
-              isWebGl2: ${this._isWebGl2};
-              slicesIndex: ${this.slicesIndex};
-              slicesOrientation: ${this.orientation};
-              slicesWindowCenter: ${this.slicesWindowCenter};
-              slicesWindowWidth: ${this.slicesWindowWidth};
-              src: ${this.src};
-              srcLoaded: ${this.srcLoaded};
-              volumeWindowCenter: ${this.volumeWindowCenter};
-              volumeWindowWidth: ${this.volumeWindowWidth};
-            `}
-            position="0 0 0"
-            ref={(el: Entity) => (this._targetEntity = el)}
-          />
-        );
-      }
-      // This is seperate from the slice entity as it will store the volume render,
-      // preventing long load times when switching mode
-      // Node spawner is on the bounding box in
-      // volume mode; as the "volume" is in a different scene
-      case DisplayMode.VOLUME: {
-        return (
-          <a-entity
-            id="target-entity"
-            al-volume={`
-              controlsType: ${this.controlsType};
-              displayMode: ${this.displayMode};
-              isHighRes: false;
-              isWebGl2: ${this._isWebGl2};
-              slicesIndex: ${this.slicesIndex};
-              slicesOrientation: ${this.orientation};
-              slicesWindowCenter: ${this.slicesWindowCenter};
-              slicesWindowWidth: ${this.slicesWindowWidth};
-              src: ${this.src};
-              srcLoaded: ${this.srcLoaded};
-              volumeWindowCenter: ${this.volumeWindowCenter};
-              volumeWindowWidth: ${this.volumeWindowWidth};
-            `}
-            position="0 0 0"
-            ref={(el: Entity) => (this._targetEntity = el)}
-          />
-        );
-      }
-      default: {
-        return;
-      }
-    }
+    return (
+      <Src
+        cb={(ref) => {
+          this._targetEntity = ref;
+        }}
+        controlsType={this.controlsType}
+        displayMode={this.displayMode}
+        dracoDecoderPath={this.dracoDecoderPath}
+        graphEnabled={this.graphEnabled}
+        isWebGl2={this._isWebGl2}
+        orientation={this.orientation}
+        slicesIndex={this.slicesIndex}
+        slicesWindowCenter={this.slicesWindowCenter}
+        slicesWindowWidth={this.slicesWindowWidth}
+        src={this.src}
+        srcLoaded={this.srcLoaded}
+        volumeWindowCenter={this.volumeWindowCenter}
+        volumeWindowWidth={this.volumeWindowWidth}
+      />);
   }
 
   private _renderBoundingBox() {
@@ -939,7 +878,10 @@ export class Aleph {
   // tslint:disable-next-line: no-any
   private _renderOrbitCamera(): any {
     return (
-      this._camera = <OrbitCamera
+      <OrbitCamera
+        cb={(ref) => {
+          this._camera = ref;
+        }}
         fov={Constants.cameraValues.fov}
         near={Constants.cameraValues.near}
         far={Constants.cameraValues.far}
@@ -956,9 +898,11 @@ export class Aleph {
           this.camera ? this.camera.position : new THREE.Vector3(0, 0, 0)
         )}
         enabled={this.controlsEnabled}
-        animating={this.camera && this.camera.animating ? this.camera.animating : false}
-        />
-    );
+        animating={
+          this.camera && this.camera.animating ? this.camera.animating : false
+        }
+      />
+    )
   }
 
   // tslint:disable-next-line: no-any
@@ -1297,9 +1241,7 @@ export class Aleph {
   }
 
   private _recenter(): void {
-    const cameraState: AlCamera = Utils.getCameraStateFromMesh(
-      this._getMesh()
-    );
+    const cameraState: AlCamera = Utils.getCameraStateFromMesh(this._getMesh());
 
     const animationStart = {
       position: this.camera.position.clone(),

@@ -7,22 +7,19 @@
 
 ## Properties
 
-| Property             | Attribute              | Description | Type                                                                                           | Default               |
-| -------------------- | ---------------------- | ----------- | ---------------------------------------------------------------------------------------------- | --------------------- |
-| `boundingBoxEnabled` | `bounding-box-enabled` |             | `boolean`                                                                                      | `false`               |
-| `controlsType`       | `controls-type`        |             | `ControlsType.ORBIT \| ControlsType.TRACKBALL`                                                 | `ControlsType.ORBIT`  |
-| `displayMode`        | `display-mode`         |             | `DisplayMode.MESH \| DisplayMode.SLICES \| DisplayMode.VOLUME`                                 | `DisplayMode.MESH`    |
-| `graphEnabled`       | `graph-enabled`        |             | `boolean`                                                                                      | `false`               |
-| `material`           | `material`             |             | `Material.CLAY \| Material.DEFAULT \| Material.NORMALS \| Material.WIREFRAME \| Material.XRAY` | `Material.DEFAULT`    |
-| `orientation`        | `orientation`          |             | `Orientation.AXIAL \| Orientation.CORONAL \| Orientation.SAGGITAL`                             | `Orientation.CORONAL` |
-| `slicesIndex`        | `slices-index`         |             | `number`                                                                                       | `undefined`           |
-| `slicesWindowCenter` | `slices-window-center` |             | `number`                                                                                       | `undefined`           |
-| `slicesWindowWidth`  | `slices-window-width`  |             | `number`                                                                                       | `undefined`           |
-| `stackhelper`        | --                     |             | `StackHelper \| VolumeRenderHelper`                                                            | `undefined`           |
-| `units`              | `units`                |             | `Units.METERS \| Units.MILLIMETERS`                                                            | `Units.METERS`        |
-| `volumeSteps`        | `volume-steps`         |             | `number`                                                                                       | `undefined`           |
-| `volumeWindowCenter` | `volume-window-center` |             | `number`                                                                                       | `undefined`           |
-| `volumeWindowWidth`  | `volume-window-width`  |             | `number`                                                                                       | `undefined`           |
+| Property             | Attribute              | Description | Type                                                               | Default     |
+| -------------------- | ---------------------- | ----------- | ------------------------------------------------------------------ | ----------- |
+| `boundingBoxEnabled` | `bounding-box-enabled` |             | `boolean`                                                          | `undefined` |
+| `controlsType`       | `controls-type`        |             | `ControlsType.ORBIT \| ControlsType.TRACKBALL`                     | `undefined` |
+| `displayMode`        | `display-mode`         |             | `DisplayMode.MESH \| DisplayMode.SLICES \| DisplayMode.VOLUME`     | `undefined` |
+| `graphEnabled`       | `graph-enabled`        |             | `boolean`                                                          | `undefined` |
+| `orientation`        | `orientation`          |             | `Orientation.AXIAL \| Orientation.CORONAL \| Orientation.SAGGITAL` | `undefined` |
+| `slicesBrightness`   | `slices-brightness`    |             | `number`                                                           | `undefined` |
+| `slicesContrast`     | `slices-contrast`      |             | `number`                                                           | `undefined` |
+| `slicesIndex`        | `slices-index`         |             | `number`                                                           | `undefined` |
+| `units`              | `units`                |             | `Units.METERS \| Units.MILLIMETERS`                                | `undefined` |
+| `volumeBrightness`   | `volume-brightness`    |             | `number`                                                           | `undefined` |
+| `volumeContrast`     | `volume-contrast`      |             | `number`                                                           | `undefined` |
 
 
 ## Events
@@ -33,16 +30,14 @@
 | `controlsTypeChanged`       |             | `CustomEvent<any>` |
 | `displayModeChanged`        |             | `CustomEvent<any>` |
 | `graphEnabledChanged`       |             | `CustomEvent<any>` |
-| `materialChanged`           |             | `CustomEvent<any>` |
 | `orientationChanged`        |             | `CustomEvent<any>` |
 | `recenter`                  |             | `CustomEvent<any>` |
+| `slicesBrightnessChanged`   |             | `CustomEvent<any>` |
+| `slicesContrastChanged`     |             | `CustomEvent<any>` |
 | `slicesIndexChanged`        |             | `CustomEvent<any>` |
-| `slicesWindowCenterChanged` |             | `CustomEvent<any>` |
-| `slicesWindowWidthChanged`  |             | `CustomEvent<any>` |
 | `unitsChanged`              |             | `CustomEvent<any>` |
-| `volumeStepsChanged`        |             | `CustomEvent<any>` |
-| `volumeWindowCenterChanged` |             | `CustomEvent<any>` |
-| `volumeWindowWidthChanged`  |             | `CustomEvent<any>` |
+| `volumeBrightnessChanged`   |             | `CustomEvent<any>` |
+| `volumeContrastChanged`     |             | `CustomEvent<any>` |
 
 
 ## CSS Custom Properties

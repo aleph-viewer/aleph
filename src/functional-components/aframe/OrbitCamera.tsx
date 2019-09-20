@@ -1,6 +1,6 @@
 import { FunctionalComponent, h } from "@stencil/core";
 
-interface OrbitCameraProps {
+interface OrbitCameraProps extends FunctionalComponentProps {
   animating: boolean;
   controlPosition: string;
   controlTarget: string;
@@ -16,20 +16,25 @@ interface OrbitCameraProps {
   zoomSpeed: number;
 }
 
-export const OrbitCamera: FunctionalComponent<OrbitCameraProps> = ({ animating,
-  controlPosition,
-  controlTarget,
-  dampingFactor,
-  enabled,
-  far,
-  fov,
-  maxPolarAngle,
-  minDistance,
-  minPolarAngle,
-  near,
-  rotateSpeed,
-  zoomSpeed }, _children) => (
-
+export const OrbitCamera: FunctionalComponent<OrbitCameraProps> = (
+  {
+    animating,
+    cb,
+    controlPosition,
+    controlTarget,
+    dampingFactor,
+    enabled,
+    far,
+    fov,
+    maxPolarAngle,
+    minDistance,
+    minPolarAngle,
+    near,
+    rotateSpeed,
+    zoomSpeed
+  },
+  _children
+) => (
   <a-camera
     fov={fov}
     near={near}
@@ -53,5 +58,6 @@ export const OrbitCamera: FunctionalComponent<OrbitCameraProps> = ({ animating,
       animating: ${animating}
     `}
     al-control-lights
+    ref={ref => cb(ref)}
   />
 );
