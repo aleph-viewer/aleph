@@ -22,7 +22,17 @@ import {
   Orientation,
   Units
 } from "../../enums";
-import { OrbitCamera, Src, Nodes, Edges, Angles, Lights, TrackballCamera } from "../../functional-components/aframe";
+import {
+  Angles,
+  BoundingBox,
+  Edges,
+  Lights,
+  Nodes,
+  OrbitCamera,
+  Scene,
+  Src,
+  TrackballCamera
+} from "../../functional-components/aframe";
 import { AlAngle, AlCamera, AlEdge, AlGraph, AlNode } from "../../interfaces";
 import {
   appClearAngles,
@@ -65,10 +75,9 @@ import {
   Utils
 } from "../../utils";
 import { AlControlEvents } from "../../utils/AlControlEvents";
-import { BoundingBox } from "../../functional-components/aframe/BoundingBox";
 
-type Entity = import("aframe").Entity;
-type Scene = import("aframe").Scene;
+type AEntity = import("aframe").Entity;
+type AScene = import("aframe").Scene;
 //#endregion
 
 @Component({
@@ -80,17 +89,17 @@ export class Aleph {
   //#region Private variables
   private _boundingBox: THREE.Box3;
   private _boundingSphereRadius: number;
-  private _camera: Entity;
+  private _camera: AEntity;
   private _debouncedAppSetCamera: (state: AlCamera) => void;
   private _hovered: string | null = null;
   private _isShiftDown: boolean = false;
   private _isWebGl2: boolean = true;
   // tslint:disable-next-line: no-any
   private _loadedObject: any;
-  private _scene: Scene;
-  private _targetEntity: Entity;
+  private _scene: AScene;
+  private _targetEntity: AEntity;
   private _validTarget: boolean;
-  private _boundingEntity: Entity;
+  private _boundingEntity: AEntity;
   //#endregion
 
   //#region props
@@ -449,199 +458,133 @@ export class Aleph {
     ).bind(this);
   }
 
-  private _renderSpinner() {
-    if (this.src && !this.srcLoaded) {
-      return (
-        <div id="spinner">
-          <div class="square" />
-        </div>
-      );
-    }
-  }
-
-  private _renderSrc() {
-    return (
-      <Src
-        cb={(ref) => {
-          this._targetEntity = ref;
-        }}
-        controlsType={this.controlsType}
-        displayMode={this.displayMode}
-        dracoDecoderPath={this.dracoDecoderPath}
-        graphEnabled={this.graphEnabled}
-        isWebGl2={this._isWebGl2}
-        orientation={this.orientation}
-        slicesIndex={this.slicesIndex}
-        slicesWindowCenter={this.slicesWindowCenter}
-        slicesWindowWidth={this.slicesWindowWidth}
-        src={this.src}
-        srcLoaded={this.srcLoaded}
-        volumeWindowCenter={this.volumeWindowCenter}
-        volumeWindowWidth={this.volumeWindowWidth}
-      />);
-  }
-
-  private _renderBoundingBox() {
-    return (
-      <BoundingBox
-        cb={(ref) => {
-          this._boundingEntity = ref;
-        }}
-        boundingBox={this._boundingBox}
-        boundingBoxEnabled={this.boundingBoxEnabled}
-        color={Constants.colors.white}
-        displayMode={this.displayMode}
-        graphEnabled={this.graphEnabled}
-        mesh={this._getMesh()}
-        srcLoaded={this.srcLoaded}
-        targetEntity={this._targetEntity}
-      />
-    );
-  }
-
-  private _renderNodes() {
-    return (
-      <Nodes
-        boundingSphereRadius={this._boundingSphereRadius}
-        camera={this._scene ? this._scene.camera : null}
-        cameraPosition={this.camera ? this.camera.position : null}
-        controlsType={this.controlsType}
-        fontSize={Constants.fontSizeMedium}
-        graphEnabled={this.graphEnabled}
-        nodes={this.nodes}
-        selected={this.selected}
-      />
-    );
-  }
-
-  private _renderEdges() {
-    return (
-      <Edges
-        boundingSphereRadius={this._boundingSphereRadius}
-        camera={this._scene ? this._scene.camera : null}
-        cameraPosition={this.camera ? this.camera.position : null}
-        controlsType={this.controlsType}
-        displayMode={this.displayMode}
-        edges={this.edges}
-        edgeSize={Constants.edgeSize}
-        fontSize={Constants.fontSizeSmall}
-        nodes={this.nodes}
-        selected={this.selected}
-        units={this.units}
-      />
-    );
-  }
-
-  private _renderAngles() {
-    return (
-      <Angles
-        angles={this.angles}
-        boundingSphereRadius={this._boundingSphereRadius}
-        camera={this._scene ? this._scene.camera : null}
-        cameraPosition={this.camera ? this.camera.position : null}
-        controlsType={this.controlsType}
-        edges={this.edges}
-        edgeSize={Constants.edgeSize}
-        fontSize={Constants.fontSizeSmall}
-        nodes={this.nodes}
-        selected={this.selected}
-      />
-    );
-  }
-
-  private _renderLights() {
-    return (
-      <Lights />
-    );
-  }
-
-  // tslint:disable-next-line: no-any
-  private _renderOrbitCamera(): any {
-    return (
-      <OrbitCamera
-        cb={(ref) => {
-          this._camera = ref;
-        }}
-        animating={this.camera && this.camera.animating ? this.camera.animating : false}
-        controlPosition={ThreeUtils.vector3ToString(this.camera ? this.camera.position : new THREE.Vector3(0, 0, 0))}
-        controlTarget={ThreeUtils.vector3ToString(this.camera ? this.camera.target : new THREE.Vector3(0, 0, 0))}
-        dampingFactor={Constants.camera.dampingFactor}
-        enabled={this.controlsEnabled}
-        far={Constants.camera.far}
-        fov={Constants.camera.fov}
-        maxPolarAngle={Constants.camera.maxPolarAngle}
-        minDistance={Constants.camera.minDistance}
-        minPolarAngle={Constants.camera.minPolarAngle}
-        near={Constants.camera.near}
-        rotateSpeed={Constants.camera.orbitRotateSpeed}
-        zoomSpeed={Constants.camera.orbitZoomSpeed}
-      />
-    )
-  }
-
-  // tslint:disable-next-line: no-any
-  private _renderTrackballCamera(): any {
-    return (
-      <TrackballCamera
-        cb={(ref) => {
-          this._camera = ref;
-        }}
-        animating={this.camera && this.camera.animating ? this.camera.animating : false}
-        controlPosition={ThreeUtils.vector3ToString(this.camera ? this.camera.position : new THREE.Vector3(0, 0, 0))}
-        controlTarget={ThreeUtils.vector3ToString(this.camera ? this.camera.target : new THREE.Vector3(0, 0, 0))}
-        dampingFactor={Constants.camera.dampingFactor}
-        enabled={this.controlsEnabled}
-        far={Constants.camera.far}
-        fov={Constants.camera.fov}
-        near={Constants.camera.near}
-        panSpeed={Constants.camera.panSpeed}
-        rotateSpeed={Constants.camera.trackballRotateSpeed}
-        screenHeight={this._scene ? this._scene.canvas.height : 0}
-        screenWidth={this._scene ? this._scene.canvas.width : 0}
-        zoomSpeed={Constants.camera.trackballZoomSpeed}
-      />
-    );
-  }
-
-  private _renderControls() {
-    switch (this.controlsType) {
-      case ControlsType.TRACKBALL: {
-        return this._renderTrackballCamera();
-      }
-      case ControlsType.ORBIT: {
-        return this._renderOrbitCamera();
-      }
-      default: {
-        return null;
-      }
-    }
-  }
-
-  private _renderCamera() {
-    return [this._renderControls(), this._renderLights()];
-  }
-
   private _renderScene() {
     return (
-      <a-scene
-        embedded
-        renderer={`
-          colorManagement: true;
-          sortObjects: true;
-          webgl2: ${this._isWebGl2};
-          antialias: true;
-        `}
-        vr-mode-ui="enabled: false"
-        ref={el => (this._scene = el)}
-      >
-        {this._renderSrc()}
-        {this._renderBoundingBox()}
-        {this._renderNodes()}
-        {this._renderEdges()}
-        {this._renderAngles()}
-        {this._renderCamera()}
-      </a-scene>
-    );
+      <Scene
+        cb={(ref) => {
+          this._scene = ref as AScene;
+        }}
+        isWebGl2={this._isWebGl2}>
+        <Src
+          cb={(ref) => {
+            this._targetEntity = ref;
+          }}
+          controlsType={this.controlsType}
+          displayMode={this.displayMode}
+          dracoDecoderPath={this.dracoDecoderPath}
+          graphEnabled={this.graphEnabled}
+          isWebGl2={this._isWebGl2}
+          orientation={this.orientation}
+          slicesIndex={this.slicesIndex}
+          slicesWindowCenter={this.slicesWindowCenter}
+          slicesWindowWidth={this.slicesWindowWidth}
+          src={this.src}
+          srcLoaded={this.srcLoaded}
+          volumeWindowCenter={this.volumeWindowCenter}
+          volumeWindowWidth={this.volumeWindowWidth}
+        />
+        <BoundingBox
+          cb={(ref) => {
+            this._boundingEntity = ref;
+          }}
+          boundingBox={this._boundingBox}
+          boundingBoxEnabled={this.boundingBoxEnabled}
+          color={Constants.colors.white}
+          displayMode={this.displayMode}
+          graphEnabled={this.graphEnabled}
+          mesh={this._getMesh()}
+          srcLoaded={this.srcLoaded}
+          targetEntity={this._targetEntity}
+        />
+        <Nodes
+          boundingSphereRadius={this._boundingSphereRadius}
+          camera={this._scene ? this._scene.camera : null}
+          cameraPosition={this.camera ? this.camera.position : null}
+          controlsType={this.controlsType}
+          fontSize={Constants.fontSizeMedium}
+          graphEnabled={this.graphEnabled}
+          nodes={this.nodes}
+          selected={this.selected}
+        />
+        <Edges
+          boundingSphereRadius={this._boundingSphereRadius}
+          camera={this._scene ? this._scene.camera : null}
+          cameraPosition={this.camera ? this.camera.position : null}
+          controlsType={this.controlsType}
+          displayMode={this.displayMode}
+          edges={this.edges}
+          edgeSize={Constants.edgeSize}
+          fontSize={Constants.fontSizeSmall}
+          nodes={this.nodes}
+          selected={this.selected}
+          units={this.units}
+        />
+        <Angles
+          angles={this.angles}
+          boundingSphereRadius={this._boundingSphereRadius}
+          camera={this._scene ? this._scene.camera : null}
+          cameraPosition={this.camera ? this.camera.position : null}
+          controlsType={this.controlsType}
+          edges={this.edges}
+          edgeSize={Constants.edgeSize}
+          fontSize={Constants.fontSizeSmall}
+          nodes={this.nodes}
+          selected={this.selected}
+        />
+        {(() => {
+          switch (this.controlsType) {
+            case ControlsType.TRACKBALL: {
+              return (
+                <TrackballCamera
+                  cb={(ref) => {
+                    this._camera = ref;
+                  }}
+                  animating={this.camera && this.camera.animating ? this.camera.animating : false}
+                  controlPosition={ThreeUtils.vector3ToString(this.camera ? this.camera.position : new THREE.Vector3(0, 0, 0))}
+                  controlTarget={ThreeUtils.vector3ToString(this.camera ? this.camera.target : new THREE.Vector3(0, 0, 0))}
+                  dampingFactor={Constants.camera.dampingFactor}
+                  enabled={this.controlsEnabled}
+                  far={Constants.camera.far}
+                  fov={Constants.camera.fov}
+                  near={Constants.camera.near}
+                  panSpeed={Constants.camera.panSpeed}
+                  rotateSpeed={Constants.camera.trackballRotateSpeed}
+                  screenHeight={this._scene ? this._scene.canvas.height : 0}
+                  screenWidth={this._scene ? this._scene.canvas.width : 0}
+                  zoomSpeed={Constants.camera.trackballZoomSpeed}
+                />
+              )
+            }
+            case ControlsType.ORBIT: {
+              return (
+                <OrbitCamera
+                  cb={(ref) => {
+                    this._camera = ref;
+                  }}
+                  animating={this.camera && this.camera.animating ? this.camera.animating : false}
+                  controlPosition={ThreeUtils.vector3ToString(this.camera ? this.camera.position : new THREE.Vector3(0, 0, 0))}
+                  controlTarget={ThreeUtils.vector3ToString(this.camera ? this.camera.target : new THREE.Vector3(0, 0, 0))}
+                  dampingFactor={Constants.camera.dampingFactor}
+                  enabled={this.controlsEnabled}
+                  far={Constants.camera.far}
+                  fov={Constants.camera.fov}
+                  maxPolarAngle={Constants.camera.maxPolarAngle}
+                  minDistance={Constants.camera.minDistance}
+                  minPolarAngle={Constants.camera.minPolarAngle}
+                  near={Constants.camera.near}
+                  rotateSpeed={Constants.camera.orbitRotateSpeed}
+                  zoomSpeed={Constants.camera.orbitZoomSpeed}
+                />
+              )
+            }
+            default: {
+              return null;
+            }
+          }
+        })()}
+        <Lights />
+      </Scene>
+    )
   }
 
   public render() {
@@ -660,7 +603,13 @@ export class Aleph {
           <div id="lut-max">1.0</div>
         </div>
         {this._renderScene()}
-        {this._renderSpinner()}
+        {
+          (this.src && !this.srcLoaded) && (
+            <div id="spinner">
+              <div class="square" />
+            </div>
+          )
+        }
       </div>
     );
   }
