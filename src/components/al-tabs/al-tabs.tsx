@@ -120,7 +120,12 @@ export class Tabs {
     this.leavingTab = this.selectedTab;
     this.selectedTab = selectedTab;
     this.ionTabsWillChange.emit({ tab: selectedTab.tab });
-    selectedTab.setActive();
+    try {
+      selectedTab.setActive();
+    } catch (e) {
+      // do nothing
+    }
+
     return true;
   }
 

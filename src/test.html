@@ -7,22 +7,25 @@
       content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0"
     />
     <title>Aleph</title>
-    <script src="/assets/aframe-master.js"></script>
-    <script src="https://unpkg.com/three@0.102.1/examples/js/controls/OrbitControls.js"></script>
+    <!-- <script src="/assets/aframe-master.js"></script>
+    <script src="https://unpkg.com/three@0.102.1/examples/js/controls/OrbitControls.js"></script> -->
+
+    <link rel="stylesheet" href="https://unpkg.com/@ionic/core@5.4.1/css/ionic.bundle.css">
 
     <script
       type="module"
-      src="https://unpkg.com/@ionic/core@4.7.4/dist/ionic/ionic.esm.js"
+      src="https://unpkg.com/@ionic/core@5.4.1/dist/ionic/ionic.esm.js"
     ></script>
     <script
       nomodule=""
-      src="https://unpkg.com/@ionic/core@4.7.4/dist/ionic/ionic.js"
+      src="https://unpkg.com/@ionic/core@5.4.1/dist/ionic/ionic.js"
     ></script>
 
-    <script src="/assets/ami.min.js"></script>
+    <!-- <script src="/assets/ami.min.js"></script>
 
-    <link rel="stylesheet" href="/build/aleph.css" />
-    <style>
+    <link rel="stylesheet" href="/build/aleph.css" /> -->
+
+    <!-- <style>
       *,
       *:before,
       *:after {
@@ -82,22 +85,39 @@
       /* al-control-panel {
         --bounding-box-enabled-visibility: hidden;
       } */
-    </style>
+    </style> -->
   </head>
   <body>
-    <div id="container">
-      <div id="debug" class="disabled">
-        <al-control-panel></al-control-panel>
-      </div>
+    <!-- <div id="container">
+      <div id="debug"> -->
+        <ion-app>
+        <ion-tab-bar>
+          <ion-tab-button tab="tab1">
+            tab1 button
+          </ion-tab-button>
+          <ion-tab-button tab="tab2">
+            tab2 button
+          </ion-tab-button>
+        </ion-tab-bar>
+        <ion-tabs>
+          <ion-tab tab="tab1">
+            tab 1 content
+          </ion-tab>
+          <ion-tab tab="tab2">
+            tab 2 content
+          </ion-tab>
+        </ion-tabs>
+        </ion-app>
+      <!-- </div> -->
 
-      <div id="scene">
+      <!-- <div id="scene">
         <al-viewer
           draco-decoder-path="assets/"
           width="100%"
           height="100%"
         ></al-viewer>
-      </div>
-    </div>
+      </div> -->
+    <!-- </div> -->
 
     <script>
 
@@ -115,11 +135,11 @@
           "Fisherman (GLTF)"
         ],
         [
-          "https://www.morphosource.org/media/morphosource/dcm_sample/platypus/platypus_manifest_20_slices.json",
+          "https://aleph-fixtures.netlify.com/collection/dicom/platypus/platypus_manifest_20_slices/index.json",
           "Platypus (DICOM)"
         ],
         [
-          "https://www.morphosource.org/media/morphosource/dcm_sample/ptilocercus/dcm_multi_vf300_jpegQ95_16bit_allslices.json",
+          "https://aleph-fixtures.netlify.com/collection/dicom/tree-shrew/index.json",
           "Tree Shrew (DICOM)"
         ]
       ]);
@@ -128,21 +148,22 @@
 
         container = document.getElementById("container");
         alControlPanel = document.querySelector("al-control-panel");
-        alViewer = document.querySelector("al-viewer");
+        // alViewer = document.querySelector("al-viewer");
         debug = document.getElementById("debug");
 
-        alControlPanel.urls = urls;
+        // alControlPanel.urls = urls;
 
-        var promises = [alControlPanel, alViewer].map(function(customElement) {
-          return customElements.whenDefined(customElement.localName);
-        });
+        // var promises = [alControlPanel].map(function(customElement) {
+        //   return customElements.whenDefined(customElement.localName);
+        // });
 
-        Promise.all(promises).then(function() {
-          nextState({
-            src: Array.from(urls)[0][0]
-          });
-        });
+        // Promise.all(promises).then(function() {
+        //   nextState({
+        //     src: Array.from(urls)[0][0]
+        //   });
+        // });
 
+        /*
         alViewer.addEventListener(
           "changed",
           function(e) {
@@ -335,10 +356,11 @@
           },
           false
         );
+        */
 
-        resize();
+        //resize();
       }
-
+      /*
       function nextState(s) {
 
         state = Object.assign({}, state, s);
@@ -374,30 +396,30 @@
 
         prevState = Object.assign({}, state);
       }
+      */
+      // function resize() {
+      //   container.style.height = window.innerHeight + "px";
+      //   //if (alViewer.resize) {
+      //     // scene will resize internally as it listens to window.onresize. however, it's useful to be able to force a resize if the window.onresize event isn't fired
+      //     //alViewer.resize();
+      //     alControlPanel.tabContentHeight = debug.clientHeight - 150 + "px";
+      //   //}
+      // }
 
-      function resize() {
-        container.style.height = window.innerHeight + "px";
-        if (alViewer.resize) {
-          // scene will resize internally as it listens to window.onresize. however, it's useful to be able to force a resize if the window.onresize event isn't fired
-          alViewer.resize();
-          alControlPanel.tabContentHeight = debug.clientHeight - 150 + "px";
-        }
-      }
-
-      window.addEventListener("resize", function() {
-        resize();
-      });
+      // window.addEventListener("resize", function() {
+      //   resize();
+      // });
 
     </script>
 
-    <script>
+    <!-- <script>
       if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
         document.write("<script type=\"module\" src=\"/build/aleph.esm.js\" onload=\"init()\"><\/script>");
         document.write("<script nomodule src=\"/build/aleph.js\" onload=\"init()\"><\/script>");
       } else {
         document.write("<script src=\"https://unpkg.com/@universalviewer/aleph/dist/aleph/aleph.js\" onload=\"init()\"><\/script>");
       }
-    </script>
+    </script> -->
 
   </body>
 </html>
