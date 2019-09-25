@@ -42,6 +42,7 @@ export class AlSettings {
   @Prop({ mutable: true }) public controlsType: ControlsType;
   @Prop({ mutable: true }) public displayMode: DisplayMode;
   @Prop({ mutable: true }) public graphEnabled: boolean;
+  @Prop({ mutable: true }) public graphVisible: boolean;
   // @Prop({ mutable: true }) public material: Material = Material.DEFAULT;
   @Prop({ mutable: true }) public orientation: Orientation;
   @Prop({ mutable: true }) public slicesIndex: number;
@@ -158,24 +159,28 @@ export class AlSettings {
   }
 
   public renderGraphEnabled() {
-    return (
-      <ion-item
-        style={{
-          display: "var(--graph-enabled-display, block)"
-        }}
-      >
-        <ion-icon
-          src={GraphIcon}
-          slot="start"
-          title={this._contentStrings.graphEnabled}
-        />
-        <ion-toggle
-          slot="end"
-          checked={this.graphEnabled}
-          onIonChange={e => this._graphEnabled(e.detail.checked)}
-        />
-      </ion-item>
-    );
+    if (this.graphVisible) {
+      return (
+        <ion-item
+          style={{
+            display: "var(--graph-enabled-display, block)"
+          }}
+        >
+          <ion-icon
+            src={GraphIcon}
+            slot="start"
+            title={this._contentStrings.graphEnabled}
+          />
+          <ion-toggle
+            slot="end"
+            checked={this.graphEnabled}
+            onIonChange={e => this._graphEnabled(e.detail.checked)}
+          />
+        </ion-item>
+      );
+    } else {
+      return null;
+    }
   }
 
   public renderBoundingBoxEnabled() {

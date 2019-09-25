@@ -13,6 +13,7 @@
 | `controlsType`       | `controls-type`        |             | `ControlsType.ORBIT \| ControlsType.TRACKBALL`                     | `undefined` |
 | `displayMode`        | `display-mode`         |             | `DisplayMode.MESH \| DisplayMode.SLICES \| DisplayMode.VOLUME`     | `undefined` |
 | `graphEnabled`       | `graph-enabled`        |             | `boolean`                                                          | `undefined` |
+| `graphVisible`       | `graph-visible`        |             | `boolean`                                                          | `undefined` |
 | `orientation`        | `orientation`          |             | `Orientation.AXIAL \| Orientation.CORONAL \| Orientation.SAGGITAL` | `undefined` |
 | `slicesBrightness`   | `slices-brightness`    |             | `number`                                                           | `undefined` |
 | `slicesContrast`     | `slices-contrast`      |             | `number`                                                           | `undefined` |

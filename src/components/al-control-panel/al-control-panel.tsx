@@ -93,6 +93,7 @@ export class AlSettings {
                   controls-type={this.controlsType}
                   display-mode={this.displayMode}
                   graph-enabled={this.graphEnabled}
+                  graph-visible={this.graphTabEnabled}
                   slices-index={this.slicesIndex}
                   slices-brightness={this.slicesBrightness}
                   slices-contrast={this.slicesContrast}

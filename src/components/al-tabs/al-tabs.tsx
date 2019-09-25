@@ -76,13 +76,18 @@ export class Tabs {
   @Method()
   public async select(tab: string | HTMLIonTabElement): Promise<boolean> {
     const selectedTab = await this.getTab(tab);
-    if (!this.shouldSwitch(selectedTab)) {
-      return false;
-    }
-    this.setActive(selectedTab);
-    this.tabSwitch();
 
-    return true;
+    if (selectedTab) {
+      if (!this.shouldSwitch(selectedTab)) {
+        return false;
+      }
+      this.setActive(selectedTab);
+      this.tabSwitch();
+
+      return true;
+    }
+
+    return false;
   }
 
   /**
@@ -97,9 +102,6 @@ export class Tabs {
     const tabEl =
       typeof tab === "string" ? this.tabs.find(t => t.tab === tab) : tab;
 
-    if (!tabEl) {
-      console.error(`tab with id: "${tabEl}" does not exist`);
-    }
     return tabEl;
   }
 

@@ -139,6 +139,10 @@
 
         Promise.all(promises).then(function() {
           nextState({
+            consoleTabEnabled: true,
+            graphTabEnabled: true,
+            settingsTabEnabled: true,
+            srcTabEnabled: true,
             src: Array.from(urls)[0][0]
           });
         });
@@ -359,16 +363,20 @@
 
         alControlPanel.angles = state.angles;
         alControlPanel.boundingBoxEnabled =  state.boundingBoxEnabled;
+        alControlPanel.consoleTabEnabled = state.consoleTabEnabled;
         alControlPanel.controlsType = state.controlsType;
         alControlPanel.displayMode = state.displayMode;
         alControlPanel.edges = state.edges;
         alControlPanel.graphEnabled = state.graphEnabled;
+        alControlPanel.graphTabEnabled = state.graphTabEnabled;
         alControlPanel.nodes = state.nodes;
         alControlPanel.selected = state.selected;
-        alControlPanel.units = state.units;
-        alControlPanel.slicesIndex = state.slicesIndex;
+        alControlPanel.settingsTabEnabled = state.settingsTabEnabled;
         alControlPanel.slicesBrightness = state.slicesWindowCenter;
         alControlPanel.slicesContrast = state.slicesWindowWidth;
+        alControlPanel.slicesIndex = state.slicesIndex;
+        alControlPanel.srcTabEnabled = state.srcTabEnabled;
+        alControlPanel.units = state.units;
         alControlPanel.volumeBrightness = state.volumeWindowCenter;
         alControlPanel.volumeContrast = state.volumeWindowWidth;
 

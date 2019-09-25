@@ -86,6 +86,7 @@ export namespace Components {
     'controlsType': ControlsType;
     'displayMode': DisplayMode;
     'graphEnabled': boolean;
+    'graphVisible': boolean;
     'orientation': Orientation;
     'slicesBrightness': number;
     'slicesContrast': number;
@@ -293,6 +294,7 @@ declare namespace LocalJSX {
     'controlsType'?: ControlsType;
     'displayMode'?: DisplayMode;
     'graphEnabled'?: boolean;
+    'graphVisible'?: boolean;
     'onBoundingBoxEnabledChanged'?: (event: CustomEvent<any>) => void;
     'onControlsTypeChanged'?: (event: CustomEvent<any>) => void;
     'onDisplayModeChanged'?: (event: CustomEvent<any>) => void;
