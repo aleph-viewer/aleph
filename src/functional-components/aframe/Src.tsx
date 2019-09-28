@@ -6,7 +6,6 @@ interface SrcProps extends FunctionalComponentProps {
   displayMode: DisplayMode;
   dracoDecoderPath: string;
   graphEnabled: boolean;
-  isWebGl2: boolean;
   orientation: Orientation;
   slicesIndex: number;
   slicesWindowCenter: number;
@@ -24,7 +23,6 @@ export const Src: FunctionalComponent<SrcProps> = (
     displayMode,
     dracoDecoderPath,
     graphEnabled,
-    isWebGl2,
     orientation,
     slicesIndex,
     slicesWindowCenter,
@@ -70,7 +68,6 @@ export const Src: FunctionalComponent<SrcProps> = (
                 controlsType: ${controlsType};
                 displayMode: ${displayMode};
                 isHighRes: false;
-                isWebGl2: ${isWebGl2};
                 slicesIndex: ${slicesIndex};
                 slicesOrientation: ${orientation};
                 slicesWindowCenter: ${slicesWindowCenter};
@@ -97,7 +94,6 @@ export const Src: FunctionalComponent<SrcProps> = (
                 controlsType: ${controlsType};
                 displayMode: ${displayMode};
                 isHighRes: false;
-                isWebGl2: ${isWebGl2};
                 slicesIndex: ${slicesIndex};
                 slicesOrientation: ${orientation};
                 slicesWindowCenter: ${slicesWindowCenter};

@@ -44,7 +44,6 @@ export default AFRAME.registerComponent("al-volume", {
     controlsType: { type: "string" },
     displayMode: { type: "string" },
     isHighRes: { type: "boolean", default: false },
-    isWebGl2: { type: "boolean" },
     slicesIndex: { type: "number" },
     slicesOrientation: { type: "string" },
     slicesWindowCenter: { type: "number" },

@@ -474,7 +474,6 @@ export class Aleph {
           displayMode={this.displayMode}
           dracoDecoderPath={this.dracoDecoderPath}
           graphEnabled={this.graphEnabled}
-          isWebGl2={this._isWebGl2}
           orientation={this.orientation}
           slicesIndex={this.slicesIndex}
           slicesWindowCenter={this.slicesWindowCenter}
