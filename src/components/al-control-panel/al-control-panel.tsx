@@ -55,37 +55,40 @@ export class AlSettings {
     const tabContentHeight: string =
       this.tabContentHeight || this.el.parentElement.clientHeight + "px";
 
-    const numTabsEnabled: number = [this.consoleTabEnabled, this.graphTabEnabled, this.settingsTabEnabled, this.srcTabEnabled].filter(Boolean).length;
+    const numTabsEnabled: number = [
+      this.consoleTabEnabled,
+      this.graphTabEnabled,
+      this.settingsTabEnabled,
+      this.srcTabEnabled
+    ].filter(Boolean).length;
 
     return (
       <ion-app>
         <al-tabs>
-          {
-            numTabsEnabled > 1 ? (
-              <ion-tab-bar>
-                {this.srcTabEnabled ? (
-                  <ion-tab-button tab="src">
-                    <ion-label>{this._contentStrings.src}</ion-label>
-                  </ion-tab-button>
-                ) : null}
-                {this.settingsTabEnabled ? (
-                  <ion-tab-button tab="settings">
-                    <ion-label>{this._contentStrings.settings}</ion-label>
-                  </ion-tab-button>
-                ) : null}
-                {this.graphTabEnabled ? (
-                  <ion-tab-button tab="graph">
-                    <ion-label>{this._contentStrings.graph}</ion-label>
-                  </ion-tab-button>
-                ) : null}
-                {this.consoleTabEnabled ? (
-                  <ion-tab-button tab="console">
-                    <ion-label>{this._contentStrings.console}</ion-label>
-                  </ion-tab-button>
-                ) : null}
-              </ion-tab-bar>
-            ) : null
-          }
+          {numTabsEnabled > 1 ? (
+            <ion-tab-bar>
+              {this.srcTabEnabled ? (
+                <ion-tab-button tab="src">
+                  <ion-label>{this._contentStrings.src}</ion-label>
+                </ion-tab-button>
+              ) : null}
+              {this.settingsTabEnabled ? (
+                <ion-tab-button tab="settings">
+                  <ion-label>{this._contentStrings.settings}</ion-label>
+                </ion-tab-button>
+              ) : null}
+              {this.graphTabEnabled ? (
+                <ion-tab-button tab="graph">
+                  <ion-label>{this._contentStrings.graph}</ion-label>
+                </ion-tab-button>
+              ) : null}
+              {this.consoleTabEnabled ? (
+                <ion-tab-button tab="console">
+                  <ion-label>{this._contentStrings.console}</ion-label>
+                </ion-tab-button>
+              ) : null}
+            </ion-tab-bar>
+          ) : null}
           {this.srcTabEnabled ? (
             <ion-tab tab="src">
               <al-url-picker urls={this.urls} url={this.url}></al-url-picker>
