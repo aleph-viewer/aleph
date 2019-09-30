@@ -20,14 +20,14 @@
 
 ### Used by
 
- - [al-control-panel](../al-control-panel)
+ - [al-control-panel](..\al-control-panel)
 
 ### Depends on
 
-- [al-node-list](../al-node-list)
-- [al-node-editor](../al-node-editor)
-- [al-edge-editor](../al-edge-editor)
-- [al-angle-editor](../al-angle-editor)
+- [al-node-list](..\al-node-list)
+- [al-node-editor](..\al-node-editor)
+- [al-edge-editor](..\al-edge-editor)
+- [al-angle-editor](..\al-angle-editor)
 
 ### Graph
 ```mermaid

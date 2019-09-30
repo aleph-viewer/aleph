@@ -234,17 +234,17 @@ declare global {
 }
 
 declare namespace LocalJSX {
-  interface AlAngleEditor {
+  interface AlAngleEditor extends JSXBase.HTMLAttributes<HTMLAlAngleEditorElement> {
     'angle'?: [string, AlAngle];
     'onDeleteAngle'?: (event: CustomEvent<any>) => void;
     'onSaveAngle'?: (event: CustomEvent<any>) => void;
   }
-  interface AlConsole {
+  interface AlConsole extends JSXBase.HTMLAttributes<HTMLAlConsoleElement> {
     'graph'?: string | null;
     'onGraphSubmitted'?: (event: CustomEvent<any>) => void;
     'tabSize'?: number;
   }
-  interface AlControlPanel {
+  interface AlControlPanel extends JSXBase.HTMLAttributes<HTMLAlControlPanelElement> {
     'angles'?: Map<string, AlAngle> | null;
     'boundingBoxEnabled'?: boolean;
     'consoleTabEnabled'?: boolean;
@@ -267,29 +267,29 @@ declare namespace LocalJSX {
     'volumeBrightness'?: number;
     'volumeContrast'?: number;
   }
-  interface AlEdgeEditor {
+  interface AlEdgeEditor extends JSXBase.HTMLAttributes<HTMLAlEdgeEditorElement> {
     'edge'?: [string, AlEdge];
     'onDeleteEdge'?: (event: CustomEvent<any>) => void;
     'onSaveEdge'?: (event: CustomEvent<any>) => void;
   }
-  interface AlGraphEditor {
+  interface AlGraphEditor extends JSXBase.HTMLAttributes<HTMLAlGraphEditorElement> {
     'angles'?: Map<string, AlAngle> | null;
     'edges'?: Map<string, AlEdge> | null;
     'node'?: [string, AlNode];
     'nodes'?: Map<string, AlNode> | null;
     'selected'?: string | null;
   }
-  interface AlNodeEditor {
+  interface AlNodeEditor extends JSXBase.HTMLAttributes<HTMLAlNodeEditorElement> {
     'node'?: [string, AlNode];
     'onDeleteNode'?: (event: CustomEvent<any>) => void;
     'onSaveNode'?: (event: CustomEvent<any>) => void;
   }
-  interface AlNodeList {
+  interface AlNodeList extends JSXBase.HTMLAttributes<HTMLAlNodeListElement> {
     'nodes'?: Map<string, AlNode> | null;
     'onSelectedChanged'?: (event: CustomEvent<any>) => void;
     'selected'?: string | null;
   }
-  interface AlSettings {
+  interface AlSettings extends JSXBase.HTMLAttributes<HTMLAlSettingsElement> {
     'boundingBoxEnabled'?: boolean;
     'controlsType'?: ControlsType;
     'displayMode'?: DisplayMode;
@@ -315,7 +315,7 @@ declare namespace LocalJSX {
     'volumeBrightness'?: number;
     'volumeContrast'?: number;
   }
-  interface AlTabs {
+  interface AlTabs extends JSXBase.HTMLAttributes<HTMLAlTabsElement> {
     /**
     * Emitted when the navigation has finished transitioning to a new component.
     */
@@ -329,12 +329,12 @@ declare namespace LocalJSX {
       tab: string;
     }>) => void;
   }
-  interface AlUrlPicker {
+  interface AlUrlPicker extends JSXBase.HTMLAttributes<HTMLAlUrlPickerElement> {
     'onUrlChanged'?: (event: CustomEvent<any>) => void;
     'url'?: string | null;
     'urls'?: Map<string, string> | null;
   }
-  interface AlViewer {
+  interface AlViewer extends JSXBase.HTMLAttributes<HTMLAlViewerElement> {
     'dracoDecoderPath'?: string | null;
     'height'?: string;
     /**
@@ -368,19 +368,7 @@ export { LocalJSX as JSX };
 
 declare module "@stencil/core" {
   export namespace JSX {
-    interface IntrinsicElements {
-      'al-angle-editor': LocalJSX.AlAngleEditor & JSXBase.HTMLAttributes<HTMLAlAngleEditorElement>;
-      'al-console': LocalJSX.AlConsole & JSXBase.HTMLAttributes<HTMLAlConsoleElement>;
-      'al-control-panel': LocalJSX.AlControlPanel & JSXBase.HTMLAttributes<HTMLAlControlPanelElement>;
-      'al-edge-editor': LocalJSX.AlEdgeEditor & JSXBase.HTMLAttributes<HTMLAlEdgeEditorElement>;
-      'al-graph-editor': LocalJSX.AlGraphEditor & JSXBase.HTMLAttributes<HTMLAlGraphEditorElement>;
-      'al-node-editor': LocalJSX.AlNodeEditor & JSXBase.HTMLAttributes<HTMLAlNodeEditorElement>;
-      'al-node-list': LocalJSX.AlNodeList & JSXBase.HTMLAttributes<HTMLAlNodeListElement>;
-      'al-settings': LocalJSX.AlSettings & JSXBase.HTMLAttributes<HTMLAlSettingsElement>;
-      'al-tabs': LocalJSX.AlTabs & JSXBase.HTMLAttributes<HTMLAlTabsElement>;
-      'al-url-picker': LocalJSX.AlUrlPicker & JSXBase.HTMLAttributes<HTMLAlUrlPickerElement>;
-      'al-viewer': LocalJSX.AlViewer & JSXBase.HTMLAttributes<HTMLAlViewerElement>;
-    }
+    interface IntrinsicElements extends LocalJSX.IntrinsicElements {}
   }
 }
 

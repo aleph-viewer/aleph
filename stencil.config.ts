@@ -20,15 +20,7 @@ export const config: Config = {
     {
       src: '**/*.i18n.*.json',
       dest: 'i18n'
-    },
-    {
-      src: 'test.html',
-      dest: 'test.html'
     }
-    // {
-    //   src: '../loader',
-    //   dest: 'loader'
-    // }
   ],
   testing: {
     testPathIgnorePatterns: ["/node_modules/", "/src/utils/shaders/"]

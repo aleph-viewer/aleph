@@ -36,11 +36,11 @@
 
 ### Depends on
 
-- [al-tabs](../al-tabs)
-- [al-url-picker](../al-url-picker)
-- [al-settings](../al-settings)
-- [al-graph-editor](../al-graph-editor)
-- [al-console](../al-console)
+- [al-tabs](..\al-tabs)
+- [al-url-picker](..\al-url-picker)
+- [al-settings](..\al-settings)
+- [al-graph-editor](..\al-graph-editor)
+- [al-console](..\al-console)
 
 ### Graph
 ```mermaid
