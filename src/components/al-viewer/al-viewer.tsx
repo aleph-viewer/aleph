@@ -459,7 +459,6 @@ export class Aleph {
   }
 
   private _renderScene() {
-    console.log(this._isWebGl2);
     return (
       <Scene
         cb={ref => {
