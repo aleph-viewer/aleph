@@ -1,28 +1,27 @@
 export class Constants {
-  public static lightIntensity = 0.5;
-  public static BoundingBoxWidth = 2;
-  // 24 FPS
-  public static targetFrameTime = 1000 / 24;
-  public static stepPowerMinMax = [1, 10];
-  public static movingStepCount = 2;
+  public static boundingBoxWidth = 2;
   public static controllerName = "-controller";
   public static edgeSize = 0.005;
   public static fontSizeLarge = 1;
   public static fontSizeMedium = 0.7;
   public static fontSizeSmall = 0.4;
+  public static frustrumScaleFactor = 0.7;
+  public static lightIntensity = 0.5;
   public static maxAnimationSteps = 50;
   public static minLoadingMS = 500;
   public static movedEventName = "-moved";
+  public static movingStepCount = 2;
   public static nodeSizeRatio = 100;
   public static stackSpaceMultiplier = { x: 10, y: 10, z: 10 };
+  public static stepPowerMinMax = [1, 10];
   public static stepsIncrement = 8;
   public static stepsMax: number = 512;
   public static stepsMin: number = 1;
+  public static targetFrameTime = 1000 / 24; // 24 FPS
   public static titleIdName = "-title";
   public static topLayerRenderOrder = 999;
   public static unitsDecimalPlaces = 2;
   public static zoomFactor = 2.5;
-  public static frustrumScaleFactor = 0.7;
 
   public static textPadding = {
     width: 0.03,

@@ -69,7 +69,7 @@ export default AFRAME.registerComponent("al-bounding-box", {
       // - makes the line width constant regardless distance (1 unit is 1px on screen) (0 - attenuate, 1 - don't attenuate)
       sizeAttenuation: 0,
       // - float defining width (if sizeAttenuation is true, it's world units; else is screen pixels)
-      lineWidth: Constants.BoundingBoxWidth,
+      lineWidth: Constants.boundingBoxWidth,
       // - camera near clip plane distance (REQUIRED if sizeAttenuation set to false)
       near: this.el.sceneEl.camera.near,
       // - camera far clip plane distance (REQUIRED if sizeAttenuation set to false)
@@ -125,7 +125,7 @@ export default AFRAME.registerComponent("al-bounding-box", {
     TLF_TRF.vertices.push(TopLeftFront);
     TLF_TRF.vertices.push(TopRightFront);
     const line1 = new MeshLine();
-    line1.setGeometry(TLF_TRF, _p => Constants.BoundingBoxWidth);
+    line1.setGeometry(TLF_TRF, _p => Constants.boundingBoxWidth);
     const mesh1 = new THREE.Mesh(line1.geometry, MeshLineMat);
     BboxLineController.add(mesh1);
 
@@ -134,7 +134,7 @@ export default AFRAME.registerComponent("al-bounding-box", {
     TLF_TLB.vertices.push(TopLeftFront);
     TLF_TLB.vertices.push(TopLeftBack);
     const line2 = new MeshLine();
-    line2.setGeometry(TLF_TLB, _p => Constants.BoundingBoxWidth);
+    line2.setGeometry(TLF_TLB, _p => Constants.boundingBoxWidth);
     const mesh2 = new THREE.Mesh(line2.geometry, MeshLineMat);
     BboxLineController.add(mesh2);
 
@@ -143,7 +143,7 @@ export default AFRAME.registerComponent("al-bounding-box", {
     TLF_BLF.vertices.push(TopLeftFront);
     TLF_BLF.vertices.push(BottomLeftFront);
     const line3 = new MeshLine();
-    line3.setGeometry(TLF_BLF, _p => Constants.BoundingBoxWidth);
+    line3.setGeometry(TLF_BLF, _p => Constants.boundingBoxWidth);
     const mesh3 = new THREE.Mesh(line3.geometry, MeshLineMat);
     BboxLineController.add(mesh3);
 
@@ -152,7 +152,7 @@ export default AFRAME.registerComponent("al-bounding-box", {
     TRB_TRF.vertices.push(TopRightBack);
     TRB_TRF.vertices.push(TopRightFront);
     const line4 = new MeshLine();
-    line4.setGeometry(TRB_TRF, _p => Constants.BoundingBoxWidth);
+    line4.setGeometry(TRB_TRF, _p => Constants.boundingBoxWidth);
     const mesh4 = new THREE.Mesh(line4.geometry, MeshLineMat);
     BboxLineController.add(mesh4);
 
@@ -161,7 +161,7 @@ export default AFRAME.registerComponent("al-bounding-box", {
     TRB_TLB.vertices.push(TopRightBack);
     TRB_TLB.vertices.push(TopLeftBack);
     const line5 = new MeshLine();
-    line5.setGeometry(TRB_TLB, _p => Constants.BoundingBoxWidth);
+    line5.setGeometry(TRB_TLB, _p => Constants.boundingBoxWidth);
     const mesh5 = new THREE.Mesh(line5.geometry, MeshLineMat);
     BboxLineController.add(mesh5);
 
@@ -170,7 +170,7 @@ export default AFRAME.registerComponent("al-bounding-box", {
     TRB_BRB.vertices.push(TopRightBack);
     TRB_BRB.vertices.push(BottomRightBack);
     const line6 = new MeshLine();
-    line6.setGeometry(TRB_BRB, _p => Constants.BoundingBoxWidth);
+    line6.setGeometry(TRB_BRB, _p => Constants.boundingBoxWidth);
     const mesh6 = new THREE.Mesh(line6.geometry, MeshLineMat);
     BboxLineController.add(mesh6);
 
@@ -179,7 +179,7 @@ export default AFRAME.registerComponent("al-bounding-box", {
     BRB_BRF.vertices.push(BottomRightBack);
     BRB_BRF.vertices.push(BottomRightFront);
     const line7 = new MeshLine();
-    line7.setGeometry(BRB_BRF, _p => Constants.BoundingBoxWidth);
+    line7.setGeometry(BRB_BRF, _p => Constants.boundingBoxWidth);
     const mesh7 = new THREE.Mesh(line7.geometry, MeshLineMat);
     BboxLineController.add(mesh7);
 
@@ -188,7 +188,7 @@ export default AFRAME.registerComponent("al-bounding-box", {
     BRB_BLB.vertices.push(BottomRightBack);
     BRB_BLB.vertices.push(BottomLeftBack);
     const line8 = new MeshLine();
-    line8.setGeometry(BRB_BLB, _p => Constants.BoundingBoxWidth);
+    line8.setGeometry(BRB_BLB, _p => Constants.boundingBoxWidth);
     const mesh8 = new THREE.Mesh(line8.geometry, MeshLineMat);
     BboxLineController.add(mesh8);
 
@@ -197,7 +197,7 @@ export default AFRAME.registerComponent("al-bounding-box", {
     BLF_BLB.vertices.push(BottomLeftFront);
     BLF_BLB.vertices.push(BottomLeftBack);
     const line9 = new MeshLine();
-    line9.setGeometry(BLF_BLB, _p => Constants.BoundingBoxWidth);
+    line9.setGeometry(BLF_BLB, _p => Constants.boundingBoxWidth);
     const mesh9 = new THREE.Mesh(line9.geometry, MeshLineMat);
     BboxLineController.add(mesh9);
 
@@ -206,7 +206,7 @@ export default AFRAME.registerComponent("al-bounding-box", {
     BLF_BRF.vertices.push(BottomLeftFront);
     BLF_BRF.vertices.push(BottomRightFront);
     const line10 = new MeshLine();
-    line10.setGeometry(BLF_BRF, _p => Constants.BoundingBoxWidth);
+    line10.setGeometry(BLF_BRF, _p => Constants.boundingBoxWidth);
     const mesh10 = new THREE.Mesh(line10.geometry, MeshLineMat);
     BboxLineController.add(mesh10);
 
@@ -215,7 +215,7 @@ export default AFRAME.registerComponent("al-bounding-box", {
     TRF_BRF.vertices.push(TopRightFront);
     TRF_BRF.vertices.push(BottomRightFront);
     const line11 = new MeshLine();
-    line11.setGeometry(TRF_BRF, _p => Constants.BoundingBoxWidth);
+    line11.setGeometry(TRF_BRF, _p => Constants.boundingBoxWidth);
     const mesh11 = new THREE.Mesh(line11.geometry, MeshLineMat);
     BboxLineController.add(mesh11);
 
@@ -224,7 +224,7 @@ export default AFRAME.registerComponent("al-bounding-box", {
     TLB_BLB.vertices.push(TopLeftBack);
     TLB_BLB.vertices.push(BottomLeftBack);
     const line12 = new MeshLine();
-    line12.setGeometry(TLB_BLB, _p => Constants.BoundingBoxWidth);
+    line12.setGeometry(TLB_BLB, _p => Constants.boundingBoxWidth);
     const mesh12 = new THREE.Mesh(line12.geometry, MeshLineMat);
     BboxLineController.add(mesh12);
 
