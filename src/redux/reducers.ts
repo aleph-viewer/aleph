@@ -112,10 +112,10 @@ export const app = (
         ...state,
         selected: state.selected === action.payload ? null : state.selected,
         nodes: new Map(
-          [...state.nodes].filter(([key]) => key !== action.payload)
+          Array.from(state.nodes).filter(([key]) => key !== action.payload)
         ),
         edges: new Map(
-          [...state.edges].filter(
+          Array.from(state.edges).filter(
             ([_key, edge]) =>
               action.payload !== edge.node1Id && action.payload !== edge.node2Id
           )
@@ -163,10 +163,10 @@ export const app = (
         ...state,
         selected: state.selected === action.payload ? null : state.selected,
         edges: new Map(
-          [...state.edges].filter(([key]) => key !== action.payload)
+          Array.from(state.edges).filter(([key]) => key !== action.payload)
         ),
         angles: new Map(
-          [...state.angles].filter(
+          Array.from(state.angles).filter(
             ([_key, angle]) =>
               action.payload !== angle.edge1Id &&
               action.payload !== angle.edge2Id
@@ -215,7 +215,7 @@ export const app = (
         ...state,
         selected: state.selected === action.payload ? null : state.selected,
         angles: new Map(
-          [...state.angles].filter(([key]) => key !== action.payload)
+          Array.from(state.angles).filter(([key]) => key !== action.payload)
         )
       };
     }
