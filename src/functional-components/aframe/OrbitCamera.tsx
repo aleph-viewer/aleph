@@ -12,6 +12,7 @@ interface OrbitCameraProps extends FunctionalComponentProps {
   minDistance: number;
   minPolarAngle: number;
   near: number;
+  panSpeed: number;
   rotateSpeed: number;
   zoomSpeed: number;
 }
@@ -30,6 +31,7 @@ export const OrbitCamera: FunctionalComponent<OrbitCameraProps> = (
     minDistance,
     minPolarAngle,
     near,
+    panSpeed,
     rotateSpeed,
     zoomSpeed
   },
@@ -55,7 +57,8 @@ export const OrbitCamera: FunctionalComponent<OrbitCameraProps> = (
       controlTarget: ${controlTarget};
       controlPosition: ${controlPosition};
       enabled: ${enabled};
-      animating: ${animating}
+      animating: ${animating};
+      panSpeed: ${panSpeed}
     `}
     al-control-lights
     ref={ref => cb(ref)}

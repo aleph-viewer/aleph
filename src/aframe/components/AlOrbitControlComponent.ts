@@ -50,6 +50,7 @@ export default AFRAME.registerComponent("al-orbit-control", {
     minAzimuthAngle: { type: "number", default: -Infinity },
     minDistance: { default: 1 },
     minPolarAngle: { default: 0 },
+    panSpeed: { default: 1 },
     rotateSpeed: { default: 0.05 },
     screenSpacePanning: { default: false },
     zoomSpeed: { type: "number", default: 0.5 }
@@ -271,6 +272,7 @@ export default AFRAME.registerComponent("al-orbit-control", {
     controls.minDistance = data.minDistance;
     controls.minPolarAngle = THREE.Math.degToRad(data.minPolarAngle);
     controls.minAzimuthAngle = THREE.Math.degToRad(data.minAzimuthAngle);
+    controls.panSpeed = data.panSpeed;
     controls.rotateSpeed = data.rotateSpeed;
     controls.screenSpacePanning = data.screenSpacePanning;
     controls.zoomSpeed = data.zoomSpeed;

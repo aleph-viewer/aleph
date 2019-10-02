@@ -595,6 +595,7 @@ export class Aleph {
                   maxPolarAngle={Constants.camera.maxPolarAngle}
                   minDistance={Constants.camera.minDistance}
                   minPolarAngle={Constants.camera.minPolarAngle}
+                  panSpeed={Constants.camera.orbitPanSpeed}
                   near={Constants.camera.near}
                   rotateSpeed={Constants.camera.orbitRotateSpeed}
                   zoomSpeed={Constants.camera.orbitZoomSpeed}
