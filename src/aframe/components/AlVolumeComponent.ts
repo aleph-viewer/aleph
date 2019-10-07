@@ -12,6 +12,12 @@ export class AlVolumeEvents {
   public static VOLUME_RAY_CAST: string = "al-volume-ray-cast";
 }
 
+// tslint:disable-next-line: max-classes-per-file
+export class AlVolumeCastType {
+  public static CREATE: string = "create";
+  public static DRAG: string = "drag";
+}
+
 interface AlVolumeState {
   bufferScene: THREE.Scene;
   bufferSceneTexture: THREE.WebGLRenderTarget;
@@ -163,7 +169,8 @@ export default AFRAME.registerComponent("al-volume", {
       hitPosition,
       intersection,
       rayResult,
-      hitNormal
+      hitNormal,
+      type: event.detail.type
     });
   },
 

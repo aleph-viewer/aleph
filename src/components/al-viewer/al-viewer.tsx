@@ -1,6 +1,6 @@
 import { KeyDown } from "@edsilv/key-codes";
-import { Action, Store } from "@edsilv/stencil-redux";
 import "@edsilv/stencil-redux";
+import { Action, Store } from "@edsilv/stencil-redux";
 import {
   Component,
   Event,
@@ -12,7 +12,10 @@ import {
 } from "@stencil/core";
 import "../../aframe";
 import { AlGltfModelEvents, AlNodeSpawnerEvents } from "../../aframe";
-import { AlVolumeEvents } from "../../aframe/components/AlVolumeComponent";
+import {
+  AlVolumeCastType,
+  AlVolumeEvents
+} from "../../aframe/components/AlVolumeComponent";
 import { Constants } from "../../Constants";
 import {
   AlGraphEntryType,
@@ -68,7 +71,6 @@ import {
 import { configureStore } from "../../redux/store";
 import {
   AlGraphEvents,
-  AMIUtils,
   EventUtils,
   GraphUtils,
   ThreeUtils,
@@ -949,15 +951,15 @@ export class Aleph {
     this._stateChanged();
   }
 
-  private _getStackHelper(): AMI.VolumeRenderHelper | null {
-    let stackhelper: AMI.VolumeRenderHelper | null = null;
+  // private _getStackHelper(): AMI.VolumeRenderHelper | null {
+  //   let stackhelper: AMI.VolumeRenderHelper | null = null;
 
-    if (this.displayMode === DisplayMode.VOLUME) {
-      stackhelper = this._loadedObject;
-    }
+  //   if (this.displayMode === DisplayMode.VOLUME) {
+  //     stackhelper = this._loadedObject;
+  //   }
 
-    return stackhelper;
-  }
+  //   return stackhelper;
+  // }
 
   private _getMesh(): THREE.Mesh | null {
     let mesh: THREE.Mesh | null = null;
@@ -1081,7 +1083,8 @@ export class Aleph {
         this._scene.emit(AlVolumeEvents.VOLUME_RAY_REQUEST, {
           cameraPosition: this._camera.object3D.children[0].position.clone(),
           cameraDirection: this._camera.getAttribute("raycaster").direction,
-          intersection
+          intersection,
+          type: AlVolumeCastType.CREATE
         });
       } else if (intersection) {
         newNode = {
@@ -1111,32 +1114,66 @@ export class Aleph {
     const hitPosition = event.detail.hitPosition;
     const rayResult = event.detail.rayResult;
 
-    const nodeId: string = GraphUtils.getNextId(
-      AlGraphEntryType.NODE,
-      this.nodes
-    );
+    switch (event.detail.type) {
+      case AlVolumeCastType.CREATE: {
+        let newNode: AlNode;
+        const nodeId: string = GraphUtils.getNextId(
+          AlGraphEntryType.NODE,
+          this.nodes
+        );
 
-    let newNode: AlNode;
+        if (rayResult) {
+          newNode = {
+            targetId: this.src,
+            position: ThreeUtils.vector3ToString(hitPosition),
+            scale: this._boundingSphereRadius / Constants.nodeSizeRatio,
+            title: nodeId
+          };
+        }
 
-    if (rayResult) {
-      newNode = {
-        targetId: this.src,
-        position: ThreeUtils.vector3ToString(hitPosition),
-        scale: this._boundingSphereRadius / Constants.nodeSizeRatio,
-        title: nodeId
-      };
-    }
+        if (newNode) {
+          const previousSelected = this.selected;
+          this._setNode([nodeId, newNode]);
 
-    if (newNode) {
-      const previousSelected = this.selected;
-      this._setNode([nodeId, newNode]);
+          if (
+            this._isShiftDown && // Shift is down
+            this.nodes.has(previousSelected) // A Node is already selected
+          ) {
+            this._createEdge(previousSelected, nodeId);
+            this._selectNode(nodeId);
+          }
+        }
+        break;
+      }
+      case AlVolumeCastType.DRAG: {
+        const nodeId = this.selected;
 
-      if (
-        this._isShiftDown && // Shift is down
-        this.nodes.has(previousSelected) // A Node is already selected
-      ) {
-        this._createEdge(previousSelected, nodeId);
-        this._selectNode(nodeId);
+        if (!rayResult) {
+          const distance = this._camera.object3D.children[0].position.distanceTo(
+            this._targetEntity.getAttribute("position")
+          );
+
+          hitPosition.copy(this._camera.object3D.children[0].position);
+          hitPosition.add(
+            this._camera
+              .getAttribute("raycaster")
+              .direction.clone()
+              .multiplyScalar(distance * 1.5)
+          );
+        }
+
+        this._setNode([
+          nodeId,
+          {
+            position: ThreeUtils.vector3ToString(hitPosition)
+          }
+        ]);
+        const eventName = nodeId + Constants.movedEventName;
+        this._scene.emit(eventName, {}, true);
+        break;
+      }
+      default: {
+        break;
       }
     }
   }
@@ -1202,65 +1239,49 @@ export class Aleph {
     // tslint:disable-next-line: no-any
     const raycaster = this._camera.components.raycaster as any;
     const raycasterAttribute = this._camera.getAttribute("raycaster");
-    let intersection;
     const hitPosition = new THREE.Vector3();
+
     let validLocation = false;
-    const orbitPosition = this._camera.object3D.children[0].position;
+    const intersection = raycaster.getIntersection(
+      this._boundingEntity
+    ) as THREE.Intersection;
 
     if (this.displayMode === DisplayMode.VOLUME) {
-      // First try bounding box
-      intersection = raycaster.getIntersection(
-        this._boundingEntity
-      ) as THREE.Intersection;
-
       if (intersection) {
-        const hitNormal = new THREE.Vector3();
-
-        const rayResult = AMIUtils.volumeRay(
-          this._getStackHelper(),
-          orbitPosition.clone(),
-          raycasterAttribute.direction,
-          Constants.camera.far,
-          hitPosition,
-          hitNormal
-        );
-
-        if (rayResult) {
-          validLocation = true;
-        }
+        this._scene.emit(AlVolumeEvents.VOLUME_RAY_REQUEST, {
+          cameraPosition: this._camera.object3D.children[0].position.clone(),
+          cameraDirection: this._camera.getAttribute("raycaster").direction,
+          intersection,
+          type: AlVolumeCastType.DRAG
+        });
       }
     } else {
-      // First try target
-      intersection = raycaster.getIntersection(
-        this._targetEntity
-      ) as THREE.Intersection;
-
       if (intersection) {
         hitPosition.copy(intersection.point);
         validLocation = true;
       }
-    }
 
-    // IF not a valid location, dangle in space
-    if (!validLocation) {
-      const distance = orbitPosition.distanceTo(
-        this._targetEntity.getAttribute("position")
-      );
+      // IF not a valid location, dangle in space
+      if (!validLocation) {
+        const distance = this._camera.object3D.children[0].position.distanceTo(
+          this._targetEntity.getAttribute("position")
+        );
 
-      hitPosition.copy(orbitPosition);
-      hitPosition.add(
-        raycasterAttribute.direction.clone().multiplyScalar(distance * 1.5)
-      );
-    }
-
-    this._setNode([
-      nodeId,
-      {
-        position: ThreeUtils.vector3ToString(hitPosition)
+        hitPosition.copy(this._camera.object3D.children[0].position);
+        hitPosition.add(
+          raycasterAttribute.direction.clone().multiplyScalar(distance * 1.5)
+        );
       }
-    ]);
-    const eventName = nodeId + Constants.movedEventName;
-    this._scene.emit(eventName, {}, true);
+
+      this._setNode([
+        nodeId,
+        {
+          position: ThreeUtils.vector3ToString(hitPosition)
+        }
+      ]);
+      const eventName = nodeId + Constants.movedEventName;
+      this._scene.emit(eventName, {}, true);
+    }
   }
 
   private _addEventListeners(): void {
