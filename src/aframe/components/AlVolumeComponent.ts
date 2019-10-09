@@ -460,7 +460,7 @@ export default AFRAME.registerComponent("al-volume", {
         // allow some time for the stackhelper to update
         setTimeout(() => {
           this.state.renderSteps = this.getRenderSteps();
-        }, 800);
+        }, Constants.volumeRenderStepsDelay);
       } else {
         (this.el.sceneEl.object3D as THREE.Scene).background = null;
       }
@@ -480,7 +480,9 @@ export default AFRAME.registerComponent("al-volume", {
           oldData.controlsType &&
           oldData.controlsType !== this.data.controlsType
         ) {
-          this.state.renderSteps = this.getRenderSteps();
+          setTimeout(() => {
+            this.state.renderSteps = this.getRenderSteps();
+          }, Constants.volumeRenderStepsDelay);
         }
 
         // if the volumeWindowCenter changed

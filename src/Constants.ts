@@ -22,7 +22,8 @@ export class Constants {
   public static topLayerRenderOrder = 999;
   public static unitsDecimalPlaces = 2;
   public static zoomFactor = 2.5;
-  public static VolumeSensitivity = 0.05;
+  public static volumeRaycastSensitivity = 0.05;
+  public static volumeRenderStepsDelay = 800;
 
   public static textPadding = {
     width: 0.03,
