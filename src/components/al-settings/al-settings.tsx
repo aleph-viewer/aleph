@@ -380,7 +380,7 @@ export class AlSettings {
                 slot="end"
                 min="0"
                 max="1"
-                step=".1"
+                step=".01"
                 value={this.slicesIndex}
                 onIonChange={e => this._slicesIndex(e.detail.value)}
               />
