@@ -59,7 +59,7 @@ export class AMIUtils {
     );
     let windowMin = stackHelper.windowCenter - stackHelper.windowWidth * 0.5;
     // Reduce windowMin by the sensitivity, to prevent floating nodes
-    windowMin -= windowMin * Constants.VolumeSensitivity;
+    windowMin -= windowMin * Constants.Raycast;
     let steppedIndex = -1;
 
     // main loop along raycast vector

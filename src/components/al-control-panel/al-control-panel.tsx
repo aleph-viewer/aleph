@@ -29,6 +29,7 @@ export class AlSettings {
   @Prop({ mutable: true }) public slicesBrightness: number;
   @Prop({ mutable: true }) public slicesContrast: number;
   @Prop({ mutable: true }) public slicesIndex: number;
+  @Prop({ mutable: true }) public slicesMaxIndex: number;
   @Prop({ mutable: true }) public srcTabEnabled: boolean = true;
   @Prop({ mutable: true }) public tabContentHeight: string | null = null;
   @Prop({ mutable: true }) public units: Units;
@@ -104,6 +105,7 @@ export class AlSettings {
                   graph-enabled={this.graphEnabled}
                   graph-visible={this.graphTabEnabled}
                   slices-index={this.slicesIndex}
+                  slices-max-index={this.slicesMaxIndex}
                   slices-brightness={this.slicesBrightness}
                   slices-contrast={this.slicesContrast}
                   volume-brightness={this.volumeBrightness}

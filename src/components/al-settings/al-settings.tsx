@@ -46,6 +46,7 @@ export class AlSettings {
   // @Prop({ mutable: true }) public material: Material = Material.DEFAULT;
   @Prop({ mutable: true }) public orientation: Orientation;
   @Prop({ mutable: true }) public slicesIndex: number;
+  @Prop({ mutable: true }) public slicesMaxIndex: number;
   @Prop({ mutable: true }) public slicesBrightness: number; // window center
   @Prop({ mutable: true }) public slicesContrast: number; // window width
   @Prop({ mutable: true }) public units: Units;
@@ -380,7 +381,7 @@ export class AlSettings {
                 slot="end"
                 min="0"
                 max="1"
-                step=".01"
+                step={1 / this.slicesMaxIndex}
                 value={this.slicesIndex}
                 onIonChange={e => this._slicesIndex(e.detail.value)}
               />

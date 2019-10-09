@@ -8,6 +8,7 @@ import { BaseComponent } from "./BaseComponent";
 export class AlVolumeEvents {
   public static ERROR: string = "al-volume-error";
   public static LOADED: string = "al-volume-loaded";
+  public static SLICES_MAX_INDEX: string = "al-volume-slices-max-index";
   public static VOLUME_RAY_REQUEST: string = "al-volume-ray-requested";
   public static VOLUME_RAY_CAST: string = "al-volume-ray-cast";
 }
@@ -153,8 +154,8 @@ export default AFRAME.registerComponent("al-volume", {
     const camDir: THREE.Vector3 = event.detail.cameraDirection;
     const intersection: THREE.Vector3 = event.detail.intersection;
 
-    const hitPosition = new THREE.Vector3();
-    const hitNormal = new THREE.Vector3();
+    const hitPosition: THREE.Vector3 = new THREE.Vector3();
+    const hitNormal: THREE.Vector3 = new THREE.Vector3();
 
     const rayResult = AMIUtils.volumeRay(
       this.state.stackhelper,
@@ -184,14 +185,14 @@ export default AFRAME.registerComponent("al-volume", {
       .object3D as THREE.Scene).background = this.state.bufferSceneTexture.texture;
   },
 
-  onInteraction(_event: CustomEvent): void {
-    if (this.state.stackhelper && _event.detail.needsRender) {
+  onInteraction(event: CustomEvent): void {
+    if (this.state.stackhelper && event.detail.needsRender) {
       this.state.renderSteps = 2;
     }
   },
 
-  onInteractionFinished(_event: CustomEvent): void {
-    if (this.state.stackhelper && _event.detail.needsRender) {
+  onInteractionFinished(event: CustomEvent): void {
+    if (this.state.stackhelper && event.detail.needsRender) {
       this.state.renderSteps = this.getRenderSteps();
     }
 
@@ -359,6 +360,7 @@ export default AFRAME.registerComponent("al-volume", {
     ) {
       // set default
       index = Math.floor(slicesIndexMax * 0.5);
+      this.el.sceneEl.emit(AlVolumeEvents.SLICES_MAX_INDEX, slicesIndexMax, false);
     } else {
       index = slicesIndexMax * this.data.slicesIndex;
     }

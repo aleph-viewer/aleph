@@ -56,6 +56,7 @@ export namespace Components {
     'slicesBrightness': number;
     'slicesContrast': number;
     'slicesIndex': number;
+    'slicesMaxIndex': number;
     'srcTabEnabled': boolean;
     'tabContentHeight': string | null;
     'units': Units;
@@ -91,6 +92,7 @@ export namespace Components {
     'slicesBrightness': number;
     'slicesContrast': number;
     'slicesIndex': number;
+    'slicesMaxIndex': number;
     'units': Units;
     'volumeBrightness': number;
     'volumeContrast': number;
@@ -259,6 +261,7 @@ declare namespace LocalJSX {
     'slicesBrightness'?: number;
     'slicesContrast'?: number;
     'slicesIndex'?: number;
+    'slicesMaxIndex'?: number;
     'srcTabEnabled'?: boolean;
     'tabContentHeight'?: string | null;
     'units'?: Units;
@@ -311,6 +314,7 @@ declare namespace LocalJSX {
     'slicesBrightness'?: number;
     'slicesContrast'?: number;
     'slicesIndex'?: number;
+    'slicesMaxIndex'?: number;
     'units'?: Units;
     'volumeBrightness'?: number;
     'volumeContrast'?: number;

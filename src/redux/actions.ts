@@ -35,6 +35,7 @@ export type ActionTypes =
   | AppSetNodeAction
   | AppSetOrientationAction
   | AppSetSlicesIndexAction
+  | AppSetSlicesMaxIndexAction
   | AppSetSlicesWindowCenterAction
   | AppSetSlicesWindowWidthAction
   | AppSetSrcAction
@@ -68,6 +69,7 @@ export enum TypeKeys {
   APP_SET_NODES_ENABLED = "APP_SET_NODES_ENABLED",
   APP_SET_ORIENTATION = "APP_SET_ORIENTATION",
   APP_SET_SLICES_INDEX = "APP_SET_SLICES_INDEX",
+  APP_SET_SLICES_MAX_INDEX = "APP_SET_SLICES_MAX_INDEX",
   APP_SET_SLICES_WINDOW_CENTER = "APP_SET_SLICES_WINDOW_CENTER",
   APP_SET_SLICES_WINDOW_WIDTH = "APP_SET_SLICES_WINDOW_WIDTH",
   APP_SET_SRC = "APP_SET_SRC",
@@ -402,6 +404,21 @@ export const appSetSlicesIndex = (payload: number) => async (
 ) => {
   return dispatch({
     type: TypeKeys.APP_SET_SLICES_INDEX,
+    payload
+  });
+};
+
+export interface AppSetSlicesMaxIndexAction {
+  type: TypeKeys.APP_SET_SLICES_MAX_INDEX;
+  payload: number;
+}
+
+export const appSetSlicesMaxIndex = (payload: number) => async (
+  dispatch,
+  _getState
+) => {
+  return dispatch({
+    type: TypeKeys.APP_SET_SLICES_MAX_INDEX,
     payload
   });
 };

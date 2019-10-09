@@ -59,6 +59,7 @@ import {
   appSetNode,
   appSetOrientation,
   appSetSlicesIndex,
+  appSetSlicesMaxIndex,
   appSetSlicesWindowCenter,
   appSetSlicesWindowWidth,
   appSetSrc,
@@ -133,6 +134,7 @@ export class Aleph {
   public appSetNode: Action;
   public appSetOrientation: Action;
   public appSetSlicesIndex: Action;
+  public appSetSlicesMaxIndex: Action;
   public appSetSlicesWindowCenter: Action;
   public appSetSlicesWindowWidth: Action;
   public appSetSrc: Action;
@@ -160,6 +162,7 @@ export class Aleph {
   @State() public orientation: Orientation;
   @State() public selected: string;
   @State() public slicesIndex: number;
+  @State() public slicesMaxIndex: number;
   @State() public slicesWindowCenter: number;
   @State() public slicesWindowWidth: number;
   @State() public src: string | null;
@@ -350,6 +353,7 @@ export class Aleph {
           orientation,
           selected,
           slicesIndex,
+          slicesMaxIndex,
           slicesWindowCenter,
           slicesWindowWidth,
           src,
@@ -375,6 +379,7 @@ export class Aleph {
         orientation,
         selected,
         slicesIndex,
+        slicesMaxIndex,
         slicesWindowCenter,
         slicesWindowWidth,
         src,
@@ -408,6 +413,7 @@ export class Aleph {
       appSetNode,
       appSetOrientation,
       appSetSlicesIndex,
+      appSetSlicesMaxIndex,
       appSetSlicesWindowCenter,
       appSetSlicesWindowWidth,
       appSetSrc,
@@ -449,8 +455,9 @@ export class Aleph {
     this._controlsInteractionFinishedHandler = this._controlsInteractionFinishedHandler.bind(
       this
     );
+    this._slicesMaxIndexHandler = this._slicesMaxIndexHandler.bind(this);
     this._spawnNodeHandler = this._spawnNodeHandler.bind(this);
-    this._srcLoaded = this._srcLoaded.bind(this);
+    this._srcLoadedHandler = this._srcLoadedHandler.bind(this);
     this._volumeRaycastHandler = this._volumeRaycastHandler.bind(this);
 
     // debounced event handlers
@@ -987,7 +994,7 @@ export class Aleph {
   }
 
   // tslint:disable-next-line: no-any
-  private _srcLoaded(ev: any): void {
+  private _srcLoadedHandler(ev: any): void {
     this._loadedObject = ev.detail;
 
     const mesh: THREE.Mesh | null = this._getMesh();
@@ -1284,6 +1291,10 @@ export class Aleph {
     }
   }
 
+  private _slicesMaxIndexHandler(event: CustomEvent): void {
+    this.appSetSlicesMaxIndex(event.detail);
+  }
+
   private _addEventListeners(): void {
     window.addEventListener("keydown", this._keyDownHandler, false);
     window.addEventListener("keyup", this._keyUpHandler, false);
@@ -1350,11 +1361,13 @@ export class Aleph {
 
     this._scene.addEventListener(
       AlGltfModelEvents.LOADED,
-      this._srcLoaded,
+      this._srcLoadedHandler,
       false
     );
 
-    this._scene.addEventListener(AlVolumeEvents.LOADED, this._srcLoaded, false);
+    this._scene.addEventListener(AlVolumeEvents.LOADED, this._srcLoadedHandler, false);
+
+    this._scene.addEventListener(AlVolumeEvents.SLICES_MAX_INDEX, this._slicesMaxIndexHandler, false);
 
     this._scene.addEventListener(
       AlGraphEvents.POINTER_OVER,

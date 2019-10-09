@@ -24,6 +24,7 @@ export const getInitialState = () => {
     orientation: Orientation.CORONAL,
     selected: null,
     slicesIndex: 0.5,
+    slicesMaxIndex: undefined,
     slicesWindowCenter: 0.5,
     slicesWindowWidth: 0.5,
     src: null,
@@ -272,6 +273,12 @@ export const app = (
       return {
         ...state,
         slicesIndex: action.payload
+      };
+    }
+    case TypeKeys.APP_SET_SLICES_MAX_INDEX: {
+      return {
+        ...state,
+        slicesMaxIndex: action.payload
       };
     }
     case TypeKeys.APP_SET_SLICES_WINDOW_WIDTH: {
