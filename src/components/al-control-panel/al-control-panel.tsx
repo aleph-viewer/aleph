@@ -37,6 +37,7 @@ export class AlSettings {
   @Prop({ mutable: true }) public urls: Map<string, string> | null = null;
   @Prop({ mutable: true }) public volumeBrightness: number;
   @Prop({ mutable: true }) public volumeContrast: number;
+  @Prop({ mutable: true }) public volumeSteps: number;
 
   private _getGraphJson(): string {
     if (this.nodes && this.edges && this.angles) {
@@ -110,6 +111,7 @@ export class AlSettings {
                   slices-contrast={this.slicesContrast}
                   volume-brightness={this.volumeBrightness}
                   volume-contrast={this.volumeContrast}
+                  volume-steps={this.volumeSteps}
                   units={this.units}
                 ></al-settings>
               </Scroll>

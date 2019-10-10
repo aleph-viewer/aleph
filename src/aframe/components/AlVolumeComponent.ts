@@ -6,6 +6,7 @@ import { VolumetricLoader } from "../../utils/VolumetricLoader";
 import { BaseComponent } from "./BaseComponent";
 
 export class AlVolumeEvents {
+  public static DEFAULT_RENDER_STEPS: string = "al-default-render-steps";
   public static ERROR: string = "al-volume-error";
   public static LOADED: string = "al-volume-loaded";
   public static SLICES_MAX_INDEX: string = "al-volume-slices-max-index";
@@ -29,7 +30,7 @@ interface AlVolumeState {
   loaded: boolean;
   lutHelper: AMI.LutHelper;
   lastRenderTime: number;
-  renderSteps: number;
+  volumeSteps: number;
   // tslint:disable-next-line: no-any
   stack: any;
   stackhelper: AMI.StackHelper | AMI.VolumeRenderHelper;
@@ -50,13 +51,13 @@ export default AFRAME.registerComponent("al-volume", {
   schema: {
     controlsType: { type: "string" },
     displayMode: { type: "string" },
-    isHighRes: { type: "boolean", default: false },
     slicesIndex: { type: "number" },
     slicesOrientation: { type: "string" },
     slicesWindowCenter: { type: "number" },
     slicesWindowWidth: { type: "number" },
     src: { type: "string" },
     srcLoaded: { type: "boolean" },
+    volumeSteps: { type: "number" },
     volumeWindowCenter: { type: "number" },
     volumeWindowWidth: { type: "number" }
   },
@@ -78,7 +79,7 @@ export default AFRAME.registerComponent("al-volume", {
       frameTime: window.performance.now(),
       loaded: false,
       lastRenderTime: 0,
-      renderSteps: 0
+      volumeSteps: 0
     } as AlVolumeState;
 
     this.bindMethods();
@@ -94,9 +95,10 @@ export default AFRAME.registerComponent("al-volume", {
 
   bindMethods(): void {
     this.addEventListeners = this.addEventListeners.bind(this);
+    this.denormaliseVolumeSteps = this.denormaliseVolumeSteps.bind(this);
     this.castVolumeRay = this.castVolumeRay.bind(this);
     this.createBufferTexture = this.createBufferTexture.bind(this);
-    this.getRenderSteps = this.getRenderSteps.bind(this);
+    this.getDefaultVolumeSteps = this.getDefaultVolumeSteps.bind(this);
     this.handleStack = this.handleStack.bind(this);
     this.onInteraction = this.onInteraction.bind(this);
     this.onInteractionFinished = this.onInteractionFinished.bind(this);
@@ -125,6 +127,7 @@ export default AFRAME.registerComponent("al-volume", {
       this.onInteractionFinished,
       false
     );
+
     this.el.sceneEl.addEventListener(
       AlVolumeEvents.VOLUME_RAY_REQUEST,
       this.castVolumeRay,
@@ -139,10 +142,12 @@ export default AFRAME.registerComponent("al-volume", {
       AlControlEvents.INTERACTION,
       this.onInteraction
     );
+
     this.el.sceneEl.removeEventListener(
       AlControlEvents.INTERACTION_FINISHED,
       this.onInteractionFinished
     );
+
     this.el.sceneEl.addEventListener(
       AlVolumeEvents.VOLUME_RAY_REQUEST,
       this.castVolumeRay
@@ -187,20 +192,20 @@ export default AFRAME.registerComponent("al-volume", {
 
   onInteraction(event: CustomEvent): void {
     if (this.state.stackhelper && event.detail.needsRender) {
-      this.state.renderSteps = 2;
+      this.state.volumeSteps = 2;
     }
   },
 
   onInteractionFinished(event: CustomEvent): void {
     if (this.state.stackhelper && event.detail.needsRender) {
-      this.state.renderSteps = this.getRenderSteps();
+      this.state.volumeSteps = this.denormaliseVolumeSteps(this.data.volumeSteps);
     }
 
     this.state.debounce = false;
   },
 
-  getRenderSteps(): number {
-    // 128 steps for desktop (7), 32 steps for mobile (5)
+  getDefaultVolumeSteps(): number {
+    // default to 128 steps for desktop (2 ^ 7), 32 steps for mobile (2 ^ 5)
     let power;
 
     if (AFRAME.utils.device.isMobile()) {
@@ -209,9 +214,14 @@ export default AFRAME.registerComponent("al-volume", {
       power = 7;
     }
 
-    const res = Math.pow(2, power + (this.data.isHighRes ? 1 : 0));
+    const steps = Math.pow(2, power);
 
-    return res;
+    return steps;
+  },
+
+  denormaliseVolumeSteps(normalisedValue: number): number {
+    const steps: number = Math.pow(2, normalisedValue * 10);
+    return steps;
   },
 
   rendererResize(): void {
@@ -225,7 +235,7 @@ export default AFRAME.registerComponent("al-volume", {
       state.bufferSceneTextureWidth = this.el.sceneEl.canvas.clientWidth;
       state.bufferSceneTextureHeight = this.el.sceneEl.canvas.clientHeight;
 
-      this.state.renderSteps = this.getRenderSteps();
+      this.state.volumeSteps = this.data.volumeSteps;
     }
   },
 
@@ -233,7 +243,7 @@ export default AFRAME.registerComponent("al-volume", {
     if (this.data.displayMode === DisplayMode.VOLUME) {
       this.createBufferTexture();
 
-      this.state.stackhelper.steps = this.state.renderSteps;
+      this.state.stackhelper.steps = this.state.volumeSteps;
 
       const prev = window.performance.now();
 
@@ -247,7 +257,7 @@ export default AFRAME.registerComponent("al-volume", {
       const renderTime: number = post - prev;
 
       this.state.lastRenderTime = renderTime;
-      this.state.renderSteps = 0;
+      this.state.volumeSteps = 0;
     }
   },
 
@@ -276,7 +286,7 @@ export default AFRAME.registerComponent("al-volume", {
         state.lutHelper.lutsO = AMI.LutHelper.presetLutsO();
         state.stackhelper = new AMI.VolumeRenderHelper(state.stack);
         state.stackhelper.textureLUT = state.lutHelper.texture;
-        state.stackhelper.steps = this.getRenderSteps();
+        state.stackhelper.steps = this.getDefaultVolumeSteps();
         break;
       }
       default: {
@@ -461,8 +471,11 @@ export default AFRAME.registerComponent("al-volume", {
         this.createBufferTexture();
         // allow some time for the stackhelper to update
         setTimeout(() => {
-          this.state.renderSteps = this.getRenderSteps();
-        }, Constants.volumeRenderStepsDelay);
+          const defaultVolumeSteps: number = this.getDefaultVolumeSteps();
+          const normalised: number = Math.log2(defaultVolumeSteps) / 10;
+          this.el.sceneEl.emit(AlVolumeEvents.DEFAULT_RENDER_STEPS, normalised, false);
+          this.state.volumeSteps = defaultVolumeSteps;
+        }, Constants.volumeStepsDelay);
       } else {
         (this.el.sceneEl.object3D as THREE.Scene).background = null;
       }
@@ -476,6 +489,13 @@ export default AFRAME.registerComponent("al-volume", {
       case DisplayMode.VOLUME: {
         this.updateVolumeStack();
 
+        if (
+          oldData &&
+          oldData.volumeSteps !== this.data.volumeSteps
+        ) {
+          this.state.volumeSteps = this.denormaliseVolumeSteps(this.data.volumeSteps);
+        }
+
         // if the controls type has changed, re-render the buffer scene
         if (
           oldData &&
@@ -483,11 +503,11 @@ export default AFRAME.registerComponent("al-volume", {
           oldData.controlsType !== this.data.controlsType
         ) {
           setTimeout(() => {
-            this.state.renderSteps = this.getRenderSteps();
-          }, Constants.volumeRenderStepsDelay);
+            this.state.volumeSteps = this.denormaliseVolumeSteps(this.data.volumeSteps);
+          }, Constants.volumeStepsDelay);
         }
 
-        // if the volumeWindowCenter changed
+        // if the volumeSteps changed
         if (
           oldData &&
           oldData.volumeWindowCenter &&
@@ -495,7 +515,7 @@ export default AFRAME.registerComponent("al-volume", {
         ) {
           this.state.debounce = true;
           this.state.stackhelper.stack.windowCenter = this.data.volumeWindowCenter;
-          this.state.renderSteps = this.getRenderSteps();
+          this.state.volumeSteps = this.denormaliseVolumeSteps(this.data.volumeSteps);
         }
 
         // if the volumeWindowWidth changed
@@ -506,7 +526,7 @@ export default AFRAME.registerComponent("al-volume", {
         ) {
           this.state.debounce = true;
           this.state.stackhelper.stack.windowWidth = this.data.volumeWindowWidth;
-          this.state.renderSteps = this.getRenderSteps();
+          this.state.volumeSteps = this.denormaliseVolumeSteps(this.data.volumeSteps);
         }
 
         break;
@@ -526,7 +546,7 @@ export default AFRAME.registerComponent("al-volume", {
       this.el.setObject3D("mesh", this.state.stackhelper);
     }
 
-    if (this.state.renderSteps > 0 && !this.state.debounce) {
+    if (this.state.volumeSteps > 0 && !this.state.debounce) {
       this.renderBufferScene();
     }
   },

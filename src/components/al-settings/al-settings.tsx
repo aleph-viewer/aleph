@@ -34,9 +34,9 @@ export class AlSettings {
   @Event() public slicesContrastChanged: EventEmitter;
   @Event() public unitsChanged: EventEmitter;
   @Event() public graphEnabledChanged: EventEmitter;
-  // @Event() public volumeStepsChanged: EventEmitter;
   @Event() public volumeBrightnessChanged: EventEmitter;
   @Event() public volumeContrastChanged: EventEmitter;
+  @Event() public volumeStepsChanged: EventEmitter;
 
   @Prop({ mutable: true }) public boundingBoxEnabled: boolean;
   @Prop({ mutable: true }) public controlsType: ControlsType;
@@ -50,9 +50,9 @@ export class AlSettings {
   @Prop({ mutable: true }) public slicesBrightness: number; // window center
   @Prop({ mutable: true }) public slicesContrast: number; // window width
   @Prop({ mutable: true }) public units: Units;
-  // @Prop({ mutable: true }) public volumeSteps: number;
   @Prop({ mutable: true }) public volumeBrightness: number; // window center
   @Prop({ mutable: true }) public volumeContrast: number; // window width
+  @Prop({ mutable: true }) public volumeSteps: number;
 
   private _boundingBoxEnabled(enabled: boolean) {
     this.boundingBoxEnabled = enabled;
@@ -104,10 +104,11 @@ export class AlSettings {
     this.unitsChanged.emit(units);
   }
 
-  // private _volumeSteps(steps: number) {
-  //   this.volumeSteps = steps;
-  //   this.volumeStepsChanged.emit(steps);
-  // }
+  private _volumeSteps(steps: number) {
+    steps = Math.round(steps * 10) / 10; // 1 decimal place.
+    this.volumeSteps = steps;
+    this.volumeStepsChanged.emit(steps);
+  }
 
   private _volumeBrightness(brightness: number) {
     this.volumeBrightness = brightness;
@@ -468,7 +469,7 @@ export class AlSettings {
         return (
           <div>
             {this.renderGenericOptions()}
-            {/* <ion-item
+            {<ion-item
               style={{
                 display: "var(--volume-steps-display, block)"
               }}
@@ -476,18 +477,17 @@ export class AlSettings {
               <ion-icon
                 src={SliderIcon}
                 slot="start"
-                title={this._contentStrings.renderSteps}
+                title={this._contentStrings.volumeSteps}
               />
               <ion-range
                 slot="end"
-                min={Constants.stepsMin}
-                max={Constants.stepsMax}
-                value={steps}
-                step={Constants.stepsIncrement}
-                pin={true}
-                onIonChange={e => this._volumeSteps(e.detail.value)}
+                min="0"
+                max="1"
+                value={this.volumeSteps}
+                step="0.1"
+                onMouseUp={e => this._volumeSteps((e.srcElement).value)}
               />
-            </ion-item> */}
+            </ion-item>}
             {/* <ion-item>
                 <ion-label>LUT</ion-label>
                 <select onChange={ (e) => this.onVolumeLutChanged.emit(e.detail.value) }>
@@ -512,7 +512,7 @@ export class AlSettings {
                 slot="end"
                 min="0"
                 max="1"
-                step=".1"
+                step="0.1"
                 value={this.volumeBrightness}
                 onIonChange={e => {
                   this._volumeBrightness(e.detail.value);
@@ -533,7 +533,7 @@ export class AlSettings {
                 slot="end"
                 min="0"
                 max="1"
-                step=".1"
+                step="0.1"
                 value={this.volumeContrast}
                 onIonChange={e => this._volumeContrast(e.detail.value)}
               />

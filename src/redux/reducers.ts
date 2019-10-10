@@ -30,7 +30,7 @@ export const getInitialState = () => {
     src: null,
     srcLoaded: false,
     units: Units.METERS,
-    volumeSteps: 1, // leaving this here in case we want to allow a manual step count slider in future
+    volumeSteps: 0.5,
     volumeWindowCenter: 0.5,
     volumeWindowWidth: 0.5
   } as AlAppState;

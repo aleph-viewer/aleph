@@ -12,6 +12,7 @@ interface SrcProps extends FunctionalComponentProps {
   slicesWindowWidth: number;
   src: string;
   srcLoaded: boolean;
+  volumeSteps: number;
   volumeWindowCenter: number;
   volumeWindowWidth: number;
 }
@@ -29,6 +30,7 @@ export const Src: FunctionalComponent<SrcProps> = (
     slicesWindowWidth,
     src,
     srcLoaded,
+    volumeSteps,
     volumeWindowCenter,
     volumeWindowWidth
   },
@@ -67,13 +69,13 @@ export const Src: FunctionalComponent<SrcProps> = (
               al-volume={`
                 controlsType: ${controlsType};
                 displayMode: ${displayMode};
-                isHighRes: false;
                 slicesIndex: ${slicesIndex};
                 slicesOrientation: ${orientation};
                 slicesWindowCenter: ${slicesWindowCenter};
                 slicesWindowWidth: ${slicesWindowWidth};
                 src: ${src};
                 srcLoaded: ${srcLoaded};
+                volumeSteps: ${volumeSteps};
                 volumeWindowCenter: ${volumeWindowCenter};
                 volumeWindowWidth: ${volumeWindowWidth};
               `}
@@ -93,13 +95,13 @@ export const Src: FunctionalComponent<SrcProps> = (
               al-volume={`
                 controlsType: ${controlsType};
                 displayMode: ${displayMode};
-                isHighRes: false;
                 slicesIndex: ${slicesIndex};
                 slicesOrientation: ${orientation};
                 slicesWindowCenter: ${slicesWindowCenter};
                 slicesWindowWidth: ${slicesWindowWidth};
                 src: ${src};
                 srcLoaded: ${srcLoaded};
+                volumeSteps: ${volumeSteps};
                 volumeWindowCenter: ${volumeWindowCenter};
                 volumeWindowWidth: ${volumeWindowWidth};
               `}

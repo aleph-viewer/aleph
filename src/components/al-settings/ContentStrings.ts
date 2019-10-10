@@ -18,13 +18,13 @@ export interface ContentStrings extends I18nJson {
   orbit?: string;
   orientation?: string;
   recenter?: string;
-  renderSteps?: string;
   saggital?: string;
   sliceIndex?: string;
   slices?: string;
   trackball?: string;
   units?: string;
   volume?: string;
+  volumeSteps?: string;
   wireframe?: string;
   xray?: string;
 }

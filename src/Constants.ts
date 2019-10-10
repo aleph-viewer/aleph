@@ -14,16 +14,13 @@ export class Constants {
   public static nodeSizeRatio = 100;
   public static stackSpaceMultiplier = { x: 10, y: 10, z: 10 };
   public static stepPowerMinMax = [1, 10];
-  public static stepsIncrement = 8;
-  public static stepsMax: number = 512;
-  public static stepsMin: number = 1;
   public static targetFrameTime = 1000 / 24; // 24 FPS
   public static titleIdName = "-title";
   public static topLayerRenderOrder = 999;
   public static unitsDecimalPlaces = 2;
   public static zoomFactor = 2.5;
   public static volumeRaycastSensitivity = 0.05;
-  public static volumeRenderStepsDelay = 800;
+  public static volumeStepsDelay = 800;
 
   public static textPadding = {
     width: 0.03,

@@ -51,15 +51,15 @@ export class AMIUtils {
     // FROM DATA SHADER
     // float windowMin = uWindowCenterWidth[0] - uWindowCenterWidth[1] * 0.5;
     // float normalizedIntensity = ( realIntensity - windowMin ) / uWindowCenterWidth[1];
-    console.log(
-      "WindowCenter: ",
-      stackHelper.windowCenter,
-      " WindowWidth: ",
-      stackHelper.windowWidth
-    );
+    // console.log(
+    //   "WindowCenter: ",
+    //   stackHelper.windowCenter,
+    //   " WindowWidth: ",
+    //   stackHelper.windowWidth
+    // );
     let windowMin = stackHelper.windowCenter - stackHelper.windowWidth * 0.5;
     // Reduce windowMin by the sensitivity, to prevent floating nodes
-    windowMin -= windowMin * Constants.Raycast;
+    windowMin -= windowMin * Constants.volumeRaycastSensitivity;
     let steppedIndex = -1;
 
     // main loop along raycast vector

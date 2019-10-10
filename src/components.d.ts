@@ -64,6 +64,7 @@ export namespace Components {
     'urls': Map<string, string> | null;
     'volumeBrightness': number;
     'volumeContrast': number;
+    'volumeSteps': number;
   }
   interface AlEdgeEditor {
     'edge': [string, AlEdge];
@@ -96,6 +97,7 @@ export namespace Components {
     'units': Units;
     'volumeBrightness': number;
     'volumeContrast': number;
+    'volumeSteps': number;
   }
   interface AlTabs {
     /**
@@ -269,6 +271,7 @@ declare namespace LocalJSX {
     'urls'?: Map<string, string> | null;
     'volumeBrightness'?: number;
     'volumeContrast'?: number;
+    'volumeSteps'?: number;
   }
   interface AlEdgeEditor extends JSXBase.HTMLAttributes<HTMLAlEdgeEditorElement> {
     'edge'?: [string, AlEdge];
@@ -310,6 +313,7 @@ declare namespace LocalJSX {
     'onUnitsChanged'?: (event: CustomEvent<any>) => void;
     'onVolumeBrightnessChanged'?: (event: CustomEvent<any>) => void;
     'onVolumeContrastChanged'?: (event: CustomEvent<any>) => void;
+    'onVolumeStepsChanged'?: (event: CustomEvent<any>) => void;
     'orientation'?: Orientation;
     'slicesBrightness'?: number;
     'slicesContrast'?: number;
@@ -318,6 +322,7 @@ declare namespace LocalJSX {
     'units'?: Units;
     'volumeBrightness'?: number;
     'volumeContrast'?: number;
+    'volumeSteps'?: number;
   }
   interface AlTabs extends JSXBase.HTMLAttributes<HTMLAlTabsElement> {
     /**

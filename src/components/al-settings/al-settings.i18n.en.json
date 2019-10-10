@@ -23,6 +23,7 @@
   "trackball": "Trackball",
   "units": "Units",
   "volume": "Volume",
+  "volumeSteps": "Render Detail (only increase if you know your device is capable!)",
   "wireframe": "Wireframe",
   "xray": "XRay"
 }
