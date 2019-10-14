@@ -23,6 +23,7 @@
 | `slicesBrightness`   | `slices-brightness`    |             | `number`                                                       | `undefined` |
 | `slicesContrast`     | `slices-contrast`      |             | `number`                                                       | `undefined` |
 | `slicesIndex`        | `slices-index`         |             | `number`                                                       | `undefined` |
+| `slicesMaxIndex`     | `slices-max-index`     |             | `number`                                                       | `undefined` |
 | `srcTabEnabled`      | `src-tab-enabled`      |             | `boolean`                                                      | `true`      |
 | `tabContentHeight`   | `tab-content-height`   |             | `string`                                                       | `null`      |
 | `units`              | `units`                |             | `Units.METERS \| Units.MILLIMETERS`                            | `undefined` |
@@ -30,6 +31,7 @@
 | `urls`               | --                     |             | `Map<string, string>`                                          | `null`      |
 | `volumeBrightness`   | `volume-brightness`    |             | `number`                                                       | `undefined` |
 | `volumeContrast`     | `volume-contrast`      |             | `number`                                                       | `undefined` |
+| `volumeSteps`        | `volume-steps`         |             | `number`                                                       | `undefined` |
 
 
 ## Dependencies

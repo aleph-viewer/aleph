@@ -18,9 +18,11 @@
 | `slicesBrightness`   | `slices-brightness`    |             | `number`                                                           | `undefined` |
 | `slicesContrast`     | `slices-contrast`      |             | `number`                                                           | `undefined` |
 | `slicesIndex`        | `slices-index`         |             | `number`                                                           | `undefined` |
+| `slicesMaxIndex`     | `slices-max-index`     |             | `number`                                                           | `undefined` |
 | `units`              | `units`                |             | `Units.METERS \| Units.MILLIMETERS`                                | `undefined` |
 | `volumeBrightness`   | `volume-brightness`    |             | `number`                                                           | `undefined` |
 | `volumeContrast`     | `volume-contrast`      |             | `number`                                                           | `undefined` |
+| `volumeSteps`        | `volume-steps`         |             | `number`                                                           | `undefined` |
 
 
 ## Events
@@ -39,6 +41,7 @@
 | `unitsChanged`              |             | `CustomEvent<any>` |
 | `volumeBrightnessChanged`   |             | `CustomEvent<any>` |
 | `volumeContrastChanged`     |             | `CustomEvent<any>` |
+| `volumeStepsChanged`        |             | `CustomEvent<any>` |
 
 
 ## CSS Custom Properties

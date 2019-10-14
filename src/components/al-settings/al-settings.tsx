@@ -469,25 +469,27 @@ export class AlSettings {
         return (
           <div>
             {this.renderGenericOptions()}
-            {<ion-item
-              style={{
-                display: "var(--volume-steps-display, block)"
-              }}
-            >
-              <ion-icon
-                src={SliderIcon}
-                slot="start"
-                title={this._contentStrings.volumeSteps}
-              />
-              <ion-range
-                slot="end"
-                min="0"
-                max="1"
-                value={this.volumeSteps}
-                step="0.1"
-                onMouseUp={e => this._volumeSteps((e.srcElement).value)}
-              />
-            </ion-item>}
+            {
+              <ion-item
+                style={{
+                  display: "var(--volume-steps-display, block)"
+                }}
+              >
+                <ion-icon
+                  src={SliderIcon}
+                  slot="start"
+                  title={this._contentStrings.volumeSteps}
+                />
+                <ion-range
+                  slot="end"
+                  min="0"
+                  max="1"
+                  value={this.volumeSteps}
+                  step="0.1"
+                  onMouseUp={e => this._volumeSteps(e.srcElement.value)}
+                />
+              </ion-item>
+            }
             {/* <ion-item>
                 <ion-label>LUT</ion-label>
                 <select onChange={ (e) => this.onVolumeLutChanged.emit(e.detail.value) }>

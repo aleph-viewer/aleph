@@ -458,7 +458,9 @@ export class Aleph {
     this._slicesMaxIndexHandler = this._slicesMaxIndexHandler.bind(this);
     this._spawnNodeHandler = this._spawnNodeHandler.bind(this);
     this._srcLoadedHandler = this._srcLoadedHandler.bind(this);
-    this._volumeDefaultRenderStepsHandler = this._volumeDefaultRenderStepsHandler.bind(this);
+    this._volumeDefaultRenderStepsHandler = this._volumeDefaultRenderStepsHandler.bind(
+      this
+    );
     this._volumeRaycastHandler = this._volumeRaycastHandler.bind(this);
 
     // debounced event handlers
@@ -1372,9 +1374,21 @@ export class Aleph {
       false
     );
 
-    this._scene.addEventListener(AlVolumeEvents.DEFAULT_RENDER_STEPS, this._volumeDefaultRenderStepsHandler, false);
-    this._scene.addEventListener(AlVolumeEvents.LOADED, this._srcLoadedHandler, false);
-    this._scene.addEventListener(AlVolumeEvents.SLICES_MAX_INDEX, this._slicesMaxIndexHandler, false);
+    this._scene.addEventListener(
+      AlVolumeEvents.DEFAULT_RENDER_STEPS,
+      this._volumeDefaultRenderStepsHandler,
+      false
+    );
+    this._scene.addEventListener(
+      AlVolumeEvents.LOADED,
+      this._srcLoadedHandler,
+      false
+    );
+    this._scene.addEventListener(
+      AlVolumeEvents.SLICES_MAX_INDEX,
+      this._slicesMaxIndexHandler,
+      false
+    );
 
     this._scene.addEventListener(
       AlGraphEvents.POINTER_OVER,

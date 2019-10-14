@@ -198,7 +198,9 @@ export default AFRAME.registerComponent("al-volume", {
 
   onInteractionFinished(event: CustomEvent): void {
     if (this.state.stackhelper && event.detail.needsRender) {
-      this.state.volumeSteps = this.denormaliseVolumeSteps(this.data.volumeSteps);
+      this.state.volumeSteps = this.denormaliseVolumeSteps(
+        this.data.volumeSteps
+      );
     }
 
     this.state.debounce = false;
@@ -370,7 +372,11 @@ export default AFRAME.registerComponent("al-volume", {
     ) {
       // set default
       index = Math.floor(slicesIndexMax * 0.5);
-      this.el.sceneEl.emit(AlVolumeEvents.SLICES_MAX_INDEX, slicesIndexMax, false);
+      this.el.sceneEl.emit(
+        AlVolumeEvents.SLICES_MAX_INDEX,
+        slicesIndexMax,
+        false
+      );
     } else {
       index = slicesIndexMax * this.data.slicesIndex;
     }
@@ -473,7 +479,11 @@ export default AFRAME.registerComponent("al-volume", {
         setTimeout(() => {
           const defaultVolumeSteps: number = this.getDefaultVolumeSteps();
           const normalised: number = Math.log2(defaultVolumeSteps) / 10;
-          this.el.sceneEl.emit(AlVolumeEvents.DEFAULT_RENDER_STEPS, normalised, false);
+          this.el.sceneEl.emit(
+            AlVolumeEvents.DEFAULT_RENDER_STEPS,
+            normalised,
+            false
+          );
           this.state.volumeSteps = defaultVolumeSteps;
         }, Constants.volumeStepsDelay);
       } else {
@@ -489,11 +499,10 @@ export default AFRAME.registerComponent("al-volume", {
       case DisplayMode.VOLUME: {
         this.updateVolumeStack();
 
-        if (
-          oldData &&
-          oldData.volumeSteps !== this.data.volumeSteps
-        ) {
-          this.state.volumeSteps = this.denormaliseVolumeSteps(this.data.volumeSteps);
+        if (oldData && oldData.volumeSteps !== this.data.volumeSteps) {
+          this.state.volumeSteps = this.denormaliseVolumeSteps(
+            this.data.volumeSteps
+          );
         }
 
         // if the controls type has changed, re-render the buffer scene
@@ -503,7 +512,9 @@ export default AFRAME.registerComponent("al-volume", {
           oldData.controlsType !== this.data.controlsType
         ) {
           setTimeout(() => {
-            this.state.volumeSteps = this.denormaliseVolumeSteps(this.data.volumeSteps);
+            this.state.volumeSteps = this.denormaliseVolumeSteps(
+              this.data.volumeSteps
+            );
           }, Constants.volumeStepsDelay);
         }
 
@@ -515,7 +526,9 @@ export default AFRAME.registerComponent("al-volume", {
         ) {
           this.state.debounce = true;
           this.state.stackhelper.stack.windowCenter = this.data.volumeWindowCenter;
-          this.state.volumeSteps = this.denormaliseVolumeSteps(this.data.volumeSteps);
+          this.state.volumeSteps = this.denormaliseVolumeSteps(
+            this.data.volumeSteps
+          );
         }
 
         // if the volumeWindowWidth changed
@@ -526,7 +539,9 @@ export default AFRAME.registerComponent("al-volume", {
         ) {
           this.state.debounce = true;
           this.state.stackhelper.stack.windowWidth = this.data.volumeWindowWidth;
-          this.state.volumeSteps = this.denormaliseVolumeSteps(this.data.volumeSteps);
+          this.state.volumeSteps = this.denormaliseVolumeSteps(
+            this.data.volumeSteps
+          );
         }
 
         break;
