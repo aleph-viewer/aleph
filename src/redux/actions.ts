@@ -36,8 +36,6 @@ export type ActionTypes =
   | AppSetOrientationAction
   | AppSetSlicesIndexAction
   | AppSetSlicesMaxIndexAction
-  | AppSetSlicesWindowCenterAction
-  | AppSetSlicesWindowWidthAction
   | AppSetSrcAction
   | AppSetSrcLoadedAction
   | AppSetUnitsAction
@@ -419,36 +417,6 @@ export const appSetSlicesMaxIndex = (payload: number) => async (
 ) => {
   return dispatch({
     type: TypeKeys.APP_SET_SLICES_MAX_INDEX,
-    payload
-  });
-};
-
-export interface AppSetSlicesWindowWidthAction {
-  type: TypeKeys.APP_SET_SLICES_WINDOW_WIDTH;
-  payload: number;
-}
-
-export const appSetSlicesWindowWidth = (payload: number) => async (
-  dispatch,
-  _getState
-) => {
-  return dispatch({
-    type: TypeKeys.APP_SET_SLICES_WINDOW_WIDTH,
-    payload
-  });
-};
-
-export interface AppSetSlicesWindowCenterAction {
-  type: TypeKeys.APP_SET_SLICES_WINDOW_CENTER;
-  payload: number;
-}
-
-export const appSetSlicesWindowCenter = (payload: number) => async (
-  dispatch,
-  _getState
-) => {
-  return dispatch({
-    type: TypeKeys.APP_SET_SLICES_WINDOW_CENTER,
     payload
   });
 };
