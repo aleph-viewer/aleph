@@ -204,26 +204,6 @@ Type: `Promise<void>`
 
 
 
-### `setSlicesBrightness(brightness: number) => Promise<void>`
-
-
-
-#### Returns
-
-Type: `Promise<void>`
-
-
-
-### `setSlicesContrast(contrast: number) => Promise<void>`
-
-
-
-#### Returns
-
-Type: `Promise<void>`
-
-
-
 ### `setSlicesIndex(index: number) => Promise<void>`
 
 

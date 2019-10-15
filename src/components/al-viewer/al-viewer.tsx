@@ -60,8 +60,6 @@ import {
   appSetOrientation,
   appSetSlicesIndex,
   appSetSlicesMaxIndex,
-  appSetSlicesWindowCenter,
-  appSetSlicesWindowWidth,
   appSetSrc,
   appSetSrcLoaded,
   appSetUnits,
@@ -135,8 +133,6 @@ export class Aleph {
   public appSetOrientation: Action;
   public appSetSlicesIndex: Action;
   public appSetSlicesMaxIndex: Action;
-  public appSetSlicesWindowCenter: Action;
-  public appSetSlicesWindowWidth: Action;
   public appSetSrc: Action;
   public appSetSrcLoaded: Action;
   public appSetUnits: Action;
@@ -163,8 +159,6 @@ export class Aleph {
   @State() public selected: string;
   @State() public slicesIndex: number;
   @State() public slicesMaxIndex: number;
-  @State() public slicesWindowCenter: number;
-  @State() public slicesWindowWidth: number;
   @State() public src: string | null;
   @State() public srcLoaded: boolean;
   @State() public units: Units;
@@ -291,16 +285,6 @@ export class Aleph {
   }
 
   @Method()
-  public async setSlicesBrightness(brightness: number): Promise<void> {
-    this._setSlicesWindowCenter(brightness);
-  }
-
-  @Method()
-  public async setSlicesContrast(contrast: number): Promise<void> {
-    this._setSlicesWindowWidth(contrast);
-  }
-
-  @Method()
   public async setUnits(units: Units): Promise<void> {
     this._setUnits(units);
   }
@@ -354,8 +338,6 @@ export class Aleph {
           selected,
           slicesIndex,
           slicesMaxIndex,
-          slicesWindowCenter,
-          slicesWindowWidth,
           src,
           srcLoaded,
           units,
@@ -380,8 +362,6 @@ export class Aleph {
         selected,
         slicesIndex,
         slicesMaxIndex,
-        slicesWindowCenter,
-        slicesWindowWidth,
         src,
         srcLoaded,
         units,
@@ -414,8 +394,6 @@ export class Aleph {
       appSetOrientation,
       appSetSlicesIndex,
       appSetSlicesMaxIndex,
-      appSetSlicesWindowCenter,
-      appSetSlicesWindowWidth,
       appSetSrc,
       appSetSrcLoaded,
       appSetUnits,
@@ -488,8 +466,6 @@ export class Aleph {
           graphEnabled={this.graphEnabled}
           orientation={this.orientation}
           slicesIndex={this.slicesIndex}
-          slicesWindowCenter={this.slicesWindowCenter}
-          slicesWindowWidth={this.slicesWindowWidth}
           src={this.src}
           srcLoaded={this.srcLoaded}
           volumeSteps={this.volumeSteps}
@@ -919,16 +895,6 @@ export class Aleph {
 
   private _setSlicesIndex(index: number): void {
     this.appSetSlicesIndex(index);
-    this._stateChanged();
-  }
-
-  private _setSlicesWindowCenter(center: number): void {
-    this.appSetSlicesWindowCenter(center);
-    this._stateChanged();
-  }
-
-  private _setSlicesWindowWidth(width: number): void {
-    this.appSetSlicesWindowWidth(width);
     this._stateChanged();
   }
 
