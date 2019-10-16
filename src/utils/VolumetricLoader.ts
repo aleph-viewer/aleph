@@ -10,23 +10,22 @@ export class VolumetricLoader {
       const fileExtension: string = Utils.getFileExtension(src);
 
       if (
-          Object.values(VolumeFileType).includes(fileExtension as VolumeFileType)
+        Object.values(VolumeFileType).includes(fileExtension as VolumeFileType)
       ) {
-          let data = [src];
-          this._loadVolume(data, resolve, reject, container);
+        let data = [src];
+        this._loadVolume(data, resolve, reject, container);
       } else {
         xhr.open("GET", src, true);
         xhr.onload = () => {
           let data = JSON.parse(xhr.responseText);
-          data = this._mapfiles(data.baseurl, data.series);          
+          data = this._mapfiles(data.baseurl, data.series);
           this._loadVolume(data, resolve, reject, container);
         };
         xhr.onerror = error => {
           reject(error);
         };
-        xhr.send();   
+        xhr.send();
       }
-
     });
   }
 
