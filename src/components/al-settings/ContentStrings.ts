@@ -25,6 +25,7 @@ export interface ContentStrings extends I18nJson {
   units?: string;
   volume?: string;
   volumeSteps?: string;
+  volumeStepsHighEnabled?: string;
   wireframe?: string;
   xray?: string;
 }

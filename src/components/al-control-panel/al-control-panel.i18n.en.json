@@ -1,6 +1,6 @@
 {
-  "console": "console",
-  "graph": "graph",
-  "settings": "settings",
-  "src": "src"
+  "console": "Console",
+  "graph": "Nodes",
+  "settings": "Settings",
+  "src": "Source"
 }

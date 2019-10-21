@@ -1,3 +1,7 @@
+import ConsoleIcon from "../../assets/svg/console-2.svg";
+import GraphIcon from "../../assets/svg/graph.svg";
+import SettingsIcon from "../../assets/svg/options.svg";
+import SourceIcon from "../../assets/svg/source.svg";
 import { Component, Element, h, Prop } from "@stencil/core";
 import { ControlsType, DisplayMode, Units } from "../../enums/index.js";
 import { Scroll } from "../../functional-components/Scroll";
@@ -38,6 +42,7 @@ export class AlSettings {
   @Prop({ mutable: true }) public volumeBrightness: number;
   @Prop({ mutable: true }) public volumeContrast: number;
   @Prop({ mutable: true }) public volumeSteps: number;
+  @Prop({ mutable: true }) public volumeStepsHighEnabled: boolean;
 
   private _getGraphJson(): string {
     if (this.nodes && this.edges && this.angles) {
@@ -71,21 +76,25 @@ export class AlSettings {
             <ion-tab-bar>
               {this.srcTabEnabled ? (
                 <ion-tab-button tab="src">
+                  <ion-icon src={SourceIcon} />
                   <ion-label>{this._contentStrings.src}</ion-label>
                 </ion-tab-button>
               ) : null}
               {this.settingsTabEnabled ? (
                 <ion-tab-button tab="settings">
+                  <ion-icon src={SettingsIcon} />
                   <ion-label>{this._contentStrings.settings}</ion-label>
                 </ion-tab-button>
               ) : null}
               {this.graphTabEnabled ? (
                 <ion-tab-button tab="graph">
+                  <ion-icon src={GraphIcon} />
                   <ion-label>{this._contentStrings.graph}</ion-label>
                 </ion-tab-button>
               ) : null}
               {this.consoleTabEnabled ? (
                 <ion-tab-button tab="console">
+                  <ion-icon src={ConsoleIcon} />
                   <ion-label>{this._contentStrings.console}</ion-label>
                 </ion-tab-button>
               ) : null}
@@ -112,6 +121,7 @@ export class AlSettings {
                   volume-brightness={this.volumeBrightness}
                   volume-contrast={this.volumeContrast}
                   volume-steps={this.volumeSteps}
+                  volume-steps-high-enabled={this.volumeStepsHighEnabled}
                   units={this.units}
                 ></al-settings>
               </Scroll>

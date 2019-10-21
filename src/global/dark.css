@@ -30,6 +30,7 @@
 
   --color: var(--al-color-primary);
   --ion-item-color: var(--al-item-color);
+  --ion-list-header-border-color: rgb(199, 197, 199, 0.1);
   --ion-item-border-color: var(--al-item-border-color);
   --ion-text-color-rgb: 255, 255, 255;
   --ion-color-primary-rgb: 255, 255, 255;

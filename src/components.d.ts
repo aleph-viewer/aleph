@@ -65,6 +65,7 @@ export namespace Components {
     'volumeBrightness': number;
     'volumeContrast': number;
     'volumeSteps': number;
+    'volumeStepsHighEnabled': boolean;
   }
   interface AlEdgeEditor {
     'edge': [string, AlEdge];
@@ -98,6 +99,7 @@ export namespace Components {
     'volumeBrightness': number;
     'volumeContrast': number;
     'volumeSteps': number;
+    'volumeStepsHighEnabled': boolean;
   }
   interface AlTabs {
     /**
@@ -270,6 +272,7 @@ declare namespace LocalJSX {
     'volumeBrightness'?: number;
     'volumeContrast'?: number;
     'volumeSteps'?: number;
+    'volumeStepsHighEnabled'?: boolean;
   }
   interface AlEdgeEditor extends JSXBase.HTMLAttributes<HTMLAlEdgeEditorElement> {
     'edge'?: [string, AlEdge];
@@ -312,6 +315,7 @@ declare namespace LocalJSX {
     'onVolumeBrightnessChanged'?: (event: CustomEvent<any>) => void;
     'onVolumeContrastChanged'?: (event: CustomEvent<any>) => void;
     'onVolumeStepsChanged'?: (event: CustomEvent<any>) => void;
+    'onVolumeStepsHighEnabledChanged'?: (event: CustomEvent<any>) => void;
     'orientation'?: Orientation;
     'slicesBrightness'?: number;
     'slicesContrast'?: number;
@@ -321,6 +325,7 @@ declare namespace LocalJSX {
     'volumeBrightness'?: number;
     'volumeContrast'?: number;
     'volumeSteps'?: number;
+    'volumeStepsHighEnabled'?: boolean;
   }
   interface AlTabs extends JSXBase.HTMLAttributes<HTMLAlTabsElement> {
     /**

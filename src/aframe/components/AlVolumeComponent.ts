@@ -396,11 +396,7 @@ export default AFRAME.registerComponent("al-volume", {
       this.state.stackhelper.stack.minMax[1] -
       this.state.stackhelper.stack.minMax[0];
     const windowWidth: number = Math.floor(
-      Utils.reverseNumber(
-        windowWidthMax * this.data.volumeWindowWidth,
-        0,
-        windowWidthMax
-      )
+      windowWidthMax * this.data.volumeWindowWidth
     );
 
     // update the stackhelper
