@@ -1253,11 +1253,12 @@ export class Aleph {
     const hitPosition = new THREE.Vector3();
 
     let validLocation = false;
-    const intersection = raycaster.getIntersection(
-      this._boundingEntity
-    ) as THREE.Intersection;
 
     if (this.displayMode === DisplayMode.VOLUME) {
+      const intersection = raycaster.getIntersection(
+        this._boundingEntity
+      ) as THREE.Intersection;
+
       if (intersection) {
         this._scene.emit(AlVolumeEvents.VOLUME_RAY_REQUEST, {
           cameraPosition: this._camera.object3D.children[0].position.clone(),
@@ -1267,6 +1268,10 @@ export class Aleph {
         });
       }
     } else {
+      const intersection = raycaster.getIntersection(
+        this._targetEntity
+      ) as THREE.Intersection;
+
       if (intersection) {
         hitPosition.copy(intersection.point);
         validLocation = true;
@@ -1282,6 +1287,8 @@ export class Aleph {
         hitPosition.add(
           raycasterAttribute.direction.clone().multiplyScalar(distance * 1.5)
         );
+      } else {
+        hitPosition.copy(intersection.point);
       }
 
       this._setNode([
