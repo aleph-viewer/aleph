@@ -6,6 +6,7 @@ import { MeshFileType } from "./MeshFileType";
 import { Orientation } from "./Orientation";
 import { RayType } from "./RayType";
 import { Units } from "./Units";
+import { VolumeFileType } from "./VolumeFileType";
 
 export {
   AlGraphEntryType,
@@ -15,5 +16,6 @@ export {
   MeshFileType,
   Orientation,
   RayType,
-  Units
+  Units,
+  VolumeFileType
 };
