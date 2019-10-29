@@ -438,7 +438,9 @@ export class AlSettings {
                 slot="end"
                 min="0"
                 max="1"
-                step=".1"
+                step=".05"
+                snaps="true"
+                ticks="false"
                 value={this.slicesBrightness}
                 onIonChange={e => this._slicesBrightness(e.detail.value)}
               />
@@ -457,7 +459,9 @@ export class AlSettings {
                 slot="end"
                 min="0"
                 max="1"
-                step=".1"
+                step=".05"
+                snaps="true"
+                ticks="false"
                 value={this.slicesContrast}
                 onIonChange={e => this._slicesContrast(e.detail.value)}
               />
@@ -514,7 +518,9 @@ export class AlSettings {
                 slot="end"
                 min="0"
                 max="1"
-                step="0.1"
+                step=".05"
+                snaps="true"
+                ticks="false"
                 value={this.volumeBrightness}
                 onIonChange={e => {
                   this._volumeBrightness(e.detail.value);
@@ -535,7 +541,9 @@ export class AlSettings {
                 slot="end"
                 min="0"
                 max="1"
-                step="0.1"
+                step=".05"
+                snaps="true"
+                ticks="false"
                 value={this.volumeContrast}
                 onIonChange={e => this._volumeContrast(e.detail.value)}
               />

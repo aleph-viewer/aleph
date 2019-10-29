@@ -315,7 +315,7 @@
         alControlPanel.addEventListener(
           "slicesBrightnessChanged",
           function(e) {
-            alViewer.setSlicesBrightness(e.detail);
+            alViewer.setVolumeBrightness(e.detail);
           },
           false
         );
@@ -323,7 +323,7 @@
         alControlPanel.addEventListener(
           "slicesContrastChanged",
           function(e) {
-            alViewer.setSlicesContrast(e.detail);
+            alViewer.setVolumeContrast(e.detail);
           },
           false
         );
@@ -410,8 +410,8 @@
         alControlPanel.nodes = state.nodes;
         alControlPanel.selected = state.selected;
         alControlPanel.settingsTabEnabled = state.settingsTabEnabled;
-        alControlPanel.slicesBrightness = state.slicesWindowCenter;
-        alControlPanel.slicesContrast = state.slicesWindowWidth;
+        alControlPanel.slicesBrightness = state.volumeWindowCenter;
+        alControlPanel.slicesContrast = state.volumeWindowWidth;
         alControlPanel.slicesIndex = state.slicesIndex;
         alControlPanel.slicesMaxIndex = state.slicesMaxIndex;
         alControlPanel.srcTabEnabled = state.srcTabEnabled;
