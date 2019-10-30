@@ -194,12 +194,14 @@ export default AFRAME.registerComponent("al-cursor", {
     canvas.removeEventListener("mousemove", this.onMouseMove);
     canvas.removeEventListener("touchmove", this.onMouseMove);
     el.setAttribute("raycaster", "useWorldCoordinates", false);
+    el.setAttribute("raycaster", "far", 1000);
     if (this.data.rayOrigin !== "mouse") {
       return;
     }
     canvas.addEventListener("mousemove", this.onMouseMove, false);
     canvas.addEventListener("touchmove", this.onMouseMove, false);
     el.setAttribute("raycaster", "useWorldCoordinates", true);
+    el.setAttribute("raycaster", "far", 100000);
     this.updateCanvasBounds();
   },
 

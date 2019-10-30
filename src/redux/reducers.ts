@@ -64,7 +64,6 @@ export const app = (
       return {
         ...getInitialState(),
         displayMode,
-        graphEnabled: state.graphEnabled,
         src
       };
     }
