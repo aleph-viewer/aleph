@@ -3,7 +3,7 @@ import GraphIcon from "../../assets/svg/graph.svg";
 import SettingsIcon from "../../assets/svg/options.svg";
 import SourceIcon from "../../assets/svg/source.svg";
 import { Component, Element, h, Prop } from "@stencil/core";
-import { ControlsType, DisplayMode, Units } from "../../enums/index.js";
+import { ControlsType, DisplayMode, Orientation, Units } from "../../enums/index.js";
 import { Scroll } from "../../functional-components/Scroll";
 import { AlAngle, AlEdge, AlNode } from "../../interfaces/index.js";
 import i18n from "./al-control-panel.i18n.en.json";
@@ -28,6 +28,7 @@ export class AlSettings {
   @Prop({ mutable: true }) public graphEnabled: boolean;
   @Prop({ mutable: true }) public graphTabEnabled: boolean = true;
   @Prop({ mutable: true }) public nodes: Map<string, AlNode> | null = null;
+  @Prop({ mutable: true }) public orientation: Orientation;
   @Prop({ mutable: true }) public selected: string | null = null;
   @Prop({ mutable: true }) public settingsTabEnabled: boolean = true;
   @Prop({ mutable: true }) public slicesBrightness: number;
@@ -114,6 +115,7 @@ export class AlSettings {
                   display-mode={this.displayMode}
                   graph-enabled={this.graphEnabled}
                   graph-visible={this.graphTabEnabled}
+                  orientation={this.orientation}
                   slices-index={this.slicesIndex}
                   slices-max-index={this.slicesMaxIndex}
                   slices-brightness={this.slicesBrightness}

@@ -11,7 +11,7 @@
  * @prop --volume-window-width-display: Volume Window Width Range Display
  */
 
-ion-item select {
+select {
   padding: 5px;
   min-width: 100px;
   background-color: var(--al-select-background-color);

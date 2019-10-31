@@ -46,6 +46,10 @@ export class AlSettings {
   @Prop({ mutable: true }) public slicesBrightness: number; // window center
   @Prop({ mutable: true }) public slicesContrast: number; // window width
   @Prop({ mutable: true }) public units: Units;
+  @Prop({ mutable: true }) public units_code: String;
+  @Prop({ mutable: true }) public unitsPlaceholderText: String;
+  @Prop({ mutable: true }) public unitsSelectEnabled: Boolean = false;
+  @Prop({ mutable: true }) public unitsSelectText: String;
   @Prop({ mutable: true }) public volumeBrightness: number; // window center
   @Prop({ mutable: true }) public volumeContrast: number; // window width
   @Prop({ mutable: true }) public volumeSteps: number;
@@ -69,6 +73,12 @@ export class AlSettings {
   private _graphEnabled(enabled: boolean) {
     this.graphEnabled = enabled;
     this.graphEnabledChanged.emit(enabled);
+    if (enabled) {
+      this.unitsSelectText = this.unitsPlaceholderText;
+      this.unitsSelectEnabled = true;
+    } else {
+      this.unitsSelectEnabled = false;
+    }
   }
 
   // private _material(material: Material) {
@@ -114,7 +124,12 @@ export class AlSettings {
 
   private _units(units: Units) {
     this.units = units;
-    this.unitsChanged.emit(units);
+    this.unitsChanged.emit(this.units);
+    if (units === Units.MILLIMETERS) {
+      this.unitsSelectText = this._contentStrings.millimeters;
+    } else if (units === Units.METERS) {
+      this.unitsSelectText = this._contentStrings.meters;
+    }
   }
 
   private _volumeBrightness(brightness: number) {
@@ -165,7 +180,7 @@ export class AlSettings {
       >
         <ion-button
           style={{
-            width: "85px"
+            width: "80px"
           }}
           size="small"
           onClick={() => {
@@ -181,12 +196,19 @@ export class AlSettings {
           >
             {cameraLabel}
           </ion-label>
-          <ion-icon slot="end" src={cameraIcon} title={cameraLabel} />
+          <ion-icon 
+            style={{
+              "min-width": "18px",
+            }}
+            slot="end" 
+            src={cameraIcon} 
+            title={cameraLabel} 
+          />
         </ion-button>
 
         <ion-button
           style={{
-            width: "85px"
+            width: "80px"
           }}
           size="small"
           onClick={() => {
@@ -203,6 +225,9 @@ export class AlSettings {
             {this._contentStrings.recenter}
           </ion-label>
           <ion-icon
+            style={{
+              "min-width": "18px",
+            }}
             slot="end"
             src={RecenterIcon}
             title={this._contentStrings.recenter}
@@ -211,7 +236,7 @@ export class AlSettings {
 
         <ion-button
           style={{
-            width: "85px"
+            width: "80px"
           }}
           size="small"
           onClick={() => {
@@ -228,6 +253,9 @@ export class AlSettings {
             {this._contentStrings.bounds}
           </ion-label>
           <ion-icon
+            style={{
+              "min-width": "18px",
+            }}
             slot="end"
             src={boundingBoxEnabledIcon}
             title={this._contentStrings.bounds}
@@ -248,7 +276,6 @@ export class AlSettings {
         >
           <ion-label title={this._contentStrings.displayMode}>Mode</ion-label>
           <select
-            slot="end"
             onChange={e =>
               this._displayMode((e.srcElement as HTMLSelectElement)
                 .value as DisplayMode)
@@ -276,6 +303,11 @@ export class AlSettings {
 
   public renderGraphEnabled() {
     if (this.graphVisible) {
+      if (this.units === Units.MILLIMETERS) {
+        this.unitsPlaceholderText = this._contentStrings.millimeters;
+      } else if (this.units == Units.METERS) {
+        this.unitsPlaceholderText = this._contentStrings.meters;
+      }
       return (
         <div>
           <ion-list-header
@@ -309,25 +341,26 @@ export class AlSettings {
             }}
           >
             <ion-label title={this._contentStrings.units}>Units</ion-label>
-            <select
-              slot="end"
-              onChange={e =>
-                this._units((e.srcElement as HTMLSelectElement).value as Units)
-              }
+            <ion-select
+              interface="popover"
+              placeholder={this.unitsPlaceholderText}
+              selectedText={this.unitsSelectText}
+              disabled={!this.unitsSelectEnabled}
+              onIonChange={e => this._units(e.detail.value)}
             >
-              <option
-                selected={this.units === Units.METERS}
-                value={Units.METERS}
-              >
-                {this._contentStrings.meters}
-              </option>
-              <option
-                selected={this.units === Units.MILLIMETERS}
+              <ion-select-option
+                selected={this.unitsSelectText == this._contentStrings.millimeters}
                 value={Units.MILLIMETERS}
               >
                 {this._contentStrings.millimeters}
-              </option>
-            </select>
+              </ion-select-option>
+              <ion-select-option
+                selected={this.unitsSelectText == this._contentStrings.meters}
+                value={Units.METERS}
+              >
+                {this._contentStrings.meters}
+              </ion-select-option>
+            </ion-select>
           </ion-item>
         </div>
       );
@@ -335,25 +368,6 @@ export class AlSettings {
       return null;
     }
   }
-
-  // public renderBoundingBoxEnabled() {
-  //   return (
-  //     <ion-item
-  //       style={{
-  //         display: "var(--bounding-box-enabled-display, block)"
-  //       }}
-  //     >
-  //       <ion-label title={this._contentStrings.boundingBoxEnabled}>
-  //         Bounding Box
-  //       </ion-label>
-  //       <ion-toggle
-  //         slot="end"
-  //         checked={this.boundingBoxEnabled}
-  //         onIonChange={e => this._boundingBoxEnabled(e.detail.checked)}
-  //       />
-  //     </ion-item>
-  //   );
-  // }
 
   public renderHiResEnabled() {
     return (
@@ -374,117 +388,6 @@ export class AlSettings {
     );
   }
 
-  // public renderRecenterButton() {
-  //   return (
-  //     <ion-item
-  //       style={{
-  //         display: "var(--recenter-display, block)"
-  //       }}
-  //     >
-  //       <ion-icon
-  //         src={RecenterIcon}
-  //         slot="start"
-  //         title={this._contentStrings.recenter}
-  //       />
-  //       <ion-button
-  //         slot="end"
-  //         size="small"
-  //         onClick={() => {
-  //           this.recenter.emit();
-  //         }}
-  //       >
-  //         {this._contentStrings.recenter}
-  //       </ion-button>
-  //     </ion-item>
-  //   );
-  // }
-
-  // public renderUnitsSelect() {
-  //   return (
-  //     <ion-item
-  //       style={{
-  //         display: "var(--units-display, block)"
-  //       }}
-  //     >
-  //       <ion-label
-  //           title={this._contentStrings.units}
-  //       >
-  //         Units
-  //       </ion-label>
-  //       <select
-  //         slot="end"
-  //         onChange={e =>
-  //           this._units((e.srcElement as HTMLSelectElement).value as Units)
-  //         }
-  //       >
-  //         <option selected={this.units === Units.METERS} value={Units.METERS}>
-  //           {this._contentStrings.meters}
-  //         </option>
-  //         <option
-  //           selected={this.units === Units.MILLIMETERS}
-  //           value={Units.MILLIMETERS}
-  //         >
-  //           {this._contentStrings.millimeters}
-  //         </option>
-  //       </select>
-  //     </ion-item>
-  //   );
-  // }
-
-  // public renderMaterialSelect() {
-  //   return (
-  //     <ion-item
-  //       style={{
-  //         display: "var(--material-display, block)"
-  //       }}
-  //     >
-  //       <ion-icon
-  //         src={MaterialIcon}
-  //         slot="start"
-  //         title={this._contentStrings.material}
-  //       />
-  //       <select
-  //         slot="end"
-  //         onChange={e =>
-  //           this._material((e.srcElement as HTMLSelectElement)
-  //             .value as Material)
-  //         }
-  //       >
-  //         <option
-  //           selected={this.material === Material.DEFAULT}
-  //           value={Material.DEFAULT}
-  //         >
-  //           {this._contentStrings.default}
-  //         </option>
-  //         <option
-  //           selected={this.material === Material.CLAY}
-  //           value={Material.CLAY}
-  //         >
-  //           {this._contentStrings.clay}
-  //         </option>
-  //         <option
-  //           selected={this.material === Material.NORMALS}
-  //           value={Material.NORMALS}
-  //         >
-  //           {this._contentStrings.normals}
-  //         </option>
-  //         <option
-  //           selected={this.material === Material.WIREFRAME}
-  //           value={Material.WIREFRAME}
-  //         >
-  //           {this._contentStrings.wireframe}
-  //         </option>
-  //         <option
-  //           selected={this.material === Material.XRAY}
-  //           value={Material.XRAY}
-  //         >
-  //           {this._contentStrings.xray}
-  //         </option>
-  //       </select>
-  //     </ion-item>
-  //   );
-  // }
-
   public renderSlicesControls() {
     return (
       <div>
@@ -494,32 +397,32 @@ export class AlSettings {
           }}
         >
           <ion-label color="primary">Plane</ion-label>
-          <select
-            slot="end"
-            onChange={e =>
-              this._orientation((e.srcElement as HTMLSelectElement)
-                .value as Orientation)
-            }
+          <ion-select
+            interface="popover"
+            onIonChange={e =>
+                          this._orientation((e.srcElement as HTMLSelectElement)
+                            .value as Orientation)
+                        }
           >
-            <option
+            <ion-select-option
               selected={this.orientation === Orientation.CORONAL}
               value={Orientation.CORONAL}
             >
               {this._contentStrings.coronal}
-            </option>
-            <option
+            </ion-select-option>
+            <ion-select-option
               selected={this.orientation === Orientation.SAGGITAL}
               value={Orientation.SAGGITAL}
             >
               {this._contentStrings.saggital}
-            </option>
-            <option
+            </ion-select-option>
+            <ion-select-option
               selected={this.orientation === Orientation.AXIAL}
               value={Orientation.AXIAL}
             >
               {this._contentStrings.axial}
-            </option>
-          </select>
+            </ion-select-option>
+          </ion-select>
         </ion-item>
         <ion-item
           style={{
@@ -673,11 +576,18 @@ export class AlSettings {
   }
 
   public render() {
-    return [
-      this.renderControlsTypeSelect(),
-      this.renderDisplayModeToggle(),
-      this.renderOptions(),
-      this.renderGraphEnabled()
-    ];
+    return (
+      <div
+        style={{
+          "max-width": "100%",
+          "overflow-x": "hidden"
+        }}
+      >
+      {this.renderControlsTypeSelect()}
+      {this.renderDisplayModeToggle()}
+      {this.renderOptions()}
+      {this.renderGraphEnabled()}
+      </div>
+    );
   }
 }

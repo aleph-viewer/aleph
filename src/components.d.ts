@@ -20,13 +20,14 @@ import {
 import {
   ControlsType,
   DisplayMode,
+  Orientation,
   Units,
 } from './enums/index.js';
 import {
   ControlsType as ControlsType1,
   DisplayMode as DisplayMode2,
   Material,
-  Orientation,
+  Orientation as Orientation1,
   Units as Units1,
 } from './enums';
 import {
@@ -51,6 +52,7 @@ export namespace Components {
     'graphEnabled': boolean;
     'graphTabEnabled': boolean;
     'nodes': Map<string, AlNode> | null;
+    'orientation': Orientation;
     'selected': string | null;
     'settingsTabEnabled': boolean;
     'slicesBrightness': number;
@@ -96,6 +98,9 @@ export namespace Components {
     'slicesIndex': number;
     'slicesMaxIndex': number;
     'units': Units;
+    'unitsPlaceholderText': String;
+    'unitsSelectEnabled': Boolean;
+    'unitsSelectText': String;
     'volumeBrightness': number;
     'volumeContrast': number;
     'volumeSteps': number;
@@ -258,6 +263,7 @@ declare namespace LocalJSX {
     'graphEnabled'?: boolean;
     'graphTabEnabled'?: boolean;
     'nodes'?: Map<string, AlNode> | null;
+    'orientation'?: Orientation;
     'selected'?: string | null;
     'settingsTabEnabled'?: boolean;
     'slicesBrightness'?: number;
@@ -322,6 +328,10 @@ declare namespace LocalJSX {
     'slicesIndex'?: number;
     'slicesMaxIndex'?: number;
     'units'?: Units;
+    'unitsPlaceholderText'?: String;
+    'unitsSelectEnabled'?: Boolean;
+    'unitsSelectText'?: String;
+    'units_code'?: String;
     'volumeBrightness'?: number;
     'volumeContrast'?: number;
     'volumeSteps'?: number;
