@@ -395,8 +395,9 @@ export default AFRAME.registerComponent("al-volume", {
     const windowWidthMax: number =
       this.state.stackhelper.stack.minMax[1] -
       this.state.stackhelper.stack.minMax[0];
-    const windowWidth: number = 
-      Math.floor(windowWidthMax * this.data.volumeWindowWidth);
+    const windowWidth: number = Math.floor(
+      windowWidthMax * this.data.volumeWindowWidth
+    );
 
     // update the stackhelper
     (this.state
@@ -426,8 +427,9 @@ export default AFRAME.registerComponent("al-volume", {
     const windowWidthMax: number =
       this.state.stackhelper.stack.minMax[1] -
       this.state.stackhelper.stack.minMax[0];
-    const windowWidth: number = 
-      Math.floor(windowWidthMax * this.data.volumeWindowWidth);
+    const windowWidth: number = Math.floor(
+      windowWidthMax * this.data.volumeWindowWidth
+    );
 
     // update the stackhelper
     (this.state
