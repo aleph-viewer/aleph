@@ -98,9 +98,6 @@ export namespace Components {
     'slicesIndex': number;
     'slicesMaxIndex': number;
     'units': Units;
-    'unitsPlaceholderText': String;
-    'unitsSelectEnabled': Boolean;
-    'unitsSelectText': String;
     'volumeBrightness': number;
     'volumeContrast': number;
     'volumeSteps': number;
@@ -328,10 +325,6 @@ declare namespace LocalJSX {
     'slicesIndex'?: number;
     'slicesMaxIndex'?: number;
     'units'?: Units;
-    'unitsPlaceholderText'?: String;
-    'unitsSelectEnabled'?: Boolean;
-    'unitsSelectText'?: String;
-    'units_code'?: String;
     'volumeBrightness'?: number;
     'volumeContrast'?: number;
     'volumeSteps'?: number;

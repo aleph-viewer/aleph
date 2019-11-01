@@ -3,7 +3,12 @@ import GraphIcon from "../../assets/svg/graph.svg";
 import SettingsIcon from "../../assets/svg/options.svg";
 import SourceIcon from "../../assets/svg/source.svg";
 import { Component, Element, h, Prop } from "@stencil/core";
-import { ControlsType, DisplayMode, Orientation, Units } from "../../enums/index.js";
+import {
+  ControlsType,
+  DisplayMode,
+  Orientation,
+  Units
+} from "../../enums/index.js";
 import { Scroll } from "../../functional-components/Scroll";
 import { AlAngle, AlEdge, AlNode } from "../../interfaces/index.js";
 import i18n from "./al-control-panel.i18n.en.json";

@@ -46,10 +46,6 @@ export class AlSettings {
   @Prop({ mutable: true }) public slicesBrightness: number; // window center
   @Prop({ mutable: true }) public slicesContrast: number; // window width
   @Prop({ mutable: true }) public units: Units;
-  @Prop({ mutable: true }) public units_code: String;
-  @Prop({ mutable: true }) public unitsPlaceholderText: String;
-  @Prop({ mutable: true }) public unitsSelectEnabled: Boolean = false;
-  @Prop({ mutable: true }) public unitsSelectText: String;
   @Prop({ mutable: true }) public volumeBrightness: number; // window center
   @Prop({ mutable: true }) public volumeContrast: number; // window width
   @Prop({ mutable: true }) public volumeSteps: number;
@@ -73,12 +69,6 @@ export class AlSettings {
   private _graphEnabled(enabled: boolean) {
     this.graphEnabled = enabled;
     this.graphEnabledChanged.emit(enabled);
-    if (enabled) {
-      this.unitsSelectText = this.unitsPlaceholderText;
-      this.unitsSelectEnabled = true;
-    } else {
-      this.unitsSelectEnabled = false;
-    }
   }
 
   // private _material(material: Material) {
@@ -125,11 +115,6 @@ export class AlSettings {
   private _units(units: Units) {
     this.units = units;
     this.unitsChanged.emit(this.units);
-    if (units === Units.MILLIMETERS) {
-      this.unitsSelectText = this._contentStrings.millimeters;
-    } else if (units === Units.METERS) {
-      this.unitsSelectText = this._contentStrings.meters;
-    }
   }
 
   private _volumeBrightness(brightness: number) {
@@ -196,13 +181,13 @@ export class AlSettings {
           >
             {cameraLabel}
           </ion-label>
-          <ion-icon 
+          <ion-icon
             style={{
-              "min-width": "18px",
+              "min-width": "18px"
             }}
-            slot="end" 
-            src={cameraIcon} 
-            title={cameraLabel} 
+            slot="end"
+            src={cameraIcon}
+            title={cameraLabel}
           />
         </ion-button>
 
@@ -226,7 +211,7 @@ export class AlSettings {
           </ion-label>
           <ion-icon
             style={{
-              "min-width": "18px",
+              "min-width": "18px"
             }}
             slot="end"
             src={RecenterIcon}
@@ -254,7 +239,7 @@ export class AlSettings {
           </ion-label>
           <ion-icon
             style={{
-              "min-width": "18px",
+              "min-width": "18px"
             }}
             slot="end"
             src={boundingBoxEnabledIcon}
@@ -303,11 +288,6 @@ export class AlSettings {
 
   public renderGraphEnabled() {
     if (this.graphVisible) {
-      if (this.units === Units.MILLIMETERS) {
-        this.unitsPlaceholderText = this._contentStrings.millimeters;
-      } else if (this.units == Units.METERS) {
-        this.unitsPlaceholderText = this._contentStrings.meters;
-      }
       return (
         <div>
           <ion-list-header
@@ -341,26 +321,24 @@ export class AlSettings {
             }}
           >
             <ion-label title={this._contentStrings.units}>Units</ion-label>
-            <ion-select
-              interface="popover"
-              placeholder={this.unitsPlaceholderText}
-              selectedText={this.unitsSelectText}
-              disabled={!this.unitsSelectEnabled}
-              onIonChange={e => this._units(e.detail.value)}
+            <select
+              onChange={e =>
+                this._units((e.srcElement as HTMLSelectElement).value as Units)
+              }
             >
-              <ion-select-option
-                selected={this.unitsSelectText == this._contentStrings.millimeters}
+              <option
+                selected={this.units === Units.MILLIMETERS}
                 value={Units.MILLIMETERS}
               >
                 {this._contentStrings.millimeters}
-              </ion-select-option>
-              <ion-select-option
-                selected={this.unitsSelectText == this._contentStrings.meters}
+              </option>
+              <option
+                selected={this.units === Units.METERS}
                 value={Units.METERS}
               >
                 {this._contentStrings.meters}
-              </ion-select-option>
-            </ion-select>
+              </option>
+            </select>
           </ion-item>
         </div>
       );
@@ -377,7 +355,8 @@ export class AlSettings {
         }}
       >
         <ion-label title={this._contentStrings.volumeStepsHighEnabledWarning}>
-          {this._contentStrings.volumeStepsHighEnabled} <ion-icon src={AlertIcon} />
+          {this._contentStrings.volumeStepsHighEnabled}{" "}
+          <ion-icon src={AlertIcon} />
         </ion-label>
         <ion-toggle
           slot="end"
@@ -397,32 +376,31 @@ export class AlSettings {
           }}
         >
           <ion-label color="primary">Plane</ion-label>
-          <ion-select
-            interface="popover"
-            onIonChange={e =>
-                          this._orientation((e.srcElement as HTMLSelectElement)
-                            .value as Orientation)
-                        }
+          <select
+            onChange={e =>
+              this._orientation((e.srcElement as HTMLSelectElement)
+                .value as Orientation)
+            }
           >
-            <ion-select-option
+            <option
               selected={this.orientation === Orientation.CORONAL}
               value={Orientation.CORONAL}
             >
               {this._contentStrings.coronal}
-            </ion-select-option>
-            <ion-select-option
+            </option>
+            <option
               selected={this.orientation === Orientation.SAGGITAL}
               value={Orientation.SAGGITAL}
             >
               {this._contentStrings.saggital}
-            </ion-select-option>
-            <ion-select-option
+            </option>
+            <option
               selected={this.orientation === Orientation.AXIAL}
               value={Orientation.AXIAL}
             >
               {this._contentStrings.axial}
-            </ion-select-option>
-          </ion-select>
+            </option>
+          </select>
         </ion-item>
         <ion-item
           style={{
@@ -462,7 +440,9 @@ export class AlSettings {
             display: "var(--slices-brightness-display, block)"
           }}
         >
-          <ion-label color="primary">{this._contentStrings.brightness}</ion-label>
+          <ion-label color="primary">
+            {this._contentStrings.brightness}
+          </ion-label>
           <ion-range
             slot="end"
             min="0"
@@ -516,7 +496,9 @@ export class AlSettings {
             display: "var(--volume-brightness-display, block)"
           }}
         >
-          <ion-label color="primary">{this._contentStrings.brightness}</ion-label>
+          <ion-label color="primary">
+            {this._contentStrings.brightness}
+          </ion-label>
           <ion-range
             slot="end"
             min="0"
@@ -583,10 +565,10 @@ export class AlSettings {
           "overflow-x": "hidden"
         }}
       >
-      {this.renderControlsTypeSelect()}
-      {this.renderDisplayModeToggle()}
-      {this.renderOptions()}
-      {this.renderGraphEnabled()}
+        {this.renderControlsTypeSelect()}
+        {this.renderDisplayModeToggle()}
+        {this.renderOptions()}
+        {this.renderGraphEnabled()}
       </div>
     );
   }
