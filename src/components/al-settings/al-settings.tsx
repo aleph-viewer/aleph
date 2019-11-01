@@ -172,7 +172,7 @@ export class AlSettings {
             this._switchControls();
           }}
         >
-          <ion-label
+          <span
             style={{
               "font-size": "10px",
               color: "white"
@@ -180,7 +180,7 @@ export class AlSettings {
             slot="start"
           >
             {cameraLabel}
-          </ion-label>
+          </span>
           <ion-icon
             style={{
               "min-width": "18px"
@@ -200,7 +200,7 @@ export class AlSettings {
             this.recenter.emit();
           }}
         >
-          <ion-label
+          <span
             style={{
               "font-size": "10px",
               color: "white"
@@ -208,7 +208,7 @@ export class AlSettings {
             slot="start"
           >
             {this._contentStrings.recenter}
-          </ion-label>
+          </span>
           <ion-icon
             style={{
               "min-width": "18px"
@@ -228,7 +228,7 @@ export class AlSettings {
             this._switchBoundingBoxEnabled();
           }}
         >
-          <ion-label
+          <span
             style={{
               "font-size": "10px",
               color: "white"
@@ -236,7 +236,7 @@ export class AlSettings {
             slot="start"
           >
             {this._contentStrings.bounds}
-          </ion-label>
+          </span>
           <ion-icon
             style={{
               "min-width": "18px"
@@ -259,8 +259,9 @@ export class AlSettings {
             "margin-top": "10px"
           }}
         >
-          <ion-label title={this._contentStrings.displayMode}>Mode</ion-label>
+          <span title={this._contentStrings.displayMode}>Mode</span>
           <select
+            slot="end"
             onChange={e =>
               this._displayMode((e.srcElement as HTMLSelectElement)
                 .value as DisplayMode)
@@ -299,16 +300,16 @@ export class AlSettings {
               "margin-top": "10px"
             }}
           >
-            <ion-label>Measure and Annotate</ion-label>
+            <span>Measure and Annotate</span>
           </ion-list-header>
           <ion-item
             style={{
               display: "var(--graph-enabled-display, block)"
             }}
           >
-            <ion-label title={this._contentStrings.graphEnabled}>
+            <span title={this._contentStrings.graphEnabled}>
               {this._contentStrings.graphEnabled}
-            </ion-label>
+            </span>
             <ion-toggle
               slot="end"
               checked={this.graphEnabled}
@@ -320,8 +321,9 @@ export class AlSettings {
               display: "var(--units-display, block)"
             }}
           >
-            <ion-label title={this._contentStrings.units}>Units</ion-label>
+            <span title={this._contentStrings.units}>Units</span>
             <select
+              slot="end"
               onChange={e =>
                 this._units((e.srcElement as HTMLSelectElement).value as Units)
               }
@@ -354,10 +356,10 @@ export class AlSettings {
           display: "var(--volume-steps-high-display, block)"
         }}
       >
-        <ion-label title={this._contentStrings.volumeStepsHighEnabledWarning}>
+        <span title={this._contentStrings.volumeStepsHighEnabledWarning}>
           {this._contentStrings.volumeStepsHighEnabled}{" "}
           <ion-icon src={AlertIcon} />
-        </ion-label>
+        </span>
         <ion-toggle
           slot="end"
           checked={this.volumeStepsHighEnabled}
@@ -375,8 +377,9 @@ export class AlSettings {
             display: "var(--slices-orientation-display, block)"
           }}
         >
-          <ion-label color="primary">Plane</ion-label>
+          <span color="primary">Plane</span>
           <select
+            slot="end"
             onChange={e =>
               this._orientation((e.srcElement as HTMLSelectElement)
                 .value as Orientation)
@@ -407,7 +410,7 @@ export class AlSettings {
             display: "var(--slices-index-display, block)"
           }}
         >
-          <ion-label color="primary">{this._contentStrings.slice}</ion-label>
+          <span>{this._contentStrings.slice}</span>
           <ion-range
             slot="end"
             min="0"
@@ -433,16 +436,16 @@ export class AlSettings {
             "margin-top": "10px"
           }}
         >
-          <ion-label>{this._contentStrings.windowingTitle}</ion-label>
+          <span>{this._contentStrings.windowingTitle}</span>
         </ion-list-header>
         <ion-item
           style={{
             display: "var(--slices-brightness-display, block)"
           }}
         >
-          <ion-label color="primary">
+          <span>
             {this._contentStrings.brightness}
-          </ion-label>
+          </span>
           <ion-range
             slot="end"
             min="0"
@@ -461,7 +464,7 @@ export class AlSettings {
             display: "var(--slices-contrast-display, block)"
           }}
         >
-          <ion-label>{this._contentStrings.contrast}</ion-label>
+          <span>{this._contentStrings.contrast}</span>
           <ion-range
             slot="end"
             min="0"
@@ -489,16 +492,16 @@ export class AlSettings {
             "margin-top": "10px"
           }}
         >
-          <ion-label>{this._contentStrings.windowingTitle}</ion-label>
+          <span>{this._contentStrings.windowingTitle}</span>
         </ion-list-header>
         <ion-item
           style={{
             display: "var(--volume-brightness-display, block)"
           }}
         >
-          <ion-label color="primary">
+          <span>
             {this._contentStrings.brightness}
-          </ion-label>
+          </span>
           <ion-range
             slot="end"
             min="0"
@@ -517,7 +520,7 @@ export class AlSettings {
             display: "var(--volume-contrast-display, block)"
           }}
         >
-          <ion-label>{this._contentStrings.contrast}</ion-label>
+          <span>{this._contentStrings.contrast}</span>
           <ion-range
             slot="end"
             min="0"
