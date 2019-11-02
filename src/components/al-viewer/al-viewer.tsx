@@ -559,81 +559,82 @@ export class Aleph {
           selected={this.selected}
         />
         {(() => {
-          switch (this.controlsType) {
-            case ControlsType.TRACKBALL: {
-              return (
-                <TrackballCamera
-                  cb={ref => {
-                    this._camera = ref;
-                  }}
-                  animating={
-                    this.camera && this.camera.animating
-                      ? this.camera.animating
-                      : false
-                  }
-                  controlPosition={ThreeUtils.vector3ToString(
-                    this.camera
-                      ? this.camera.position
-                      : new THREE.Vector3(0, 0, 0)
-                  )}
-                  controlTarget={ThreeUtils.vector3ToString(
-                    this.camera
-                      ? this.camera.target
-                      : new THREE.Vector3(0, 0, 0)
-                  )}
-                  dampingFactor={Constants.camera.dampingFactor}
-                  enabled={this.controlsEnabled}
-                  far={Constants.camera.far}
-                  fov={Constants.camera.fov}
-                  near={Constants.camera.near}
-                  panSpeed={Constants.camera.panSpeed}
-                  rotateSpeed={Constants.camera.trackballRotateSpeed}
-                  screenHeight={this._scene ? this._scene.canvas.height : 0}
-                  screenWidth={this._scene ? this._scene.canvas.width : 0}
-                  zoomSpeed={Constants.camera.trackballZoomSpeed}
-                />
-              );
-            }
-            case ControlsType.ORBIT: {
-              return (
-                <OrbitCamera
-                  cb={ref => {
-                    this._camera = ref;
-                  }}
-                  animating={
-                    this.camera && this.camera.animating
-                      ? this.camera.animating
-                      : false
-                  }
-                  controlPosition={ThreeUtils.vector3ToString(
-                    this.camera
-                      ? this.camera.position
-                      : new THREE.Vector3(0, 0, 0)
-                  )}
-                  controlTarget={ThreeUtils.vector3ToString(
-                    this.camera
-                      ? this.camera.target
-                      : new THREE.Vector3(0, 0, 0)
-                  )}
-                  dampingFactor={Constants.camera.dampingFactor}
-                  enabled={this.controlsEnabled}
-                  far={Constants.camera.far}
-                  fov={Constants.camera.fov}
-                  maxPolarAngle={Constants.camera.maxPolarAngle}
-                  minDistance={Constants.camera.minDistance}
-                  minPolarAngle={Constants.camera.minPolarAngle}
-                  panSpeed={Constants.camera.orbitPanSpeed}
-                  near={Constants.camera.near}
-                  rotateSpeed={Constants.camera.orbitRotateSpeed}
-                  zoomSpeed={Constants.camera.orbitZoomSpeed}
-                />
-              );
-            }
-            case ControlsType.VR: {
-              return <VRControllers />;
-            }
-            default: {
-              return null;
+          if (this.vrModeEnabled) {
+            return <VRControllers />
+          } else {
+            switch (this.controlsType) {
+              case ControlsType.TRACKBALL: {
+                return (
+                  <TrackballCamera
+                    cb={ref => {
+                      this._camera = ref;
+                    }}
+                    animating={
+                      this.camera && this.camera.animating
+                        ? this.camera.animating
+                        : false
+                    }
+                    controlPosition={ThreeUtils.vector3ToString(
+                      this.camera
+                        ? this.camera.position
+                        : new THREE.Vector3(0, 0, 0)
+                    )}
+                    controlTarget={ThreeUtils.vector3ToString(
+                      this.camera
+                        ? this.camera.target
+                        : new THREE.Vector3(0, 0, 0)
+                    )}
+                    dampingFactor={Constants.camera.dampingFactor}
+                    enabled={this.controlsEnabled}
+                    far={Constants.camera.far}
+                    fov={Constants.camera.fov}
+                    near={Constants.camera.near}
+                    panSpeed={Constants.camera.panSpeed}
+                    rotateSpeed={Constants.camera.trackballRotateSpeed}
+                    screenHeight={this._scene ? this._scene.canvas.height : 0}
+                    screenWidth={this._scene ? this._scene.canvas.width : 0}
+                    zoomSpeed={Constants.camera.trackballZoomSpeed}
+                  />
+                );
+              }
+              case ControlsType.ORBIT: {
+                return (
+                  <OrbitCamera
+                    cb={ref => {
+                      this._camera = ref;
+                    }}
+                    animating={
+                      this.camera && this.camera.animating
+                        ? this.camera.animating
+                        : false
+                    }
+                    controlPosition={ThreeUtils.vector3ToString(
+                      this.camera
+                        ? this.camera.position
+                        : new THREE.Vector3(0, 0, 0)
+                    )}
+                    controlTarget={ThreeUtils.vector3ToString(
+                      this.camera
+                        ? this.camera.target
+                        : new THREE.Vector3(0, 0, 0)
+                    )}
+                    dampingFactor={Constants.camera.dampingFactor}
+                    enabled={this.controlsEnabled}
+                    far={Constants.camera.far}
+                    fov={Constants.camera.fov}
+                    maxPolarAngle={Constants.camera.maxPolarAngle}
+                    minDistance={Constants.camera.minDistance}
+                    minPolarAngle={Constants.camera.minPolarAngle}
+                    panSpeed={Constants.camera.orbitPanSpeed}
+                    near={Constants.camera.near}
+                    rotateSpeed={Constants.camera.orbitRotateSpeed}
+                    zoomSpeed={Constants.camera.orbitZoomSpeed}
+                  />
+                );
+              }
+              default: {
+                return null;
+              }
             }
           }
         })()}
