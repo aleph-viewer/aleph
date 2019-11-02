@@ -10,7 +10,7 @@
 | Property             | Attribute              | Description | Type                                                               | Default     |
 | -------------------- | ---------------------- | ----------- | ------------------------------------------------------------------ | ----------- |
 | `boundingBoxEnabled` | `bounding-box-enabled` |             | `boolean`                                                          | `undefined` |
-| `controlsType`       | `controls-type`        |             | `ControlsType.ORBIT \| ControlsType.TRACKBALL`                     | `undefined` |
+| `controlsType`       | `controls-type`        |             | `ControlsType.ORBIT \| ControlsType.TRACKBALL \| ControlsType.VR`  | `undefined` |
 | `displayMode`        | `display-mode`         |             | `DisplayMode.MESH \| DisplayMode.SLICES \| DisplayMode.VOLUME`     | `undefined` |
 | `graphEnabled`       | `graph-enabled`        |             | `boolean`                                                          | `undefined` |
 | `graphVisible`       | `graph-visible`        |             | `boolean`                                                          | `undefined` |
@@ -64,7 +64,7 @@
 
 ### Used by
 
- - [al-control-panel](..\al-control-panel)
+ - [al-control-panel](../al-control-panel)
 
 ### Graph
 ```mermaid

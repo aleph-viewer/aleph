@@ -24,7 +24,7 @@
 
 ### Used by
 
- - [al-graph-editor](..\al-graph-editor)
+ - [al-graph-editor](../al-graph-editor)
 
 ### Graph
 ```mermaid
