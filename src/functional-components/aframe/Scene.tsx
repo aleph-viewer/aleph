@@ -2,11 +2,11 @@ import { FunctionalComponent, h } from "@stencil/core";
 
 interface SceneProps extends FunctionalComponentProps {
   isWebGl2: boolean;
-  vrModeEnabled: boolean;
+  vrToggleEnabled: boolean;
 }
 
 export const Scene: FunctionalComponent<SceneProps> = (
-  { cb, isWebGl2, vrModeEnabled },
+  { cb, isWebGl2, vrToggleEnabled },
   children
 ) => (
   <a-scene
@@ -17,7 +17,7 @@ export const Scene: FunctionalComponent<SceneProps> = (
       webgl2: ${isWebGl2};
       antialias: true;
     `}
-    vr-mode-ui={`enabled: ${vrModeEnabled}`}
+    vr-mode-ui={`enabled: ${vrToggleEnabled}`}
     ref={ref => cb(ref)}
   >
     {children}

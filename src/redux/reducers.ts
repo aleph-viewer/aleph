@@ -33,7 +33,8 @@ export const getInitialState = () => {
     volumeSteps: 0.5,
     volumeWindowCenter: 0.5,
     volumeWindowWidth: 0.5,
-    vrModeEnabled: false
+    vrModeEnabled: false, // are we in VR
+    vrToggleEnabled: true // is the VR button enabled
   } as AlAppState;
 };
 
@@ -322,6 +323,12 @@ export const app = (
       return {
         ...state,
         vrModeEnabled: action.payload
+      };
+    }
+    case TypeKeys.APP_SET_VR_TOGGLE_ENABLED: {
+      return {
+        ...state,
+        vrToggleEnabled: action.payload
       };
     }
     //#endregion
