@@ -19,7 +19,6 @@ export const Scene: FunctionalComponent<SceneProps> = (
     `}
     vr-mode-ui={`
       enabled: ${vrToggleEnabled};
-      enterVRButton: #enterVR;
     `}
     ref={ref => cb(ref)}
   >
