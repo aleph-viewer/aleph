@@ -7,3 +7,4 @@ export { OrbitCamera } from "./OrbitCamera";
 export { Scene } from "./Scene";
 export { Src } from "./Src";
 export { TrackballCamera } from "./TrackballCamera";
+export { VRControllers } from "./VRControllers";

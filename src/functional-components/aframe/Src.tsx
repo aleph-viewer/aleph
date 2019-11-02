@@ -15,6 +15,7 @@ interface SrcProps extends FunctionalComponentProps {
   volumeSteps: number;
   volumeWindowCenter: number;
   volumeWindowWidth: number;
+  vrModeEnabled: boolean;
 }
 
 export const Src: FunctionalComponent<SrcProps> = (
@@ -32,7 +33,8 @@ export const Src: FunctionalComponent<SrcProps> = (
     srcLoaded,
     volumeSteps,
     volumeWindowCenter,
-    volumeWindowWidth
+    volumeWindowWidth,
+    vrModeEnabled
   },
   _children
 ) =>
@@ -47,6 +49,7 @@ export const Src: FunctionalComponent<SrcProps> = (
               class="collidable"
               al-node-spawner={`
                 graphEnabled: ${graphEnabled};
+                vrModeEnabled: ${vrModeEnabled};
               `}
               al-gltf-model={`
                 src: url(${src});
@@ -65,6 +68,7 @@ export const Src: FunctionalComponent<SrcProps> = (
               class="collidable"
               al-node-spawner={`
                 graphEnabled: ${graphEnabled};
+                vrModeEnabled: ${vrModeEnabled};
               `}
               al-volume={`
                 controlsType: ${controlsType};

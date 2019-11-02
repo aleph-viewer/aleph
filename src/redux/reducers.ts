@@ -32,7 +32,8 @@ export const getInitialState = () => {
     units: Units.METERS,
     volumeSteps: 0.5,
     volumeWindowCenter: 0.5,
-    volumeWindowWidth: 0.5
+    volumeWindowWidth: 0.5,
+    vrModeEnabled: false
   } as AlAppState;
 };
 
@@ -314,6 +315,13 @@ export const app = (
       return {
         ...state,
         volumeWindowCenter: action.payload
+      };
+    }
+    //#region vr
+    case TypeKeys.APP_SET_VR_MODE_ENABLED: {
+      return {
+        ...state,
+        vrModeEnabled: action.payload
       };
     }
     //#endregion

@@ -34,7 +34,8 @@ import {
   OrbitCamera,
   Scene,
   Src,
-  TrackballCamera
+  TrackballCamera,
+  VRControllers
 } from "../../functional-components/aframe";
 import { AlAngle, AlCamera, AlEdge, AlGraph, AlNode } from "../../interfaces";
 import {
@@ -67,7 +68,8 @@ import {
   appSetUnits,
   appSetVolumeSteps,
   appSetVolumeWindowCenter,
-  appSetVolumeWindowWidth
+  appSetVolumeWindowWidth,
+  appSetVRModeEnabled
 } from "../../redux/actions";
 import { configureStore } from "../../redux/store";
 import {
@@ -143,6 +145,7 @@ export class Aleph {
   public appSetVolumeSteps: Action;
   public appSetVolumeWindowCenter: Action;
   public appSetVolumeWindowWidth: Action;
+  public appSetVRModeEnabled: Action;
   //#endregion
 
   //#region state
@@ -171,6 +174,7 @@ export class Aleph {
   @State() public volumeSteps: number;
   @State() public volumeWindowCenter: number;
   @State() public volumeWindowWidth: number;
+  @State() public vrModeEnabled: boolean;
   //#endregion
 
   //#region general methods
@@ -361,7 +365,8 @@ export class Aleph {
           units,
           volumeSteps,
           volumeWindowCenter,
-          volumeWindowWidth
+          volumeWindowWidth,
+          vrModeEnabled
         }
       } = state;
 
@@ -387,7 +392,8 @@ export class Aleph {
         units,
         volumeSteps,
         volumeWindowCenter,
-        volumeWindowWidth
+        volumeWindowWidth,
+        vrModeEnabled
       };
     });
 
@@ -421,7 +427,8 @@ export class Aleph {
       appSetUnits,
       appSetVolumeSteps,
       appSetVolumeWindowCenter,
-      appSetVolumeWindowWidth
+      appSetVolumeWindowWidth,
+      appSetVRModeEnabled
     });
 
     // set up event handlers
@@ -477,6 +484,7 @@ export class Aleph {
           this._scene = ref as AScene;
         }}
         isWebGl2={this._isWebGl2}
+        vrModeEnabled={this.vrModeEnabled}
       >
         <Src
           cb={ref => {
@@ -495,6 +503,7 @@ export class Aleph {
           volumeSteps={this.volumeSteps}
           volumeWindowCenter={this.volumeWindowCenter}
           volumeWindowWidth={this.volumeWindowWidth}
+          vrModeEnabled={this.vrModeEnabled}
         />
         <BoundingBox
           cb={ref => {
@@ -508,6 +517,7 @@ export class Aleph {
           mesh={this._getMesh()}
           srcLoaded={this.srcLoaded}
           targetEntity={this._targetEntity}
+          vrModeEnabled={this.vrModeEnabled}
         />
         <Nodes
           boundingSphereRadius={this._boundingSphereRadius}
@@ -614,6 +624,9 @@ export class Aleph {
                   zoomSpeed={Constants.camera.orbitZoomSpeed}
                 />
               );
+            }
+            case ControlsType.VR: {
+              return <VRControllers />;
             }
             default: {
               return null;
@@ -961,16 +974,6 @@ export class Aleph {
     this.appSetSrc([src, displayMode]);
     this._stateChanged();
   }
-
-  // private _getStackHelper(): AMI.VolumeRenderHelper | null {
-  //   let stackhelper: AMI.VolumeRenderHelper | null = null;
-
-  //   if (this.displayMode === DisplayMode.VOLUME) {
-  //     stackhelper = this._loadedObject;
-  //   }
-
-  //   return stackhelper;
-  // }
 
   private _getMesh(): THREE.Mesh | null {
     let mesh: THREE.Mesh | null = null;
