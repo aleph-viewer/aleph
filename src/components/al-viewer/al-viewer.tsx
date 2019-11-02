@@ -431,7 +431,8 @@ export class Aleph {
       appSetVolumeSteps,
       appSetVolumeWindowCenter,
       appSetVolumeWindowWidth,
-      appSetVRModeEnabled
+      appSetVRModeEnabled,
+      appSetVRToggleEnabled
     });
 
     // set up event handlers
