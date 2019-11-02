@@ -69,7 +69,8 @@ import {
   appSetVolumeSteps,
   appSetVolumeWindowCenter,
   appSetVolumeWindowWidth,
-  appSetVRModeEnabled
+  appSetVRModeEnabled,
+  appSetVRToggleEnabled
 } from "../../redux/actions";
 import { configureStore } from "../../redux/store";
 import {
@@ -146,6 +147,7 @@ export class Aleph {
   public appSetVolumeWindowCenter: Action;
   public appSetVolumeWindowWidth: Action;
   public appSetVRModeEnabled: Action;
+  public appSetVRToggleEnabled: Action;
   //#endregion
 
   //#region state
@@ -175,6 +177,7 @@ export class Aleph {
   @State() public volumeWindowCenter: number;
   @State() public volumeWindowWidth: number;
   @State() public vrModeEnabled: boolean;
+  @State() public vrToggleEnabled: boolean;
   //#endregion
 
   //#region general methods
@@ -484,7 +487,7 @@ export class Aleph {
           this._scene = ref as AScene;
         }}
         isWebGl2={this._isWebGl2}
-        vrModeEnabled={this.vrModeEnabled}
+        vrToggleEnabled={this.vrToggleEnabled}
       >
         <Src
           cb={ref => {
