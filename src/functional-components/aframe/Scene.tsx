@@ -17,7 +17,10 @@ export const Scene: FunctionalComponent<SceneProps> = (
       webgl2: ${isWebGl2};
       antialias: true;
     `}
-    vr-mode-ui={`enabled: ${vrToggleEnabled}`}
+    vr-mode-ui={`
+      enabled: ${vrToggleEnabled};
+      enterVRButton: #enterVR;
+    `}
     ref={ref => cb(ref)}
   >
     {children}
