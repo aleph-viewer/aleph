@@ -98,7 +98,6 @@
     </div>
 
     <script>
-
       var container, alControlPanel, alViewer, state, debug;
 
       var prevState = {};
@@ -119,7 +118,6 @@
       ]);
 
       function init() {
-
         container = document.getElementById("container");
         alControlPanel = document.querySelector("al-control-panel");
         alViewer = document.querySelector("al-viewer");
@@ -145,9 +143,11 @@
           "changed",
           function(e) {
             // update everything except src (this can't be changed from within al-viewer)
-            nextState(Object.assign({}, e.detail, {
-              src: prevState.src
-            }));
+            nextState(
+              Object.assign({}, e.detail, {
+                src: prevState.src
+              })
+            );
           },
           false
         );
@@ -287,7 +287,7 @@
         alControlPanel.addEventListener(
           "ionTabsDidChange",
           function(e) {
-            resize()
+            resize();
           },
           false
         );
@@ -338,7 +338,6 @@
       }
 
       function nextState(s) {
-
         state = Object.assign({}, state, s);
 
         if (state.src && state.src !== prevState.src) {
@@ -356,7 +355,7 @@
         }
 
         alControlPanel.angles = state.angles;
-        alControlPanel.boundingBoxEnabled =  state.boundingBoxEnabled;
+        alControlPanel.boundingBoxEnabled = state.boundingBoxEnabled;
         alControlPanel.consoleTabEnabled = state.consoleTabEnabled;
         alControlPanel.controlsType = state.controlsType;
         alControlPanel.displayMode = state.displayMode;
@@ -391,17 +390,26 @@
       window.addEventListener("resize", function() {
         resize();
       });
-
     </script>
 
     <script>
-      if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
-        document.write("<script type=\"module\" src=\"/build/aleph.esm.js\" onload=\"init()\"><\/script>");
-        document.write("<script nomodule src=\"/build/aleph.js\" onload=\"init()\"><\/script>");
+      if (
+        location.hostname === "localhost" ||
+        location.hostname === "127.0.0.1"
+      ) {
+        document.write(
+          '<script type="module" src="/build/aleph.esm.js" onload="init()"><\/script>'
+        );
+        document.write(
+          '<script nomodule src="/build/aleph.js" onload="init()"><\/script>'
+        );
       } else {
-        document.write("<script src=\"https://unpkg.com/@universalviewer/aleph/dist/aleph/aleph.js\" onload=\"init()\"><\/script>");
+        document.write(
+          '<script src="https://unpkg.com/@universalviewer/aleph/dist/aleph/aleph.js" onload="init()"><\/script>'
+        );
       }
     </script>
 
+    <button id="enterVR">Enter VR</button>
   </body>
 </html>

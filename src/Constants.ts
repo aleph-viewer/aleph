@@ -63,7 +63,7 @@ export class Constants {
     maxPolarAngle: 175,
     minDistance: 0,
     minPolarAngle: 5,
-    near: 0.05,
+    near: 1e-5,
     orbitPanSpeed: 0.3,
     orbitRotateSpeed: 0.5,
     orbitZoomSpeed: 1,
