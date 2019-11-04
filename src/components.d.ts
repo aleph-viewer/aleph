@@ -32,6 +32,9 @@ import {
 import {
   DisplayMode as DisplayMode1,
 } from './enums/DisplayMode';
+import {
+  AlGraph as AlGraph1,
+} from './interfaces/AlGraph';
 
 export namespace Components {
   interface AlAngleEditor {
@@ -152,6 +155,34 @@ export namespace Components {
     'setVolumeSteps': (steps: number) => Promise<void>;
     'width': string;
   }
+  interface UvAleph {
+    'clearGraph': () => Promise<void>;
+    'deleteAngle': (angleId: string) => Promise<void>;
+    'deleteEdge': (edgeId: string) => Promise<void>;
+    'deleteNode': (nodeId: string) => Promise<void>;
+    'dracoDecoderPath': string | null;
+    'height': string;
+    'load': (src: string, displayMode?: DisplayMode) => Promise<void>;
+    'resize': () => Promise<void>;
+    'selectNode': (nodeId: string) => Promise<void>;
+    'setBoundingBoxEnabled': (visible: boolean) => Promise<void>;
+    'setDisplayMode': (displayMode: DisplayMode) => Promise<void>;
+    /**
+    * Creates or updates an edge in the graph
+    */
+    'setEdge': (edge: [string, AlEdge]) => Promise<void>;
+    'setGraph': (graph: AlGraph) => Promise<void>;
+    'setGraphEnabled': (enabled: boolean) => Promise<void>;
+    'setNode': (node: [string, AlNode]) => Promise<void>;
+    'setOrientation': (orientation: Orientation) => Promise<void>;
+    'setSlicesIndex': (index: number) => Promise<void>;
+    'setSlicesWindowCenter': (center: number) => Promise<void>;
+    'setSlicesWindowWidth': (width: number) => Promise<void>;
+    'setVolumeSteps': (steps: number) => Promise<void>;
+    'setVolumeWindowCenter': (center: number) => Promise<void>;
+    'setVolumeWindowWidth': (width: number) => Promise<void>;
+    'width': string;
+  }
 }
 
 declare global {
@@ -222,6 +253,12 @@ declare global {
     prototype: HTMLAlViewerElement;
     new (): HTMLAlViewerElement;
   };
+
+  interface HTMLUvAlephElement extends Components.UvAleph, HTMLStencilElement {}
+  var HTMLUvAlephElement: {
+    prototype: HTMLUvAlephElement;
+    new (): HTMLUvAlephElement;
+  };
   interface HTMLElementTagNameMap {
     'al-angle-editor': HTMLAlAngleEditorElement;
     'al-console': HTMLAlConsoleElement;
@@ -234,6 +271,7 @@ declare global {
     'al-tabs': HTMLAlTabsElement;
     'al-url-picker': HTMLAlUrlPickerElement;
     'al-viewer': HTMLAlViewerElement;
+    'uv-aleph': HTMLUvAlephElement;
   }
 }
 
@@ -356,6 +394,19 @@ declare namespace LocalJSX {
     'onLoaded'?: (event: CustomEvent<any>) => void;
     'width'?: string;
   }
+  interface UvAleph extends JSXBase.HTMLAttributes<HTMLUvAlephElement> {
+    'dracoDecoderPath'?: string | null;
+    'height'?: string;
+    /**
+    * Fires whenever the internal state changes passing an object describing the state.
+    */
+    'onChanged'?: (event: CustomEvent<any>) => void;
+    /**
+    * Fires when an object is loaded passing either the object or a stackhelper for volumetric data.
+    */
+    'onLoaded'?: (event: CustomEvent<any>) => void;
+    'width'?: string;
+  }
 
   interface IntrinsicElements {
     'al-angle-editor': AlAngleEditor;
@@ -369,6 +420,7 @@ declare namespace LocalJSX {
     'al-tabs': AlTabs;
     'al-url-picker': AlUrlPicker;
     'al-viewer': AlViewer;
+    'uv-aleph': UvAleph;
   }
 }
 

@@ -560,7 +560,8 @@ export class Aleph {
         />
         {(() => {
           if (this.vrModeEnabled) {
-            return <VRControllers />
+            console.log("render vr controllers");
+            return <VRControllers />;
           } else {
             switch (this.controlsType) {
               case ControlsType.TRACKBALL: {
