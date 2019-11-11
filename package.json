@@ -1,6 +1,6 @@
 {
   "name": "@universalviewer/aleph",
-  "version": "0.0.1-pre.48",
+  "version": "0.0.1-pre.49",
   "description": "Aleph",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -23,7 +23,7 @@
     "start:prod": "stencil build --serve",
     "test": "stencil test --spec --e2e",
     "test.watch": "stencil test --spec --e2e --watchAll",
-    "deploy": "npm publish --access public && netlify deploy --dir=www --prod",
+    "deploy": "netlify deploy --dir=www --prod",
     "prepublishOnly": "npm run build && npm run test"
   },
   "dependencies": {
