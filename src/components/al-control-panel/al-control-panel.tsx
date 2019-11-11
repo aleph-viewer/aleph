@@ -1,5 +1,14 @@
+import ConsoleIcon from "../../assets/svg/console-2.svg";
+import GraphIcon from "../../assets/svg/graph.svg";
+import SettingsIcon from "../../assets/svg/options.svg";
+import SourceIcon from "../../assets/svg/source.svg";
 import { Component, Element, h, Prop } from "@stencil/core";
-import { ControlsType, DisplayMode, Units } from "../../enums/index.js";
+import {
+  ControlsType,
+  DisplayMode,
+  Orientation,
+  Units
+} from "../../enums/index.js";
 import { Scroll } from "../../functional-components/Scroll";
 import { AlAngle, AlEdge, AlNode } from "../../interfaces/index.js";
 import i18n from "./al-control-panel.i18n.en.json";
@@ -24,6 +33,7 @@ export class AlSettings {
   @Prop({ mutable: true }) public graphEnabled: boolean;
   @Prop({ mutable: true }) public graphTabEnabled: boolean = true;
   @Prop({ mutable: true }) public nodes: Map<string, AlNode> | null = null;
+  @Prop({ mutable: true }) public orientation: Orientation;
   @Prop({ mutable: true }) public selected: string | null = null;
   @Prop({ mutable: true }) public settingsTabEnabled: boolean = true;
   @Prop({ mutable: true }) public slicesBrightness: number;
@@ -38,6 +48,7 @@ export class AlSettings {
   @Prop({ mutable: true }) public volumeBrightness: number;
   @Prop({ mutable: true }) public volumeContrast: number;
   @Prop({ mutable: true }) public volumeSteps: number;
+  @Prop({ mutable: true }) public volumeStepsHighEnabled: boolean;
 
   private _getGraphJson(): string {
     if (this.nodes && this.edges && this.angles) {
@@ -71,21 +82,25 @@ export class AlSettings {
             <ion-tab-bar>
               {this.srcTabEnabled ? (
                 <ion-tab-button tab="src">
+                  <ion-icon src={SourceIcon} />
                   <ion-label>{this._contentStrings.src}</ion-label>
                 </ion-tab-button>
               ) : null}
               {this.settingsTabEnabled ? (
                 <ion-tab-button tab="settings">
+                  <ion-icon src={SettingsIcon} />
                   <ion-label>{this._contentStrings.settings}</ion-label>
                 </ion-tab-button>
               ) : null}
               {this.graphTabEnabled ? (
                 <ion-tab-button tab="graph">
+                  <ion-icon src={GraphIcon} />
                   <ion-label>{this._contentStrings.graph}</ion-label>
                 </ion-tab-button>
               ) : null}
               {this.consoleTabEnabled ? (
                 <ion-tab-button tab="console">
+                  <ion-icon src={ConsoleIcon} />
                   <ion-label>{this._contentStrings.console}</ion-label>
                 </ion-tab-button>
               ) : null}
@@ -105,6 +120,7 @@ export class AlSettings {
                   display-mode={this.displayMode}
                   graph-enabled={this.graphEnabled}
                   graph-visible={this.graphTabEnabled}
+                  orientation={this.orientation}
                   slices-index={this.slicesIndex}
                   slices-max-index={this.slicesMaxIndex}
                   slices-brightness={this.slicesBrightness}
@@ -112,6 +128,7 @@ export class AlSettings {
                   volume-brightness={this.volumeBrightness}
                   volume-contrast={this.volumeContrast}
                   volume-steps={this.volumeSteps}
+                  volume-steps-high-enabled={this.volumeStepsHighEnabled}
                   units={this.units}
                 ></al-settings>
               </Scroll>

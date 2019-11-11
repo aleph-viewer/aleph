@@ -15,7 +15,7 @@ export const getInitialState = () => {
     boundingBoxEnabled: false,
     camera: null,
     controlsEnabled: true,
-    controlsType: ControlsType.ORBIT,
+    controlsType: ControlsType.TRACKBALL,
     displayMode: DisplayMode.MESH,
     edges: new Map<string, AlEdge>(),
     material: Material.DEFAULT,
@@ -29,12 +29,12 @@ export const getInitialState = () => {
     srcLoaded: false,
     units: Units.METERS,
     volumeSteps: 0.5,
+    volumeStepsHighEnabled: false,
     volumeWindowCenter: 0.5,
-    volumeWindowWidth: 0.0
+    volumeWindowWidth: 1.0
   } as AlAppState;
 };
 
-// todo: split app reducer into src, nodes, edges, etc reducers and combine them
 export const app = (
   state: AlAppState = getInitialState(),
   action: ActionTypes
@@ -75,6 +75,10 @@ export const app = (
           state.displayMode !== DisplayMode.MESH
             ? true
             : state.boundingBoxEnabled,
+        controlsType:
+          state.displayMode === DisplayMode.MESH
+            ? ControlsType.ORBIT
+            : ControlsType.TRACKBALL,
         units:
           state.displayMode !== DisplayMode.MESH
             ? Units.MILLIMETERS
@@ -235,8 +239,7 @@ export const app = (
       return {
         ...state,
         displayMode: action.payload,
-        boundingBoxEnabled:
-          action.payload !== DisplayMode.MESH ? true : state.boundingBoxEnabled
+        boundingBoxEnabled: action.payload === DisplayMode.SLICES ? true : false
       };
     }
     case TypeKeys.APP_SET_ORIENTATION: {

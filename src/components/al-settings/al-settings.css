@@ -11,12 +11,7 @@
  * @prop --volume-window-width-display: Volume Window Width Range Display
  */
 
-ion-item {
-  --border-width: 0 0 0 0;
-  --inner-border-width: 0 0 0 0;
-}
-
-ion-item select {
+select {
   padding: 5px;
   min-width: 100px;
   background-color: var(--al-select-background-color);
@@ -24,7 +19,13 @@ ion-item select {
   border: none;
 }
 
-/* ion-label .icon-inner {
-  --color: grey;
-  font-size: 16px;
-} */
+@supports (-moz-appearance: none) {
+  select {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+  }
+}
+
+ion-label {
+  color: var(--al-item-color);
+}

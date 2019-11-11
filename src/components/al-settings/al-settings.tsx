@@ -1,15 +1,10 @@
 import { Component, Event, EventEmitter, h, Prop } from "@stencil/core";
-import BoundingBoxIcon from "../../assets/svg/bounding-box.svg";
-import BrightnessIcon from "../../assets/svg/brightness.svg";
-import ContrastIcon from "../../assets/svg/contrast.svg";
-import ControlsTypeIcon from "../../assets/svg/controls-type.svg";
-import DisplayModeIcon from "../../assets/svg/display-mode.svg";
-import GraphIcon from "../../assets/svg/graph.svg";
-// import MaterialIcon from "../../assets/svg/material.svg";
-import OrientationIcon from "../../assets/svg/orientation.svg";
+import AlertIcon from "../../assets/svg/alert.svg";
+import BoundingBoxIcon from "../../assets/svg/bounding-box-2.svg";
+import ObjectIcon from "../../assets/svg/object-alone.svg";
+import OrbitCameraIcon from "../../assets/svg/orbit_camera.svg";
 import RecenterIcon from "../../assets/svg/recenter.svg";
-import SliderIcon from "../../assets/svg/slider.svg";
-import UnitsIcon from "../../assets/svg/units.svg";
+import RotateObjectIcon from "../../assets/svg/rotate_object.svg";
 import { ControlsType, Orientation, Units } from "../../enums";
 import { DisplayMode } from "../../enums/DisplayMode";
 import i18n from "./al-settings.i18n.en.json";
@@ -37,6 +32,7 @@ export class AlSettings {
   @Event() public volumeBrightnessChanged: EventEmitter;
   @Event() public volumeContrastChanged: EventEmitter;
   @Event() public volumeStepsChanged: EventEmitter;
+  @Event() public volumeStepsHighEnabledChanged: EventEmitter;
 
   @Prop({ mutable: true }) public boundingBoxEnabled: boolean;
   @Prop({ mutable: true }) public controlsType: ControlsType;
@@ -53,6 +49,7 @@ export class AlSettings {
   @Prop({ mutable: true }) public volumeBrightness: number; // window center
   @Prop({ mutable: true }) public volumeContrast: number; // window width
   @Prop({ mutable: true }) public volumeSteps: number;
+  @Prop({ mutable: true }) public volumeStepsHighEnabled: boolean;
 
   private _boundingBoxEnabled(enabled: boolean) {
     this.boundingBoxEnabled = enabled;
@@ -99,15 +96,25 @@ export class AlSettings {
     this.slicesContrastChanged.emit(contrast);
   }
 
-  private _units(units: Units) {
-    this.units = units;
-    this.unitsChanged.emit(units);
+  private _switchBoundingBoxEnabled() {
+    if (this.boundingBoxEnabled) {
+      this._boundingBoxEnabled(false);
+    } else {
+      this._boundingBoxEnabled(true);
+    }
   }
 
-  private _volumeSteps(steps: number) {
-    steps = Math.round(steps * 10) / 10; // 1 decimal place.
-    this.volumeSteps = steps;
-    this.volumeStepsChanged.emit(steps);
+  private _switchControls() {
+    if (this.controlsType === ControlsType.ORBIT) {
+      this._controlsType(ControlsType.TRACKBALL);
+    } else if (this.controlsType === ControlsType.TRACKBALL) {
+      this._controlsType(ControlsType.ORBIT);
+    }
+  }
+
+  private _units(units: Units) {
+    this.units = units;
+    this.unitsChanged.emit(this.units);
   }
 
   private _volumeBrightness(brightness: number) {
@@ -120,19 +127,139 @@ export class AlSettings {
     this.volumeContrastChanged.emit(contrast);
   }
 
+  private _volumeSteps(steps: number) {
+    steps = Math.round(steps * 10) / 10; // 1 decimal place.
+    this.volumeSteps = steps;
+    this.volumeStepsChanged.emit(steps);
+  }
+
+  private _volumeStepsHighEnabled(enabled: boolean) {
+    if (enabled) {
+      this._volumeSteps(this.volumeSteps + 0.2);
+    } else {
+      this._volumeSteps(this.volumeSteps - 0.2);
+    }
+  }
+
+  public renderControlsTypeSelect() {
+    let cameraIcon: string;
+    let cameraLabel: string;
+    if (this.controlsType === ControlsType.ORBIT) {
+      cameraIcon = OrbitCameraIcon;
+      cameraLabel = this._contentStrings.orbit;
+    } else if (this.controlsType === ControlsType.TRACKBALL) {
+      cameraIcon = RotateObjectIcon;
+      cameraLabel = this._contentStrings.rotate;
+    }
+    let boundingBoxEnabledIcon: string;
+    if (this.boundingBoxEnabled) {
+      boundingBoxEnabledIcon = BoundingBoxIcon;
+    } else {
+      boundingBoxEnabledIcon = ObjectIcon;
+    }
+    return (
+      <div
+        style={{
+          "margin-top": "10px"
+        }}
+      >
+        <ion-button
+          style={{
+            width: "80px"
+          }}
+          size="small"
+          onClick={() => {
+            this._switchControls();
+          }}
+        >
+          <span
+            style={{
+              "font-size": "10px",
+              color: "white"
+            }}
+            slot="start"
+          >
+            {cameraLabel}
+          </span>
+          <ion-icon
+            style={{
+              "min-width": "18px"
+            }}
+            slot="end"
+            src={cameraIcon}
+            title={cameraLabel}
+          />
+        </ion-button>
+
+        <ion-button
+          style={{
+            width: "80px"
+          }}
+          size="small"
+          onClick={() => {
+            this.recenter.emit();
+          }}
+        >
+          <span
+            style={{
+              "font-size": "10px",
+              color: "white"
+            }}
+            slot="start"
+          >
+            {this._contentStrings.recenter}
+          </span>
+          <ion-icon
+            style={{
+              "min-width": "18px"
+            }}
+            slot="end"
+            src={RecenterIcon}
+            title={this._contentStrings.recenter}
+          />
+        </ion-button>
+
+        <ion-button
+          style={{
+            width: "80px"
+          }}
+          size="small"
+          onClick={() => {
+            this._switchBoundingBoxEnabled();
+          }}
+        >
+          <span
+            style={{
+              "font-size": "10px",
+              color: "white"
+            }}
+            slot="start"
+          >
+            {this._contentStrings.bounds}
+          </span>
+          <ion-icon
+            style={{
+              "min-width": "18px"
+            }}
+            slot="end"
+            src={boundingBoxEnabledIcon}
+            title={this._contentStrings.bounds}
+          />
+        </ion-button>
+      </div>
+    );
+  }
+
   public renderDisplayModeToggle() {
     if (this.displayMode !== DisplayMode.MESH) {
       return (
         <ion-item
           style={{
-            display: "var(--display-mode-display, block)"
+            display: "var(--display-mode-display, block)",
+            "margin-top": "10px"
           }}
         >
-          <ion-icon
-            src={DisplayModeIcon}
-            slot="start"
-            title={this._contentStrings.displayMode}
-          />
+          <span title={this._contentStrings.displayMode}>Mode</span>
           <select
             slot="end"
             onChange={e =>
@@ -163,203 +290,250 @@ export class AlSettings {
   public renderGraphEnabled() {
     if (this.graphVisible) {
       return (
-        <ion-item
-          style={{
-            display: "var(--graph-enabled-display, block)"
-          }}
-        >
-          <ion-icon
-            src={GraphIcon}
-            slot="start"
-            title={this._contentStrings.graphEnabled}
-          />
-          <ion-toggle
-            slot="end"
-            checked={this.graphEnabled}
-            onIonChange={e => this._graphEnabled(e.detail.checked)}
-          />
-        </ion-item>
+        <div>
+          <ion-list-header
+            style={{
+              color: "var(--al-item-color)",
+              "border-width": "1px 0 0 0",
+              "border-color": "var(--ion-list-header-border-color)",
+              "border-style": "solid",
+              "margin-top": "10px"
+            }}
+          >
+            <span>Measure and Annotate</span>
+          </ion-list-header>
+          <ion-item
+            style={{
+              display: "var(--graph-enabled-display, block)"
+            }}
+          >
+            <span title={this._contentStrings.graphEnabled}>
+              {this._contentStrings.graphEnabled}
+            </span>
+            <ion-toggle
+              slot="end"
+              checked={this.graphEnabled}
+              onIonChange={e => this._graphEnabled(e.detail.checked)}
+            />
+          </ion-item>
+          <ion-item
+            style={{
+              display: "var(--units-display, block)"
+            }}
+          >
+            <span title={this._contentStrings.units}>Units</span>
+            <select
+              slot="end"
+              onChange={e =>
+                this._units((e.srcElement as HTMLSelectElement).value as Units)
+              }
+            >
+              <option
+                selected={this.units === Units.MILLIMETERS}
+                value={Units.MILLIMETERS}
+              >
+                {this._contentStrings.millimeters}
+              </option>
+              <option
+                selected={this.units === Units.METERS}
+                value={Units.METERS}
+              >
+                {this._contentStrings.meters}
+              </option>
+            </select>
+          </ion-item>
+        </div>
       );
     } else {
       return null;
     }
   }
 
-  public renderBoundingBoxEnabled() {
+  public renderHiResEnabled() {
     return (
       <ion-item
         style={{
-          display: "var(--bounding-box-enabled-display, block)"
+          display: "var(--volume-steps-high-display, block)"
         }}
       >
-        <ion-icon
-          src={BoundingBoxIcon}
-          slot="start"
-          title={this._contentStrings.boundingBoxEnabled}
-        />
+        <span title={this._contentStrings.volumeStepsHighEnabledWarning}>
+          {this._contentStrings.volumeStepsHighEnabled}{" "}
+          <ion-icon src={AlertIcon} />
+        </span>
         <ion-toggle
           slot="end"
-          checked={this.boundingBoxEnabled}
-          onIonChange={e => this._boundingBoxEnabled(e.detail.checked)}
+          checked={this.volumeStepsHighEnabled}
+          onIonChange={e => this._volumeStepsHighEnabled(e.detail.checked)}
         />
       </ion-item>
     );
   }
 
-  public renderControlsTypeSelect() {
+  public renderSlicesControls() {
     return (
-      <ion-item
-        style={{
-          display: "var(--controls-type-display, block)"
-        }}
-      >
-        <ion-icon
-          src={ControlsTypeIcon}
-          slot="start"
-          title={this._contentStrings.controlsType}
-        />
-        <select
-          slot="end"
-          onChange={e =>
-            this._controlsType((e.srcElement as HTMLSelectElement)
-              .value as ControlsType)
-          }
-        >
-          <option
-            selected={this.controlsType === ControlsType.ORBIT}
-            value={ControlsType.ORBIT}
-          >
-            {this._contentStrings.orbit}
-          </option>
-          <option
-            selected={this.controlsType === ControlsType.TRACKBALL}
-            value={ControlsType.TRACKBALL}
-          >
-            {this._contentStrings.trackball}
-          </option>
-        </select>
-      </ion-item>
-    );
-  }
-
-  public renderRecenterButton() {
-    return (
-      <ion-item
-        style={{
-          display: "var(--recenter-display, block)"
-        }}
-      >
-        <ion-icon
-          src={RecenterIcon}
-          slot="start"
-          title={this._contentStrings.recenter}
-        />
-        <ion-button
-          slot="end"
-          size="small"
-          onClick={() => {
-            this.recenter.emit();
+      <div>
+        <ion-item
+          style={{
+            display: "var(--slices-orientation-display, block)"
           }}
         >
-          {this._contentStrings.recenter}
-        </ion-button>
-      </ion-item>
-    );
-  }
-
-  public renderUnitsSelect() {
-    return (
-      <ion-item
-        style={{
-          display: "var(--units-display, block)"
-        }}
-      >
-        <ion-icon
-          src={UnitsIcon}
-          slot="start"
-          title={this._contentStrings.units}
-        />
-        <select
-          slot="end"
-          onChange={e =>
-            this._units((e.srcElement as HTMLSelectElement).value as Units)
-          }
-        >
-          <option selected={this.units === Units.METERS} value={Units.METERS}>
-            {this._contentStrings.meters}
-          </option>
-          <option
-            selected={this.units === Units.MILLIMETERS}
-            value={Units.MILLIMETERS}
+          <span color="primary">Plane</span>
+          <select
+            slot="end"
+            onChange={e =>
+              this._orientation((e.srcElement as HTMLSelectElement)
+                .value as Orientation)
+            }
           >
-            {this._contentStrings.millimeters}
-          </option>
-        </select>
-      </ion-item>
+            <option
+              selected={this.orientation === Orientation.CORONAL}
+              value={Orientation.CORONAL}
+            >
+              {this._contentStrings.coronal}
+            </option>
+            <option
+              selected={this.orientation === Orientation.SAGGITAL}
+              value={Orientation.SAGGITAL}
+            >
+              {this._contentStrings.saggital}
+            </option>
+            <option
+              selected={this.orientation === Orientation.AXIAL}
+              value={Orientation.AXIAL}
+            >
+              {this._contentStrings.axial}
+            </option>
+          </select>
+        </ion-item>
+        <ion-item
+          style={{
+            display: "var(--slices-index-display, block)"
+          }}
+        >
+          <span>{this._contentStrings.slice}</span>
+          <ion-range
+            slot="end"
+            min="0"
+            max="1"
+            step={1 / this.slicesMaxIndex}
+            value={this.slicesIndex}
+            onIonChange={e => this._slicesIndex(e.detail.value)}
+          />
+        </ion-item>
+      </div>
     );
   }
 
-  // public renderMaterialSelect() {
-  //   return (
-  //     <ion-item
-  //       style={{
-  //         display: "var(--material-display, block)"
-  //       }}
-  //     >
-  //       <ion-icon
-  //         src={MaterialIcon}
-  //         slot="start"
-  //         title={this._contentStrings.material}
-  //       />
-  //       <select
-  //         slot="end"
-  //         onChange={e =>
-  //           this._material((e.srcElement as HTMLSelectElement)
-  //             .value as Material)
-  //         }
-  //       >
-  //         <option
-  //           selected={this.material === Material.DEFAULT}
-  //           value={Material.DEFAULT}
-  //         >
-  //           {this._contentStrings.default}
-  //         </option>
-  //         <option
-  //           selected={this.material === Material.CLAY}
-  //           value={Material.CLAY}
-  //         >
-  //           {this._contentStrings.clay}
-  //         </option>
-  //         <option
-  //           selected={this.material === Material.NORMALS}
-  //           value={Material.NORMALS}
-  //         >
-  //           {this._contentStrings.normals}
-  //         </option>
-  //         <option
-  //           selected={this.material === Material.WIREFRAME}
-  //           value={Material.WIREFRAME}
-  //         >
-  //           {this._contentStrings.wireframe}
-  //         </option>
-  //         <option
-  //           selected={this.material === Material.XRAY}
-  //           value={Material.XRAY}
-  //         >
-  //           {this._contentStrings.xray}
-  //         </option>
-  //       </select>
-  //     </ion-item>
-  //   );
-  // }
+  public renderSlicesWindowingControls() {
+    return (
+      <div>
+        <ion-list-header
+          style={{
+            color: "var(--al-item-color)",
+            "border-width": "1px 0 0 0",
+            "border-color": "var(--ion-list-header-border-color)",
+            "border-style": "solid",
+            "margin-top": "10px"
+          }}
+        >
+          <span>{this._contentStrings.windowingTitle}</span>
+        </ion-list-header>
+        <ion-item
+          style={{
+            display: "var(--slices-brightness-display, block)"
+          }}
+        >
+          <span>
+            {this._contentStrings.brightness}
+          </span>
+          <ion-range
+            slot="end"
+            min="0"
+            max="1"
+            step=".05"
+            snaps="true"
+            ticks="false"
+            value={this.slicesBrightness}
+            onIonChange={e => {
+              this._slicesBrightness(e.detail.value);
+            }}
+          ></ion-range>
+        </ion-item>
+        <ion-item
+          style={{
+            display: "var(--slices-contrast-display, block)"
+          }}
+        >
+          <span>{this._contentStrings.contrast}</span>
+          <ion-range
+            slot="end"
+            min="0"
+            max="1"
+            step=".05"
+            snaps="true"
+            ticks="false"
+            value={this.slicesContrast}
+            onIonChange={e => this._slicesContrast(e.detail.value)}
+          />
+        </ion-item>
+      </div>
+    );
+  }
 
-  public renderGenericOptions() {
-    return [
-      this.renderBoundingBoxEnabled(),
-      this.renderControlsTypeSelect(),
-      this.renderRecenterButton(),
-      this.renderUnitsSelect()
-    ];
+  public renderVolumeWindowingControls() {
+    return (
+      <div>
+        <ion-list-header
+          style={{
+            color: "var(--al-item-color)",
+            "border-width": "1px 0 0 0",
+            "border-color": "var(--ion-list-header-border-color)",
+            "border-style": "solid",
+            "margin-top": "10px"
+          }}
+        >
+          <span>{this._contentStrings.windowingTitle}</span>
+        </ion-list-header>
+        <ion-item
+          style={{
+            display: "var(--volume-brightness-display, block)"
+          }}
+        >
+          <span>
+            {this._contentStrings.brightness}
+          </span>
+          <ion-range
+            slot="end"
+            min="0"
+            max="1"
+            step=".05"
+            snaps="true"
+            ticks="false"
+            value={this.volumeBrightness}
+            onIonChange={e => {
+              this._volumeBrightness(e.detail.value);
+            }}
+          ></ion-range>
+        </ion-item>
+        <ion-item
+          style={{
+            display: "var(--volume-contrast-display, block)"
+          }}
+        >
+          <span>{this._contentStrings.contrast}</span>
+          <ion-range
+            slot="end"
+            min="0"
+            max="1"
+            step=".05"
+            snaps="true"
+            ticks="false"
+            value={this.volumeContrast}
+            onIonChange={e => this._volumeContrast(e.detail.value)}
+          />
+        </ion-item>
+      </div>
+    );
   }
 
   public renderOptions() {
@@ -367,192 +541,18 @@ export class AlSettings {
       case DisplayMode.SLICES: {
         return (
           <div>
-            {this.renderGenericOptions()}
-            <ion-item
-              style={{
-                display: "var(--slices-index-display, block)"
-              }}
-            >
-              <ion-icon
-                src={SliderIcon}
-                slot="start"
-                title={this._contentStrings.sliceIndex}
-              />
-              <ion-range
-                slot="end"
-                min="0"
-                max="1"
-                step={1 / this.slicesMaxIndex}
-                value={this.slicesIndex}
-                onIonChange={e => this._slicesIndex(e.detail.value)}
-              />
-            </ion-item>
-            <ion-item
-              style={{
-                display: "var(--slices-orientation-display, block)"
-              }}
-            >
-              <ion-icon
-                src={OrientationIcon}
-                slot="start"
-                title={this._contentStrings.orientation}
-              />
-              <select
-                slot="end"
-                onChange={e =>
-                  this._orientation((e.srcElement as HTMLSelectElement)
-                    .value as Orientation)
-                }
-              >
-                <option
-                  selected={this.orientation === Orientation.CORONAL}
-                  value={Orientation.CORONAL}
-                >
-                  {this._contentStrings.coronal}
-                </option>
-                <option
-                  selected={this.orientation === Orientation.SAGGITAL}
-                  value={Orientation.SAGGITAL}
-                >
-                  {this._contentStrings.saggital}
-                </option>
-                <option
-                  selected={this.orientation === Orientation.AXIAL}
-                  value={Orientation.AXIAL}
-                >
-                  {this._contentStrings.axial}
-                </option>
-              </select>
-            </ion-item>
-            <ion-item
-              style={{
-                display: "var(--slices-brightness-display, block)"
-              }}
-            >
-              <ion-icon
-                src={BrightnessIcon}
-                slot="start"
-                title={this._contentStrings.brightness}
-              />
-              <ion-range
-                slot="end"
-                min="0"
-                max="1"
-                step=".05"
-                snaps="true"
-                ticks="false"
-                value={this.slicesBrightness}
-                onIonChange={e => this._slicesBrightness(e.detail.value)}
-              />
-            </ion-item>
-            <ion-item
-              style={{
-                display: "var(--slices-contrast-display, block)"
-              }}
-            >
-              <ion-icon
-                src={ContrastIcon}
-                slot="start"
-                title={this._contentStrings.contrast}
-              />
-              <ion-range
-                slot="end"
-                min="0"
-                max="1"
-                step=".05"
-                snaps="true"
-                ticks="false"
-                value={this.slicesContrast}
-                onIonChange={e => this._slicesContrast(e.detail.value)}
-              />
-            </ion-item>
+            {this.renderSlicesControls()}
+            {this.renderSlicesWindowingControls()}
           </div>
         );
       }
       case DisplayMode.VOLUME: {
         return (
           <div>
-            {this.renderGenericOptions()}
-            {
-              <ion-item
-                style={{
-                  display: "var(--volume-steps-display, block)"
-                }}
-              >
-                <ion-icon
-                  src={SliderIcon}
-                  slot="start"
-                  title={this._contentStrings.volumeSteps}
-                />
-                <ion-range
-                  slot="end"
-                  min="0"
-                  max="1"
-                  value={this.volumeSteps}
-                  step="0.1"
-                  onMouseUp={e => this._volumeSteps(e.srcElement.value)}
-                />
-              </ion-item>
-            }
-            {/* <ion-item>
-                <ion-label>LUT</ion-label>
-                <select onChange={ (e) => this.onVolumeLutChanged.emit(e.detail.value) }>
-                {
-                  this.luts.split(',').forEach((lut: string) => {
-                    return <option value={lut}>{lut}</option>;
-                  })
-                }
-                </ion-select>
-              </ion-item> */}
-            <ion-item
-              style={{
-                display: "var(--volume-brightness-display, block)"
-              }}
-            >
-              <ion-icon
-                src={BrightnessIcon}
-                slot="start"
-                title={this._contentStrings.brightness}
-              />
-              <ion-range
-                slot="end"
-                min="0"
-                max="1"
-                step=".05"
-                snaps="true"
-                ticks="false"
-                value={this.volumeBrightness}
-                onIonChange={e => {
-                  this._volumeBrightness(e.detail.value);
-                }}
-              />
-            </ion-item>
-            <ion-item
-              style={{
-                display: "var(--volume-contrast-display, block)"
-              }}
-            >
-              <ion-icon
-                src={ContrastIcon}
-                slot="start"
-                title={this._contentStrings.contrast}
-              />
-              <ion-range
-                slot="end"
-                min="0"
-                max="1"
-                step=".05"
-                snaps="true"
-                ticks="false"
-                value={this.volumeContrast}
-                onIonChange={e => this._volumeContrast(e.detail.value)}
-              />
-            </ion-item>
+            {this.renderHiResEnabled()}
+            {this.renderVolumeWindowingControls()}
           </div>
         );
-      }
-      case DisplayMode.MESH: {
-        return this.renderGenericOptions();
       }
       default: {
         return;
@@ -561,10 +561,18 @@ export class AlSettings {
   }
 
   public render() {
-    return [
-      this.renderDisplayModeToggle(),
-      this.renderGraphEnabled(),
-      this.renderOptions()
-    ];
+    return (
+      <div
+        style={{
+          "max-width": "100%",
+          "overflow-x": "hidden"
+        }}
+      >
+        {this.renderControlsTypeSelect()}
+        {this.renderDisplayModeToggle()}
+        {this.renderOptions()}
+        {this.renderGraphEnabled()}
+      </div>
+    );
   }
 }

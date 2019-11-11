@@ -408,6 +408,7 @@
         alControlPanel.graphEnabled = state.graphEnabled;
         alControlPanel.graphTabEnabled = state.graphTabEnabled;
         alControlPanel.nodes = state.nodes;
+        alControlPanel.orientation = state.orientation;
         alControlPanel.selected = state.selected;
         alControlPanel.settingsTabEnabled = state.settingsTabEnabled;
         alControlPanel.slicesBrightness = state.volumeWindowCenter;
@@ -419,6 +420,7 @@
         alControlPanel.volumeBrightness = state.volumeWindowCenter;
         alControlPanel.volumeContrast = state.volumeWindowWidth;
         alControlPanel.volumeSteps = state.volumeSteps;
+        alControlPanel.volumeStepsHighEnabled = state.volumeStepsHighEnabled;
 
         prevState = Object.assign({}, state);
       }

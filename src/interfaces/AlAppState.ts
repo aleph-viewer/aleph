@@ -22,6 +22,7 @@ export interface AlAppState {
   srcLoaded: boolean;
   units: Units;
   volumeSteps: number;
+  volumeStepsHighEnabled: boolean;
   volumeWindowCenter: number;
   volumeWindowWidth: number;
 }
