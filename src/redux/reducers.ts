@@ -35,7 +35,6 @@ export const getInitialState = () => {
   } as AlAppState;
 };
 
-// todo: split app reducer into src, nodes, edges, etc reducers and combine them
 export const app = (
   state: AlAppState = getInitialState(),
   action: ActionTypes
@@ -76,6 +75,10 @@ export const app = (
           state.displayMode !== DisplayMode.MESH
             ? true
             : state.boundingBoxEnabled,
+        controlsType:
+          state.displayMode === DisplayMode.MESH
+            ? ControlsType.ORBIT
+            : ControlsType.TRACKBALL,
         units:
           state.displayMode !== DisplayMode.MESH
             ? Units.MILLIMETERS
