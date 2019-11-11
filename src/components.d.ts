@@ -143,8 +143,6 @@ export namespace Components {
     'setMaterial': (material: Material) => Promise<void>;
     'setNode': (node: [string, AlNode]) => Promise<void>;
     'setOrientation': (orientation: Orientation) => Promise<void>;
-    'setSlicesBrightness': (brightness: number) => Promise<void>;
-    'setSlicesContrast': (contrast: number) => Promise<void>;
     'setSlicesIndex': (index: number) => Promise<void>;
     'setUnits': (units: Units) => Promise<void>;
     'setVolumeBrightness': (brightness: number) => Promise<void>;

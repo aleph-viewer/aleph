@@ -25,14 +25,12 @@ export const getInitialState = () => {
     selected: null,
     slicesIndex: 0.5,
     slicesMaxIndex: undefined,
-    slicesWindowCenter: 0.5,
-    slicesWindowWidth: 0.5,
     src: null,
     srcLoaded: false,
     units: Units.METERS,
     volumeSteps: 0.5,
     volumeWindowCenter: 0.5,
-    volumeWindowWidth: 0.5
+    volumeWindowWidth: 0.0
   } as AlAppState;
 };
 
@@ -278,18 +276,6 @@ export const app = (
       return {
         ...state,
         slicesMaxIndex: action.payload
-      };
-    }
-    case TypeKeys.APP_SET_SLICES_WINDOW_WIDTH: {
-      return {
-        ...state,
-        slicesWindowWidth: action.payload
-      };
-    }
-    case TypeKeys.APP_SET_SLICES_WINDOW_CENTER: {
-      return {
-        ...state,
-        slicesWindowCenter: action.payload
       };
     }
     case TypeKeys.APP_SET_UNITS: {

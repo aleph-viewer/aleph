@@ -106,15 +106,59 @@
       const urls = new Map([
         [
           "https://nomad-project.co.uk/objects/collection/toy-lion/_toy-lion/toy-lion.gltf",
-          "Lion (GLTF)"
+          "Toy Lion (Textured Surface)"
         ],
         [
-          "https://iiif-3d-manifests.netlify.com/collection/gltf/woody/_woody/assets/woody.gltf",
-          "Fisherman (GLTF)"
+          "http://alembic-dcm.netlify.com/shrew400/shrew400.dcm",
+          "Tree Shrew Head"
         ],
         [
-          "https://www.morphosource.org/media/morphosource/dcm_sample/ptilocercus/dcm_multi_vf300_jpegQ95_16bit_allslices.json",
-          "Tree Shrew (DICOM)"
+          "http://alembic-dcm.netlify.com/plat400/plat400.dcm",
+          "Platypus Body"
+        ],
+        [
+          "http://alembic-dcm.netlify.com/loris400/loris400.dcm",
+          "Loris Body"
+        ],
+        [
+          "http://alembic-dcm.netlify.com/squirrel400/squirrel400.dcm",
+          "Ground Squirrel Body"
+        ],
+        [
+          "http://alembic-dcm.netlify.com/armadillo400/armadillo400.dcm",
+          "Armadillo Body"
+        ],
+        [
+          "http://alembic-dcm.netlify.com/sloth400/sloth400.dcm",
+          "Baby Sloth Body"
+        ],
+        [
+          "http://alembic-dcm.netlify.com/cranium400/cranium400.dcm",
+          "Gorilla Cranium (Skeletal)"
+        ],
+        [
+          "http://alembic-dcm.netlify.com/lumbar400/lumbar400.dcm",
+          "Lumbar Vertebrae (Skeletal)"
+        ],
+        [
+          "https://alembic-dcm.netlify.com/foot400/foot400.dcm",
+          "Flying Lemur Foot (Skeletal)"
+        ],
+        [
+          "https://alembic-dcm.netlify.com/frog400/frog400.dcm",
+          "Frog Body (Iodine Stained)"
+        ],
+        [
+          "https://alembic-dcm.netlify.com/lemur400/lemur400.dcm",
+          "Lemur Body (Iodine Stained)"
+        ],
+        [
+          "https://alembic-dcm.netlify.com/bird.glb",
+          "Tropical Bird Body (Textured Surface)"
+        ],
+        [
+          "https://alembic-dcm.netlify.com/frog.glb",
+          "Frog On Leaf (Textured Surface)"
         ]
       ]);
 
@@ -271,7 +315,7 @@
         alControlPanel.addEventListener(
           "slicesBrightnessChanged",
           function(e) {
-            alViewer.setSlicesBrightness(e.detail);
+            alViewer.setVolumeBrightness(e.detail);
           },
           false
         );
@@ -279,7 +323,7 @@
         alControlPanel.addEventListener(
           "slicesContrastChanged",
           function(e) {
-            alViewer.setSlicesContrast(e.detail);
+            alViewer.setVolumeContrast(e.detail);
           },
           false
         );
@@ -366,8 +410,8 @@
         alControlPanel.nodes = state.nodes;
         alControlPanel.selected = state.selected;
         alControlPanel.settingsTabEnabled = state.settingsTabEnabled;
-        alControlPanel.slicesBrightness = state.slicesWindowCenter;
-        alControlPanel.slicesContrast = state.slicesWindowWidth;
+        alControlPanel.slicesBrightness = state.volumeWindowCenter;
+        alControlPanel.slicesContrast = state.volumeWindowWidth;
         alControlPanel.slicesIndex = state.slicesIndex;
         alControlPanel.slicesMaxIndex = state.slicesMaxIndex;
         alControlPanel.srcTabEnabled = state.srcTabEnabled;

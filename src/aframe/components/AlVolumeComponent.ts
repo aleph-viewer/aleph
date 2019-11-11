@@ -53,8 +53,6 @@ export default AFRAME.registerComponent("al-volume", {
     displayMode: { type: "string" },
     slicesIndex: { type: "number" },
     slicesOrientation: { type: "string" },
-    slicesWindowCenter: { type: "number" },
-    slicesWindowWidth: { type: "number" },
     src: { type: "string" },
     srcLoaded: { type: "boolean" },
     volumeSteps: { type: "number" },
@@ -387,7 +385,7 @@ export default AFRAME.registerComponent("al-volume", {
     const windowCenterMax: number = this.state.stackhelper.stack.minMax[1];
     const windowCenter: number = Math.floor(
       Utils.reverseNumber(
-        windowCenterMax * this.data.slicesWindowCenter,
+        windowCenterMax * this.data.volumeWindowCenter,
         0,
         windowCenterMax
       )
@@ -399,7 +397,7 @@ export default AFRAME.registerComponent("al-volume", {
       this.state.stackhelper.stack.minMax[0];
     const windowWidth: number = Math.floor(
       Utils.reverseNumber(
-        windowWidthMax * this.data.slicesWindowWidth,
+        windowWidthMax * this.data.volumeWindowWidth,
         0,
         windowWidthMax
       )

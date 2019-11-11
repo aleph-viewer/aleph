@@ -18,8 +18,6 @@ export interface AlAppState {
   orientation: Orientation;
   selected: string | null;
   slicesIndex: number;
-  slicesWindowCenter: number;
-  slicesWindowWidth: number;
   src: string | null;
   srcLoaded: boolean;
   units: Units;

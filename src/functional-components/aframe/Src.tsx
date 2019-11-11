@@ -8,8 +8,6 @@ interface SrcProps extends FunctionalComponentProps {
   graphEnabled: boolean;
   orientation: Orientation;
   slicesIndex: number;
-  slicesWindowCenter: number;
-  slicesWindowWidth: number;
   src: string;
   srcLoaded: boolean;
   volumeSteps: number;
@@ -26,8 +24,6 @@ export const Src: FunctionalComponent<SrcProps> = (
     graphEnabled,
     orientation,
     slicesIndex,
-    slicesWindowCenter,
-    slicesWindowWidth,
     src,
     srcLoaded,
     volumeSteps,
@@ -71,8 +67,6 @@ export const Src: FunctionalComponent<SrcProps> = (
                 displayMode: ${displayMode};
                 slicesIndex: ${slicesIndex};
                 slicesOrientation: ${orientation};
-                slicesWindowCenter: ${slicesWindowCenter};
-                slicesWindowWidth: ${slicesWindowWidth};
                 src: ${src};
                 srcLoaded: ${srcLoaded};
                 volumeSteps: ${volumeSteps};
@@ -97,8 +91,6 @@ export const Src: FunctionalComponent<SrcProps> = (
                 displayMode: ${displayMode};
                 slicesIndex: ${slicesIndex};
                 slicesOrientation: ${orientation};
-                slicesWindowCenter: ${slicesWindowCenter};
-                slicesWindowWidth: ${slicesWindowWidth};
                 src: ${src};
                 srcLoaded: ${srcLoaded};
                 volumeSteps: ${volumeSteps};
