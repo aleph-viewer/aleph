@@ -49,8 +49,10 @@ export const app = (
         displayMode = plDisplayMode;
       } else if (src) {
         const fileExtension: string = Utils.getFileExtension(src);
+        const fileEnd: string = Utils.getFileEndCharacters(src, 3);
         if (
-          Object.values(MeshFileType).includes(fileExtension as MeshFileType)
+          Object.values(MeshFileType).includes(fileExtension as MeshFileType) ||
+          Object.values(MeshFileType).includes(fileEnd as MeshFileType)
         ) {
           displayMode = DisplayMode.MESH;
         } else {
