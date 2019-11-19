@@ -1,0 +1,27 @@
+{
+  "entries": [
+    "components/al-angle-editor/al-angle-editor.js",
+    "components/al-console/al-console.js",
+    "components/al-control-panel/al-control-panel.js",
+    "components/al-graph-editor/al-graph-editor.js",
+    "components/al-node-editor/al-node-editor.js",
+    "components/al-node-list/al-node-list.js",
+    "components/al-edge-editor/al-edge-editor.js",
+    "components/al-settings/al-settings.js",
+    "components/al-url-picker/al-url-picker.js",
+    "components/al-tabs/al-tabs.js",
+    "components/al-viewer/al-viewer.js"
+  ],
+  "compiler": {
+    "name": "@stencil/core",
+    "version": "1.3.0",
+    "typescriptVersion": "3.5.3"
+  },
+  "collections": [
+    {
+      "name": "@edsilv/stencil-redux",
+      "tags": []
+    }
+  ],
+  "bundles": []
+}

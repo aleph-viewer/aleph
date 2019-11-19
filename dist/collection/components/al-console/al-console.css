@@ -1,0 +1,9 @@
+#graph {
+  --background: var(--al-textarea-background-color);
+  --color: var(--al-textarea-color);
+  --padding-bottom: var(--al-textarea-padding-bottom);
+  --padding-end: var(--al-textarea-padding-end);
+  --padding-start: var(--al-textarea-padding-start);
+  --padding-top: var(--al-textarea-padding-top);
+  font-size: var(--al-console-font-size);
+}

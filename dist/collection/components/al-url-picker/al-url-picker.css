@@ -1,0 +1,11 @@
+#select {
+  --padding-start: 0px;
+  width: 100%;
+  max-width: 100% !important;
+}
+
+#input {
+  --background: var(--al-input-background-color);
+  --color: var(--al-input-color);
+  --padding-start: var(--al-input-padding-start);
+}
