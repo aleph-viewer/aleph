@@ -53983,7 +53983,9 @@ class VolumetricLoader {
         return new Promise((resolve, reject) => {
             const xhr = new XMLHttpRequest();
             const fileExtension = Utils.getFileExtension(src);
-            if (Object.values(VolumeFileType).includes(fileExtension)) {
+            const fileEnd = Utils.getFileEndCharacters(src, 3);
+            if (Object.values(VolumeFileType).includes(fileExtension) ||
+                Object.values(VolumeFileType).includes(fileEnd)) {
                 let data = [src];
                 this._loadVolume(data, resolve, reject, container);
             }

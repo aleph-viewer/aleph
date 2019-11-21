@@ -34999,7 +34999,9 @@ var VolumetricLoader = /** @class */ (function () {
         return new Promise(function (resolve, reject) {
             var xhr = new XMLHttpRequest();
             var fileExtension = Utils.getFileExtension(src);
-            if (Object.values(VolumeFileType).includes(fileExtension)) {
+            var fileEnd = Utils.getFileEndCharacters(src, 3);
+            if (Object.values(VolumeFileType).includes(fileExtension) ||
+                Object.values(VolumeFileType).includes(fileEnd)) {
                 var data = [src];
                 _this_1._loadVolume(data, resolve, reject, container);
             }
