@@ -56,8 +56,10 @@ For minified production builds run:
 ## Contributing
 
 Read below to learn how to take part in improving Aleph:
+
 - Fork the repository and [run the examples from source](#getting-started)
 - Get familiar with [Code of Conduct](CODE_OF_CONDUCT.md)
+- Read our [guide to contributing](CONTRIBUTING.md)
 - Find an issue to work on and submit a pull request
   - First time contributing to open source? Pick a [good first issue](https://github.com/aleph-viewer/aleph/labels/good%20first%20issue) to get you familiar with GitHub contributing process.
   - First time contributing to Aleph? Pick a [beginner friendly issue](https://github.com/aleph-viewer/aleph/labels/beginners) to get you familiar with codebase and our contributing process.
