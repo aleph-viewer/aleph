@@ -2,6 +2,7 @@
 <div align="center">
     <br />
     <!-- <img src="https://raw.githubusercontent.com/aleph-viewer/aleph/master/logo.png" alt="Aleph Logo" width="300"/> -->
+    <div align="center" style="font-size: 3em">א</div>
     <h3>Aleph</h3>
 </div>
 
