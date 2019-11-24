@@ -1,10 +1,20 @@
-<p align="center">
-<h1 style="fontsize: 5rem">
-א
-</h1>
-</p>
+<br>
+<div align="center">
+    <br />
+    <!-- <img src="https://raw.githubusercontent.com/aleph-viewer/aleph/master/logo.png" alt="Aleph Logo" width="300"/> -->
+    <h3>Aleph</h3>
+</div>
 
-**Aleph** is a 3D object viewer and annotation/measurement tool built with [A-Frame](https://aframe.io), [AMI](https://github.com/FNNDSC/ami), [StencilJS](http://stenciljs.com), and [Ionic](https://ionicframework.com).
+<div id="badges" align="center">
+
+  [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-curved)](https://github.com/aleph-viewer/aleph/labels/help%20wanted)
+  [![Build Status](https://travis-ci.com/aleph-viewer/aleph.svg?branch=master)](https://travis-ci.com/aleph-viewer/aleph)
+  [![Open questions](https://img.shields.io/badge/Open-questions-blue.svg?style=flat-curved)](https://github.com/aleph-viewer/aleph/labels/question)
+  [![Open bugs](https://img.shields.io/badge/Open-bugs-red.svg?style=flat-curved)](https://github.com/aleph-viewer/aleph/labels/bug)
+
+  **Aleph** is a 3D object viewer and annotation/measurement tool built with [A-Frame](https://aframe.io), [AMI](https://github.com/FNNDSC/ami), [StencilJS](http://stenciljs.com), and [Ionic](https://ionicframework.com)
+
+</div>
 
 - [**Website**](#website)
 - [**Scope**](#scope)
