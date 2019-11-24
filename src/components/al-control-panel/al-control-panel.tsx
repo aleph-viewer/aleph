@@ -1,5 +1,5 @@
+import "@ionic/core";
 import { Component, Element, h, Prop } from "@stencil/core";
-import "../../../node_modules/@ionic/core";
 import ConsoleIcon from "../../assets/svg/console-2.svg";
 import GraphIcon from "../../assets/svg/graph.svg";
 import SettingsIcon from "../../assets/svg/options.svg";

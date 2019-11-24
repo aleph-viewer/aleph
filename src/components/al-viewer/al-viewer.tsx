@@ -1,6 +1,7 @@
 import { KeyDown } from "@edsilv/key-codes";
 import "@edsilv/stencil-redux";
 import { Action, Store } from "@edsilv/stencil-redux";
+import "@ionic/core";
 import {
   Component,
   Event,
@@ -10,7 +11,6 @@ import {
   Prop,
   State
 } from "@stencil/core";
-import "../../../node_modules/@ionic/core";
 import "../../aframe";
 import { AlGltfModelEvents, AlNodeSpawnerEvents } from "../../aframe";
 import {
