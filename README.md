@@ -20,7 +20,7 @@
 
 </div>
 
-- [**Website**](#website)
+<!-- - [**Website**](#website) -->
 - [**Scope**](#scope)
 - [**Getting Started**](#getting-started)
 - [**Contributing**](#contributing)
@@ -29,9 +29,9 @@
 - [**License**](#license)
 
 
-## Website
+<!-- ## Website
 
-[Visit the Aleph demo page](https://aleph-viewer.com) to try it out.
+[Visit the Aleph demo page](https://aleph-viewer.com) to try it out. -->
 
 ## Scope
 - Usable as a web component within any page/framework and has a [Universal Viewer](http://universalviewer.io) integration
