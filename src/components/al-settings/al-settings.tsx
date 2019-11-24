@@ -160,91 +160,104 @@ export class AlSettings {
     return (
       <div
         style={{
-          "margin-top": "10px"
+          "margin-top": "10px",
+          "text-align": "center"
         }}
       >
         <ion-button
           style={{
-            width: "80px"
+            width: "28%",
+            height: "45px",
+            "margin-left": "5px",
+            "margin-right": "5px"
           }}
           size="small"
           onClick={() => {
             this._switchControls();
           }}
         >
-          <span
+          <div
             style={{
               "font-size": "10px",
-              color: "white"
+              color: "white",
+              "margin-bottom": "2px"
             }}
-            slot="start"
           >
-            {cameraLabel}
-          </span>
           <ion-icon
             style={{
-              "min-width": "18px"
+              "min-width": "20px",
+              "min-height": "20px",
+              "margin-bottom": "2px"
             }}
-            slot="end"
             src={cameraIcon}
             title={cameraLabel}
-          />
+          /><br />
+          {cameraLabel}
+          </div>
         </ion-button>
 
         <ion-button
           style={{
-            width: "80px"
+            width: "28%",
+            height: "45px",
+            "margin-left": "5px",
+            "margin-right": "5px"
           }}
           size="small"
           onClick={() => {
             this.recenter.emit();
           }}
         >
-          <span
+          <div
             style={{
               "font-size": "10px",
-              color: "white"
+              color: "white",
+              "margin-bottom": "2px"
             }}
-            slot="start"
           >
+            <ion-icon
+              style={{
+                "min-width": "20px",
+                "min-height": "20px",
+                "margin-bottom": "2px"
+              }}
+              src={RecenterIcon}
+              title={this._contentStrings.recenter}
+            /><br />
             {this._contentStrings.recenter}
-          </span>
-          <ion-icon
-            style={{
-              "min-width": "18px"
-            }}
-            slot="end"
-            src={RecenterIcon}
-            title={this._contentStrings.recenter}
-          />
+          </div>
         </ion-button>
 
         <ion-button
           style={{
-            width: "80px"
+            width: "28%",
+            height: "45px",
+            "margin-left": "5px",
+            "margin-right": "5px"
           }}
           size="small"
           onClick={() => {
             this._switchBoundingBoxEnabled();
           }}
         >
-          <span
+          <div
             style={{
               "font-size": "10px",
-              color: "white"
+              color: "white",
+              "margin-bottom": "2px"
             }}
-            slot="start"
           >
+            <ion-icon
+              style={{
+                "min-width": "20px",
+                "min-height": "20px",
+                "margin-bottom": "2px"
+              }}
+              src={boundingBoxEnabledIcon}
+              title={this._contentStrings.bounds}
+            /><br />
             {this._contentStrings.bounds}
-          </span>
-          <ion-icon
-            style={{
-              "min-width": "18px"
-            }}
-            slot="end"
-            src={boundingBoxEnabledIcon}
-            title={this._contentStrings.bounds}
-          />
+          </div>
         </ion-button>
       </div>
     );
@@ -455,7 +468,7 @@ export class AlSettings {
             onIonChange={e => {
               this._slicesBrightness(e.detail.value as number);
             }}
-          ></ion-range>
+          />
         </ion-item>
         <ion-item
           style={{
@@ -509,7 +522,7 @@ export class AlSettings {
             onIonChange={e => {
               this._volumeBrightness(e.detail.value as number);
             }}
-          ></ion-range>
+          />
         </ion-item>
         <ion-item
           style={{
