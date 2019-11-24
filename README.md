@@ -13,17 +13,18 @@ The aim of this project is to satisfy the following top-level design goals:
 The 3D Viewer:
 
 - is usable as a web component within any page/framework
-- has a supporting Control Panel (also a stand-alone web component) showing associated settings for a given mesh or volume
-- and Control Panel are straight-forward to debug, using a single source of truth and unidirectional data flow (redux0)
-- and Control Panel are themable to allow customised colour schemes (css variables)
+- has a supporting Control Panel (a separate web component) showing associated settings for a given mesh or volume
+- is straight-forward to debug, using a single source of truth and unidirectional data flow (redux)
+- is themable to allow customised colour schemes (css variables)
 - encapsulates 3D rendering logic in a well-defined component model, with pre-existing community support/adoption (A-Frame)
-- utilises a component model to extensibly display various 3D file types (GLTF+DRACO, DICOM)
+- utilises the component model to extensibly display 3D media file types (GLTF+DRACO, DICOM)
 - renders 3D scenes declaratively, decoupling the presentation layer from the application layer
-- allows annotation of points on a 3D mesh or volume with a title and description
-- allows measurement of lengths and angles, with the potential to be extended to areas and volumes
-- allows annotation/measurement data to be stored/retrieved as json
-- allows panning, rotating, and animated transitions between annotations/measurements
-- annotation/measurement tools are "in-scene" as opposed to overlaid, permitting future AR/VR/XR use cases
+- permits annotation of points on a 3D mesh or volume with a title and description
+- permits measurement of lengths and angles, with the potential to be extended to areas and volumes
+- permits annotation/measurement data to be stored/retrieved as json
+- permits slice and volume views of volumetric data, with axis/slice selection and point cloud windowing controls
+- permits panning, rotating, and animated transitions between annotations/measurements
+- has "in-scene" annotation/measurement tools as opposed to overlaid, permitting future AR/VR/XR use cases
 
 Aleph can be used to display GLTF files and DICOM series. GLTF can be used in conjunction with DRACO compression.
 
