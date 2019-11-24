@@ -10,23 +10,24 @@ https://aleph-viewer.com
 
 The aim of this project is to satisfy the following top-level design goals:
 
-- Viewer is usable as a web component e.g. `<al-viewer src="object.gltf" />` within any page/framework
-- Viewer has a supporting control panel (also a web component) that can be used separately or not at all
-- Control panel shows associated settings for a given mesh or volume
-- Viewer and control panel are straight-forward to debug, using a single source of truth and unidirectional data flow
-- Viewer and control panel are themable to allow customised colour schemes
-- Viewer encapsulates 3D rendering logic in a well-defined component model, with pre-existing community support/adoption
-- Viewer utilises a component model to extensibly display various 3D file types (initially GLTF+DRACO, DICOM)
-- Viewer renders 3D scenes declaratively, decoupling the presentation layer from the application layer
-- Viewer allows annotation of points on a 3D mesh or volume with a title and description
-- Viewer allows measurement of lengths and angles, with the potential to be extended to areas and volumes
-- Viewer allows annotation/measurement data to be stored/retrieved as json
-- Viewer allows panning, rotating, and animated transitions between annotations/measurements
-- Viewer annotation/measurement tools are "in-scene" as opposed to overlaid, permitting future AR/VR/XR use cases
+The 3D Viewer:
 
-Aleph can be used to display GLTF files and DICOM series. GLTF can be used in conjunction with DRACO compression. DICOM series must be [represented as a json array](https://www.morphosource.org/media/morphosource/dcm_sample/ptilocercus/dcm_multi_vf300_jpegQ95_16bit_allslices.json).
+- is usable as a web component within any page/framework
+- has a supporting Control Panel (also a stand-alone web component) showing associated settings for a given mesh or volume
+- and Control Panel are straight-forward to debug, using a single source of truth and unidirectional data flow (redux0)
+- and Control Panel are themable to allow customised colour schemes (css variables)
+- encapsulates 3D rendering logic in a well-defined component model, with pre-existing community support/adoption (A-Frame)
+- utilises a component model to extensibly display various 3D file types (GLTF+DRACO, DICOM)
+- renders 3D scenes declaratively, decoupling the presentation layer from the application layer
+- allows annotation of points on a 3D mesh or volume with a title and description
+- allows measurement of lengths and angles, with the potential to be extended to areas and volumes
+- allows annotation/measurement data to be stored/retrieved as json
+- allows panning, rotating, and animated transitions between annotations/measurements
+- annotation/measurement tools are "in-scene" as opposed to overlaid, permitting future AR/VR/XR use cases
 
-To annotate/measure an object, open the "graph" tab in the control panel and click the plus icon to enable the graph. Clicking on a 3D object will create a node which can be given a title and description. Nodes can be used as points of interest or can be connected via edges. With a node selected, SHIFT + Click to create an edge between that and another node. Edges can be used for measurement and can also be labeled with a title and description. Units of measurement can be changed in the control panel. SHIFT + Click between edges to measure angles.
+Aleph can be used to display GLTF files and DICOM series. GLTF can be used in conjunction with DRACO compression.
+
+To annotate/measure an object, open the "Settings" tab in the control panel and check "Enable Node Placement". Clicking on a 3D object will create a node which can be given a title and description. Nodes can be used as points of interest or can be connected via edges. With a node selected, SHIFT + Click to create an edge between that and another node. Edges can be used for measurement and can also be labeled with a title and description. Units of measurement can be changed in the control panel. SHIFT + Click between edges to measure angles.
 
 ## Setup
 
