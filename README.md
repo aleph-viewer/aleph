@@ -15,7 +15,7 @@
 </div>
 
 <div align="center">
-  <a href="https://www.morphosource.org/"><img src="https://avatars3.githubusercontent.com/u/33296362?s=200&v=4" /></a>
+  <a href="https://www.morphosource.org/"><img width="70px" src="https://avatars3.githubusercontent.com/u/33296362?s=200&v=4" />&nbsp;&nbsp;</a>
   <a href="http://universalviewer.io"><img width="65px" src="https://avatars0.githubusercontent.com/u/9430521?s=200&v=4" /></a>
 </div>
 
