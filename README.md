@@ -16,6 +16,12 @@
 
 </div>
 
+<div style='margin:0 auto;width:80%;'>
+
+![Aleph](https://raw.githubusercontent.com/aleph-viewer/aleph/master/aleph-screenshot.jpg)
+
+</div>
+
 - [**Website**](#website)
 - [**Scope**](#scope)
 - [**Getting Started**](#getting-started)
@@ -23,6 +29,7 @@
 - [**Feedback**](#feedback)
 - [**Documentation**](#documentation)
 - [**License**](#license)
+
 
 ## Website
 
