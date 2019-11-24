@@ -33,10 +33,6 @@
 - Permits panning, rotating, and animated transitions between annotations/measurements
 - Has "in-scene" annotation/measurement tools as opposed to overlaid, permitting future AR/VR/XR use cases
 
-Aleph can be used to display GLTF files and DICOM series. GLTF can be used in conjunction with DRACO compression.
-
-To annotate/measure an object, open the "Settings" tab in the control panel and check "Enable Node Placement". Clicking on a 3D object will create a node which can be given a title and description. Nodes can be used as points of interest or can be connected via edges. With a node selected, SHIFT + Click to create an edge between that and another node. Edges can be used for measurement and can also be labeled with a title and description. Units of measurement can be changed in the control panel. SHIFT + Click between edges to measure angles.
-
 ## Getting Started
 
 Clone the repository and run `npm install`
@@ -45,22 +41,22 @@ Clone the repository and run `npm install`
 
 For development with readable sources and hot reloading run:
 
-  npm run build:dev
+    npm run build:dev
 
 ### Production Builds
 
 For minified production builds run:
 
-  npm run build
+    npm run build
 
 ### View on localhost
 
-  npm start
+    npm start
 
 ## Contributing
 
 Read below to learn how to take part in improving Aleph:
-- Fork the repository and [run the examples from source](doc/Developing.md#quick-start)
+- Fork the repository and [run the examples from source](#getting-started)
 - Get familiar with [Code of Conduct](CODE_OF_CONDUCT.md)
 - Find an issue to work on and submit a pull request
   - First time contributing to open source? Pick a [good first issue](https://github.com/aleph-viewer/aleph/labels/good%20first%20issue) to get you familiar with GitHub contributing process.
@@ -109,6 +105,10 @@ Read below how to engage with Aleph [community](COMMUNITY_TEAM.md):
   - [al-render-overlaid](/src/aframe/components/AlRenderOverlaidComponent.ts)
   - [al-trackball-control](/src/aframe/components/AlTrackballControlComponent.ts)
   - [al-volume](/src/aframe/components/AlVolumeComponent.ts) -->
+
+Aleph can be used to display GLTF files and DICOM series. GLTF can be used in conjunction with DRACO compression.
+
+To annotate/measure an object, open the "Settings" tab in the control panel and check "Enable Node Placement". Clicking on a 3D object will create a node which can be given a title and description. Nodes can be used as points of interest or can be connected via edges. With a node selected, SHIFT + Click to create an edge between that and another node. Edges can be used for measurement and can also be labeled with a title and description. Units of measurement can be changed in the control panel. SHIFT + Click between edges to measure angles.
 
 The two top-level web components are `<al-control-panel>` and `<al-viewer>`. `<al-control-panel>` wraps a tabs-based interface containing `<al-url-picker>`, `<al-settings>`, `<al-graph-editor>`, and `<al-console>`. `<al-viewer>` contains the A-Frame scene and all 3D rendering logic. It also contains a Redux store that acts as single source of truth for the viewer and control panel. `<al-viewer>` can be used independently of `<al-control-panel>`, which can be lazy loaded to provide additional options. 
 
