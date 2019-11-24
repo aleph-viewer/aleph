@@ -12,7 +12,7 @@ The aim of this project is to satisfy the following top-level design goals:
 
 The 3D Viewer:
 
-- is usable as a web component within any page/framework
+- is usable as a web component within any page/framework and has a [Universal Viewer](http://universalviewer.io) integration
 - has a supporting Control Panel (a separate web component) showing associated settings for a given mesh or volume
 - is straight-forward to debug, using a single source of truth and unidirectional data flow (redux)
 - is themable to allow customised colour schemes (css variables)
