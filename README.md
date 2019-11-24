@@ -18,7 +18,7 @@
 
 <div style='margin:0 auto;width:80%;'>
 
-![Aleph](https://raw.githubusercontent.com/aleph-viewer/aleph/master/aleph-screenshot.jpg)
+![Aleph](https://raw.githubusercontent.com/aleph-viewer/aleph/master/aleph-screenshot.png)
 
 </div>
 
