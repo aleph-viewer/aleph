@@ -440,8 +440,8 @@
 
     </script>
 
-    <script type="module" src="/build/aleph.esm.js"></script>
-    <script nomodule src="/build/aleph.js"></script>
+    <script type="module" src="/build/aleph.esm.js" onload="init()"></script>
+    <script nomodule src="/build/aleph.js" onload="init()"></script>
 
     <!-- <script>
       if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
