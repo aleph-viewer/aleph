@@ -1,12 +1,9 @@
-<br>
 <div align="center">
-    <br />
-    <!-- <img src="https://raw.githubusercontent.com/aleph-viewer/aleph/master/logo.png" alt="Aleph Logo" width="300"/> -->
-    <div align="center" style="font-size: 3em">א</div>
+    <img src="https://raw.githubusercontent.com/aleph-viewer/aleph/master/logo.png" alt="Aleph Logo" />
     <h3>Aleph</h3>
 </div>
 
-<div id="badges" align="center">
+<div align="center">
 
   [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-curved)](https://github.com/aleph-viewer/aleph/labels/help%20wanted)
   [![Build Status](https://travis-ci.com/aleph-viewer/aleph.svg?branch=master)](https://travis-ci.com/aleph-viewer/aleph)
@@ -17,7 +14,7 @@
 
 </div>
 
-<div style='margin:0 auto;width:80%;'>
+<div>
 
 ![Aleph](https://raw.githubusercontent.com/aleph-viewer/aleph/master/aleph-screenshot.png)
 
