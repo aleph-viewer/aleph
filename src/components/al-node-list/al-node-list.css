@@ -4,6 +4,6 @@ ion-item {
   user-select: none;
 }
 
-ion-item[selected] {
+ion-item[data-selected] {
   --color: var(--al-item-selected-color);
 }

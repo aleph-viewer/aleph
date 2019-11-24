@@ -1,6 +1,6 @@
 <div align="center">
-    <img src="https://raw.githubusercontent.com/aleph-viewer/aleph/master/logo.png" alt="Aleph Logo" />
-    <h3>Aleph</h3>
+  <img src="https://raw.githubusercontent.com/aleph-viewer/aleph/master/logo.png" alt="Aleph Logo" />
+  <h3>Aleph</h3>
 </div>
 
 <div align="center">
@@ -32,7 +32,6 @@
 - [**Feedback**](#feedback)
 - [**Documentation**](#documentation)
 - [**License**](#license)
-
 
 ## Website
 
