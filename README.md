@@ -15,7 +15,7 @@
 </div>
 
 <div align="center">
-  <a href="https://www.morphosource.org/"><img src="https://camo.githubusercontent.com/ede3854f0b1623d1f3e976bf54e19d6e0b353ff1/68747470733a2f2f6f70656e636f6c6c6563746976652e636f6d2f756e6976657273616c7669657765722f73706f6e736f722f342f6176617461722e737667" /></a>
+  <a href="https://www.morphosource.org/"><img src="https://avatars3.githubusercontent.com/u/33296362?s=200&v=4" /></a>
   <a href="http://universalviewer.io"><img width="65px" src="https://avatars0.githubusercontent.com/u/9430521?s=200&v=4" /></a>
 </div>
 
