@@ -443,9 +443,7 @@ export class AlSettings {
             display: "var(--slices-brightness-display, block)"
           }}
         >
-          <span>
-            {this._contentStrings.brightness}
-          </span>
+          <span>{this._contentStrings.brightness}</span>
           <ion-range
             slot="end"
             min="0"
@@ -499,9 +497,7 @@ export class AlSettings {
             display: "var(--volume-brightness-display, block)"
           }}
         >
-          <span>
-            {this._contentStrings.brightness}
-          </span>
+          <span>{this._contentStrings.brightness}</span>
           <ion-range
             slot="end"
             min="0"

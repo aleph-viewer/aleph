@@ -66,7 +66,7 @@
 
 ### Used by
 
- - [al-control-panel](../al-control-panel)
+ - [al-control-panel](..\al-control-panel)
 
 ### Graph
 ```mermaid
