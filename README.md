@@ -8,11 +8,11 @@ https://aleph-viewer.com
 
 **Aleph** is a 3D object viewer and annotation/measurement tool built with [A-Frame](https://aframe.io), [AMI](https://github.com/FNNDSC/ami), [StencilJS](http://stenciljs.com), and [Ionic](https://ionicframework.com). 
 
-Aleph:
+Aleph aims to satisfy the following goals:
 
 - is usable as a web component within any page/framework and has a [Universal Viewer](http://universalviewer.io) integration
 - has a supporting Control Panel (a separate web component) showing associated settings for a given mesh or volume
-- is straight-forward to debug, using a single source of truth and unidirectional data flow (redux)
+- is straight-forward to debug, using a single source of truth and unidirectional data flow ([redux](https://redux.js.org/))
 - is themable to allow customised colour schemes (css variables)
 - encapsulates 3D rendering logic in a well-defined component model, with pre-existing community support/adoption (A-Frame)
 - utilises the component model to extensibly display 3D media file types (GLTF+DRACO, DICOM)
