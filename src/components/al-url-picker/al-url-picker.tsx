@@ -12,7 +12,7 @@ export class AlUrlPicker {
   @Prop({ mutable: true }) public urls: Map<string, string> | null = null;
   @Prop({ mutable: true }) public url: string | null = null;
 
-  private _input: HTMLInputElement;
+  private _input: HTMLIonInputElement;
 
   public render() {
     if (this.urls) {
@@ -37,7 +37,7 @@ export class AlUrlPicker {
             <ion-input
               id="input"
               type="url"
-              size="100"
+              size={100}
               placeholder="src"
               required
               value={this.url}

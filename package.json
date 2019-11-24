@@ -29,6 +29,7 @@
   "dependencies": {
     "@edsilv/key-codes": "0.1.1",
     "@edsilv/stencil-redux": "0.1.1",
+    "@ionic/core": "^4.11.5",
     "redux": "^4.0.1",
     "redux-logger": "3.0.6",
     "redux-thunk": "2.3.0",

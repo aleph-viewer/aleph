@@ -31,7 +31,7 @@ export class AlEdgeEditor {
               placeholder={this._contentStrings.title}
               required
               onIonChange={e => (edge.title = e.detail.value)}
-              maxlength="20"
+              maxlength={20}
             />
           </ion-item>
           <ion-item>
@@ -39,9 +39,9 @@ export class AlEdgeEditor {
               id="description"
               value={edge.description}
               placeholder={this._contentStrings.description}
-              rows="5"
+              rows={5}
               onIonChange={e => (edge.description = e.detail.value)}
-              maxlength="280"
+              maxlength={280}
             />
           </ion-item>
           <ion-item>

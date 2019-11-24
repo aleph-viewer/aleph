@@ -10,6 +10,7 @@ import {
   Prop,
   State
 } from "@stencil/core";
+import "../../../node_modules/@ionic/core";
 import "../../aframe";
 import { AlGltfModelEvents, AlNodeSpawnerEvents } from "../../aframe";
 import {

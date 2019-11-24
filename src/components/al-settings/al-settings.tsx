@@ -413,11 +413,11 @@ export class AlSettings {
           <span>{this._contentStrings.slice}</span>
           <ion-range
             slot="end"
-            min="0"
-            max="1"
+            min={0}
+            max={1}
             step={1 / this.slicesMaxIndex}
             value={this.slicesIndex}
-            onIonChange={e => this._slicesIndex(e.detail.value)}
+            onIonChange={e => this._slicesIndex(e.detail.value as number)}
           />
         </ion-item>
       </div>
@@ -446,14 +446,14 @@ export class AlSettings {
           <span>{this._contentStrings.brightness}</span>
           <ion-range
             slot="end"
-            min="0"
-            max="1"
-            step=".05"
-            snaps="true"
-            ticks="false"
+            min={0}
+            max={1}
+            step={.05}
+            snaps={true}
+            ticks={false}
             value={this.slicesBrightness}
             onIonChange={e => {
-              this._slicesBrightness(e.detail.value);
+              this._slicesBrightness(e.detail.value as number);
             }}
           ></ion-range>
         </ion-item>
@@ -465,13 +465,13 @@ export class AlSettings {
           <span>{this._contentStrings.contrast}</span>
           <ion-range
             slot="end"
-            min="0"
-            max="1"
-            step=".05"
-            snaps="true"
-            ticks="false"
+            min={0}
+            max={1}
+            step={.05}
+            snaps={true}
+            ticks={false}
             value={this.slicesContrast}
-            onIonChange={e => this._slicesContrast(e.detail.value)}
+            onIonChange={e => this._slicesContrast(e.detail.value as number)}
           />
         </ion-item>
       </div>
@@ -500,14 +500,14 @@ export class AlSettings {
           <span>{this._contentStrings.brightness}</span>
           <ion-range
             slot="end"
-            min="0"
-            max="1"
-            step=".05"
-            snaps="true"
-            ticks="false"
+            min={0}
+            max={1}
+            step={.05}
+            snaps={true}
+            ticks={false}
             value={this.volumeBrightness}
             onIonChange={e => {
-              this._volumeBrightness(e.detail.value);
+              this._volumeBrightness(e.detail.value as number);
             }}
           ></ion-range>
         </ion-item>
@@ -519,13 +519,13 @@ export class AlSettings {
           <span>{this._contentStrings.contrast}</span>
           <ion-range
             slot="end"
-            min="0"
-            max="1"
-            step=".05"
-            snaps="true"
-            ticks="false"
+            min={0}
+            max={1}
+            step={.05}
+            snaps={true}
+            ticks={false}
             value={this.volumeContrast}
-            onIonChange={e => this._volumeContrast(e.detail.value)}
+            onIonChange={e => this._volumeContrast(e.detail.value as number)}
           />
         </ion-item>
       </div>

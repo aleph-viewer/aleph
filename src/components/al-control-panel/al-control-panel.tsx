@@ -1,8 +1,9 @@
+import { Component, Element, h, Prop } from "@stencil/core";
+import "../../../node_modules/@ionic/core";
 import ConsoleIcon from "../../assets/svg/console-2.svg";
 import GraphIcon from "../../assets/svg/graph.svg";
 import SettingsIcon from "../../assets/svg/options.svg";
 import SourceIcon from "../../assets/svg/source.svg";
-import { Component, Element, h, Prop } from "@stencil/core";
 import {
   ControlsType,
   DisplayMode,

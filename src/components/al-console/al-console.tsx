@@ -9,7 +9,7 @@ import i18n from "./al-console.i18n.en.json";
 })
 export class AlConsole {
   private _contentStrings: ContentStrings = i18n;
-  private _graph: HTMLTextAreaElement;
+  private _graph: HTMLIonTextareaElement;
 
   @Event() public graphSubmitted: EventEmitter;
 
@@ -35,10 +35,10 @@ export class AlConsole {
           <ion-textarea
             id="graph"
             value={this._getGraphJson()}
-            rows="10"
+            rows={10}
             required
             onIonChange={e => (this.graph = e.detail.value)}
-            maxlength="5000"
+            maxlength={5000}
             ref={el => (this._graph = el)}
           />
         </ion-item>
