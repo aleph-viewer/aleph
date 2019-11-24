@@ -20,6 +20,9 @@ export const config: Config = {
     {
       src: '**/*.i18n.*.json',
       dest: 'i18n'
+    },
+    {
+      src: 'demo.html'
     }
   ],
   testing: {
