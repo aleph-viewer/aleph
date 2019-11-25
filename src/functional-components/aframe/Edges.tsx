@@ -97,6 +97,7 @@ export const Edges: FunctionalComponent<EdgesProps> = (
           centoid.clone(),
           cameraPosition
         );
+
         const entityScale =
           (frustrumDistance / boundingSphereRadius) *
           Constants.frustrumScaleFactor;
