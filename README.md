@@ -37,6 +37,11 @@
 
 [Visit the Aleph demo page](https://aleph-viewer.com) to try it out.
 
+Simple example: <!-- Remix Button -->
+<a href="https://glitch.com/edit/#!/remix/aleph-example">
+  <img src="https://cdn.glitch.com/2bdfb3f8-05ef-4035-a06e-2043962a3a13%2Fremix%402x.png?1513093958726" alt="remix this" height="33">
+</a>
+
 ## Scope
 - Usable as a web component within any page/framework and has a [Universal Viewer](http://universalviewer.io) integration
 - Has a supporting Control Panel (a separate web component) showing associated settings for a given mesh or volume
