@@ -183,16 +183,17 @@ export class AlSettings {
               "margin-bottom": "2px"
             }}
           >
-          <ion-icon
-            style={{
-              "min-width": "20px",
-              "min-height": "20px",
-              "margin-bottom": "2px"
-            }}
-            src={cameraIcon}
-            title={cameraLabel}
-          /><br />
-          {cameraLabel}
+            <ion-icon
+              style={{
+                "min-width": "20px",
+                "min-height": "20px",
+                "margin-bottom": "2px"
+              }}
+              src={cameraIcon}
+              title={cameraLabel}
+            />
+            <br />
+            {cameraLabel}
           </div>
         </ion-button>
 
@@ -223,7 +224,8 @@ export class AlSettings {
               }}
               src={RecenterIcon}
               title={this._contentStrings.recenter}
-            /><br />
+            />
+            <br />
             {this._contentStrings.recenter}
           </div>
         </ion-button>
@@ -255,7 +257,8 @@ export class AlSettings {
               }}
               src={boundingBoxEnabledIcon}
               title={this._contentStrings.bounds}
-            /><br />
+            />
+            <br />
             {this._contentStrings.bounds}
           </div>
         </ion-button>
@@ -461,7 +464,7 @@ export class AlSettings {
             slot="end"
             min={0}
             max={1}
-            step={.05}
+            step={0.05}
             snaps={true}
             ticks={false}
             value={this.slicesBrightness}
@@ -480,7 +483,7 @@ export class AlSettings {
             slot="end"
             min={0}
             max={1}
-            step={.05}
+            step={0.05}
             snaps={true}
             ticks={false}
             value={this.slicesContrast}
@@ -515,7 +518,7 @@ export class AlSettings {
             slot="end"
             min={0}
             max={1}
-            step={.05}
+            step={0.05}
             snaps={true}
             ticks={false}
             value={this.volumeBrightness}
@@ -534,7 +537,7 @@ export class AlSettings {
             slot="end"
             min={0}
             max={1}
-            step={.05}
+            step={0.05}
             snaps={true}
             ticks={false}
             value={this.volumeContrast}

@@ -68,9 +68,27 @@
 
  - [al-control-panel](..\al-control-panel)
 
+### Depends on
+
+- ion-button
+- ion-icon
+- ion-item
+- ion-list-header
+- ion-toggle
+- ion-range
+
 ### Graph
 ```mermaid
 graph TD;
+  al-settings --> ion-button
+  al-settings --> ion-icon
+  al-settings --> ion-item
+  al-settings --> ion-list-header
+  al-settings --> ion-toggle
+  al-settings --> ion-range
+  ion-button --> ion-ripple-effect
+  ion-item --> ion-icon
+  ion-item --> ion-ripple-effect
   al-control-panel --> al-settings
   style al-settings fill:#f9f,stroke:#333,stroke-width:4px
 ```

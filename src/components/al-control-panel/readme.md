@@ -40,7 +40,13 @@
 
 ### Depends on
 
+- ion-app
 - [al-tabs](..\al-tabs)
+- ion-tab-bar
+- ion-tab-button
+- ion-icon
+- ion-label
+- ion-tab
 - [al-url-picker](..\al-url-picker)
 - [al-settings](..\al-settings)
 - [al-graph-editor](..\al-graph-editor)
@@ -49,15 +55,59 @@
 ### Graph
 ```mermaid
 graph TD;
+  al-control-panel --> ion-app
   al-control-panel --> al-tabs
+  al-control-panel --> ion-tab-bar
+  al-control-panel --> ion-tab-button
+  al-control-panel --> ion-icon
+  al-control-panel --> ion-label
+  al-control-panel --> ion-tab
   al-control-panel --> al-url-picker
   al-control-panel --> al-settings
   al-control-panel --> al-graph-editor
   al-control-panel --> al-console
+  ion-tab-button --> ion-ripple-effect
+  al-url-picker --> ion-item
+  al-url-picker --> ion-select
+  al-url-picker --> ion-select-option
+  al-url-picker --> ion-input
+  al-url-picker --> ion-button
+  al-url-picker --> ion-icon
+  ion-item --> ion-icon
+  ion-item --> ion-ripple-effect
+  ion-button --> ion-ripple-effect
+  al-settings --> ion-button
+  al-settings --> ion-icon
+  al-settings --> ion-item
+  al-settings --> ion-list-header
+  al-settings --> ion-toggle
+  al-settings --> ion-range
   al-graph-editor --> al-node-list
+  al-graph-editor --> ion-item-divider
   al-graph-editor --> al-node-editor
   al-graph-editor --> al-edge-editor
   al-graph-editor --> al-angle-editor
+  al-node-list --> ion-list
+  al-node-list --> ion-item
+  al-node-editor --> ion-item
+  al-node-editor --> ion-input
+  al-node-editor --> ion-textarea
+  al-node-editor --> ion-button
+  al-node-editor --> ion-icon
+  al-edge-editor --> ion-item
+  al-edge-editor --> ion-input
+  al-edge-editor --> ion-textarea
+  al-edge-editor --> ion-button
+  al-edge-editor --> ion-icon
+  al-angle-editor --> ion-item
+  al-angle-editor --> ion-input
+  al-angle-editor --> ion-textarea
+  al-angle-editor --> ion-button
+  al-angle-editor --> ion-icon
+  al-console --> ion-item
+  al-console --> ion-textarea
+  al-console --> ion-button
+  al-console --> ion-icon
   style al-control-panel fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

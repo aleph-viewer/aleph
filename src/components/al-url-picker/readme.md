@@ -26,9 +26,27 @@
 
  - [al-control-panel](..\al-control-panel)
 
+### Depends on
+
+- ion-item
+- ion-select
+- ion-select-option
+- ion-input
+- ion-button
+- ion-icon
+
 ### Graph
 ```mermaid
 graph TD;
+  al-url-picker --> ion-item
+  al-url-picker --> ion-select
+  al-url-picker --> ion-select-option
+  al-url-picker --> ion-input
+  al-url-picker --> ion-button
+  al-url-picker --> ion-icon
+  ion-item --> ion-icon
+  ion-item --> ion-ripple-effect
+  ion-button --> ion-ripple-effect
   al-control-panel --> al-url-picker
   style al-url-picker fill:#f9f,stroke:#333,stroke-width:4px
 ```

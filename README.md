@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://raw.githubusercontent.com/aleph-viewer/aleph/master/logo.png" alt="Aleph Logo" />
+  <img src="https://raw.githubusercontent.com/aleph-viewer/aleph/master/logo.png" width="70" alt="Aleph Logo" />
   <h3>Aleph</h3>
 </div>
 
