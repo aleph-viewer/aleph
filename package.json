@@ -23,7 +23,6 @@
     "start:prod": "stencil build --serve",
     "test": "stencil test --spec --e2e",
     "test.watch": "stencil test --spec --e2e --watchAll",
-    "deploy": "netlify deploy --dir=www --prod",
     "prepublishOnly": "npm run build && npm run test"
   },
   "dependencies": {
