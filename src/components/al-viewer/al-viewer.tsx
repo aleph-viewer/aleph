@@ -17,6 +17,7 @@ import {
   AlVolumeCastType,
   AlVolumeEvents
 } from "../../aframe/components/AlVolumeComponent";
+import "../../assets/OrbitControls.js";
 import { Constants } from "../../Constants";
 import {
   AlGraphEntryType,
