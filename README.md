@@ -6,7 +6,7 @@
 <div align="center">
 
   [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-curved)](https://github.com/aleph-viewer/aleph/labels/help%20wanted)
-  [![Build Status](https://travis-ci.com/aleph-viewer/aleph.svg?branch=master)](https://travis-ci.com/aleph-viewer/aleph)
+  ![Build Status](https://github.com/UniversalViewer/uv-ebook-extension/workflows/CI/badge.svg)
   [![Open questions](https://img.shields.io/badge/Open-questions-blue.svg?style=flat-curved)](https://github.com/aleph-viewer/aleph/labels/question)
   [![Open bugs](https://img.shields.io/badge/Open-bugs-red.svg?style=flat-curved)](https://github.com/aleph-viewer/aleph/labels/bug)
 
