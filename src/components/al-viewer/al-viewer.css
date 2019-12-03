@@ -52,7 +52,7 @@
 #al-container #spinner {
   position: absolute;
   left: 50%;
-  top: 50%;
+  top: calc(50% - 15px);
 }
 
 #al-container #spinner .square {

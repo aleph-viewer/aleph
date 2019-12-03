@@ -36,22 +36,22 @@
         color: #fff;
       }
 
-      #debug {
+      #controlPanel {
         flex: 20%;
         min-width: 300px;
         padding: 1rem;
       }
 
-      #debug h1 {
+      #controlPanel h1 {
         margin-top: 0;
         text-align: right;
       }
 
-      #debug section {
+      #controlPanel section {
         margin: 1rem 0 0 0;
       }
 
-      #debug.disabled {
+      #controlPanel.disabled {
         pointer-events: none;
         opacity: 0.4;
       }
@@ -73,7 +73,7 @@
   </head>
   <body>
     <div id="container">
-      <div id="debug" class="disabled">
+      <div id="controlPanel" class="disabled">
         <al-control-panel></al-control-panel>
       </div>
 
@@ -88,7 +88,7 @@
 
     <script>
 
-      var container, alControlPanel, alViewer, state, debug;
+      var container, alControlPanel, alViewer, state, controlPanel;
 
       var prevState = {};
 
@@ -156,7 +156,7 @@
         container = document.getElementById("container");
         alControlPanel = document.querySelector("al-control-panel");
         alViewer = document.querySelector("al-viewer");
-        debug = document.getElementById("debug");
+        controlPanel = document.getElementById("controlPanel");
 
         alControlPanel.urls = urls;
 
@@ -383,9 +383,9 @@
         }
 
         if (!state.srcLoaded) {
-          debug.classList.add("disabled");
+          controlPanel.classList.add("disabled");
         } else {
-          debug.classList.remove("disabled");
+          controlPanel.classList.remove("disabled");
         }
 
         alControlPanel.angles = state.angles;
@@ -419,7 +419,7 @@
         if (alViewer.resize) {
           // scene will resize internally as it listens to window.onresize. however, it's useful to be able to force a resize if the window.onresize event isn't fired
           alViewer.resize();
-          alControlPanel.tabContentHeight = debug.clientHeight - 150 + "px";
+          alControlPanel.tabContentHeight = controlPanel.clientHeight - 150 + "px";
         }
       }
 
