@@ -581,7 +581,7 @@ export class AlSettings {
         }}
       >
         {this.renderControlsTypeSelect()}
-        {/* {this.renderDisplayModeToggle()} */}
+        {this.renderDisplayModeToggle()}
         {this.renderOptions()}
         {this.renderGraphEnabled()}
       </div>

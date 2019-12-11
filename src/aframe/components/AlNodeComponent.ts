@@ -14,7 +14,7 @@ interface AlNodeState {
   mesh: THREE.Mesh;
   mouseDown: boolean;
   outlineGeometry: THREE.SphereGeometry;
-  outlineMaterial: THREE.ShaderMaterial;
+  outlineMaterial: THREE.Material;
   outlineMesh: THREE.Mesh;
   selected: boolean;
 }
