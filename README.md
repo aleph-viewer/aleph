@@ -4,12 +4,14 @@
 </div>
 
 <div align="center">
+
   [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-curved)](https://github.com/aleph-viewer/aleph/labels/help%20wanted)
   ![Build Status](https://github.com/aleph-viewer/aleph/workflows/CI/badge.svg)
   [![Open questions](https://img.shields.io/badge/Open-questions-blue.svg?style=flat-curved)](https://github.com/aleph-viewer/aleph/labels/question)
   [![Open bugs](https://img.shields.io/badge/Open-bugs-red.svg?style=flat-curved)](https://github.com/aleph-viewer/aleph/labels/bug)
 
   **Aleph** is a 3D object viewer and annotation/measurement tool built with [A-Frame](https://aframe.io), [AMI](https://github.com/FNNDSC/ami), [StencilJS](http://stenciljs.com), and [Ionic](https://ionicframework.com)
+
 </div>
 
 <div align="center">
