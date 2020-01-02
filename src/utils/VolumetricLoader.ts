@@ -1,5 +1,5 @@
-import { Utils } from "../utils";
 import { VolumeFileType } from "../enums";
+import { Utils } from "../utils";
 
 export class VolumetricLoader {
   // tslint:disable-next-line: no-any
