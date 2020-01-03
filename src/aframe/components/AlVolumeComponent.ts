@@ -247,11 +247,12 @@ export default AFRAME.registerComponent("al-volume", {
 
       const prev = window.performance.now();
 
+      this.el.sceneEl.renderer.setRenderTarget(this.state.bufferSceneTexture);
       this.el.sceneEl.renderer.render(
         this.state.bufferScene,
-        this.el.sceneEl.camera,
-        this.state.bufferSceneTexture
+        this.el.sceneEl.camera
       );
+      this.el.sceneEl.renderer.setRenderTarget(null);
 
       const post = window.performance.now();
       const renderTime: number = post - prev;
