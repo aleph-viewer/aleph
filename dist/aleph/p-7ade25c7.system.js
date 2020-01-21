@@ -1,0 +1,1 @@
+System.register([],function(e){"use strict";return{execute:function(){var r=e("n",function(e,r,t,s){var u=e.closest("ion-nav");if(u){if(r==="forward"){if(t!==undefined){return u.push(t,s,{skipIfBusy:true})}}else if(r==="root"){if(t!==undefined){return u.setRoot(t,s,{skipIfBusy:true})}}else if(r==="back"){return u.pop({skipIfBusy:true})}}return Promise.resolve(false)})}}});

@@ -1,0 +1,1 @@
+const i=(i,r,s,e)=>{const f=i.closest("ion-nav");if(f)if("forward"===r){if(void 0!==s)return f.push(s,e,{skipIfBusy:!0})}else if("root"===r){if(void 0!==s)return f.setRoot(s,e,{skipIfBusy:!0})}else if("back"===r)return f.pop({skipIfBusy:!0});return Promise.resolve(!1)};export{i as n};

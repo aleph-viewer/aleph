@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0"
+    />
+    <title>Aleph</title>
+    <script src="/assets/aframe-master.js"></script>
+    <script src="https://unpkg.com/three@0.102.1/examples/js/controls/OrbitControls.js"></script>
+
+    <script
+      type="module"
+      src="https://unpkg.com/@ionic/core@4.11.5/dist/ionic/ionic.esm.js"
+    ></script>
+    <script
+      nomodule=""
+      src="https://unpkg.com/@ionic/core@4.11.5/dist/ionic/ionic.js"
+    ></script>
+
+    <script src="/assets/ami.min.js"></script>
+
+    <link rel="stylesheet" href="/build/aleph.css" />
+    <style>
+      *,
+      *:before,
+      *:after {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: sans-serif;
+        background-color: #1c1b1c;
+      }
+
+      #container {
+        width: 100%;
+        height: 100%;
+        display: flex;
+      }
+
+      #scene {
+        flex: 80%;
+        color: #fff;
+      }
+
+      #debug {
+        flex: 20%;
+        min-width: 300px;
+        padding: 1rem;
+      }
+
+      #debug h1 {
+        margin-top: 0;
+        text-align: right;
+      }
+
+      #debug section {
+        margin: 1rem 0 0 0;
+      }
+
+      #debug.disabled {
+        pointer-events: none;
+        opacity: 0.4;
+      }
+
+      .ion-page {
+        visibility: visible !important; /* edge fix */
+      }
+
+      .rs-base {
+        margin-top: 20px;
+        position: static;
+        width: auto;
+      }
+
+      /* al-control-panel {
+        --bounding-box-enabled-visibility: hidden;
+      } */
+    </style>
+  </head>
+  <body>
+    <div id="container">
+      <div id="debug" class="disabled">
+        <al-control-panel></al-control-panel>
+      </div>
+
+      <div id="scene">
+        <al-viewer
+          draco-decoder-path="assets/"
+          width="100%"
+          height="100%"
+        ></al-viewer>
+      </div>
+    </div>
+
+    <script>
+
+      var container, alControlPanel, alViewer, state, debug;
+
+      var prevState = {};
+
+      const urls = new Map([
+        [
+          "https://nomad-project.co.uk/objects/collection/toy-lion/_toy-lion/toy-lion.gltf",
+          "Toy Lion (Textured Surface)"
+        ],
+        [
+          "https://alembic-dcm.netlify.com/shrew400/shrew400.dcm",
+          "Tree Shrew Head"
+        ],
+        [
+          "https://alembic-dcm.netlify.com/plat400/plat400.dcm",
+          "Platypus Body"
+        ],
+        [
+          "https://alembic-dcm.netlify.com/loris400/loris400.dcm",
+          "Loris Body"
+        ],
+        [
+          "https://alembic-dcm.netlify.com/squirrel400/squirrel400.dcm",
+          "Ground Squirrel Body"
+        ],
+        [
+          "https://alembic-dcm.netlify.com/armadillo400/armadillo400.dcm",
+          "Armadillo Body"
+        ],
+        [
+          "https://alembic-dcm.netlify.com/sloth400/sloth400.dcm",
+          "Baby Sloth Body"
+        ],
+        [
+          "https://alembic-dcm.netlify.com/cranium400/cranium400.dcm",
+          "Gorilla Cranium (Skeletal)"
+        ],
+        [
+          "https://alembic-dcm.netlify.com/lumbar400/lumbar400.dcm",
+          "Lumbar Vertebrae (Skeletal)"
+        ],
+        [
+          "https://alembic-dcm.netlify.com/foot400/foot400.dcm",
+          "Flying Lemur Foot (Skeletal)"
+        ],
+        [
+          "https://alembic-dcm.netlify.com/frog400/frog400.dcm",
+          "Frog Body (Iodine Stained)"
+        ],
+        [
+          "https://alembic-dcm.netlify.com/lemur400/lemur400.dcm",
+          "Lemur Body (Iodine Stained)"
+        ],
+        [
+          "https://alembic-dcm.netlify.com/bird.glb",
+          "Tropical Bird Body (Textured Surface)"
+        ],
+        [
+          "https://alembic-dcm.netlify.com/frog.glb",
+          "Frog On Leaf (Textured Surface)"
+        ]
+      ]);
+
+      function init() {
+
+        container = document.getElementById("container");
+        alControlPanel = document.querySelector("al-control-panel");
+        alViewer = document.querySelector("al-viewer");
+        debug = document.getElementById("debug");
+
+        alControlPanel.urls = urls;
+
+        var promises = [alControlPanel, alViewer].map(function(customElement) {
+          return customElements.whenDefined(customElement.localName);
+        });
+
+        Promise.all(promises).then(function() {
+          nextState({
+            consoleTabEnabled: true,
+            graphTabEnabled: true,
+            settingsTabEnabled: true,
+            srcTabEnabled: true,
+            src: Array.from(urls)[0][0]
+          });
+        });
+
+        alViewer.addEventListener(
+          "changed",
+          function(e) {
+            // update everything except src (this can't be changed from within al-viewer)
+            nextState(Object.assign({}, e.detail, {
+              src: prevState.src
+            }));
+          },
+          false
+        );
+
+        alControlPanel.addEventListener(
+          "boundingBoxEnabledChanged",
+          function(e) {
+            alViewer.setBoundingBoxEnabled(e.detail);
+          },
+          false
+        );
+
+        alControlPanel.addEventListener(
+          "controlsTypeChanged",
+          function(e) {
+            alViewer.setControlsType(e.detail);
+          },
+          false
+        );
+
+        alControlPanel.addEventListener(
+          "deleteAngle",
+          function(e) {
+            alViewer.deleteAngle(e.detail);
+          },
+          false
+        );
+
+        alControlPanel.addEventListener(
+          "deleteEdge",
+          function(e) {
+            alViewer.deleteEdge(e.detail);
+          },
+          false
+        );
+
+        alControlPanel.addEventListener(
+          "deleteNode",
+          function(e) {
+            alViewer.deleteNode(e.detail);
+          },
+          false
+        );
+
+        alControlPanel.addEventListener(
+          "displayModeChanged",
+          function(e) {
+            alViewer.setDisplayMode(e.detail);
+          },
+          false
+        );
+
+        alControlPanel.addEventListener(
+          "graphEnabledChanged",
+          function(e) {
+            alViewer.setGraphEnabled(e.detail);
+          },
+          false
+        );
+
+        alControlPanel.addEventListener(
+          "materialChanged",
+          function(e) {
+            alViewer.setMaterial(e.detail);
+          },
+          false
+        );
+
+        alControlPanel.addEventListener(
+          "orientationChanged",
+          function(e) {
+            alViewer.setOrientation(e.detail);
+          },
+          false
+        );
+
+        alControlPanel.addEventListener(
+          "recenter",
+          function(e) {
+            alViewer.recenter();
+          },
+          false
+        );
+
+        alControlPanel.addEventListener(
+          "graphSubmitted",
+          function(e) {
+            const graph = JSON.parse(e.detail);
+            if (graph) {
+              alViewer.clearGraph();
+              alViewer.setGraph(graph);
+            }
+          },
+          false
+        );
+
+        alControlPanel.addEventListener(
+          "saveNode",
+          function(e) {
+            alViewer.setNode(e.detail);
+          },
+          false
+        );
+
+        alControlPanel.addEventListener(
+          "selectedChanged",
+          function(e) {
+            alViewer.selectNode(e.detail);
+          },
+          false
+        );
+
+        alControlPanel.addEventListener(
+          "slicesIndexChanged",
+          function(e) {
+            alViewer.setSlicesIndex(e.detail);
+          },
+          false
+        );
+
+        alControlPanel.addEventListener(
+          "slicesBrightnessChanged",
+          function(e) {
+            alViewer.setVolumeBrightness(e.detail);
+          },
+          false
+        );
+
+        alControlPanel.addEventListener(
+          "slicesContrastChanged",
+          function(e) {
+            alViewer.setVolumeContrast(e.detail);
+          },
+          false
+        );
+
+        alControlPanel.addEventListener(
+          "ionTabsDidChange",
+          function(e) {
+            resize()
+          },
+          false
+        );
+
+        alControlPanel.addEventListener(
+          "unitsChanged",
+          function(e) {
+            alViewer.setUnits(e.detail);
+          },
+          false
+        );
+
+        alControlPanel.addEventListener(
+          "urlChanged",
+          function(e) {
+            nextState({
+              src: e.detail
+            });
+          },
+          false
+        );
+
+        alControlPanel.addEventListener(
+          "volumeStepsChanged",
+          function(e) {
+            alViewer.setVolumeSteps(e.detail);
+          },
+          false
+        );
+
+        alControlPanel.addEventListener(
+          "volumeBrightnessChanged",
+          function(e) {
+            alViewer.setVolumeBrightness(e.detail);
+          },
+          false
+        );
+
+        alControlPanel.addEventListener(
+          "volumeContrastChanged",
+          function(e) {
+            alViewer.setVolumeContrast(e.detail);
+          },
+          false
+        );
+
+        resize();
+      }
+
+      function nextState(s) {
+
+        state = Object.assign({}, state, s);
+
+        if (state.src && state.src !== prevState.src) {
+          alViewer.load(state.src);
+        }
+
+        if (state.src) {
+          alControlPanel.url = state.src;
+        }
+
+        if (!state.srcLoaded) {
+          debug.classList.add("disabled");
+        } else {
+          debug.classList.remove("disabled");
+        }
+
+        alControlPanel.angles = state.angles;
+        alControlPanel.boundingBoxEnabled =  state.boundingBoxEnabled;
+        alControlPanel.consoleTabEnabled = state.consoleTabEnabled;
+        alControlPanel.controlsType = state.controlsType;
+        alControlPanel.displayMode = state.displayMode;
+        alControlPanel.edges = state.edges;
+        alControlPanel.graphEnabled = state.graphEnabled;
+        alControlPanel.graphTabEnabled = state.graphTabEnabled;
+        alControlPanel.nodes = state.nodes;
+        alControlPanel.orientation = state.orientation;
+        alControlPanel.selected = state.selected;
+        alControlPanel.settingsTabEnabled = state.settingsTabEnabled;
+        alControlPanel.slicesBrightness = state.volumeWindowCenter;
+        alControlPanel.slicesContrast = state.volumeWindowWidth;
+        alControlPanel.slicesIndex = state.slicesIndex;
+        alControlPanel.slicesMaxIndex = state.slicesMaxIndex;
+        alControlPanel.srcTabEnabled = state.srcTabEnabled;
+        alControlPanel.units = state.units;
+        alControlPanel.volumeBrightness = state.volumeWindowCenter;
+        alControlPanel.volumeContrast = state.volumeWindowWidth;
+        alControlPanel.volumeSteps = state.volumeSteps;
+        alControlPanel.volumeStepsHighEnabled = state.volumeStepsHighEnabled;
+
+        prevState = Object.assign({}, state);
+      }
+
+      function resize() {
+        container.style.height = window.innerHeight + "px";
+        if (alViewer.resize) {
+          // scene will resize internally as it listens to window.onresize. however, it's useful to be able to force a resize if the window.onresize event isn't fired
+          alViewer.resize();
+          alControlPanel.tabContentHeight = debug.clientHeight - 150 + "px";
+        }
+      }
+
+      window.addEventListener("resize", function() {
+        resize();
+      });
+
+    </script>
+
+    <!-- <script type="module" src="/build/aleph.esm.js" onload="init()"></script>
+    <script nomodule src="/build/aleph.js" onload="init()"></script> -->
+
+    <script src="https://unpkg.com/@universalviewer/aleph/dist/aleph/aleph.js" onload="init()"></script>
+  </body>
+</html>

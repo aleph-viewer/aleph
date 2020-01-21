@@ -1,0 +1,34 @@
+import "@ionic/core";
+import { ControlsType, DisplayMode, Orientation, Units } from "../../enums/index.js";
+import { AlAngle, AlEdge, AlNode } from "../../interfaces/index.js";
+export declare class AlSettings {
+    private _contentStrings;
+    el: HTMLElement;
+    angles: Map<string, AlAngle> | null;
+    boundingBoxEnabled: boolean;
+    consoleTabEnabled: boolean;
+    controlsType: ControlsType;
+    displayMode: DisplayMode;
+    edges: Map<string, AlEdge> | null;
+    graphEnabled: boolean;
+    graphTabEnabled: boolean;
+    nodes: Map<string, AlNode> | null;
+    orientation: Orientation;
+    selected: string | null;
+    settingsTabEnabled: boolean;
+    slicesBrightness: number;
+    slicesContrast: number;
+    slicesIndex: number;
+    slicesMaxIndex: number;
+    srcTabEnabled: boolean;
+    tabContentHeight: string | null;
+    units: Units;
+    url: string | null;
+    urls: Map<string, string> | null;
+    volumeBrightness: number;
+    volumeContrast: number;
+    volumeSteps: number;
+    volumeStepsHighEnabled: boolean;
+    private _getGraphJson;
+    render(): any;
+}

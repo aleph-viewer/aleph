@@ -1,0 +1,9 @@
+ion-item {
+  --color: var(--al-item-color);
+  --border-color: var(--al-item-border-color);
+  user-select: none;
+}
+
+ion-item[data-selected] {
+  --color: var(--al-item-selected-color);
+}

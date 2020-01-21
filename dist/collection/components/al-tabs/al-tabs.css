@@ -1,0 +1,26 @@
+/*@import "../../themes/ionic.globals";*/
+
+:host {
+  /*@include position(0, 0, 0, 0);*/
+
+  /* display: flex;
+  position: static;
+
+  flex-direction: column; */
+
+  /* width: 100%; */
+  /* height: 100%; */
+
+  /* contain: layout size style; */
+  z-index: var(--z-index-page-container);
+
+  --ion-tab-bar-color: var(--al-item-color);
+}
+
+.tabs-inner {
+  position: relative;
+
+  /* flex: 1;
+
+  contain: layout size style; */
+}
