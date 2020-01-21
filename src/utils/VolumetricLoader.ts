@@ -8,9 +8,13 @@ export class VolumetricLoader {
     return new Promise<any>((resolve, reject) => {
       const xhr: XMLHttpRequest = new XMLHttpRequest();
       const fileExtension: string = Utils.getFileExtension(src);
+      const fileEnd: string = Utils.getFileEndCharacters(src, 3);
 
       if (
-        Object.values(VolumeFileType).includes(fileExtension as VolumeFileType)
+        Object.values(VolumeFileType).includes(
+          fileExtension as VolumeFileType
+        ) ||
+        Object.values(VolumeFileType).includes(fileEnd as VolumeFileType)
       ) {
         let data = [src];
         this._loadVolume(data, resolve, reject, container);
