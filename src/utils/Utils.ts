@@ -37,6 +37,10 @@ export class Utils {
     return file.substring(file.lastIndexOf(".") + 1);
   }
 
+  public static getFileEndCharacters(file: string, n: number): string {
+    return file.slice(file.length - n);
+  }
+
   public static getGeometryCenter(
     geometry: THREE.Geometry | THREE.BufferGeometry
   ): THREE.Vector3 {
