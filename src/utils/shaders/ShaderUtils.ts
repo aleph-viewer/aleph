@@ -9,7 +9,6 @@ export class ShaderUtils {
     alpha: number = 0.1,
     chrominace: number = 0.5
   ): THREE.Material {
-
     //return new THREE.MeshLambertMaterial( { color: 0x666666, emissive: 0xff0000 } )
 
     return new THREE.ShaderMaterial({

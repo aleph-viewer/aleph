@@ -4,7 +4,7 @@
  * @param  {Array<THREE.Material>|THREE.Material} material
  * @return {Array<THREE.Material>}
  */
-function ensureMaterialArray (material) {
+function ensureMaterialArray(material) {
   if (!material) {
     return [];
   } else if (Array.isArray(material)) {
@@ -22,24 +22,22 @@ function ensureMaterialArray (material) {
  * @param  {THREE.Texture} envMap
  * @param  {number} reflectivity  [description]
  */
-function applyEnvMap (mesh, materialNames, envMap, reflectivity) {
+function applyEnvMap(mesh, materialNames, envMap, reflectivity) {
   if (!mesh) {
     return;
   }
 
   materialNames = materialNames || [];
 
-  mesh.traverse((node) => {
-
+  mesh.traverse(node => {
     if (!node.isMesh) {
       return;
     }
 
     const meshMaterials = ensureMaterialArray(node.material);
 
-    meshMaterials.forEach((material) => {
-
-      if (material && !('envMap' in material)) {
+    meshMaterials.forEach(material => {
+      if (material && !("envMap" in material)) {
         return;
       }
 
@@ -50,7 +48,6 @@ function applyEnvMap (mesh, materialNames, envMap, reflectivity) {
       material.envMap = envMap;
       material.reflectivity = reflectivity;
       material.needsUpdate = true;
-
     });
   });
 }
@@ -63,43 +60,50 @@ export default AFRAME.registerComponent("al-cube-env-map", {
   multiple: true,
 
   schema: {
-    path: {default: ''},
-    extension: {default: 'jpg', oneOf: ['jpg', 'png']},
-    format: {default: 'RGBFormat', oneOf: ['RGBFormat', 'RGBAFormat']},
-    enableBackground: {default: false},
-    reflectivity: {default: 1, min: 0, max: 1},
-    materials: {default: []}
+    path: { default: "" },
+    extension: { default: "jpg", oneOf: ["jpg", "png"] },
+    format: { default: "RGBFormat", oneOf: ["RGBFormat", "RGBAFormat"] },
+    enableBackground: { default: false },
+    reflectivity: { default: 1, min: 0, max: 1 },
+    materials: { default: [] }
   },
 
   init() {
     const data = this.data;
 
     this.texture = new THREE.CubeTextureLoader().load([
-      data.path + 'posx.' + data.extension, data.path + 'negx.' + data.extension,
-      data.path + 'posy.' + data.extension, data.path + 'negy.' + data.extension,
-      data.path + 'posz.' + data.extension, data.path + 'negz.' + data.extension
+      data.path + "posx." + data.extension,
+      data.path + "negx." + data.extension,
+      data.path + "posy." + data.extension,
+      data.path + "negy." + data.extension,
+      data.path + "posz." + data.extension,
+      data.path + "negz." + data.extension
     ]);
     this.texture.format = THREE[data.format];
 
     this.object3dsetHandler = () => {
-      const mesh = this.el.getObject3D('mesh');
+      const mesh = this.el.getObject3D("mesh");
       const data = this.data;
       applyEnvMap(mesh, data.materials, this.texture, data.reflectivity);
     };
-    this.el.addEventListener('object3dset', this.object3dsetHandler);
+    this.el.addEventListener("object3dset", this.object3dsetHandler);
   },
 
   update(oldData) {
     const data = this.data;
-    const mesh = this.el.getObject3D('mesh');
+    const mesh = this.el.getObject3D("mesh");
 
     let addedMaterialNames = [];
     let removedMaterialNames = [];
 
     if (data.materials.length) {
       if (oldData.materials) {
-        addedMaterialNames = data.materials.filter((name) => !oldData.materials.includes(name));
-        removedMaterialNames = oldData.materials.filter((name) => !data.materials.includes(name));
+        addedMaterialNames = data.materials.filter(
+          name => !oldData.materials.includes(name)
+        );
+        removedMaterialNames = oldData.materials.filter(
+          name => !data.materials.includes(name)
+        );
       } else {
         addedMaterialNames = data.materials;
       }
@@ -112,10 +116,16 @@ export default AFRAME.registerComponent("al-cube-env-map", {
     }
 
     if (oldData.materials && data.reflectivity !== oldData.reflectivity) {
-      const maintainedMaterialNames = data.materials
-        .filter((name) => oldData.materials.includes(name));
+      const maintainedMaterialNames = data.materials.filter(name =>
+        oldData.materials.includes(name)
+      );
       if (maintainedMaterialNames.length) {
-        applyEnvMap(mesh, maintainedMaterialNames, this.texture, data.reflectivity);
+        applyEnvMap(
+          mesh,
+          maintainedMaterialNames,
+          this.texture,
+          data.reflectivity
+        );
       }
     }
 
@@ -127,8 +137,8 @@ export default AFRAME.registerComponent("al-cube-env-map", {
   },
 
   remove() {
-    this.el.removeEventListener('object3dset', this.object3dsetHandler);
-    const mesh = this.el.getObject3D('mesh');
+    this.el.removeEventListener("object3dset", this.object3dsetHandler);
+    const mesh = this.el.getObject3D("mesh");
     const data = this.data;
 
     applyEnvMap(mesh, data.materials, null, 1);

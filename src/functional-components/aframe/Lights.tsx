@@ -6,10 +6,7 @@ interface LightsProps extends FunctionalComponentProps {
 }
 
 export const Lights: FunctionalComponent<LightsProps> = (
-  {
-    ambientLightColor,
-    ambientLightIntensity
-  },
+  { ambientLightColor, ambientLightIntensity },
   _children
 ) => (
   <a-entity

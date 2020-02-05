@@ -600,7 +600,10 @@ export class Aleph {
             }
           }
         })()}
-        <Lights ambientLightColor={Constants.lights.ambientLightColor} ambientLightIntensity={Constants.lights.ambientLightIntensity} />
+        <Lights
+          ambientLightColor={Constants.lights.ambientLightColor}
+          ambientLightIntensity={Constants.lights.ambientLightIntensity}
+        />
       </Scene>
     );
   }
