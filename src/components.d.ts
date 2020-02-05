@@ -129,6 +129,7 @@ export namespace Components {
     'deleteEdge': (edgeId: string) => Promise<void>;
     'deleteNode': (nodeId: string) => Promise<void>;
     'dracoDecoderPath': string | null;
+    'envMapPath': string | null;
     'height': string;
     'load': (src: string, displayMode?: DisplayMode) => Promise<void>;
     'recenter': () => Promise<void>;
@@ -351,6 +352,7 @@ declare namespace LocalJSX {
   }
   interface AlViewer extends JSXBase.HTMLAttributes<HTMLAlViewerElement> {
     'dracoDecoderPath'?: string | null;
+    'envMapPath'?: string | null;
     'height'?: string;
     /**
     * Fires whenever the internal state changes passing an object describing the state.

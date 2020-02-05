@@ -108,6 +108,7 @@ export class Aleph {
   //#region props
   @Prop({ context: "store" }) public store: Store;
   @Prop() public dracoDecoderPath: string | null;
+  @Prop() public envMapPath: string | null;
   @Prop() public width: string = "640";
   @Prop() public height: string = "480";
   //#endregion
@@ -465,6 +466,7 @@ export class Aleph {
           controlsType={this.controlsType}
           displayMode={this.displayMode}
           dracoDecoderPath={this.dracoDecoderPath}
+          envMapPath={this.envMapPath}
           graphEnabled={this.graphEnabled}
           orientation={this.orientation}
           slicesIndex={this.slicesIndex}
@@ -598,7 +600,7 @@ export class Aleph {
             }
           }
         })()}
-        <Lights />
+        <Lights ambientLightColor={Constants.lights.ambientLightColor} ambientLightIntensity={Constants.lights.ambientLightIntensity} />
       </Scene>
     );
   }

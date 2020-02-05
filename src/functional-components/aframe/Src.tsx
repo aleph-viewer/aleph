@@ -5,6 +5,7 @@ interface SrcProps extends FunctionalComponentProps {
   controlsType: ControlsType;
   displayMode: DisplayMode;
   dracoDecoderPath: string;
+  envMapPath: string;
   graphEnabled: boolean;
   orientation: Orientation;
   slicesIndex: number;
@@ -21,6 +22,7 @@ export const Src: FunctionalComponent<SrcProps> = (
     controlsType,
     displayMode,
     dracoDecoderPath,
+    envMapPath,
     graphEnabled,
     orientation,
     slicesIndex,
@@ -47,6 +49,9 @@ export const Src: FunctionalComponent<SrcProps> = (
               al-gltf-model={`
                 src: url(${src});
                 dracoDecoderPath: ${dracoDecoderPath};
+              `}
+              al-cube-env-map={`
+                path: ${envMapPath};
               `}
               position="0 0 0"
               scale="1 1 1"

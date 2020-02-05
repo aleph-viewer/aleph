@@ -1,11 +1,19 @@
 import { FunctionalComponent, h } from "@stencil/core";
 
-export const Lights: FunctionalComponent<FunctionalComponentProps> = (
-  _props,
+interface LightsProps extends FunctionalComponentProps {
+  ambientLightColor: number;
+  ambientLightIntensity: number;
+}
+
+export const Lights: FunctionalComponent<LightsProps> = (
+  {
+    ambientLightColor,
+    ambientLightIntensity
+  },
   _children
 ) => (
   <a-entity
     id="ambient-light"
-    light="type: ambient; color: #d0d0d0; intensity: 1"
+    light={`type: ambient; color: ${ambientLightColor}; intensity: ${ambientLightIntensity}`}
   />
 );

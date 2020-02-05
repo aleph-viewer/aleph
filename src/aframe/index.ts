@@ -4,6 +4,7 @@ import "./components/AlBillboardComponent";
 import "./components/AlBoundingBoxComponent";
 import "./components/AlChildHoverVisibleComponent";
 import "./components/AlControlLightsComponent";
+import "./components/AlCubeEnvMapComponent";
 import "./components/AlCursorComponent";
 import "./components/AlEdgeComponent";
 import { AlGltfModelEvents } from "./components/AlGltfModelComponent";

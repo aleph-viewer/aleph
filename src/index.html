@@ -80,6 +80,7 @@
       <div id="scene">
         <al-viewer
           draco-decoder-path="assets/"
+          env-map-path="assets/envmap/"
           width="100%"
           height="100%"
         ></al-viewer>
@@ -431,15 +432,6 @@
 
     <script type="module" src="/build/aleph.esm.js" onload="init()"></script>
     <script nomodule src="/build/aleph.js" onload="init()"></script>
-
-    <!-- <script>
-      if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
-        document.write("<script type=\"module\" src=\"/build/aleph.esm.js\" onload=\"init()\"><\/script>");
-        document.write("<script nomodule src=\"/build/aleph.js\" onload=\"init()\"><\/script>");
-      } else {
-        document.write("<script src=\"https://unpkg.com/@universalviewer/aleph/dist/aleph/aleph.js\" onload=\"init()\"><\/script>");
-      }
-    </script> -->
 
   </body>
 </html>

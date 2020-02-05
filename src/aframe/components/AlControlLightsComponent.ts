@@ -1,30 +1,34 @@
-import { Constants } from "../../Constants";
 import { BaseComponent } from "./BaseComponent";
 
 export default AFRAME.registerComponent("al-control-lights", {
-  schema: {},
+  schema: {
+    color: { type: "string", default: "#fff" },
+    controlsType: { type: "string", default: "orbit" },
+    lightIntensity: { type: "number", default: 0.5 },
+    minFrameMS: { type: "number", default: 15 }
+  },
 
   init() {
     this.bindMethods();
     this.addEventListeners();
     this.tickFunction = AFRAME.utils.throttle(
       this.tickFunction,
-      Constants.minFrameMS,
+      this.data.minFrameMS,
       this
     );
 
     const parent: THREE.Object3D = this.el.getObject3D("camera");
 
     const light1 = new THREE.DirectionalLight(
-      new THREE.Color(Constants.colors.white),
-      Constants.lightIntensity
+      new THREE.Color(this.data.color),
+      this.data.lightIntensity
     );
     light1.position.copy(new THREE.Vector3(1, 1, 1));
     parent.add(light1);
 
     const light2 = new THREE.DirectionalLight(
-      new THREE.Color(Constants.colors.white),
-      Constants.lightIntensity
+      new THREE.Color(this.data.color),
+      this.data.lightIntensity
     );
     light2.position.copy(new THREE.Vector3(-1, -1, -1));
     parent.add(light2);

@@ -49,7 +49,7 @@ export class Constants {
 
   public static lights = {
     ambientLightColor: 0xd0d0d0,
-    ambientLightIntensity: 1,
+    ambientLightIntensity: 0.5,
     directionalLight1Color: 0xffffff,
     directionalLight1Intensity: 0.75,
     directionalLight2Color: 0x002958,
