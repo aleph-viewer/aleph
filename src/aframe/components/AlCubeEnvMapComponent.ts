@@ -69,7 +69,6 @@ export default AFRAME.registerComponent("al-cube-env-map", {
   },
 
   init() {
-    console.log("init");
     const data = this.data;
 
     if (!data.path) {

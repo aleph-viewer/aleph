@@ -40,7 +40,6 @@ export const Src: FunctionalComponent<SrcProps> = (
     } else {
       switch (displayMode) {
         case DisplayMode.MESH: {
-          console.log("envmap path", envMapPath);
           return (
             <a-entity
               class="collidable"
