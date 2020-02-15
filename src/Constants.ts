@@ -18,7 +18,7 @@ export class Constants {
   public static titleIdName = "-title";
   public static topLayerRenderOrder = 999;
   public static unitsDecimalPlaces = 2;
-  public static zoomFactor = 3.5;
+  public static zoomFactor = 3;
   public static volumeRaycastSensitivity = 0.05;
   public static volumeStepsDelay = 800;
 

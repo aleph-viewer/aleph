@@ -24,7 +24,8 @@ interface AlNodeSpawnerComponent extends BaseComponent {
 
 export default AFRAME.registerComponent("al-node-spawner", {
   schema: {
-    graphEnabled: { type: "boolean" }
+    graphEnabled: { type: "boolean" },
+    vrEnabled: { type: "boolean" }
   },
 
   init(): void {
@@ -142,7 +143,7 @@ export default AFRAME.registerComponent("al-node-spawner", {
   },
 
   elClick(event: CustomEvent) {
-    if (this.state.left && this.data.graphEnabled) {
+    if ((this.state.left || this.data.vrEnabled) && this.data.graphEnabled) {
       this.el.sceneEl.emit(
         AlNodeSpawnerEvents.ADD_NODE,
         { aframeEvent: event },

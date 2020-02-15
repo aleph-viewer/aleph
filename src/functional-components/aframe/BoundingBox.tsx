@@ -12,6 +12,7 @@ interface BoundingBoxProps extends FunctionalComponentProps {
   mesh: THREE.Mesh;
   srcLoaded: boolean;
   targetEntity: Entity;
+  vrEnabled: boolean;
 }
 
 export const BoundingBox: FunctionalComponent<BoundingBoxProps> = (
@@ -24,7 +25,8 @@ export const BoundingBox: FunctionalComponent<BoundingBoxProps> = (
     graphEnabled,
     mesh,
     srcLoaded,
-    targetEntity
+    targetEntity,
+    vrEnabled
   },
   _children
 ) =>
@@ -57,6 +59,7 @@ export const BoundingBox: FunctionalComponent<BoundingBoxProps> = (
             `}
             al-node-spawner={`
               graphEnabled: ${graphEnabled};
+              vrEnabled: ${vrEnabled};
             `}
             class="collidable"
             ref={ref => cb(ref)}

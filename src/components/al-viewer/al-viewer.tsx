@@ -67,7 +67,8 @@ import {
   appSetUnits,
   appSetVolumeSteps,
   appSetVolumeWindowCenter,
-  appSetVolumeWindowWidth
+  appSetVolumeWindowWidth,
+  appSetVRActive
 } from "../../redux/actions";
 import { configureStore } from "../../redux/store";
 import {
@@ -78,6 +79,7 @@ import {
   Utils
 } from "../../utils";
 import { AlControlEvents } from "../../utils/AlControlEvents";
+import { VRControls } from "../../functional-components/aframe/VRControls";
 
 type AEntity = import("aframe").Entity;
 type AScene = import("aframe").Scene;
@@ -111,6 +113,7 @@ export class Aleph {
   @Prop() public envMapPath: string | null;
   @Prop() public width: string = "640";
   @Prop() public height: string = "480";
+  @Prop() public vrEnabled: boolean = false;
   //#endregion
 
   //#region actions
@@ -142,6 +145,7 @@ export class Aleph {
   public appSetVolumeSteps: Action;
   public appSetVolumeWindowCenter: Action;
   public appSetVolumeWindowWidth: Action;
+  public appSetVRActive: Action;
   //#endregion
 
   //#region state
@@ -168,6 +172,7 @@ export class Aleph {
   @State() public volumeSteps: number;
   @State() public volumeWindowCenter: number;
   @State() public volumeWindowWidth: number;
+  @State() public vrActive: number;
   //#endregion
 
   //#region general methods
@@ -346,7 +351,8 @@ export class Aleph {
           units,
           volumeSteps,
           volumeWindowCenter,
-          volumeWindowWidth
+          volumeWindowWidth,
+          vrActive
         }
       } = state;
 
@@ -370,7 +376,8 @@ export class Aleph {
         units,
         volumeSteps,
         volumeWindowCenter,
-        volumeWindowWidth
+        volumeWindowWidth,
+        vrActive
       };
     });
 
@@ -402,7 +409,8 @@ export class Aleph {
       appSetUnits,
       appSetVolumeSteps,
       appSetVolumeWindowCenter,
-      appSetVolumeWindowWidth
+      appSetVolumeWindowWidth,
+      appSetVRActive
     });
 
     // set up event handlers
@@ -431,6 +439,8 @@ export class Aleph {
     this._graphEntryValidTargetHandler = this._graphEntryValidTargetHandler.bind(
       this
     );
+    this._gripDownHandler = this._gripDownHandler.bind(this);
+    this._gripUpHandler = this._gripUpHandler.bind(this);
     this._keyDownHandler = this._keyDownHandler.bind(this);
     this._keyUpHandler = this._keyUpHandler.bind(this);
     this._controlsInteractionFinishedHandler = this._controlsInteractionFinishedHandler.bind(
@@ -443,6 +453,8 @@ export class Aleph {
       this
     );
     this._volumeRaycastHandler = this._volumeRaycastHandler.bind(this);
+    this._vrEnteredHandler = this._vrEnteredHandler.bind(this);
+    this._vrExitedHandler = this._vrExitedHandler.bind(this);
 
     // debounced event handlers
     this._debouncedAppSetCamera = EventUtils.debounce(
@@ -458,7 +470,9 @@ export class Aleph {
           this._scene = ref as AScene;
         }}
         isWebGl2={this._isWebGl2}
+        vrModeUIEnabled={true}
       >
+        <VRControls enabled={this.vrEnabled} />
         <Src
           cb={ref => {
             this._targetEntity = ref;
@@ -475,6 +489,7 @@ export class Aleph {
           volumeSteps={this.volumeSteps}
           volumeWindowCenter={this.volumeWindowCenter}
           volumeWindowWidth={this.volumeWindowWidth}
+          vrEnabled={this.vrEnabled}
         />
         <BoundingBox
           cb={ref => {
@@ -488,6 +503,7 @@ export class Aleph {
           mesh={this._getMesh()}
           srcLoaded={this.srcLoaded}
           targetEntity={this._targetEntity}
+          vrEnabled={this.vrEnabled}
         />
         <Nodes
           boundingSphereRadius={this._boundingSphereRadius}
@@ -935,6 +951,12 @@ export class Aleph {
     this._stateChanged();
   }
 
+  private _setVRActive(active: boolean): void {
+    console.log("vractive", active);
+    this.appSetVRActive(active);
+    this._stateChanged();
+  }
+
   // private _getStackHelper(): AMI.VolumeRenderHelper | null {
   //   let stackhelper: AMI.VolumeRenderHelper | null = null;
 
@@ -1017,6 +1039,14 @@ export class Aleph {
     this._isShiftDown = false;
   }
 
+  private _gripDownHandler() {
+    this._isShiftDown = true;
+  }
+
+  private _gripUpHandler() {
+    this._isShiftDown = false;
+  }
+
   private _graphEntryPointerUpHandler(_event: CustomEvent): void {
     this.appSetControlsEnabled(true);
     ThreeUtils.enableControls(this._camera, true, this.controlsType);
@@ -1092,6 +1122,14 @@ export class Aleph {
         }
       }
     }
+  }
+
+  private _vrEnteredHandler(_event: CustomEvent): void {
+    this._setVRActive(true);
+  }
+
+  private _vrExitedHandler(_event: CustomEvent): void {
+    this._setVRActive(false);
   }
 
   private _volumeRaycastHandler(event: CustomEvent): void {
@@ -1241,6 +1279,7 @@ export class Aleph {
         });
       }
     } else {
+      console.log("dragged");
       const intersection = raycaster.getIntersection(
         this._targetEntity
       ) as THREE.Intersection;
@@ -1287,6 +1326,9 @@ export class Aleph {
   private _addEventListeners(): void {
     window.addEventListener("keydown", this._keyDownHandler, false);
     window.addEventListener("keyup", this._keyUpHandler, false);
+
+    this._scene.addEventListener("gripdown", this._gripDownHandler, false);
+    this._scene.addEventListener("gripup", this._gripUpHandler, false);
 
     this._scene.addEventListener(
       AlVolumeEvents.VOLUME_RAY_CAST,
@@ -1381,6 +1423,10 @@ export class Aleph {
       this._graphEntryPointerOutHandler,
       false
     );
+
+    this._scene.addEventListener("enter-vr", this._vrEnteredHandler, false);
+
+    this._scene.addEventListener("exit-vr", this._vrExitedHandler, false);
   }
   //#endregion
 
