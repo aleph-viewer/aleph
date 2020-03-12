@@ -18,8 +18,9 @@ export default AFRAME.registerComponent("al-gltf-model", {
     const threeAny = THREE as any;
 
     this.loader = new threeAny.GLTFLoader();
-    threeAny.DRACOLoader.setDecoderPath(this.data.dracoDecoderPath);
-    this.loader.setDRACOLoader(new threeAny.DRACOLoader());
+    this.dracoLoader = new threeAny.DRACOLoader();
+    this.dracoLoader.setDecoderPath(this.data.dracoDecoderPath);
+    this.loader.setDRACOLoader(this.dracoLoader);
   },
 
   // tslint:disable-next-line: no-empty

@@ -31,7 +31,7 @@ export class AlNodeEditor {
               placeholder={this._contentStrings.title}
               required
               onIonChange={e => (node.title = e.detail.value)}
-              maxlength={20}
+              maxlength={128}
             />
           </ion-item>
           <ion-item>
@@ -41,7 +41,7 @@ export class AlNodeEditor {
               placeholder={this._contentStrings.description}
               rows={5}
               onIonChange={e => (node.description = e.detail.value)}
-              maxlength={280}
+              maxlength={1024}
             />
           </ion-item>
           <ion-item>
