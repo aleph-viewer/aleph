@@ -43,8 +43,8 @@ export const OrbitCamera: FunctionalComponent<OrbitCameraProps> = (
     look-controls="enabled: false"
     far={far}
     id="mainCamera"
-    al-cursor="rayOrigin: mouse"
-    raycaster="objects: .collidable;"
+    // al-cursor="rayOrigin: mouse"
+    // raycaster="objects: .collidable;"
     al-orbit-control={`
       minPolarAngle: ${minPolarAngle};
       maxPolarAngle: ${maxPolarAngle};
