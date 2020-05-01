@@ -109,18 +109,22 @@ export class AlSettings {
           ) : null}
           {this.srcTabEnabled ? (
             <ion-tab tab="src">
+              <al-view-controls
+                bounding-box-enabled={this.boundingBoxEnabled}
+                controls-type={this.controlsType}
+              ></al-view-controls>
               <al-url-picker urls={this.urls} url={this.url}></al-url-picker>
             </ion-tab>
           ) : null}
           {this.settingsTabEnabled ? (
             <ion-tab tab="settings">
               <Scroll height={tabContentHeight}>
-                <al-settings
+                <al-view-controls
                   bounding-box-enabled={this.boundingBoxEnabled}
                   controls-type={this.controlsType}
+                ></al-view-controls>
+                <al-settings
                   display-mode={this.displayMode}
-                  graph-enabled={this.graphEnabled}
-                  graph-visible={this.graphTabEnabled}
                   orientation={this.orientation}
                   slices-index={this.slicesIndex}
                   slices-max-index={this.slicesMaxIndex}
@@ -130,7 +134,6 @@ export class AlSettings {
                   volume-contrast={this.volumeContrast}
                   volume-steps={this.volumeSteps}
                   volume-steps-high-enabled={this.volumeStepsHighEnabled}
-                  units={this.units}
                 ></al-settings>
               </Scroll>
             </ion-tab>
@@ -138,11 +141,18 @@ export class AlSettings {
           {this.graphTabEnabled ? (
             <ion-tab tab="graph">
               <Scroll height={tabContentHeight}>
+                <al-view-controls
+                  bounding-box-enabled={this.boundingBoxEnabled}
+                  controls-type={this.controlsType}
+                ></al-view-controls>
                 <al-graph-editor
                   selected={this.selected}
                   nodes={this.nodes}
                   angles={this.angles}
                   edges={this.edges}
+                  graph-enabled={this.graphEnabled}
+                  graph-visible={this.graphTabEnabled}
+                  units={this.units}
                 ></al-graph-editor>
               </Scroll>
             </ion-tab>
@@ -150,6 +160,10 @@ export class AlSettings {
           {this.consoleTabEnabled ? (
             <ion-tab tab="console">
               <Scroll height={tabContentHeight}>
+                <al-view-controls
+                  bounding-box-enabled={this.boundingBoxEnabled}
+                  controls-type={this.controlsType}
+                ></al-view-controls>
                 <al-console graph={this._getGraphJson()}></al-console>
               </Scroll>
             </ion-tab>

@@ -1,0 +1,31 @@
+/**
+ * @prop --display-mode-display: Display Mode Toggle Display
+ * @prop --graph-enabled-display: Graph Enabled Toggle Display
+ * @prop --bounding-box-enabled-display: Bounding Box Enabled Toggle Display
+ * @prop --slices-index-display: Slices Index Range Display
+ * @prop --slices-orientation-display: Slices Orientation Select Display
+ * @prop --slices-window-center-display: Slices Window Center Range Display
+ * @prop --slices-window-width-display: Slices Window Width Range Display
+ * @prop --volume-steps-display: Volume Steps Range Display
+ * @prop --volume-window-center-display: Volume Window Center Range Display
+ * @prop --volume-window-width-display: Volume Window Width Range Display
+ */
+
+select {
+  padding: 5px;
+  min-width: 100px;
+  background-color: var(--al-select-background-color);
+  color: var(--al-item-color);
+  border: none;
+}
+
+@supports (-moz-appearance: none) {
+  select {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+  }
+}
+
+ion-label {
+  color: var(--al-item-color);
+}

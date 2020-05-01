@@ -9,17 +9,12 @@
 
 | Property                 | Attribute                   | Description | Type                                                               | Default     |
 | ------------------------ | --------------------------- | ----------- | ------------------------------------------------------------------ | ----------- |
-| `boundingBoxEnabled`     | `bounding-box-enabled`      |             | `boolean`                                                          | `undefined` |
-| `controlsType`           | `controls-type`             |             | `ControlsType.ORBIT \| ControlsType.TRACKBALL`                     | `undefined` |
 | `displayMode`            | `display-mode`              |             | `DisplayMode.MESH \| DisplayMode.SLICES \| DisplayMode.VOLUME`     | `undefined` |
-| `graphEnabled`           | `graph-enabled`             |             | `boolean`                                                          | `undefined` |
-| `graphVisible`           | `graph-visible`             |             | `boolean`                                                          | `undefined` |
 | `orientation`            | `orientation`               |             | `Orientation.AXIAL \| Orientation.CORONAL \| Orientation.SAGGITAL` | `undefined` |
 | `slicesBrightness`       | `slices-brightness`         |             | `number`                                                           | `undefined` |
 | `slicesContrast`         | `slices-contrast`           |             | `number`                                                           | `undefined` |
 | `slicesIndex`            | `slices-index`              |             | `number`                                                           | `undefined` |
 | `slicesMaxIndex`         | `slices-max-index`          |             | `number`                                                           | `undefined` |
-| `units`                  | `units`                     |             | `Units.METERS \| Units.MILLIMETERS`                                | `undefined` |
 | `volumeBrightness`       | `volume-brightness`         |             | `number`                                                           | `undefined` |
 | `volumeContrast`         | `volume-contrast`           |             | `number`                                                           | `undefined` |
 | `volumeSteps`            | `volume-steps`              |             | `number`                                                           | `undefined` |
@@ -30,16 +25,11 @@
 
 | Event                           | Description | Type               |
 | ------------------------------- | ----------- | ------------------ |
-| `boundingBoxEnabledChanged`     |             | `CustomEvent<any>` |
-| `controlsTypeChanged`           |             | `CustomEvent<any>` |
 | `displayModeChanged`            |             | `CustomEvent<any>` |
-| `graphEnabledChanged`           |             | `CustomEvent<any>` |
 | `orientationChanged`            |             | `CustomEvent<any>` |
-| `recenter`                      |             | `CustomEvent<any>` |
 | `slicesBrightnessChanged`       |             | `CustomEvent<any>` |
 | `slicesContrastChanged`         |             | `CustomEvent<any>` |
 | `slicesIndexChanged`            |             | `CustomEvent<any>` |
-| `unitsChanged`                  |             | `CustomEvent<any>` |
 | `volumeBrightnessChanged`       |             | `CustomEvent<any>` |
 | `volumeContrastChanged`         |             | `CustomEvent<any>` |
 | `volumeStepsChanged`            |             | `CustomEvent<any>` |
@@ -66,27 +56,24 @@
 
 ### Used by
 
- - [al-control-panel](..\al-control-panel)
+ - [al-control-panel](../al-control-panel)
 
 ### Depends on
 
-- ion-button
-- ion-icon
 - ion-item
-- ion-list-header
+- ion-icon
 - ion-toggle
 - ion-range
+- ion-list-header
 
 ### Graph
 ```mermaid
 graph TD;
-  al-settings --> ion-button
-  al-settings --> ion-icon
   al-settings --> ion-item
-  al-settings --> ion-list-header
+  al-settings --> ion-icon
   al-settings --> ion-toggle
   al-settings --> ion-range
-  ion-button --> ion-ripple-effect
+  al-settings --> ion-list-header
   ion-item --> ion-icon
   ion-item --> ion-ripple-effect
   al-control-panel --> al-settings

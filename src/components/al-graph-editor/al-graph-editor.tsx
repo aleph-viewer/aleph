@@ -1,5 +1,6 @@
 import { Component, h, Prop } from "@stencil/core";
 import { AlAngle, AlEdge, AlNode } from "../../interfaces";
+import { Units } from "../../enums";
 
 @Component({
   tag: "al-graph-editor",
@@ -12,6 +13,9 @@ export class AlGraphEditor {
   @Prop({ mutable: true }) public angles: Map<string, AlAngle> | null = null;
   @Prop({ mutable: true }) public edges: Map<string, AlEdge> | null = null;
   @Prop({ mutable: true }) public selected: string | null = null;
+  @Prop({ mutable: true }) public graphEnabled: boolean;
+  @Prop({ mutable: true }) public graphVisible: boolean;
+  @Prop({ mutable: true }) public units: Units;
 
   private _getSelectedNode(): [string, AlNode] | null {
     if (this.selected && this.nodes) {
@@ -45,6 +49,11 @@ export class AlGraphEditor {
 
   public render() {
     return [
+      <al-graph-settings
+        graph-enabled={this.graphEnabled}
+        graph-visible={this.graphVisible}
+        units={this.units}
+      ></al-graph-settings>,
       <al-node-list nodes={this.nodes} selected={this.selected}></al-node-list>,
       <ion-item-divider></ion-item-divider>,
       <al-node-editor node={this._getSelectedNode()}></al-node-editor>,
