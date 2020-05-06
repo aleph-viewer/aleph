@@ -4,7 +4,7 @@
     "Lion (GLTF)"
   ],
   [
-    "https://iiif-3d-manifests.netlify.com/collection/gltf/woody/_woody/assets/woody.gltf",
+    "https://iiif-3d-manifests.netlify.app/collection/gltf/woody/_woody/assets/woody.gltf",
     "Fisherman (GLTF)"
   ],
   [
@@ -12,7 +12,7 @@
     "Bowl (DRACO)"
   ],
   [
-    "https://aleph-fixtures.netlify.com/collection/dicom/brain/_brain/brain.json",
+    "https://aleph-fixtures.netlify.app/collection/dicom/brain/_brain/brain.json",
     "Brain (DICOM)"
   ],
   [
@@ -24,7 +24,7 @@
     "Tree Shrew (DICOM)"
   ],
   [
-    "https://aleph-fixtures.netlify.com/collection/gltf/bunny/_bunny/bunny_default_materials.glb",
+    "https://aleph-fixtures.netlify.app/collection/gltf/bunny/_bunny/bunny_default_materials.glb",
     "Bunny Default Materials (GLB)"
   ]
 ]
