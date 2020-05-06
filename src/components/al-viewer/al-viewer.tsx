@@ -551,6 +551,7 @@ export class Aleph {
                   enabled={this.controlsEnabled}
                   far={Constants.camera.far}
                   fov={Constants.camera.fov}
+                  graphEnabled={this.graphEnabled}
                   near={Constants.camera.near}
                   panSpeed={Constants.camera.panSpeed}
                   rotateSpeed={Constants.camera.trackballRotateSpeed}
@@ -585,6 +586,7 @@ export class Aleph {
                   enabled={this.controlsEnabled}
                   far={Constants.camera.far}
                   fov={Constants.camera.fov}
+                  graphEnabled={this.graphEnabled}
                   maxPolarAngle={Constants.camera.maxPolarAngle}
                   minDistance={Constants.camera.minDistance}
                   minPolarAngle={Constants.camera.minPolarAngle}

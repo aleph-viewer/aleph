@@ -8,6 +8,7 @@ interface OrbitCameraProps extends FunctionalComponentProps {
   enabled: boolean;
   far: number;
   fov: number;
+  graphEnabled: boolean;
   maxPolarAngle: number;
   minDistance: number;
   minPolarAngle: number;
@@ -27,6 +28,7 @@ export const OrbitCamera: FunctionalComponent<OrbitCameraProps> = (
     enabled,
     far,
     fov,
+    graphEnabled,
     maxPolarAngle,
     minDistance,
     minPolarAngle,
@@ -36,31 +38,63 @@ export const OrbitCamera: FunctionalComponent<OrbitCameraProps> = (
     zoomSpeed
   },
   _children
-) => (
-  <a-camera
-    fov={fov}
-    near={near}
-    look-controls="enabled: false"
-    far={far}
-    id="mainCamera"
-    al-cursor="rayOrigin: mouse"
-    raycaster="objects: .collidable;"
-    al-orbit-control={`
-      minPolarAngle: ${minPolarAngle};
-      maxPolarAngle: ${maxPolarAngle};
-      minDistance: ${minDistance};
-      screenSpacePanning: true;
-      rotateSpeed: ${rotateSpeed};
-      zoomSpeed: ${zoomSpeed};
-      enableDamping: true;
-      dampingFactor: ${dampingFactor};
-      controlTarget: ${controlTarget};
-      controlPosition: ${controlPosition};
-      enabled: ${enabled};
-      animating: ${animating};
-      panSpeed: ${panSpeed}
-    `}
-    al-control-lights
-    ref={ref => cb(ref)}
-  />
-);
+) =>
+  (() => {
+    if (graphEnabled) {
+      return (
+        <a-camera
+          fov={fov}
+          near={near}
+          look-controls="enabled: false"
+          far={far}
+          id="mainCamera"
+          al-cursor="rayOrigin: mouse"
+          raycaster="objects: .collidable;"
+          al-orbit-control={`
+            minPolarAngle: ${minPolarAngle};
+            maxPolarAngle: ${maxPolarAngle};
+            minDistance: ${minDistance};
+            screenSpacePanning: true;
+            rotateSpeed: ${rotateSpeed};
+            zoomSpeed: ${zoomSpeed};
+            enableDamping: true;
+            dampingFactor: ${dampingFactor};
+            controlTarget: ${controlTarget};
+            controlPosition: ${controlPosition};
+            enabled: ${enabled};
+            animating: ${animating};
+            panSpeed: ${panSpeed}
+          `}
+          al-control-lights
+          ref={ref => cb(ref)}
+        />
+      );
+    } else {
+      return (
+        <a-camera
+          fov={fov}
+          near={near}
+          look-controls="enabled: false"
+          far={far}
+          id="mainCamera"
+          al-orbit-control={`
+            minPolarAngle: ${minPolarAngle};
+            maxPolarAngle: ${maxPolarAngle};
+            minDistance: ${minDistance};
+            screenSpacePanning: true;
+            rotateSpeed: ${rotateSpeed};
+            zoomSpeed: ${zoomSpeed};
+            enableDamping: true;
+            dampingFactor: ${dampingFactor};
+            controlTarget: ${controlTarget};
+            controlPosition: ${controlPosition};
+            enabled: ${enabled};
+            animating: ${animating};
+            panSpeed: ${panSpeed}
+          `}
+          al-control-lights
+          ref={ref => cb(ref)}
+        />
+      );
+    }
+  })();

@@ -11,6 +11,8 @@
   "displayMode": "Display Mode",
   "graphEnabled": "Enable Node Placement",
   "material": "Material",
+  "meters": "Meters",
+  "millimeters": "Millimeters",
   "normals": "Normals",
   "orbit": "Orbit",
   "orientation": "Orientation",

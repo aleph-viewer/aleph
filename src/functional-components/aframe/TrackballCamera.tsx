@@ -8,6 +8,7 @@ interface TrackballCameraProps extends FunctionalComponentProps {
   enabled: boolean;
   far: number;
   fov: number;
+  graphEnabled: boolean;
   near: number;
   panSpeed: number;
   rotateSpeed: number;
@@ -26,6 +27,7 @@ export const TrackballCamera: FunctionalComponent<TrackballCameraProps> = (
     enabled,
     far,
     fov,
+    graphEnabled,
     near,
     panSpeed,
     rotateSpeed,
@@ -34,30 +36,61 @@ export const TrackballCamera: FunctionalComponent<TrackballCameraProps> = (
     zoomSpeed
   },
   _children
-) => (
-  <a-camera
-    fov={fov}
-    near={near}
-    look-controls="enabled: false"
-    far={far}
-    id="mainCamera"
-    al-cursor="rayOrigin: mouse"
-    raycaster="objects: .collidable;"
-    al-trackball-control={`
-      screenLeft: ${0};
-      screenTop: ${0};
-      screenWidth: ${screenWidth};
-      screenHeight: ${screenHeight};
-      rotateSpeed: ${rotateSpeed};
-      zoomSpeed: ${zoomSpeed};
-      panSpeed: ${panSpeed};
-      dynamicDampingFactor: ${dampingFactor};
-      controlTarget: ${controlTarget};
-      controlPosition: ${controlPosition};
-      enabled: ${enabled};
-      animating: ${animating}
-    `}
-    al-control-lights
-    ref={ref => cb(ref)}
-  />
-);
+) =>
+  (() => {
+    if (graphEnabled) {
+      return (
+        <a-camera
+          fov={fov}
+          near={near}
+          look-controls="enabled: false"
+          far={far}
+          id="mainCamera"
+          al-cursor="rayOrigin: mouse"
+          raycaster="objects: .collidable;"
+          al-trackball-control={`
+            screenLeft: ${0};
+            screenTop: ${0};
+            screenWidth: ${screenWidth};
+            screenHeight: ${screenHeight};
+            rotateSpeed: ${rotateSpeed};
+            zoomSpeed: ${zoomSpeed};
+            panSpeed: ${panSpeed};
+            dynamicDampingFactor: ${dampingFactor};
+            controlTarget: ${controlTarget};
+            controlPosition: ${controlPosition};
+            enabled: ${enabled};
+            animating: ${animating}
+          `}
+          al-control-lights
+          ref={ref => cb(ref)}
+        />
+      );
+    } else {
+      return (
+        <a-camera
+          fov={fov}
+          near={near}
+          look-controls="enabled: false"
+          far={far}
+          id="mainCamera"
+          al-trackball-control={`
+            screenLeft: ${0};
+            screenTop: ${0};
+            screenWidth: ${screenWidth};
+            screenHeight: ${screenHeight};
+            rotateSpeed: ${rotateSpeed};
+            zoomSpeed: ${zoomSpeed};
+            panSpeed: ${panSpeed};
+            dynamicDampingFactor: ${dampingFactor};
+            controlTarget: ${controlTarget};
+            controlPosition: ${controlPosition};
+            enabled: ${enabled};
+            animating: ${animating}
+          `}
+          al-control-lights
+          ref={ref => cb(ref)}
+        />
+      );
+    }
+  })();

@@ -19,7 +19,15 @@ export class AlNodeList {
   public render() {
     if (this.nodes && this.nodes.size) {
       return (
-        <ion-list>
+        <ion-list
+          style={{
+            color: "var(--al-item-color)",
+            "border-width": "1px 0 0 0",
+            "border-color": "var(--ion-list-header-border-color)",
+            "border-style": "solid",
+            "margin-top": "10px"
+          }}
+        >
           {Array.from(this.nodes).map(([nodeId, node]) => {
             return (
               <ion-item
@@ -34,7 +42,15 @@ export class AlNodeList {
       );
     }
     return (
-      <ion-item>
+      <ion-item
+        style={{
+          color: "var(--al-item-color)",
+          "border-width": "1px 0 0 0",
+          "border-color": "var(--ion-list-header-border-color)",
+          "border-style": "solid",
+          "margin-top": "10px"
+        }}
+      >
         <p>{this._contentStrings.graphEmpty}</p>
       </ion-item>
     );
