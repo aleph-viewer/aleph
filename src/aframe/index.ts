@@ -1,7 +1,7 @@
+import "./components/al-bounding-box";
 import "./components/AlAngleComponent";
 import "./components/AlBackgroundComponent";
 import "./components/AlBillboardComponent";
-import "./components/AlBoundingBoxComponent";
 import "./components/AlChildHoverVisibleComponent";
 import "./components/AlControlLightsComponent";
 import "./components/AlCubeEnvMapComponent";
