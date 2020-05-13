@@ -979,10 +979,10 @@ export class Aleph {
       const sphere: Sphere = new Sphere();
       this._boundingSphereRadius = this._boundingBox.getBoundingSphere(sphere).radius;
       // position the object
-      const center = this._boundingBox.getCenter(new THREE.Vector3());
-      this._loadedObject.model.position.x += (this._loadedObject.model.position.x - center.x);
-      this._loadedObject.model.position.y += (this._loadedObject.model.position.y - center.y);
-      this._loadedObject.model.position.z += (this._loadedObject.model.position.z - center.z);
+      // const center = this._boundingBox.getCenter(new THREE.Vector3());
+      // this._loadedObject.model.position.x += (this._loadedObject.model.position.x - center.x);
+      // this._loadedObject.model.position.y += (this._loadedObject.model.position.y - center.y);
+      // this._loadedObject.model.position.z += (this._loadedObject.model.position.z - center.z);
 
       cameraState = Utils.getCameraStateFromModel(this._loadedObject.model, Constants.zoomFactor, Constants.fov);
     } else {
@@ -1087,7 +1087,8 @@ export class Aleph {
         newNode = {
           targetId: this.src,
           position: ThreeUtils.vector3ToString(intersection.point),
-          scale: this._boundingSphereRadius / Constants.nodeSizeRatio, // todo: don't use _boundingSphereRadius
+          scale: this._boundingSphereRadius / Constants.nodeSizeRatio,
+          normal: AFRAME.utils.coordinates.stringify(intersection.face.normal),
           title: nodeId
         };
       }

@@ -80,8 +80,14 @@ export const BoundingBox: FunctionalComponent<BoundingBoxProps> = (
           />
         );
       } else {
+        const center = boundingBox.getCenter(new THREE.Vector3());
+        position = new THREE.Vector3();
+        position.x -= (targetEntity.object3D.position.x - center.x);
+        position.y -= (targetEntity.object3D.position.y - center.y);
+        position.z -= (targetEntity.object3D.position.z - center.z);
         return (
           <a-entity
+            position={ThreeUtils.vector3ToString(position)}
             al-bounding-box={`
               scale: ${ThreeUtils.vector3ToString(size)};
               color: ${color};
