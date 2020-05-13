@@ -47,7 +47,7 @@ export const TrackballCamera: FunctionalComponent<TrackballCameraProps> = (
           far={far}
           id="mainCamera"
           al-cursor="rayOrigin: mouse"
-          raycaster="objects: .collidable;"
+          raycaster="objects:.collidable;"
           al-trackball-control={`
             screenLeft: ${0};
             screenTop: ${0};
