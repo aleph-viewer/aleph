@@ -79,6 +79,33 @@ export class Utils {
     return null;
   }
 
+  public static getCameraStateFromModel(model: THREE.Object3D, zoomFactor: number, fov: number): AlCamera {
+    let center;
+    let position;
+    let sceneDistance;
+
+    if (model) {
+      const box = Utils.getBoundingBox(model);
+      center = box.getCenter(new THREE.Vector3());
+      const size = box.getSize(new THREE.Vector3()).length();
+
+      sceneDistance =
+        (zoomFactor * size) /
+        Math.tan((fov * Math.PI) / 180);
+
+      position = new THREE.Vector3();
+      position.copy(center);
+      position.z += sceneDistance;
+
+      return {
+        target: center,
+        position
+      } as AlCamera;
+    }
+
+    return null;
+  }
+
   public static getCameraPositionFromNode(
     node: AlNode,
     radius: number,

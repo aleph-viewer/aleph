@@ -206,7 +206,3 @@ export default AFRAME.registerComponent("al-node", {
     this.el.removeObject3D("mesh");
   }
 } as AlNodeComponent);
-
-export class AlNodeEvents {
-  public static ANIMATION_STARTED: string = "al-animation-started";
-}

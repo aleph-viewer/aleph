@@ -2,6 +2,7 @@ export class Constants {
   public static boundingBoxWidth = 2;
   public static controllerName = "-controller";
   public static edgeSize = 0.005;
+  public static fov = 45;
   public static fontSizeLarge = 1;
   public static fontSizeMedium = 0.7;
   public static fontSizeSmall = 0.4;
@@ -59,7 +60,7 @@ export class Constants {
   public static camera = {
     dampingFactor: 0.25,
     far: 10000,
-    fov: 45,
+    fov: Constants.fov,
     maxPolarAngle: 175,
     minDistance: 0,
     minPolarAngle: 5,

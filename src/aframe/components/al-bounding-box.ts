@@ -1,8 +1,6 @@
-import { MeshLine, MeshLineMaterial } from "three.meshline";
-
 AFRAME.registerComponent("al-bounding-box", {
   schema: {
-    boundingBoxWidth: { type: "number", default: 1.5 },
+    boundingBoxWidth: { type: "number", default: 2 },
     color: { type: "string", default: "#fff" },
     scale: { type: "string" },
     enabled: { type: "boolean", default: true },
@@ -44,7 +42,7 @@ AFRAME.registerComponent("al-bounding-box", {
     const BboxLineController = new THREE.Mesh();
     BboxLineController.renderOrder = this.data.topLayerRenderOrder - 5;
 
-    const MeshLineMat = new THREE.MeshLineMaterial({
+    const MeshLineMat = new MeshLineMaterial({
       // - THREE.Color to paint the line width, or tint the texture with
       color: new THREE.Color(this.data.color),
       // - cutoff value from 0 to 1

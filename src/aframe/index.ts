@@ -1,4 +1,6 @@
 import "./components/al-bounding-box";
+import "./components/al-gltf-model";
+import "./components/al-node-spawner";
 import "./components/AlAngleComponent";
 import "./components/AlBackgroundComponent";
 import "./components/AlBillboardComponent";
@@ -7,16 +9,23 @@ import "./components/AlControlLightsComponent";
 import "./components/AlCubeEnvMapComponent";
 import "./components/AlCursorComponent";
 import "./components/AlEdgeComponent";
-import { AlGltfModelEvents } from "./components/AlGltfModelComponent";
-import "./components/AlGltfModelComponent";
-import { AlNodeEvents } from "./components/AlNodeComponent";
 import "./components/AlNodeComponent";
-import { AlNodeSpawnerEvents } from "./components/AlNodeSpawnerComponent";
-import "./components/AlNodeSpawnerComponent";
 import "./components/AlOrbitControlComponent";
 import "./components/AlRenderOrderComponent";
 import "./components/AlRenderOverlaidComponent";
 import "./components/AlTrackballControlComponent";
 import "./components/AlVolumeComponent";
 
-export { AlGltfModelEvents, AlNodeEvents, AlNodeSpawnerEvents };
+export const AlGltfModelEvents = {
+  LOADED: "al-model-loaded",
+  ERROR: "al-model-error"
+}
+
+export const AlNodeEvents = {
+  ANIMATION_STARTED: "al-animation-started"
+}
+
+export const AlNodeSpawnerEvents = {
+  VALID_TARGET: "al-valid-target",
+  ADD_NODE: "al-add-node"
+}

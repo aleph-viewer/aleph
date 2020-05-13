@@ -78,6 +78,7 @@ import {
   Utils
 } from "../../utils";
 import { AlControlEvents } from "../../utils/AlControlEvents";
+import { Sphere } from "three";
 
 type AEntity = import("aframe").Entity;
 type AScene = import("aframe").Scene;
@@ -459,36 +460,38 @@ export class Aleph {
         }}
         isWebGl2={this._isWebGl2}
       >
-        <Src
-          cb={ref => {
-            this._targetEntity = ref;
-          }}
-          controlsType={this.controlsType}
-          displayMode={this.displayMode}
-          dracoDecoderPath={this.dracoDecoderPath}
-          envMapPath={this.envMapPath}
-          graphEnabled={this.graphEnabled}
-          orientation={this.orientation}
-          slicesIndex={this.slicesIndex}
-          src={this.src}
-          srcLoaded={this.srcLoaded}
-          volumeSteps={this.volumeSteps}
-          volumeWindowCenter={this.volumeWindowCenter}
-          volumeWindowWidth={this.volumeWindowWidth}
-        />
-        <BoundingBox
-          cb={ref => {
-            this._boundingEntity = ref;
-          }}
-          boundingBox={this._boundingBox}
-          boundingBoxEnabled={this.boundingBoxEnabled}
-          color={Constants.colors.white}
-          displayMode={this.displayMode}
-          graphEnabled={this.graphEnabled}
-          mesh={this._getMesh()}
-          srcLoaded={this.srcLoaded}
-          targetEntity={this._targetEntity}
-        />
+        <a-entity id="model-container">
+          <Src
+            cb={ref => {
+              this._targetEntity = ref;
+            }}
+            controlsType={this.controlsType}
+            displayMode={this.displayMode}
+            dracoDecoderPath={this.dracoDecoderPath}
+            envMapPath={this.envMapPath}
+            graphEnabled={this.graphEnabled}
+            orientation={this.orientation}
+            slicesIndex={this.slicesIndex}
+            src={this.src}
+            srcLoaded={this.srcLoaded}
+            volumeSteps={this.volumeSteps}
+            volumeWindowCenter={this.volumeWindowCenter}
+            volumeWindowWidth={this.volumeWindowWidth}
+          />
+          <BoundingBox
+            cb={ref => {
+              this._boundingEntity = ref;
+            }}
+            boundingBox={this._boundingBox}
+            boundingBoxEnabled={this.boundingBoxEnabled}
+            color={Constants.colors.white}
+            displayMode={this.displayMode}
+            graphEnabled={this.graphEnabled}
+            mesh={this._getMesh()}
+            srcLoaded={this.srcLoaded}
+            targetEntity={this._targetEntity}
+          />
+        </a-entity>
         <Nodes
           boundingSphereRadius={this._boundingSphereRadius}
           camera={this._scene ? this._scene.camera : null}
@@ -974,26 +977,48 @@ export class Aleph {
 
   // tslint:disable-next-line: no-any
   private _srcLoadedHandler(ev: any): void {
-    this._loadedObject = ev.detail;
+    console.log("loaded");
+    this._loadedObject = ev.detail.model;
 
-    const mesh: THREE.Mesh | null = this._getMesh();
+    this._boundingBox = Utils.getBoundingBox(this._loadedObject);
 
-    if (mesh) {
-      // Compute the bounding sphere of the mesh
-      mesh.geometry.computeBoundingSphere();
-      mesh.geometry.computeBoundingBox();
-      this._boundingSphereRadius = mesh.geometry.boundingSphere.radius;
-      this._boundingBox = Utils.getBoundingBox(mesh);
-      const cameraState: AlCamera = Utils.getCameraStateFromMesh(mesh);
+    const sphere: Sphere = new Sphere();
+    this._boundingSphereRadius = this._boundingBox.getBoundingSphere(sphere).radius;
 
-      if (cameraState) {
-        this.appSetCamera(cameraState);
-      }
+    // position the object
+    const center = this._boundingBox.getCenter(new THREE.Vector3());
+    this._loadedObject.position.x += (this._loadedObject.position.x - center.x);
+    this._loadedObject.position.y += (this._loadedObject.position.y - center.y);
+    this._loadedObject.position.z += (this._loadedObject.position.z - center.z);
 
-      this.appSetSrcLoaded(true);
-      this._stateChanged();
-      this.loaded.emit(ev.detail);
+    const cameraState: AlCamera = Utils.getCameraStateFromModel(this._loadedObject, Constants.zoomFactor, Constants.fov);
+
+    if (cameraState) {
+      this.appSetCamera(cameraState);
     }
+
+    this.appSetSrcLoaded(true);
+    this._stateChanged();
+    this.loaded.emit(ev.detail);
+
+    //const mesh: THREE.Mesh | null = this._getMesh();
+
+    // if (mesh) {
+    //   // Compute the bounding sphere of the mesh
+    //   mesh.geometry.computeBoundingSphere();
+    //   mesh.geometry.computeBoundingBox();
+    //   this._boundingSphereRadius = mesh.geometry.boundingSphere.radius;
+    //   this._boundingBox = Utils.getBoundingBox(mesh);
+    //   const cameraState: AlCamera = Utils.getCameraStateFromMesh(mesh);
+
+    //   if (cameraState) {
+    //     this.appSetCamera(cameraState);
+    //   }
+
+    //   this.appSetSrcLoaded(true);
+    //   this._stateChanged();
+    //   this.loaded.emit(ev.detail);
+    // }
   }
 
   //#endregion
@@ -1076,7 +1101,7 @@ export class Aleph {
         newNode = {
           targetId: this.src,
           position: ThreeUtils.vector3ToString(intersection.point),
-          scale: this._boundingSphereRadius / Constants.nodeSizeRatio,
+          scale: this._boundingSphereRadius / Constants.nodeSizeRatio, // todo: don't use _boundingSphereRadius
           title: nodeId
         };
       }
