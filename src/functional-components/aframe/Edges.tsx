@@ -136,7 +136,7 @@ export const Edges: FunctionalComponent<EdgesProps> = (
               />
             </a-entity>
             <a-entity
-              class="collidable"
+              data-raycastable
               id={edgeId}
               position={ThreeUtils.vector3ToString(centoid)}
               al-edge={`

@@ -50,6 +50,7 @@ export const BoundingBox: FunctionalComponent<BoundingBoxProps> = (
 
         return (
           <a-entity
+            data-raycastable
             position={ThreeUtils.vector3ToString(position)}
             al-bounding-box={`
               scale: ${ThreeUtils.vector3ToString(size)};
@@ -59,7 +60,6 @@ export const BoundingBox: FunctionalComponent<BoundingBoxProps> = (
             al-node-spawner={`
               graphEnabled: ${graphEnabled};
             `}
-            class="collidable"
             ref={ref => cb(ref)}
           />
         );

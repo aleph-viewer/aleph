@@ -84,7 +84,7 @@ export const Nodes: FunctionalComponent<NodesProps> = (
             />
           </a-entity>
           <a-entity
-            class="collidable"
+            data-raycastable
             id={nodeId}
             position={node.position}
             al-node={`
