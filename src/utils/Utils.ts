@@ -1,4 +1,4 @@
-import { Mesh } from "three";
+// import { Mesh } from "three";
 import { ThreeUtils } from ".";
 import { Constants } from "../Constants";
 import { AlCamera, AlNode } from "../interfaces";
@@ -54,25 +54,21 @@ export class Utils {
     return geom.boundingSphere.center;
   }
 
-  public static getCameraStateFromMesh(mesh: Mesh): AlCamera {
-    let meshCenter: THREE.Vector3;
-    let initialPosition: THREE.Vector3;
-    let sceneDistance: number;
-
+  public static getCameraStateFromMesh(mesh: THREE.Mesh, zoomFactor: number, fov: number): AlCamera {
     if (mesh) {
       const geom = mesh.geometry;
-      meshCenter = this.getGeometryCenter(geom);
-      sceneDistance =
-        (Constants.zoomFactor * geom.boundingSphere.radius) /
-        Math.tan((Constants.camera.fov * Math.PI) / 180);
+      const meshCenter: THREE.Vector3 = this.getGeometryCenter(geom);
+      const sceneDistance: number =
+        (zoomFactor * geom.boundingSphere.radius) /
+        Math.tan((fov * Math.PI) / 180);
 
-      initialPosition = new THREE.Vector3();
-      initialPosition.copy(meshCenter);
-      initialPosition.z += sceneDistance;
+      const position: THREE.Vector3 = new THREE.Vector3();
+      position.copy(meshCenter);
+      position.z += sceneDistance;
 
       return {
         target: meshCenter,
-        position: initialPosition
+        position
       } as AlCamera;
     }
 
@@ -80,22 +76,20 @@ export class Utils {
   }
 
   public static getCameraStateFromModel(model: THREE.Object3D, zoomFactor: number, fov: number): AlCamera {
-    let center;
-    let position;
-    let sceneDistance;
-
     if (model) {
       const box = Utils.getBoundingBox(model);
-      center = box.getCenter(new THREE.Vector3());
-      const size = box.getSize(new THREE.Vector3()).length();
+      const sphere: THREE.Sphere = new THREE.Sphere();
+      box.getBoundingSphere(sphere);
 
-      sceneDistance =
-        (zoomFactor * size) /
+      const sceneDistance: number =
+        (zoomFactor * sphere.radius) /
         Math.tan((fov * Math.PI) / 180);
 
-      position = new THREE.Vector3();
-      position.copy(center);
+      const position: THREE.Vector3 = new THREE.Vector3();
       position.z += sceneDistance;
+
+      const center: THREE.Vector3 = new THREE.Vector3();
+      box.getCenter(center)
 
       return {
         target: center,

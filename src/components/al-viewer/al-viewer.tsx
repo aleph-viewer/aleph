@@ -763,7 +763,7 @@ export class Aleph {
     animationEndVec3: THREE.Vector3
   ): void {
     const defaultCamera: AlCamera = Utils.getCameraStateFromMesh(
-      this._getMesh()
+      this._getMesh(), Constants.zoomFactor, Constants.fov
     );
 
     const animationEnd = {
@@ -839,7 +839,7 @@ export class Aleph {
   }
 
   private _recenter(): void {
-    const cameraState: AlCamera = Utils.getCameraStateFromMesh(this._getMesh());
+    const cameraState: AlCamera = Utils.getCameraStateFromMesh(this._getMesh(), Constants.zoomFactor, Constants.fov);
 
     const animationStart = {
       position: this.camera.position.clone(),
@@ -940,16 +940,6 @@ export class Aleph {
     this._stateChanged();
   }
 
-  // private _getStackHelper(): AMI.VolumeRenderHelper | null {
-  //   let stackhelper: AMI.VolumeRenderHelper | null = null;
-
-  //   if (this.displayMode === DisplayMode.VOLUME) {
-  //     stackhelper = this._loadedObject;
-  //   }
-
-  //   return stackhelper;
-  // }
-
   private _getMesh(): THREE.Mesh | null {
     let mesh: THREE.Mesh | null = null;
 
@@ -977,21 +967,36 @@ export class Aleph {
 
   // tslint:disable-next-line: no-any
   private _srcLoadedHandler(ev: any): void {
-    console.log("loaded");
-    this._loadedObject = ev.detail.model;
+    this._loadedObject = ev.detail;
 
-    this._boundingBox = Utils.getBoundingBox(this._loadedObject);
+    let cameraState: AlCamera;
 
-    const sphere: Sphere = new Sphere();
-    this._boundingSphereRadius = this._boundingBox.getBoundingSphere(sphere).radius;
+    // if it's a gltf scene, there will be a _loadedObject.model
+    // use this to get the bounding box.
+    // otherwise use _getMesh()
+    if (this._loadedObject.model) {
+      this._boundingBox = Utils.getBoundingBox(this._loadedObject.model);
+      const sphere: Sphere = new Sphere();
+      this._boundingSphereRadius = this._boundingBox.getBoundingSphere(sphere).radius;
+      // position the object
+      const center = this._boundingBox.getCenter(new THREE.Vector3());
+      this._loadedObject.model.position.x += (this._loadedObject.model.position.x - center.x);
+      this._loadedObject.model.position.y += (this._loadedObject.model.position.y - center.y);
+      this._loadedObject.model.position.z += (this._loadedObject.model.position.z - center.z);
 
-    // position the object
-    const center = this._boundingBox.getCenter(new THREE.Vector3());
-    this._loadedObject.position.x += (this._loadedObject.position.x - center.x);
-    this._loadedObject.position.y += (this._loadedObject.position.y - center.y);
-    this._loadedObject.position.z += (this._loadedObject.position.z - center.z);
+      cameraState = Utils.getCameraStateFromModel(this._loadedObject.model, Constants.zoomFactor, Constants.fov);
+    } else {
+      // there's no model, use the mesh
+      const mesh: THREE.Mesh | null = this._getMesh();
+      // Compute the bounding sphere of the mesh
+      mesh.geometry.computeBoundingSphere();
+      mesh.geometry.computeBoundingBox();
+      this._boundingBox = Utils.getBoundingBox(mesh);
+      this._boundingSphereRadius = mesh.geometry.boundingSphere.radius;
+      // we don't position the volume, instead the BoundingBox functional component positions the bounding box
 
-    const cameraState: AlCamera = Utils.getCameraStateFromModel(this._loadedObject, Constants.zoomFactor, Constants.fov);
+      cameraState = Utils.getCameraStateFromMesh(mesh, Constants.zoomFactor, Constants.fov);
+    }
 
     if (cameraState) {
       this.appSetCamera(cameraState);
@@ -1000,25 +1005,6 @@ export class Aleph {
     this.appSetSrcLoaded(true);
     this._stateChanged();
     this.loaded.emit(ev.detail);
-
-    //const mesh: THREE.Mesh | null = this._getMesh();
-
-    // if (mesh) {
-    //   // Compute the bounding sphere of the mesh
-    //   mesh.geometry.computeBoundingSphere();
-    //   mesh.geometry.computeBoundingBox();
-    //   this._boundingSphereRadius = mesh.geometry.boundingSphere.radius;
-    //   this._boundingBox = Utils.getBoundingBox(mesh);
-    //   const cameraState: AlCamera = Utils.getCameraStateFromMesh(mesh);
-
-    //   if (cameraState) {
-    //     this.appSetCamera(cameraState);
-    //   }
-
-    //   this.appSetSrcLoaded(true);
-    //   this._stateChanged();
-    //   this.loaded.emit(ev.detail);
-    // }
   }
 
   //#endregion
