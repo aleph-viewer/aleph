@@ -11,12 +11,13 @@ import {
   Prop,
   State
 } from "@stencil/core";
+import { Sphere } from "three";
 import "../../aframe";
 import { AlGltfModelEvents, AlNodeSpawnerEvents } from "../../aframe";
 import {
   AlVolumeCastType,
   AlVolumeEvents
-} from "../../aframe/components/AlVolumeComponent";
+} from "../../aframe/components/al-volume";
 import "../../assets/OrbitControls.js";
 import { Constants } from "../../Constants";
 import {
@@ -78,7 +79,6 @@ import {
   Utils
 } from "../../utils";
 import { AlControlEvents } from "../../utils/AlControlEvents";
-import { Sphere } from "three";
 
 type AEntity = import("aframe").Entity;
 type AScene = import("aframe").Scene;

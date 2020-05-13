@@ -1,7 +1,7 @@
-import { Constants } from "../../Constants";
-
-export default AFRAME.registerComponent("al-render-overlaid", {
-  schema: {},
+AFRAME.registerComponent("al-render-overlaid", {
+  schema: {
+    renderOrder: { type: "number", default: 999 }
+  },
 
   // tslint:disable-next-line: no-any
   init(_data?: any) {
@@ -12,24 +12,24 @@ export default AFRAME.registerComponent("al-render-overlaid", {
   },
 
   // tslint:disable-next-line: no-empty
-  bindMethods(): void {},
+  bindMethods() {},
 
   // tslint:disable-next-line: no-empty
-  addEventListeners(): void {},
+  addEventListeners() {},
 
   // tslint:disable-next-line: no-empty
-  removeEventListeners(): void {},
+  removeEventListeners() {},
 
   setDepth(mesh: THREE.Mesh) {
     if (mesh) {
-      mesh.renderOrder = Constants.topLayerRenderOrder;
+      mesh.renderOrder = this.data.renderOrder;
       if (mesh.material) {
         (mesh.material as THREE.Material).depthTest = false;
       }
     }
   },
 
-  remove(): void {
+  remove() {
     this.removeEventListeners();
   }
 });

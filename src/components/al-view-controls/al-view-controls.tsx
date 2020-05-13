@@ -1,9 +1,9 @@
 import { Component, Event, EventEmitter, h, Prop } from "@stencil/core";
-import BoundingBoxIcon from "../../assets/svg/bounding-box-2.svg";
+import BoundingBoxIcon from "../../assets/svg/bounding-box.svg";
 import ObjectIcon from "../../assets/svg/object-alone.svg";
-import OrbitCameraIcon from "../../assets/svg/orbit_camera.svg";
+import OrbitCameraIcon from "../../assets/svg/orbit-camera.svg";
 import RecenterIcon from "../../assets/svg/recenter.svg";
-import RotateObjectIcon from "../../assets/svg/rotate_object.svg";
+import RotateObjectIcon from "../../assets/svg/rotate-object.svg";
 import { ControlsType } from "../../enums";
 import i18n from "./al-view-controls.i18n.en.json";
 import { ContentStrings } from "./ContentStrings";

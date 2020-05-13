@@ -1,43 +1,20 @@
-import { Entity } from "aframe";
 import { Constants } from "../../Constants";
 import { AlGraphEntryType } from "../../enums";
 import { AlGraphEvents } from "../../utils";
 import { ShaderUtils } from "../../utils/shaders/ShaderUtils";
-import { BaseComponent } from "./BaseComponent";
 
-interface AlNodeState {
-  camera: THREE.Camera;
-  dragging: boolean;
-  geometry: THREE.SphereGeometry;
-  hovered: boolean;
-  material: THREE.MeshBasicMaterial;
-  mesh: THREE.Mesh;
-  mouseDown: boolean;
-  outlineGeometry: THREE.SphereGeometry;
-  outlineMaterial: THREE.Material;
-  outlineMesh: THREE.Mesh;
-  selected: boolean;
-}
-
-interface AlNodeComponent extends BaseComponent {
-  tickFunction(): void;
-  pointerDown(_event: CustomEvent): void;
-  pointerUp(_event: MouseEvent): void;
-  pointerOver(_event: CustomEvent): void;
-  pointerOut(_event: CustomEvent): void;
-}
-
-export default AFRAME.registerComponent("al-node", {
+AFRAME.registerComponent("al-node", {
   schema: {
+    graphEnabled: { type: "boolean" },
+    minFrameMS: { type: "number", default: 15 },
     scale: { type: "number", default: 1 },
-    selected: { type: "boolean" },
-    graphEnabled: { type: "boolean" }
+    selected: { type: "boolean" }
   },
 
-  init(): void {
+  init() {
     this.tickFunction = AFRAME.utils.throttle(
       this.tickFunction,
-      Constants.minFrameMS,
+      this.data.minFrameMS,
       this
     );
     this.bindMethods();
@@ -71,17 +48,17 @@ export default AFRAME.registerComponent("al-node", {
       outlineMesh,
       camera,
       dragging: false
-    } as AlNodeState;
+    };
   },
 
-  bindMethods(): void {
+  bindMethods() {
     this.pointerDown = this.pointerDown.bind(this);
     this.pointerUp = this.pointerUp.bind(this);
     this.pointerOver = this.pointerOver.bind(this);
     this.pointerOut = this.pointerOut.bind(this);
   },
 
-  addEventListeners(): void {
+  addEventListeners() {
     this.el.sceneEl.addEventListener("mousedown", this.pointerDown, {
       capture: false,
       once: false,
@@ -109,7 +86,7 @@ export default AFRAME.registerComponent("al-node", {
     });
   },
 
-  removeEventListeners(): void {
+  removeEventListeners() {
     this.el.sceneEl.removeEventListener("mousedown", this.pointerDown);
     this.el.sceneEl.removeEventListener("mouseup", this.pointerUp);
     this.el.removeEventListener("mouseup", this.pointerUp);
@@ -120,8 +97,8 @@ export default AFRAME.registerComponent("al-node", {
     );
   },
 
-  pointerDown(_event: CustomEvent): void {
-    const state = this.state as AlNodeState;
+  pointerDown(_event: CustomEvent) {
+    const state = this.state;
     if (state.hovered) {
       this.el.sceneEl.emit(
         AlGraphEvents.SELECTED,
@@ -130,15 +107,15 @@ export default AFRAME.registerComponent("al-node", {
       );
 
       if (this.data.graphEnabled) {
-        const stat = this.state as AlNodeState;
+        const stat = this.state;
         stat.mouseDown = true;
         this.el.sceneEl.emit(AlGraphEvents.POINTER_DOWN, {}, true);
       }
     }
   },
 
-  pointerUp(_event: MouseEvent): void {
-    const state = this.state as AlNodeState;
+  pointerUp(_event: MouseEvent) {
+    const state = this.state;
     if (this.data.graphEnabled) {
       state.dragging = false;
       state.mouseDown = false;
@@ -146,14 +123,14 @@ export default AFRAME.registerComponent("al-node", {
     }
   },
 
-  pointerOver(_event: CustomEvent): void {
-    const state = this.state as AlNodeState;
+  pointerOver(_event: CustomEvent) {
+    const state = this.state;
     state.hovered = true;
     this.el.sceneEl.emit(AlGraphEvents.POINTER_OVER, { id: this.el.id }, true);
   },
 
-  pointerOut(_event: CustomEvent): void {
-    const state = this.state as AlNodeState;
+  pointerOut(_event: CustomEvent) {
+    const state = this.state;
     state.hovered = false;
     if (state.mouseDown && state.selected) {
       state.dragging = true;
@@ -161,14 +138,14 @@ export default AFRAME.registerComponent("al-node", {
     this.el.sceneEl.emit(AlGraphEvents.POINTER_OUT, {}, true);
   },
 
-  update(): void {
-    const state = this.state as AlNodeState;
+  update() {
+    const state = this.state;
     state.selected = this.data.selected;
   },
 
-  tickFunction(): void {
+  tickFunction() {
     const el = this.el;
-    const state = this.state as AlNodeState;
+    const state = this.state;
 
     if (this.data.graphEnabled && state.dragging) {
       this.el.sceneEl.emit(AlGraphEvents.DRAGGED, { id: this.el.id }, true);
@@ -183,10 +160,10 @@ export default AFRAME.registerComponent("al-node", {
       state.material.color = new THREE.Color(Constants.buttonColors.up);
     }
 
-    const text: Entity = el.firstChild;
+    const text = el.firstChild;
 
     if (text) {
-      const obj3d: THREE.Object3D = text.object3D;
+      const obj3d = text.object3D;
 
       // show/hide label
       if (state.hovered || state.dragging) {
@@ -201,8 +178,8 @@ export default AFRAME.registerComponent("al-node", {
     this.tickFunction();
   },
 
-  remove(): void {
+  remove() {
     this.removeEventListeners();
     this.el.removeObject3D("mesh");
   }
-} as AlNodeComponent);
+});

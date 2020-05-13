@@ -1,47 +1,39 @@
 import { Constants } from "../../Constants";
-import { BaseComponent } from "./BaseComponent";
 
-interface AlBackgroundComponent extends BaseComponent {
-  tickFunction(): void;
-}
-
-interface AlBackgroundState {
-  hasUpdated: boolean;
-}
-
-export default AFRAME.registerComponent("al-background", {
+AFRAME.registerComponent("al-background", {
   schema: {
-    text: { type: "string", default: "" },
     boundingRadius: { type: "number", default: 1 },
+    frustrumDistance: { type: "number", default: 1 },
+    minFrameMS: { type: "number", default: 15 },
     scale: { type: "number", default: 8 },
-    frustrumDistance: { type: "number", default: 1 }
+    text: { type: "string", default: "" }
   },
 
   init() {
     this.state = {
       hasUpdated: false
-    } as AlBackgroundState;
+    };
 
     this.bindMethods();
     this.addEventListeners();
     this.tickFunction = AFRAME.utils.throttle(
       this.tickFunction,
-      Constants.minFrameMS,
+      this.data.minFrameMS,
       this
     );
   },
 
   // tslint:disable-next-line: no-empty
-  bindMethods(): void {},
+  bindMethods() {},
 
   // tslint:disable-next-line: no-empty
-  addEventListeners(): void {},
+  addEventListeners() {},
 
   // tslint:disable-next-line: no-empty
-  removeEventListeners(): void {},
+  removeEventListeners() {},
 
   // tslint:disable-next-line: no-any
-  update(oldData: any): void {
+  update(oldData: any) {
     if (this.data.text !== oldData.text) {
       this.state.hasUpdated = false;
     }
@@ -53,10 +45,10 @@ export default AFRAME.registerComponent("al-background", {
       // const parentGeom = (this.el.parentEl.object3DMap.text as THREE.Mesh)
       //   .geometry as THREE.BufferGeometry;
 
-      const parent = this.el.object3DMap.text as THREE.Mesh;
+      const parent = this.el.object3DMap.text;
       let parentGeom;
       if (parent) {
-        parentGeom = parent.geometry as THREE.BufferGeometry;
+        parentGeom = parent.geometry;
 
         if (parentGeom.attributes.position) {
           parentGeom.computeBoundingBox();
@@ -98,7 +90,7 @@ export default AFRAME.registerComponent("al-background", {
     this.tickFunction();
   },
 
-  remove(): void {
+  remove() {
     this.removeEventListeners();
   }
-} as AlBackgroundComponent);
+});

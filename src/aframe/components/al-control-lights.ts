@@ -1,6 +1,4 @@
-import { BaseComponent } from "./BaseComponent";
-
-export default AFRAME.registerComponent("al-control-lights", {
+AFRAME.registerComponent("al-control-lights", {
   schema: {
     color: { type: "string", default: "#fff" },
     controlsType: { type: "string", default: "orbit" },
@@ -9,6 +7,7 @@ export default AFRAME.registerComponent("al-control-lights", {
   },
 
   init() {
+
     this.bindMethods();
     this.addEventListeners();
     this.tickFunction = AFRAME.utils.throttle(
@@ -17,12 +16,13 @@ export default AFRAME.registerComponent("al-control-lights", {
       this
     );
 
-    const parent: THREE.Object3D = this.el.getObject3D("camera");
+    const parent = this.el.getObject3D("camera");
 
     const light1 = new THREE.DirectionalLight(
       new THREE.Color(this.data.color),
       this.data.lightIntensity
     );
+
     light1.position.copy(new THREE.Vector3(1, 1, 1));
     parent.add(light1);
 
@@ -30,32 +30,27 @@ export default AFRAME.registerComponent("al-control-lights", {
       new THREE.Color(this.data.color),
       this.data.lightIntensity
     );
+
     light2.position.copy(new THREE.Vector3(-1, -1, -1));
     parent.add(light2);
   },
 
-  // tslint:disable-next-line: no-empty
-  bindMethods(): void {},
+  bindMethods() {},
 
-  // tslint:disable-next-line: no-empty
-  addEventListeners(): void {},
+  addEventListeners() {},
 
-  // tslint:disable-next-line: no-empty
-  removeEventListeners(): void {},
+  removeEventListeners() {},
 
-  // tslint:disable-next-line: no-any
-  update(oldData: any): void {
+  update(oldData) {
     // Reset the up vector if we change camera mode
     if (this.data.controlsType !== oldData.controlsType) {
-      (this.el.object3D as THREE.Object3D).up.copy(
+      this.el.object3D.up.copy(
         this.el.sceneEl.camera.up.clone()
       );
     }
   },
 
-  // tslint:disable-next-line: no-empty
   tick() {},
 
-  // tslint:disable-next-line: no-empty
-  remove(): void {}
-} as BaseComponent);
+  remove() {}
+});

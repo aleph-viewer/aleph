@@ -1,8 +1,6 @@
-import { Constants } from "../../Constants";
-
-export default AFRAME.registerComponent("al-render-order", {
+AFRAME.registerComponent("al-render-order", {
   schema: {
-    order: { type: "number", default: Constants.topLayerRenderOrder }
+    renderOrder: { type: "number", default: 999 }
   },
 
   init() {
@@ -12,28 +10,28 @@ export default AFRAME.registerComponent("al-render-order", {
     Object.keys(this.el.object3DMap).forEach(key => {
       (this.el.object3DMap[
         key
-      ] as THREE.Object3D).renderOrder = this.data.order;
+      ]).renderOrder = this.data.renderOrder;
     });
   },
 
   // tslint:disable-next-line: no-empty
-  bindMethods(): void {},
+  bindMethods() {},
 
   // tslint:disable-next-line: no-empty
-  addEventListeners(): void {},
+  addEventListeners() {},
 
   // tslint:disable-next-line: no-empty
-  removeEventListeners(): void {},
+  removeEventListeners() {},
 
   update() {
     Object.keys(this.el.object3DMap).forEach(key => {
       (this.el.object3DMap[
         key
-      ] as THREE.Object3D).renderOrder = this.data.order;
+      ]).renderOrder = this.data.renderOrder;
     });
   },
 
-  remove(): void {
+  remove() {
     this.removeEventListeners();
   }
 });

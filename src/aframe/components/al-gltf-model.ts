@@ -1,3 +1,8 @@
+const AlGltfModelEvents = {
+  LOADED: "al-model-loaded",
+  ERROR: "al-model-error"
+}
+
 AFRAME.registerComponent("al-gltf-model", {
   schema: {
     src: { type: "model", default: "" },
@@ -9,8 +14,8 @@ AFRAME.registerComponent("al-gltf-model", {
     this.addEventListeners();
     this.model = null;
 
-    this.loader = new THREE.GLTFLoader();
-    this.dracoLoader = new THREE.DRACOLoader();
+    this.loader = new (THREE as any).GLTFLoader();
+    this.dracoLoader = new (THREE as any).DRACOLoader();
     this.dracoLoader.setDecoderPath(this.data.dracoDecoderPath);
     this.loader.setDRACOLoader(this.dracoLoader);
   },
@@ -31,7 +36,6 @@ AFRAME.registerComponent("al-gltf-model", {
 
       this.loader.load(
         src,
-
         function gltfLoaded(gltfModel) {
           self.model = gltfModel.scene || gltfModel.scenes[0];
           self.model.animations = gltfModel.animations;
@@ -75,8 +79,3 @@ AFRAME.registerComponent("al-gltf-model", {
     this.el.removeObject3D("mesh");
   }
 });
-
-const AlGltfModelEvents = {
-  LOADED: "al-model-loaded",
-  ERROR: "al-model-error"
-}

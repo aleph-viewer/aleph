@@ -1,20 +1,20 @@
+import "./components/al-angle";
+import "./components/al-background";
+import "./components/al-billboard";
 import "./components/al-bounding-box";
+import "./components/al-child-hover-visible";
+import "./components/al-control-lights";
+import "./components/al-cube-env-map";
+import "./components/al-cursor";
+import "./components/al-edge";
 import "./components/al-gltf-model";
+import "./components/al-node";
 import "./components/al-node-spawner";
-import "./components/AlAngleComponent";
-import "./components/AlBackgroundComponent";
-import "./components/AlBillboardComponent";
-import "./components/AlChildHoverVisibleComponent";
-import "./components/AlControlLightsComponent";
-import "./components/AlCubeEnvMapComponent";
-import "./components/AlCursorComponent";
-import "./components/AlEdgeComponent";
-import "./components/AlNodeComponent";
-import "./components/AlOrbitControlComponent";
-import "./components/AlRenderOrderComponent";
-import "./components/AlRenderOverlaidComponent";
-import "./components/AlTrackballControlComponent";
-import "./components/AlVolumeComponent";
+import "./components/al-orbit-control";
+import "./components/al-render-order";
+import "./components/al-render-overlaid";
+import "./components/al-trackball-control";
+import "./components/al-volume";
 
 export const AlGltfModelEvents = {
   LOADED: "al-model-loaded",

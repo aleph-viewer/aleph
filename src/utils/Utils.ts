@@ -1,5 +1,4 @@
 // import { Mesh } from "three";
-import { ThreeUtils } from ".";
 import { Constants } from "../Constants";
 import { AlCamera, AlNode } from "../interfaces";
 
@@ -110,7 +109,7 @@ export class Utils {
     }
 
     const pos: THREE.Vector3 = new THREE.Vector3();
-    pos.copy(ThreeUtils.stringToVector3(node.position));
+    pos.copy(AFRAME.utils.coordinates.parse(node.position) as THREE.Vector3);
 
     // (Position -> Target)
     const dir: THREE.Vector3 = pos

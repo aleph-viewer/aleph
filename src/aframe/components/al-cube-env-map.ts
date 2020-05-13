@@ -56,7 +56,7 @@ function applyEnvMap(mesh, materialNames, envMap, reflectivity) {
  * Specifies an envMap on an entity, without replacing any existing material
  * properties.
  */
-export default AFRAME.registerComponent("al-cube-env-map", {
+AFRAME.registerComponent("al-cube-env-map", {
   multiple: true,
 
   schema: {

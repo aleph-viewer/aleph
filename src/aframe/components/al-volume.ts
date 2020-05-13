@@ -3,7 +3,6 @@ import { DisplayMode, Orientation } from "../../enums";
 import { AMIUtils, EventUtils, Utils } from "../../utils";
 import { AlControlEvents } from "../../utils/AlControlEvents";
 import { VolumetricLoader } from "../../utils/VolumetricLoader";
-import { BaseComponent } from "./BaseComponent";
 
 export class AlVolumeEvents {
   public static DEFAULT_RENDER_STEPS: string = "al-default-render-steps";
@@ -20,37 +19,11 @@ export class AlVolumeCastType {
   public static DRAG: string = "drag";
 }
 
-interface AlVolumeState {
-  bufferScene: THREE.Scene;
-  bufferSceneTexture: THREE.WebGLRenderTarget;
-  bufferSceneTextureHeight: number;
-  bufferSceneTextureWidth: number;
-  debounce: boolean;
-  frameTime: number;
-  loaded: boolean;
-  lutHelper: AMI.LutHelper;
-  lastRenderTime: number;
-  volumeSteps: number;
-  // tslint:disable-next-line: no-any
-  stack: any;
-  stackhelper: AMI.StackHelper | AMI.VolumeRenderHelper;
-}
-
-interface AlVolumeComponent extends BaseComponent {
-  // tslint:disable-next-line: no-any
-  handleStack(stack: any): void;
-  onInteraction(event: CustomEvent): void;
-  onInteractionFinished(event: CustomEvent): void;
-  renderBufferScene(): void;
-  tickFunction(): void;
-  createBufferTexture(): void;
-  castVolumeRay(event: CustomEvent): void;
-}
-
-export default AFRAME.registerComponent("al-volume", {
+AFRAME.registerComponent("al-volume", {
   schema: {
     controlsType: { type: "string" },
     displayMode: { type: "string" },
+    minFrameMS: { type: "number", default: 15 },
     slicesIndex: { type: "number" },
     slicesOrientation: { type: "string" },
     src: { type: "string" },
@@ -60,10 +33,10 @@ export default AFRAME.registerComponent("al-volume", {
     volumeWindowWidth: { type: "number" }
   },
 
-  init(): void {
+  init() {
     this.tickFunction = AFRAME.utils.throttle(
       this.tickFunction,
-      Constants.minFrameMS,
+      this.data.minFrameMS,
       this
     );
 
@@ -78,7 +51,7 @@ export default AFRAME.registerComponent("al-volume", {
       loaded: false,
       lastRenderTime: 0,
       volumeSteps: 0
-    } as AlVolumeState;
+    };
 
     this.bindMethods();
     this.addEventListeners();
@@ -87,11 +60,11 @@ export default AFRAME.registerComponent("al-volume", {
 
     this.debouncedRenderBufferScene = EventUtils.debounce(
       this.renderBufferScene,
-      Constants.minFrameMS
+      this.data.minFrameMS
     ).bind(this);
   },
 
-  bindMethods(): void {
+  bindMethods() {
     this.addEventListeners = this.addEventListeners.bind(this);
     this.denormaliseVolumeSteps = this.denormaliseVolumeSteps.bind(this);
     this.castVolumeRay = this.castVolumeRay.bind(this);
@@ -133,7 +106,7 @@ export default AFRAME.registerComponent("al-volume", {
     );
   },
 
-  removeEventListeners(): void {
+  removeEventListeners() {
     this.el.sceneEl.removeEventListener("rendererresize", this.rendererResize);
 
     this.el.sceneEl.removeEventListener(
@@ -152,13 +125,13 @@ export default AFRAME.registerComponent("al-volume", {
     );
   },
 
-  castVolumeRay(event: CustomEvent) {
-    const camPos: THREE.Vector3 = event.detail.cameraPosition;
-    const camDir: THREE.Vector3 = event.detail.cameraDirection;
-    const intersection: THREE.Vector3 = event.detail.intersection;
+  castVolumeRay(event) {
+    const camPos = event.detail.cameraPosition;
+    const camDir = event.detail.cameraDirection;
+    const intersection = event.detail.intersection;
 
-    const hitPosition: THREE.Vector3 = new THREE.Vector3();
-    const hitNormal: THREE.Vector3 = new THREE.Vector3();
+    const hitPosition = new THREE.Vector3();
+    const hitNormal = new THREE.Vector3();
 
     const rayResult = AMIUtils.volumeRay(
       this.state.stackhelper,
@@ -178,7 +151,7 @@ export default AFRAME.registerComponent("al-volume", {
     });
   },
 
-  createBufferTexture(): void {
+  createBufferTexture() {
     this.state.bufferSceneTexture = new THREE.WebGLRenderTarget(
       this.state.bufferSceneTextureWidth,
       this.state.bufferSceneTextureHeight,
@@ -188,13 +161,13 @@ export default AFRAME.registerComponent("al-volume", {
       .object3D as THREE.Scene).background = this.state.bufferSceneTexture.texture;
   },
 
-  onInteraction(event: CustomEvent): void {
+  onInteraction(event) {
     if (this.state.stackhelper && event.detail.needsRender) {
       this.state.volumeSteps = 2;
     }
   },
 
-  onInteractionFinished(event: CustomEvent): void {
+  onInteractionFinished(event) {
     if (this.state.stackhelper && event.detail.needsRender) {
       this.state.volumeSteps = this.denormaliseVolumeSteps(
         this.data.volumeSteps
@@ -204,7 +177,7 @@ export default AFRAME.registerComponent("al-volume", {
     this.state.debounce = false;
   },
 
-  getDefaultVolumeSteps(): number {
+  getDefaultVolumeSteps() {
     // default to 128 steps for desktop (2 ^ 7), 32 steps for mobile (2 ^ 5)
     let power;
 
@@ -219,13 +192,13 @@ export default AFRAME.registerComponent("al-volume", {
     return steps;
   },
 
-  denormaliseVolumeSteps(normalisedValue: number): number {
-    const steps: number = Math.pow(2, normalisedValue * 10);
+  denormaliseVolumeSteps(normalisedValue) {
+    const steps = Math.pow(2, normalisedValue * 10);
     return steps;
   },
 
-  rendererResize(): void {
-    const state = this.state as AlVolumeState;
+  rendererResize() {
+    const state = this.state;
 
     const needsResize =
       state.bufferSceneTextureWidth !== this.el.sceneEl.canvas.clientWidth ||
@@ -239,7 +212,7 @@ export default AFRAME.registerComponent("al-volume", {
     }
   },
 
-  renderBufferScene(): void {
+  renderBufferScene() {
     if (this.data.displayMode === DisplayMode.VOLUME) {
       this.createBufferTexture();
 
@@ -255,7 +228,7 @@ export default AFRAME.registerComponent("al-volume", {
       this.el.sceneEl.renderer.setRenderTarget(null);
 
       const post = window.performance.now();
-      const renderTime: number = post - prev;
+      const renderTime = post - prev;
 
       this.state.lastRenderTime = renderTime;
       this.state.volumeSteps = 0;
@@ -263,8 +236,8 @@ export default AFRAME.registerComponent("al-volume", {
   },
 
   // tslint:disable-next-line: no-any
-  handleStack(stack: any): void {
-    const state = this.state as AlVolumeState;
+  handleStack(stack: any) {
+    const state = this.state;
     const el = this.el;
 
     state.stack = stack;
@@ -318,7 +291,7 @@ export default AFRAME.registerComponent("al-volume", {
     }
   },
 
-  updateSlicesStack(): void {
+  updateSlicesStack() {
     if (
       !this.state.stackhelper ||
       (this.state.stackhelper &&
@@ -327,12 +300,12 @@ export default AFRAME.registerComponent("al-volume", {
       return;
     }
 
-    const orientationIndex: number = Object.keys(Orientation).indexOf(
+    const orientationIndex = Object.keys(Orientation).indexOf(
       this.data.slicesOrientation.toUpperCase()
     );
 
     // based off zCosine, x:1 = saggital, y:1 = coronal, z:1 = axial
-    const zCosine: THREE.Vector3 = this.state.stackhelper.stack
+    const zCosine = this.state.stackhelper.stack
       .zCosine as THREE.Vector3;
 
     let orientationOffset;
@@ -357,13 +330,13 @@ export default AFRAME.registerComponent("al-volume", {
       (orientationIndex + orientationOffset + 2) % 3
     );
 
-    const slicesIndexMax: number =
+    const slicesIndexMax =
       this.state.stackhelper.stack.dimensionsIJK[
         Object.keys(this.state.stackhelper.stack.dimensionsIJK)[
           stackOrientationIndex
         ]
       ] - 1;
-    let index: number;
+    let index;
 
     if (
       stackOrientationIndex !== this._lastStackOrientationIndex ||
@@ -383,8 +356,8 @@ export default AFRAME.registerComponent("al-volume", {
     this._lastStackOrientationIndex = stackOrientationIndex;
 
     // brightness
-    const windowCenterMax: number = this.state.stackhelper.stack.minMax[1];
-    const windowCenter: number = Math.floor(
+    const windowCenterMax = this.state.stackhelper.stack.minMax[1];
+    const windowCenter = Math.floor(
       Utils.reverseNumber(
         windowCenterMax * this.data.volumeWindowCenter,
         0,
@@ -393,10 +366,10 @@ export default AFRAME.registerComponent("al-volume", {
     );
 
     // contrast
-    const windowWidthMax: number =
+    const windowWidthMax =
       this.state.stackhelper.stack.minMax[1] -
       this.state.stackhelper.stack.minMax[0];
-    const windowWidth: number = Math.floor(
+    const windowWidth = Math.floor(
       windowWidthMax * this.data.volumeWindowWidth
     );
 
@@ -409,14 +382,14 @@ export default AFRAME.registerComponent("al-volume", {
     (this.state.stackhelper as AMI.StackHelper).slice.windowWidth = windowWidth;
   },
 
-  updateVolumeStack(): void {
+  updateVolumeStack() {
     if (!this.state.stackhelper) {
       return;
     }
 
     // brightness
-    const windowCenterMax: number = this.state.stackhelper.stack.minMax[1];
-    const windowCenter: number = Math.floor(
+    const windowCenterMax = this.state.stackhelper.stack.minMax[1];
+    const windowCenter = Math.floor(
       Utils.reverseNumber(
         windowCenterMax * this.data.volumeWindowCenter,
         0,
@@ -425,10 +398,10 @@ export default AFRAME.registerComponent("al-volume", {
     );
 
     // contrast
-    const windowWidthMax: number =
+    const windowWidthMax =
       this.state.stackhelper.stack.minMax[1] -
       this.state.stackhelper.stack.minMax[0];
-    const windowWidth: number = Math.floor(
+    const windowWidth = Math.floor(
       windowWidthMax * this.data.volumeWindowWidth
     );
 
@@ -440,7 +413,7 @@ export default AFRAME.registerComponent("al-volume", {
   },
 
   // tslint:disable-next-line: no-any
-  update(oldData: any): void {
+  update(oldData: any) {
     const state = this.state;
     const el = this.el;
 
@@ -468,8 +441,8 @@ export default AFRAME.registerComponent("al-volume", {
         this.createBufferTexture();
         // allow some time for the stackhelper to update
         setTimeout(() => {
-          const defaultVolumeSteps: number = this.getDefaultVolumeSteps();
-          const normalised: number = Math.log2(defaultVolumeSteps) / 10;
+          const defaultVolumeSteps = this.getDefaultVolumeSteps();
+          const normalised = Math.log2(defaultVolumeSteps) / 10;
           this.el.sceneEl.emit(
             AlVolumeEvents.DEFAULT_RENDER_STEPS,
             normalised,
@@ -543,7 +516,7 @@ export default AFRAME.registerComponent("al-volume", {
     }
   },
 
-  tickFunction(): void {
+  tickFunction() {
     if (!this.state.stackhelper) {
       return;
     }
@@ -561,7 +534,7 @@ export default AFRAME.registerComponent("al-volume", {
     this.tickFunction();
   },
 
-  remove(): void {
+  remove() {
     if (this.data.displayMode === DisplayMode.SLICES) {
       this.el.removeObject3D("mesh");
     }
@@ -569,4 +542,4 @@ export default AFRAME.registerComponent("al-volume", {
 
     (this.el.sceneEl.object3D as THREE.Scene).background = null;
   }
-} as AlVolumeComponent);
+});

@@ -1,44 +1,25 @@
-import { Entity } from "aframe";
 import { Constants } from "../../Constants";
 import { AlGraphEntryType } from "../../enums";
-import { AlGraphEvents, ThreeUtils } from "../../utils";
+import { AlGraphEvents } from "../../utils";
 import { ShaderUtils } from "../../utils/shaders/ShaderUtils";
-import { BaseComponent } from "./BaseComponent";
 
-interface AlAngleState {
-  selected: boolean;
-  hovered: boolean;
-  outlineGeometry: THREE.CylinderGeometry;
-  outlineMaterial: THREE.MeshBasicMaterial;
-  outlineMesh: THREE.Mesh;
-  geometry: THREE.CylinderGeometry;
-  material: THREE.MeshBasicMaterial;
-  mesh: THREE.Mesh;
-}
-
-interface AlAngleComponent extends BaseComponent {
-  tickFunction(): void;
-  pointerDown(_event: CustomEvent): void;
-  pointerOver(_event: CustomEvent): void;
-  pointerOut(_event: CustomEvent): void;
-}
-
-export default AFRAME.registerComponent("al-angle", {
+AFRAME.registerComponent("al-angle", {
   schema: {
-    selected: { type: "boolean" },
+    angle: { type: "number" },
     edge0Pos: { type: "vec3" },
     edge1Pos: { type: "vec3" },
-    position: { type: "vec3" },
     length: { type: "number" },
+    minFrameMS: { type: "number", default: 15 },
+    position: { type: "vec3" },
     radius: { type: "number" },
-    angle: { type: "number" },
-    scale: { type: "number" }
+    scale: { type: "number" },
+    selected: { type: "boolean" }
   },
 
-  init(): void {
+  init() {
     this.tickFunction = AFRAME.utils.throttle(
       this.tickFunction,
-      Constants.minFrameMS,
+      this.data.minFrameMS,
       this
     );
     this.bindMethods();
@@ -47,20 +28,29 @@ export default AFRAME.registerComponent("al-angle", {
     this.state = {
       selected: true,
       hovered: false
-    } as AlAngleState;
+    };
 
     this.createMesh();
   },
 
-  bindMethods(): void {
-    this.pointerDown = this.pointerDown.bind(this);
-    this.pointerOver = this.pointerOver.bind(this);
-    this.pointerOut = this.pointerOut.bind(this);
+  bindMethods() {
     this.createMesh = this.createMesh.bind(this);
     this.getMatrix = this.getMatrix.bind(this);
+    this.objectToVector3 = this.objectToVector3.bind(this);
+    this.pointerDown = this.pointerDown.bind(this);
+    this.pointerOut = this.pointerOut.bind(this);
+    this.pointerOver = this.pointerOver.bind(this);
   },
 
-  addEventListeners(): void {
+  objectToVector3(vec) {
+    const res = new THREE.Vector3();
+    res.x = vec.x;
+    res.y = vec.y;
+    res.z = vec.z;
+    return res;
+  },
+
+  addEventListeners() {
     this.el.addEventListener("mousedown", this.pointerDown, {
       capture: false,
       once: false,
@@ -78,7 +68,7 @@ export default AFRAME.registerComponent("al-angle", {
     });
   },
 
-  removeEventListeners(): void {
+  removeEventListeners() {
     this.el.removeEventListener("mousedown", this.pointerDown);
     this.el.removeEventListener("raycaster-intersected", this.pointerOver);
     this.el.removeEventListener(
@@ -87,7 +77,7 @@ export default AFRAME.registerComponent("al-angle", {
     );
   },
 
-  pointerDown(_event: CustomEvent): void {
+  pointerDown(_event) {
     this.el.sceneEl.emit(
       AlGraphEvents.SELECTED,
       { type: AlGraphEntryType.ANGLE, id: this.el.id },
@@ -95,24 +85,24 @@ export default AFRAME.registerComponent("al-angle", {
     );
   },
 
-  pointerOver(_event: CustomEvent): void {
-    const state = this.state as AlAngleState;
+  pointerOver(_event) {
+    const state = this.state;
     state.hovered = true;
     this.el.sceneEl.emit(AlGraphEvents.POINTER_OVER, { id: this.el.id }, true);
   },
 
-  pointerOut(_event: CustomEvent): void {
-    const state = this.state as AlAngleState;
+  pointerOut(_event) {
+    const state = this.state;
     state.hovered = false;
     this.el.sceneEl.emit(AlGraphEvents.POINTER_OUT, {}, true);
   },
 
-  getMatrix(): THREE.Matrix4 {
+  getMatrix() {
     // Set up vector of cylinder to be direction from 1 to 2; so that scale works properly
-    const edgePos0: THREE.Vector3 = ThreeUtils.objectToVector3(
+    const edgePos0 = this.objectToVector3(
       this.data.edge0Pos
     );
-    const edgePos1: THREE.Vector3 = ThreeUtils.objectToVector3(
+    const edgePos1 = this.objectToVector3(
       this.data.edge1Pos
     );
 
@@ -143,7 +133,7 @@ export default AFRAME.registerComponent("al-angle", {
     const material = new THREE.MeshBasicMaterial();
     const mesh = new THREE.Mesh(geometry, material);
     mesh.applyMatrix(this.getMatrix());
-    mesh.position.copy(ThreeUtils.objectToVector3(this.data.position));
+    mesh.position.copy(this.objectToVector3(this.data.position));
 
     this.state.geometry = geometry;
     this.state.material = material;
@@ -172,8 +162,8 @@ export default AFRAME.registerComponent("al-angle", {
   },
 
   // tslint:disable-next-line: no-any
-  update(oldData: any): void {
-    const state = this.state as AlAngleState;
+  update(oldData: any) {
+    const state = this.state;
     state.selected = this.data.selected;
 
     // If height or radius has changed, create a new mesh
@@ -185,9 +175,9 @@ export default AFRAME.registerComponent("al-angle", {
     }
   },
 
-  tickFunction(): void {
+  tickFunction() {
     const el = this.el;
-    const state = this.state as AlAngleState;
+    const state = this.state;
 
     if (state.hovered) {
       state.material.color = new THREE.Color(Constants.buttonColors.hover);
@@ -197,7 +187,7 @@ export default AFRAME.registerComponent("al-angle", {
       state.material.color = new THREE.Color(Constants.buttonColors.up);
     }
 
-    const text: Entity = el.firstChild;
+    const text = el.firstChild;
 
     if (text) {
       const obj3d: THREE.Object3D = text.object3D;
@@ -215,8 +205,8 @@ export default AFRAME.registerComponent("al-angle", {
     this.tickFunction();
   },
 
-  remove(): void {
+  remove() {
     this.removeEventListeners();
     this.el.removeObject3D("mesh");
   }
-} as AlAngleComponent);
+});

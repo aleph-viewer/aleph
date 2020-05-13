@@ -1,42 +1,24 @@
-import { Entity } from "aframe";
 import { Constants } from "../../Constants";
 import { AlGraphEntryType } from "../../enums";
 import { AlGraphEvents, ThreeUtils } from "../../utils";
 import { ShaderUtils } from "../../utils/shaders/ShaderUtils";
-import { BaseComponent } from "./BaseComponent";
 
-interface AlEdgeState {
-  selected: boolean;
-  hovered: boolean;
-  geometry: THREE.CylinderGeometry;
-  material: THREE.MeshBasicMaterial;
-  mesh: THREE.Mesh;
-  outlineGeometry: THREE.CylinderGeometry;
-  outlineMaterial: THREE.MeshBasicMaterial;
-  outlineMesh: THREE.Mesh;
-}
-interface AlEdgeComponent extends BaseComponent {
-  tickFunction(): void;
-  pointerDown(_event: CustomEvent): void;
-  pointerOver(_event: CustomEvent): void;
-  pointerOut(_event: CustomEvent): void;
-}
-
-export default AFRAME.registerComponent("al-edge", {
+AFRAME.registerComponent("al-edge", {
   schema: {
-    selected: { type: "boolean" },
+    length: { type: "number" },
+    minFrameMS: { type: "number", default: 15 },
     node1: { type: "vec3" },
     node2: { type: "vec3" },
-    length: { type: "number" },
-    radius: { type: "number" },
     nodeScale: { type: "number" },
-    scale: { type: "number" }
+    radius: { type: "number" },
+    scale: { type: "number" },
+    selected: { type: "boolean" }
   },
 
-  init(): void {
+  init() {
     this.tickFunction = AFRAME.utils.throttle(
       this.tickFunction,
-      Constants.minFrameMS,
+      this.data.minFrameMS,
       this
     );
     this.bindMethods();
@@ -45,10 +27,10 @@ export default AFRAME.registerComponent("al-edge", {
     this.state = {
       selected: true,
       hovered: false
-    } as AlEdgeState;
+    };
   },
 
-  bindMethods(): void {
+  bindMethods() {
     this.pointerDown = this.pointerDown.bind(this);
     this.pointerOver = this.pointerOver.bind(this);
     this.pointerOut = this.pointerOut.bind(this);
@@ -56,7 +38,7 @@ export default AFRAME.registerComponent("al-edge", {
     this.getMatrix = this.getMatrix.bind(this);
   },
 
-  addEventListeners(): void {
+  addEventListeners() {
     this.el.sceneEl.addEventListener("mousedown", this.pointerDown, {
       capture: false,
       once: false,
@@ -74,7 +56,7 @@ export default AFRAME.registerComponent("al-edge", {
     });
   },
 
-  removeEventListeners(): void {
+  removeEventListeners() {
     this.el.sceneEl.removeEventListener("mousedown", this.pointerDown);
     this.el.removeEventListener("raycaster-intersected", this.pointerOver);
     this.el.removeEventListener(
@@ -83,8 +65,8 @@ export default AFRAME.registerComponent("al-edge", {
     );
   },
 
-  pointerDown(_event: CustomEvent): void {
-    const state = this.state as AlEdgeState;
+  pointerDown(_event) {
+    const state = this.state;
     if (state.hovered) {
       this.el.sceneEl.emit(
         AlGraphEvents.SELECTED,
@@ -94,19 +76,19 @@ export default AFRAME.registerComponent("al-edge", {
     }
   },
 
-  pointerOver(_event: CustomEvent): void {
-    const state = this.state as AlEdgeState;
+  pointerOver(_event) {
+    const state = this.state;
     state.hovered = true;
     this.el.sceneEl.emit(AlGraphEvents.POINTER_OVER, { id: this.el.id }, false);
   },
 
-  pointerOut(_event: CustomEvent): void {
-    const state = this.state as AlEdgeState;
+  pointerOut(_event) {
+    const state = this.state;
     state.hovered = false;
     this.el.sceneEl.emit(AlGraphEvents.POINTER_OUT, {}, false);
   },
 
-  getMatrix(): THREE.Matrix4 {
+  getMatrix() {
     // Set up vector of cylinder to be direction from 1 to 2; so that scale works properly
     const node1Pos = ThreeUtils.objectToVector3(this.data.node1);
     const node2Pos = ThreeUtils.objectToVector3(this.data.node2);
@@ -164,8 +146,8 @@ export default AFRAME.registerComponent("al-edge", {
   },
 
   // tslint:disable-next-line: no-any
-  update(oldData: any): void {
-    const state = this.state as AlEdgeState;
+  update(oldData: any) {
+    const state = this.state;
     state.selected = this.data.selected;
 
     // If length or radius has changed, create a new mesh
@@ -179,9 +161,9 @@ export default AFRAME.registerComponent("al-edge", {
     }
   },
 
-  tickFunction(): void {
+  tickFunction() {
     const el = this.el;
-    const state = this.state as AlEdgeState;
+    const state = this.state;
 
     // update color
     if (state.hovered) {
@@ -192,10 +174,10 @@ export default AFRAME.registerComponent("al-edge", {
       state.material.color = new THREE.Color(Constants.buttonColors.up);
     }
 
-    const text: Entity = el.firstChild;
+    const text = el.firstChild;
 
     if (text) {
-      const obj3d: THREE.Object3D = text.object3D;
+      const obj3d = text.object3D;
 
       // show/hide label
       if (state.hovered) {
@@ -210,8 +192,8 @@ export default AFRAME.registerComponent("al-edge", {
     this.tickFunction();
   },
 
-  remove(): void {
+  remove() {
     this.removeEventListeners();
     this.el.removeObject3D("mesh");
   }
-} as AlEdgeComponent);
+});
