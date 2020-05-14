@@ -978,12 +978,6 @@ export class Aleph {
       this._boundingBox = Utils.getBoundingBox(this._loadedObject.model);
       const sphere: Sphere = new Sphere();
       this._boundingSphereRadius = this._boundingBox.getBoundingSphere(sphere).radius;
-      // position the object
-      // const center = this._boundingBox.getCenter(new THREE.Vector3());
-      // this._loadedObject.model.position.x += (this._loadedObject.model.position.x - center.x);
-      // this._loadedObject.model.position.y += (this._loadedObject.model.position.y - center.y);
-      // this._loadedObject.model.position.z += (this._loadedObject.model.position.z - center.z);
-
       cameraState = Utils.getCameraStateFromModel(this._loadedObject.model, Constants.zoomFactor, Constants.fov);
     } else {
       // there's no model, use the mesh
@@ -993,8 +987,6 @@ export class Aleph {
       mesh.geometry.computeBoundingBox();
       this._boundingBox = Utils.getBoundingBox(mesh);
       this._boundingSphereRadius = mesh.geometry.boundingSphere.radius;
-      // we don't position the volume, instead the BoundingBox functional component positions the bounding box
-
       cameraState = Utils.getCameraStateFromMesh(mesh, Constants.zoomFactor, Constants.fov);
     }
 

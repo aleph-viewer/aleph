@@ -84,11 +84,12 @@ export class Utils {
         (zoomFactor * sphere.radius) /
         Math.tan((fov * Math.PI) / 180);
 
-      const position: THREE.Vector3 = new THREE.Vector3();
-      position.z += sceneDistance;
-
       const center: THREE.Vector3 = new THREE.Vector3();
-      box.getCenter(center)
+      box.getCenter(center);
+
+      const position: THREE.Vector3 = new THREE.Vector3();
+      position.y = center.y;
+      position.z += sceneDistance;
 
       return {
         target: center,
