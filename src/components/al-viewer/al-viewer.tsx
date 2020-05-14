@@ -79,6 +79,7 @@ import {
   Utils
 } from "../../utils";
 import { AlControlEvents } from "../../utils/AlControlEvents";
+import { ModelContainer } from "../../functional-components/aframe/ModelContainer";
 
 type AEntity = import("aframe").Entity;
 type AScene = import("aframe").Scene;
@@ -457,10 +458,13 @@ export class Aleph {
       <Scene
         cb={ref => {
           this._scene = ref as AScene;
+          this._scene.addEventListener("loaded", () => {
+            this._scene.sceneEl.renderer.toneMapping = (THREE as any).ACESFilmicToneMapping;
+          });
         }}
         isWebGl2={this._isWebGl2}
       >
-        <a-entity id="model-container">
+        <ModelContainer>
           <Src
             cb={ref => {
               this._targetEntity = ref;
@@ -491,7 +495,7 @@ export class Aleph {
             srcLoaded={this.srcLoaded}
             targetEntity={this._targetEntity}
           />
-        </a-entity>
+        </ModelContainer>
         <Nodes
           boundingSphereRadius={this._boundingSphereRadius}
           camera={this._scene ? this._scene.camera : null}
