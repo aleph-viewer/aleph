@@ -1,3 +1,5 @@
+import { MeshLine, MeshLineMaterial } from "threejs-meshline";
+
 AFRAME.registerComponent("al-bounding-box", {
   schema: {
     boundingBoxWidth: { type: "number", default: 2 },
@@ -7,13 +9,13 @@ AFRAME.registerComponent("al-bounding-box", {
     topLayerRenderOrder: { type: "number", default: 999 }
   },
 
-  init(){
+  init() {
     this.bindMethods();
     this.addEventListeners();
 
     this.state = {
       box: new THREE.Box3()
-    }
+    };
   },
 
   bindMethods() {},
@@ -55,11 +57,7 @@ AFRAME.registerComponent("al-bounding-box", {
       // - makes the line width constant regardless distance (1 unit is 1px on screen) (0 - attenuate, 1 - don't attenuate)
       sizeAttenuation: 0,
       // - float defining width (if sizeAttenuation is true, it's world units; else is screen pixels)
-      lineWidth: this.data.boundingBoxWidth,
-      // - camera near clip plane distance (REQUIRED if sizeAttenuation set to false)
-      near: this.el.sceneEl.camera.near,
-      // - camera far clip plane distance (REQUIRED if sizeAttenuation set to false)
-      far: this.el.sceneEl.camera.far
+      lineWidth: this.data.boundingBoxWidth
     });
     // MeshLineMat.transparent = this.data.opacity === 0;
     // // - alpha value from 0 to 1 (requires transparent set to true)

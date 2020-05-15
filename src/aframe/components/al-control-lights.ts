@@ -7,7 +7,6 @@ AFRAME.registerComponent("al-control-lights", {
   },
 
   init() {
-
     this.bindMethods();
     this.addEventListeners();
     this.tickFunction = AFRAME.utils.throttle(
@@ -44,9 +43,7 @@ AFRAME.registerComponent("al-control-lights", {
   update(oldData) {
     // Reset the up vector if we change camera mode
     if (this.data.controlsType !== oldData.controlsType) {
-      this.el.object3D.up.copy(
-        this.el.sceneEl.camera.up.clone()
-      );
+      this.el.object3D.up.copy(this.el.sceneEl.camera.up.clone());
     }
   },
 

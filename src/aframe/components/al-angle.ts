@@ -99,12 +99,8 @@ AFRAME.registerComponent("al-angle", {
 
   getMatrix() {
     // Set up vector of cylinder to be direction from 1 to 2; so that scale works properly
-    const edgePos0 = this.objectToVector3(
-      this.data.edge0Pos
-    );
-    const edgePos1 = this.objectToVector3(
-      this.data.edge1Pos
-    );
+    const edgePos0 = this.objectToVector3(this.data.edge0Pos);
+    const edgePos1 = this.objectToVector3(this.data.edge1Pos);
 
     const scale = new THREE.Matrix4();
     scale.makeScale(this.data.scale, this.data.scale, 1);

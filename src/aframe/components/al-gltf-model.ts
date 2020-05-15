@@ -1,7 +1,7 @@
 const AlGltfModelEvents = {
   LOADED: "al-model-loaded",
   ERROR: "al-model-error"
-}
+};
 
 AFRAME.registerComponent("al-gltf-model", {
   schema: {
@@ -9,7 +9,7 @@ AFRAME.registerComponent("al-gltf-model", {
     dracoDecoderPath: { type: "string", default: "" }
   },
 
-  init(){
+  init() {
     this.bindMethods();
     this.addEventListeners();
     this.model = null;
@@ -20,13 +20,13 @@ AFRAME.registerComponent("al-gltf-model", {
     this.loader.setDRACOLoader(this.dracoLoader);
   },
 
-  bindMethods(){},
+  bindMethods() {},
 
-  addEventListeners(){},
+  addEventListeners() {},
 
-  removeEventListeners(){},
+  removeEventListeners() {},
 
-  update(oldData){
+  update(oldData) {
     const self = this;
     const el = this.el;
     const src = this.data.src;
@@ -71,7 +71,7 @@ AFRAME.registerComponent("al-gltf-model", {
     }
   },
 
-  remove(){
+  remove() {
     if (!this.model) {
       return;
     }

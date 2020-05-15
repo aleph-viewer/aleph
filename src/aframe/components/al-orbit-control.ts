@@ -1,9 +1,9 @@
 const AlControlEvents = {
   INTERACTION: "al-control-interaction",
-  INTERACTION_FINISHED:  "al-control-interaction-finished",
+  INTERACTION_FINISHED: "al-control-interaction-finished",
   ANIMATION_STARTED: "al-controls-animation-started",
   ANIMATION_FINISHED: "al-controls-animation-finished"
-}
+};
 
 AFRAME.registerComponent("al-orbit-control", {
   dependencies: ["camera"],
@@ -87,12 +87,12 @@ AFRAME.registerComponent("al-orbit-control", {
     window.removeEventListener("mouseup", this.mouseUp);
     window.removeEventListener("mousemove", this.mouseMove),
       this.el.sceneEl.canvas.removeEventListener("mousedown", this.mouseDown);
-      this.el.sceneEl.canvas.removeEventListener("wheel", this.canvasWheel);
-      this.el.sceneEl.removeEventListener(
-        AlControlEvents.ANIMATION_STARTED,
-        this.handleAnimationCache,
-        false
-      );
+    this.el.sceneEl.canvas.removeEventListener("wheel", this.canvasWheel);
+    this.el.sceneEl.removeEventListener(
+      AlControlEvents.ANIMATION_STARTED,
+      this.handleAnimationCache,
+      false
+    );
   },
 
   handleAnimationCache(event) {
@@ -205,7 +205,7 @@ AFRAME.registerComponent("al-orbit-control", {
 
     const animationCache = [];
 
-    (this.state) = {
+    this.state = {
       animationCache,
       controls,
       mouseDown: false,

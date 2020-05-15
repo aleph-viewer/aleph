@@ -767,7 +767,9 @@ export class Aleph {
     animationEndVec3: THREE.Vector3
   ): void {
     const defaultCamera: AlCamera = Utils.getCameraStateFromMesh(
-      this._getMesh(), Constants.zoomFactor, Constants.fov
+      this._getMesh(),
+      Constants.zoomFactor,
+      Constants.fov
     );
 
     const animationEnd = {
@@ -843,7 +845,11 @@ export class Aleph {
   }
 
   private _recenter(): void {
-    const cameraState: AlCamera = Utils.getCameraStateFromMesh(this._getMesh(), Constants.zoomFactor, Constants.fov);
+    const cameraState: AlCamera = Utils.getCameraStateFromMesh(
+      this._getMesh(),
+      Constants.zoomFactor,
+      Constants.fov
+    );
 
     const animationStart = {
       position: this.camera.position.clone(),
@@ -981,8 +987,14 @@ export class Aleph {
     if (this._loadedObject.model) {
       this._boundingBox = Utils.getBoundingBox(this._loadedObject.model);
       const sphere: Sphere = new Sphere();
-      this._boundingSphereRadius = this._boundingBox.getBoundingSphere(sphere).radius;
-      cameraState = Utils.getCameraStateFromModel(this._loadedObject.model, Constants.zoomFactor, Constants.fov);
+      this._boundingSphereRadius = this._boundingBox.getBoundingSphere(
+        sphere
+      ).radius;
+      cameraState = Utils.getCameraStateFromModel(
+        this._loadedObject.model,
+        Constants.zoomFactor,
+        Constants.fov
+      );
     } else {
       // there's no model, use the mesh
       const mesh: THREE.Mesh | null = this._getMesh();
@@ -991,7 +1003,11 @@ export class Aleph {
       mesh.geometry.computeBoundingBox();
       this._boundingBox = Utils.getBoundingBox(mesh);
       this._boundingSphereRadius = mesh.geometry.boundingSphere.radius;
-      cameraState = Utils.getCameraStateFromMesh(mesh, Constants.zoomFactor, Constants.fov);
+      cameraState = Utils.getCameraStateFromMesh(
+        mesh,
+        Constants.zoomFactor,
+        Constants.fov
+      );
     }
 
     if (cameraState) {

@@ -4,12 +4,6 @@
 
 var root = this
 
-var has_require = typeof require !== 'undefined'
-
-var THREE = root.THREE || has_require && require('three')
-if( !THREE )
-	throw new Error( 'MeshLine requires three.js' )
-
 function MeshLine() {
 
 	this.positions = [];
@@ -35,7 +29,7 @@ MeshLine.prototype.setMatrixWorld = function(matrixWorld) {
 
 
 MeshLine.prototype.setGeometry = function( g, c ) {
-	
+
 	this.widthCallback = c;
 
 	this.positions = [];
@@ -343,7 +337,7 @@ MeshLine.prototype.process = function() {
 	this.geometry.setAttribute( 'counters', this.attributes.counters );
 
 	this.geometry.setIndex( this.attributes.index );
-  
+
 }
 
 function memcpy (src, srcOffset, dst, dstOffset, length) {
@@ -766,17 +760,4 @@ MeshLineMaterial.prototype.copy = function ( source ) {
 	return this;
 
 };
-
-if( typeof exports !== 'undefined' ) {
-	if( typeof module !== 'undefined' && module.exports ) {
-		exports = module.exports = { MeshLine: MeshLine, MeshLineMaterial: MeshLineMaterial };
-	}
-	exports.MeshLine = MeshLine;
-	exports.MeshLineMaterial = MeshLineMaterial;
-}
-else {
-	root.MeshLine = MeshLine;
-	root.MeshLineMaterial = MeshLineMaterial;
-}
-
 }).call(this);

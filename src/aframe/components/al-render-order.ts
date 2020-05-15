@@ -8,9 +8,7 @@ AFRAME.registerComponent("al-render-order", {
     this.addEventListeners();
 
     Object.keys(this.el.object3DMap).forEach(key => {
-      (this.el.object3DMap[
-        key
-      ]).renderOrder = this.data.renderOrder;
+      this.el.object3DMap[key].renderOrder = this.data.renderOrder;
     });
   },
 
@@ -25,9 +23,7 @@ AFRAME.registerComponent("al-render-order", {
 
   update() {
     Object.keys(this.el.object3DMap).forEach(key => {
-      (this.el.object3DMap[
-        key
-      ]).renderOrder = this.data.renderOrder;
+      this.el.object3DMap[key].renderOrder = this.data.renderOrder;
     });
   },
 

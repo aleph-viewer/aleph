@@ -53,7 +53,11 @@ export class Utils {
     return geom.boundingSphere.center;
   }
 
-  public static getCameraStateFromMesh(mesh: THREE.Mesh, zoomFactor: number, fov: number): AlCamera {
+  public static getCameraStateFromMesh(
+    mesh: THREE.Mesh,
+    zoomFactor: number,
+    fov: number
+  ): AlCamera {
     if (mesh) {
       const geom = mesh.geometry;
       const meshCenter: THREE.Vector3 = this.getGeometryCenter(geom);
@@ -74,15 +78,18 @@ export class Utils {
     return null;
   }
 
-  public static getCameraStateFromModel(model: THREE.Object3D, zoomFactor: number, fov: number): AlCamera {
+  public static getCameraStateFromModel(
+    model: THREE.Object3D,
+    zoomFactor: number,
+    fov: number
+  ): AlCamera {
     if (model) {
       const box = Utils.getBoundingBox(model);
       const sphere: THREE.Sphere = new THREE.Sphere();
       box.getBoundingSphere(sphere);
 
       const sceneDistance: number =
-        (zoomFactor * sphere.radius) /
-        Math.tan((fov * Math.PI) / 180);
+        (zoomFactor * sphere.radius) / Math.tan((fov * Math.PI) / 180);
 
       const center: THREE.Vector3 = new THREE.Vector3();
       box.getCenter(center);

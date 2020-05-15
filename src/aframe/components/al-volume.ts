@@ -305,8 +305,7 @@ AFRAME.registerComponent("al-volume", {
     );
 
     // based off zCosine, x:1 = saggital, y:1 = coronal, z:1 = axial
-    const zCosine = this.state.stackhelper.stack
-      .zCosine as THREE.Vector3;
+    const zCosine = this.state.stackhelper.stack.zCosine as THREE.Vector3;
 
     let orientationOffset;
     // If DICOM's up axis is X, offset the viewer's orientation by 1

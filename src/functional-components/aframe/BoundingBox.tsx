@@ -43,7 +43,6 @@ export const BoundingBox: FunctionalComponent<BoundingBoxProps> = (
       let position: THREE.Vector3;
 
       if (displayMode === DisplayMode.VOLUME) {
-
         position = targetEntity.object3D.position
           .clone()
           .add(Utils.getGeometryCenter(meshGeom));
@@ -82,9 +81,9 @@ export const BoundingBox: FunctionalComponent<BoundingBoxProps> = (
       } else {
         const center = boundingBox.getCenter(new THREE.Vector3());
         position = new THREE.Vector3();
-        position.x -= (targetEntity.object3D.position.x - center.x);
-        position.y -= (targetEntity.object3D.position.y - center.y);
-        position.z -= (targetEntity.object3D.position.z - center.z);
+        position.x -= targetEntity.object3D.position.x - center.x;
+        position.y -= targetEntity.object3D.position.y - center.y;
+        position.z -= targetEntity.object3D.position.z - center.z;
         return (
           <a-entity
             position={ThreeUtils.vector3ToString(position)}

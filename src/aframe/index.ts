@@ -19,13 +19,13 @@ import "./components/al-volume";
 export const AlGltfModelEvents = {
   LOADED: "al-model-loaded",
   ERROR: "al-model-error"
-}
+};
 
 export const AlNodeEvents = {
   ANIMATION_STARTED: "al-animation-started"
-}
+};
 
 export const AlNodeSpawnerEvents = {
   VALID_TARGET: "al-valid-target",
   ADD_NODE: "al-add-node"
-}
+};

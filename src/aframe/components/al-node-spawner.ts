@@ -90,20 +90,12 @@ AFRAME.registerComponent("al-node-spawner", {
 
   pointerOver(_event) {
     this.state.intersecting = true;
-    this.el.sceneEl.emit(
-      "al-valid-target",
-      { valid: true },
-      false
-    );
+    this.el.sceneEl.emit("al-valid-target", { valid: true }, false);
   },
 
   pointerOut(_event) {
     this.state.intersecting = false;
-    this.el.sceneEl.emit(
-      "al-valid-target",
-      { valid: false },
-      false
-    );
+    this.el.sceneEl.emit("al-valid-target", { valid: false }, false);
   },
 
   pointerDown(_event) {
@@ -120,11 +112,7 @@ AFRAME.registerComponent("al-node-spawner", {
 
   elClick(event) {
     if (this.state.left && this.data.graphEnabled) {
-      this.el.sceneEl.emit(
-        "al-add-node",
-        { aframeEvent: event },
-        false
-      );
+      this.el.sceneEl.emit("al-add-node", { aframeEvent: event }, false);
     }
   },
 
