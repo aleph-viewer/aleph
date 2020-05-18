@@ -65,18 +65,33 @@ export class ThreeUtils {
     return screenCoordinates;
   }
 
+  public static normaliseNumber(x: number): number {
+    return Number(x.toFixed(Constants.unitsDecimalPlaces));
+  }
+
   public static vector3ToString(vec: THREE.Vector3): string {
     return vec.toArray().join(" ");
   }
 
+  public static vector3ToNormalisedString(vec: THREE.Vector3): string {
+    const x: number = ThreeUtils.normaliseNumber(vec.x);
+    const y: number = ThreeUtils.normaliseNumber(vec.y);
+    const z: number = ThreeUtils.normaliseNumber(vec.z);
+    return `${x} ${y} ${z}`;
+  }
+
   public static stringToVector3(vec: string): THREE.Vector3 {
-    const res = vec.split(" ");
-    const vect = new THREE.Vector3();
+    const res: string[] = vec.split(" ");
+    const vect: THREE.Vector3 = new THREE.Vector3();
     vect.x = Number(res[0]);
     vect.y = Number(res[1]);
     vect.z = Number(res[2]);
 
     return vect;
+  }
+
+  public static normaliseStringVector3(vec: string): string {
+    return ThreeUtils.vector3ToNormalisedString(ThreeUtils.stringToVector3(vec));
   }
 
   // https://en.wikipedia.org/wiki/Slerp

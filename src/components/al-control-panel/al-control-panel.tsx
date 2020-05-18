@@ -14,6 +14,7 @@ import { Scroll } from "../../functional-components/Scroll";
 import { AlAngle, AlEdge, AlNode } from "../../interfaces/index.js";
 import i18n from "./al-control-panel.i18n.en.json";
 import { ContentStrings } from "./ContentStrings";
+import { ThreeUtils } from "../../utils";
 
 @Component({
   tag: "al-control-panel",
@@ -53,8 +54,22 @@ export class AlSettings {
 
   private _getGraphJson(): string {
     if (this.nodes && this.edges && this.angles) {
+
+      const nodes: Array<[string, AlNode]> = Array.from(this.nodes);
+
       const graph = {
-        nodes: Array.from(this.nodes),
+        nodes: nodes.map((n: [string, AlNode]) => {
+          const id: string = n[0];
+          const node: AlNode = n[1];
+          return [id, {
+            normal: ThreeUtils.normaliseStringVector3(node.normal),
+            position: ThreeUtils.normaliseStringVector3(node.position),
+            scale: ThreeUtils.normaliseNumber(node.scale),
+            targetId: node.targetId,
+            title: node.title,
+            description: node.description
+          }]
+        }),
         edges: Array.from(this.edges),
         angles: Array.from(this.angles)
       };
