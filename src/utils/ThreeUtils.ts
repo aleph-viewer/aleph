@@ -91,7 +91,9 @@ export class ThreeUtils {
   }
 
   public static normaliseStringVector3(vec: string): string {
-    return ThreeUtils.vector3ToNormalisedString(ThreeUtils.stringToVector3(vec));
+    return ThreeUtils.vector3ToNormalisedString(
+      ThreeUtils.stringToVector3(vec)
+    );
   }
 
   // https://en.wikipedia.org/wiki/Slerp

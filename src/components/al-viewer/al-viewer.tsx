@@ -1098,14 +1098,15 @@ export class Aleph {
       } else if (intersection) {
         newNode = {
           targetId: this.src,
-          position: ThreeUtils.vector3ToNormalisedString(intersection.point),
-          scale: ThreeUtils.normaliseNumber(this._boundingSphereRadius / Constants.nodeSizeRatio),
-          normal: ThreeUtils.vector3ToNormalisedString(intersection.face.normal),
+          position: ThreeUtils.vector3ToString(intersection.point),
+          scale: this._boundingSphereRadius / Constants.nodeSizeRatio,
+          normal: ThreeUtils.vector3ToString(intersection.face.normal),
           title: nodeId
         };
       }
 
       if (newNode) {
+
         const previousSelected = this.selected;
         this._setNode([nodeId, newNode]);
 
