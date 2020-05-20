@@ -96,7 +96,7 @@ Read below how to engage with Aleph [community](COMMUNITY_TEAM.md):
 - Ask a question, request a new feature and file a bug with [GitHub issues](https://github.com/aleph-viewer/aleph/issues/new).
 - Star the repository to show your support.
 
-## Documentation
+## Documentation 
 
 ### Web Components
 
