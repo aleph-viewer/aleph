@@ -11,12 +11,13 @@ import {
   Prop,
   State
 } from "@stencil/core";
+import { Sphere } from "three";
 import "../../aframe";
 import { AlGltfModelEvents, AlNodeSpawnerEvents } from "../../aframe";
 import {
   AlVolumeCastType,
   AlVolumeEvents
-} from "../../aframe/components/AlVolumeComponent";
+} from "../../aframe/components/al-volume";
 import "../../assets/OrbitControls.js";
 import { Constants } from "../../Constants";
 import {
@@ -38,6 +39,8 @@ import {
   Src,
   TrackballCamera
 } from "../../functional-components/aframe";
+import { ModelContainer } from "../../functional-components/aframe/ModelContainer";
+import { VRControls } from "../../functional-components/aframe/VRControls";
 import { AlAngle, AlCamera, AlEdge, AlGraph, AlNode } from "../../interfaces";
 import {
   appClearAngles,
@@ -79,7 +82,6 @@ import {
   Utils
 } from "../../utils";
 import { AlControlEvents } from "../../utils/AlControlEvents";
-import { VRControls } from "../../functional-components/aframe/VRControls";
 
 type AEntity = import("aframe").Entity;
 type AScene = import("aframe").Scene;
@@ -468,43 +470,46 @@ export class Aleph {
       <Scene
         cb={ref => {
           this._scene = ref as AScene;
+          this._scene.addEventListener("loaded", () => {
+            this._scene.sceneEl.renderer.toneMapping = (THREE as any).ACESFilmicToneMapping;
+          });
         }}
         isWebGl2={this._isWebGl2}
         vrModeUIEnabled={true}
       >
         <VRControls enabled={this.vrEnabled} />
-        <Src
-          cb={ref => {
-            this._targetEntity = ref;
-          }}
-          controlsType={this.controlsType}
-          displayMode={this.displayMode}
-          dracoDecoderPath={this.dracoDecoderPath}
-          envMapPath={this.envMapPath}
-          graphEnabled={this.graphEnabled}
-          orientation={this.orientation}
-          slicesIndex={this.slicesIndex}
-          src={this.src}
-          srcLoaded={this.srcLoaded}
-          volumeSteps={this.volumeSteps}
-          volumeWindowCenter={this.volumeWindowCenter}
-          volumeWindowWidth={this.volumeWindowWidth}
-          vrEnabled={this.vrEnabled}
-        />
-        <BoundingBox
-          cb={ref => {
-            this._boundingEntity = ref;
-          }}
-          boundingBox={this._boundingBox}
-          boundingBoxEnabled={this.boundingBoxEnabled}
-          color={Constants.colors.white}
-          displayMode={this.displayMode}
-          graphEnabled={this.graphEnabled}
-          mesh={this._getMesh()}
-          srcLoaded={this.srcLoaded}
-          targetEntity={this._targetEntity}
-          vrEnabled={this.vrEnabled}
-        />
+        <ModelContainer>
+          <Src
+            cb={ref => {
+              this._targetEntity = ref;
+            }}
+            controlsType={this.controlsType}
+            displayMode={this.displayMode}
+            dracoDecoderPath={this.dracoDecoderPath}
+            envMapPath={this.envMapPath}
+            graphEnabled={this.graphEnabled}
+            orientation={this.orientation}
+            slicesIndex={this.slicesIndex}
+            src={this.src}
+            srcLoaded={this.srcLoaded}
+            volumeSteps={this.volumeSteps}
+            volumeWindowCenter={this.volumeWindowCenter}
+            volumeWindowWidth={this.volumeWindowWidth}
+          />
+          <BoundingBox
+            cb={ref => {
+              this._boundingEntity = ref;
+            }}
+            boundingBox={this._boundingBox}
+            boundingBoxEnabled={this.boundingBoxEnabled}
+            color={Constants.colors.white}
+            displayMode={this.displayMode}
+            graphEnabled={this.graphEnabled}
+            mesh={this._getMesh()}
+            srcLoaded={this.srcLoaded}
+            targetEntity={this._targetEntity}
+          />
+        </ModelContainer>
         <Nodes
           boundingSphereRadius={this._boundingSphereRadius}
           camera={this._scene ? this._scene.camera : null}
@@ -567,6 +572,7 @@ export class Aleph {
                   enabled={this.controlsEnabled}
                   far={Constants.camera.far}
                   fov={Constants.camera.fov}
+                  graphEnabled={this.graphEnabled}
                   near={Constants.camera.near}
                   panSpeed={Constants.camera.panSpeed}
                   rotateSpeed={Constants.camera.trackballRotateSpeed}
@@ -601,6 +607,7 @@ export class Aleph {
                   enabled={this.controlsEnabled}
                   far={Constants.camera.far}
                   fov={Constants.camera.fov}
+                  graphEnabled={this.graphEnabled}
                   maxPolarAngle={Constants.camera.maxPolarAngle}
                   minDistance={Constants.camera.minDistance}
                   minPolarAngle={Constants.camera.minPolarAngle}
@@ -774,7 +781,9 @@ export class Aleph {
     animationEndVec3: THREE.Vector3
   ): void {
     const defaultCamera: AlCamera = Utils.getCameraStateFromMesh(
-      this._getMesh()
+      this._getMesh(),
+      Constants.zoomFactor,
+      Constants.fov
     );
 
     const animationEnd = {
@@ -850,7 +859,11 @@ export class Aleph {
   }
 
   private _recenter(): void {
-    const cameraState: AlCamera = Utils.getCameraStateFromMesh(this._getMesh());
+    const cameraState: AlCamera = Utils.getCameraStateFromMesh(
+      this._getMesh(),
+      Constants.zoomFactor,
+      Constants.fov
+    );
 
     const animationStart = {
       position: this.camera.position.clone(),
@@ -957,16 +970,6 @@ export class Aleph {
     this._stateChanged();
   }
 
-  // private _getStackHelper(): AMI.VolumeRenderHelper | null {
-  //   let stackhelper: AMI.VolumeRenderHelper | null = null;
-
-  //   if (this.displayMode === DisplayMode.VOLUME) {
-  //     stackhelper = this._loadedObject;
-  //   }
-
-  //   return stackhelper;
-  // }
-
   private _getMesh(): THREE.Mesh | null {
     let mesh: THREE.Mesh | null = null;
 
@@ -996,24 +999,44 @@ export class Aleph {
   private _srcLoadedHandler(ev: any): void {
     this._loadedObject = ev.detail;
 
-    const mesh: THREE.Mesh | null = this._getMesh();
+    let cameraState: AlCamera;
 
-    if (mesh) {
+    // if it's a gltf scene, there will be a _loadedObject.model
+    // use this to get the bounding box.
+    // otherwise use _getMesh()
+    if (this._loadedObject.model) {
+      this._boundingBox = Utils.getBoundingBox(this._loadedObject.model);
+      const sphere: Sphere = new Sphere();
+      this._boundingSphereRadius = this._boundingBox.getBoundingSphere(
+        sphere
+      ).radius;
+      cameraState = Utils.getCameraStateFromModel(
+        this._loadedObject.model,
+        Constants.zoomFactor,
+        Constants.fov
+      );
+    } else {
+      // there's no model, use the mesh
+      const mesh: THREE.Mesh | null = this._getMesh();
       // Compute the bounding sphere of the mesh
       mesh.geometry.computeBoundingSphere();
       mesh.geometry.computeBoundingBox();
-      this._boundingSphereRadius = mesh.geometry.boundingSphere.radius;
       this._boundingBox = Utils.getBoundingBox(mesh);
-      const cameraState: AlCamera = Utils.getCameraStateFromMesh(mesh);
-
-      if (cameraState) {
-        this.appSetCamera(cameraState);
-      }
-
-      this.appSetSrcLoaded(true);
-      this._stateChanged();
-      this.loaded.emit(ev.detail);
+      this._boundingSphereRadius = mesh.geometry.boundingSphere.radius;
+      cameraState = Utils.getCameraStateFromMesh(
+        mesh,
+        Constants.zoomFactor,
+        Constants.fov
+      );
     }
+
+    if (cameraState) {
+      this.appSetCamera(cameraState);
+    }
+
+    this.appSetSrcLoaded(true);
+    this._stateChanged();
+    this.loaded.emit(ev.detail);
   }
 
   //#endregion
@@ -1105,6 +1128,7 @@ export class Aleph {
           targetId: this.src,
           position: ThreeUtils.vector3ToString(intersection.point),
           scale: this._boundingSphereRadius / Constants.nodeSizeRatio,
+          normal: ThreeUtils.vector3ToString(intersection.face.normal),
           title: nodeId
         };
       }

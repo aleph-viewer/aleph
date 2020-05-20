@@ -47,6 +47,7 @@
 - ion-icon
 - ion-label
 - ion-tab
+- [al-view-controls](..\al-view-controls)
 - [al-url-picker](..\al-url-picker)
 - [al-settings](..\al-settings)
 - [al-graph-editor](..\al-graph-editor)
@@ -62,11 +63,15 @@ graph TD;
   al-control-panel --> ion-icon
   al-control-panel --> ion-label
   al-control-panel --> ion-tab
+  al-control-panel --> al-view-controls
   al-control-panel --> al-url-picker
   al-control-panel --> al-settings
   al-control-panel --> al-graph-editor
   al-control-panel --> al-console
   ion-tab-button --> ion-ripple-effect
+  al-view-controls --> ion-button
+  al-view-controls --> ion-icon
+  ion-button --> ion-ripple-effect
   al-url-picker --> ion-item
   al-url-picker --> ion-select
   al-url-picker --> ion-select-option
@@ -75,18 +80,19 @@ graph TD;
   al-url-picker --> ion-icon
   ion-item --> ion-icon
   ion-item --> ion-ripple-effect
-  ion-button --> ion-ripple-effect
-  al-settings --> ion-button
-  al-settings --> ion-icon
   al-settings --> ion-item
-  al-settings --> ion-list-header
+  al-settings --> ion-icon
   al-settings --> ion-toggle
   al-settings --> ion-range
+  al-settings --> ion-list-header
+  al-graph-editor --> al-graph-settings
   al-graph-editor --> al-node-list
   al-graph-editor --> ion-item-divider
   al-graph-editor --> al-node-editor
   al-graph-editor --> al-edge-editor
   al-graph-editor --> al-angle-editor
+  al-graph-settings --> ion-item
+  al-graph-settings --> ion-toggle
   al-node-list --> ion-list
   al-node-list --> ion-item
   al-node-editor --> ion-item

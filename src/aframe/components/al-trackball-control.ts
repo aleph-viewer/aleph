@@ -1,34 +1,9 @@
-import { ComponentDefinition } from "aframe";
 import { Constants } from "../../Constants";
-import { AlCamera } from "../../interfaces";
 import { ThreeUtils } from "../../utils";
 import { AlControlEvents } from "../../utils/AlControlEvents";
 import { AlTrackballControls } from "../../utils/AlTrackballControls";
 
-interface AlTrackballControlState {
-  animationCache: AlCamera[];
-  cameraAnimationCache: THREE.Vector3[];
-  // tslint:disable-next-line: no-any
-  controls: AlTrackballControls; // THREE.TrackballControls;
-  mouseDown: boolean;
-  wheelCounter1: number;
-  wheelCounter2: number;
-  wheelInterval: number;
-  wheelMarker: boolean;
-}
-
-interface AlTrackballControlComponent extends ComponentDefinition {
-  dependencies: string[];
-  tickFunction(): void;
-  mouseUp(event: MouseEvent): void;
-  mouseDown(event: MouseEvent): void;
-  mouseMove(event: MouseEvent): void;
-  canvasWheel(event: WheelEvent): void;
-  onWheel(): void;
-  handleAnimationCache(event: CustomEvent): void;
-}
-
-export default AFRAME.registerComponent("al-trackball-control", {
+AFRAME.registerComponent("al-trackball-control", {
   dependencies: ["camera"],
 
   schema: {
@@ -116,7 +91,7 @@ export default AFRAME.registerComponent("al-trackball-control", {
     );
   },
 
-  mouseUp(_event: MouseEvent) {
+  mouseUp(_event) {
     document.body.style.cursor = "grab";
     const controls = this.state.controls;
 
@@ -134,12 +109,12 @@ export default AFRAME.registerComponent("al-trackball-control", {
     this.state.mouseDown = false;
   },
 
-  mouseDown(_event: MouseEvent) {
+  mouseDown(_event) {
     this.state.mouseDown = true;
     document.body.style.cursor = "grabbing";
   },
 
-  mouseMove(_event: MouseEvent) {
+  mouseMove(_event) {
     if (this.state.mouseDown) {
       this.el.sceneEl.emit(
         AlControlEvents.INTERACTION,
@@ -177,7 +152,7 @@ export default AFRAME.registerComponent("al-trackball-control", {
     }, state.wheelInterval);
   },
 
-  canvasWheel(_event: WheelEvent) {
+  canvasWheel(_event) {
     const state = this.state;
 
     state.wheelCounter1 += 1;
@@ -223,7 +198,7 @@ export default AFRAME.registerComponent("al-trackball-control", {
 
     const animationCache = [];
 
-    (this.state as AlTrackballControlState) = {
+    this.state = {
       animationCache,
       cameraAnimationCache: null,
       controls,
@@ -250,15 +225,15 @@ export default AFRAME.registerComponent("al-trackball-control", {
     });
   },
 
-  getCameraState(): AlCamera {
+  getCameraState() {
     return {
       position: this.state.controls.object.position,
       target: this.state.controls.target
-    } as AlCamera;
+    };
   },
 
   // tslint:disable-next-line: no-any
-  update(_oldData: any) {
+  update(_oldData) {
     const controls = this.state.controls;
     const data = this.data;
 
@@ -291,11 +266,11 @@ export default AFRAME.registerComponent("al-trackball-control", {
     }
 
     if (this.data.animating && this.state.cameraAnimationCache) {
-      const nextFrame: AlCamera = this.state.animationCache.shift();
-      const nextCamera: THREE.Vector3 = this.state.cameraAnimationCache.shift();
+      const nextFrame = this.state.animationCache.shift();
+      const nextCamera = this.state.cameraAnimationCache.shift();
 
       if (nextFrame && nextFrame.position && nextFrame.target) {
-        const camera = this.el.getObject3D("camera") as THREE.Camera;
+        const camera = this.el.getObject3D("camera");
 
         controls.object.position.copy(nextFrame.position);
         camera.position.copy(nextFrame.position);
@@ -342,8 +317,8 @@ export default AFRAME.registerComponent("al-trackball-control", {
   remove() {
     this.state.controls.reset();
     this.removeListeners();
-    let state = this.state as AlTrackballControlState;
+    let state = this.state;
     state.controls.dispose();
     state = null;
   }
-} as AlTrackballControlComponent);
+});

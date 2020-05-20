@@ -14,6 +14,7 @@ import { Scroll } from "../../functional-components/Scroll";
 import { AlAngle, AlEdge, AlNode } from "../../interfaces/index.js";
 import i18n from "./al-control-panel.i18n.en.json";
 import { ContentStrings } from "./ContentStrings";
+import { ThreeUtils } from "../../utils";
 
 @Component({
   tag: "al-control-panel",
@@ -53,8 +54,24 @@ export class AlSettings {
 
   private _getGraphJson(): string {
     if (this.nodes && this.edges && this.angles) {
+      const nodes: Array<[string, AlNode]> = Array.from(this.nodes);
+
       const graph = {
-        nodes: Array.from(this.nodes),
+        nodes: nodes.map((n: [string, AlNode]) => {
+          const id: string = n[0];
+          const node: AlNode = n[1];
+          return [
+            id,
+            {
+              normal: ThreeUtils.normaliseStringVector3(node.normal),
+              position: ThreeUtils.normaliseStringVector3(node.position),
+              scale: ThreeUtils.normaliseNumber(node.scale),
+              targetId: node.targetId,
+              title: node.title,
+              description: node.description
+            }
+          ];
+        }),
         edges: Array.from(this.edges),
         angles: Array.from(this.angles)
       };
@@ -109,18 +126,22 @@ export class AlSettings {
           ) : null}
           {this.srcTabEnabled ? (
             <ion-tab tab="src">
+              <al-view-controls
+                bounding-box-enabled={this.boundingBoxEnabled}
+                controls-type={this.controlsType}
+              ></al-view-controls>
               <al-url-picker urls={this.urls} url={this.url}></al-url-picker>
             </ion-tab>
           ) : null}
           {this.settingsTabEnabled ? (
             <ion-tab tab="settings">
               <Scroll height={tabContentHeight}>
-                <al-settings
+                <al-view-controls
                   bounding-box-enabled={this.boundingBoxEnabled}
                   controls-type={this.controlsType}
+                ></al-view-controls>
+                <al-settings
                   display-mode={this.displayMode}
-                  graph-enabled={this.graphEnabled}
-                  graph-visible={this.graphTabEnabled}
                   orientation={this.orientation}
                   slices-index={this.slicesIndex}
                   slices-max-index={this.slicesMaxIndex}
@@ -130,7 +151,6 @@ export class AlSettings {
                   volume-contrast={this.volumeContrast}
                   volume-steps={this.volumeSteps}
                   volume-steps-high-enabled={this.volumeStepsHighEnabled}
-                  units={this.units}
                 ></al-settings>
               </Scroll>
             </ion-tab>
@@ -138,11 +158,18 @@ export class AlSettings {
           {this.graphTabEnabled ? (
             <ion-tab tab="graph">
               <Scroll height={tabContentHeight}>
+                <al-view-controls
+                  bounding-box-enabled={this.boundingBoxEnabled}
+                  controls-type={this.controlsType}
+                ></al-view-controls>
                 <al-graph-editor
                   selected={this.selected}
                   nodes={this.nodes}
                   angles={this.angles}
                   edges={this.edges}
+                  graph-enabled={this.graphEnabled}
+                  graph-visible={this.graphTabEnabled}
+                  units={this.units}
                 ></al-graph-editor>
               </Scroll>
             </ion-tab>
@@ -150,6 +177,10 @@ export class AlSettings {
           {this.consoleTabEnabled ? (
             <ion-tab tab="console">
               <Scroll height={tabContentHeight}>
+                <al-view-controls
+                  bounding-box-enabled={this.boundingBoxEnabled}
+                  controls-type={this.controlsType}
+                ></al-view-controls>
                 <al-console graph={this._getGraphJson()}></al-console>
               </Scroll>
             </ion-tab>

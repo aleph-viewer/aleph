@@ -1,20 +1,12 @@
-import { Entity } from "aframe";
-import { Constants } from "../../Constants";
-import { BaseComponent } from "./BaseComponent";
+AFRAME.registerComponent("al-child-hover-visible", {
+  schema: {
+    minFrameMS: { type: "number", default: 15 }
+  },
 
-interface AlChildHoverVisibleComponent extends BaseComponent {
-  tickFunction(): void;
-  pointerOver(_event: CustomEvent): void;
-  pointerOut(_event: CustomEvent): void;
-}
-
-export default AFRAME.registerComponent("al-child-hover-visible", {
-  schema: {},
-
-  init(): void {
+  init() {
     this.tickFunction = AFRAME.utils.throttle(
       this.tickFunction,
-      Constants.minFrameMS,
+      this.data.minFrameMS,
       this
     );
     this.bindMethods();
@@ -23,12 +15,12 @@ export default AFRAME.registerComponent("al-child-hover-visible", {
     this.hovered = false;
   },
 
-  bindMethods(): void {
+  bindMethods() {
     this.pointerOver = this.pointerOver.bind(this);
     this.pointerOut = this.pointerOut.bind(this);
   },
 
-  addEventListeners(): void {
+  addEventListeners() {
     this.el.addEventListener("raycaster-intersected", this.pointerOver, {
       capture: true,
       once: false,
@@ -41,7 +33,7 @@ export default AFRAME.registerComponent("al-child-hover-visible", {
     });
   },
 
-  removeEventListeners(): void {
+  removeEventListeners() {
     this.el.removeEventListener("raycaster-intersected", this.pointerOver);
     this.el.removeEventListener(
       "raycaster-intersected-cleared",
@@ -49,15 +41,15 @@ export default AFRAME.registerComponent("al-child-hover-visible", {
     );
   },
 
-  pointerOver(_event: CustomEvent): void {
+  pointerOver(_event) {
     this.hovered = true;
   },
 
-  pointerOut(_event: CustomEvent): void {
+  pointerOut(_event) {
     this.hovered = false;
   },
 
-  tickFunction(): void {
+  tickFunction() {
     const el = this.el;
     const firstChild: Entity = el.firstChild.firstChild;
 
@@ -77,7 +69,7 @@ export default AFRAME.registerComponent("al-child-hover-visible", {
     this.tickFunction();
   },
 
-  remove(): void {
+  remove() {
     this.removeEventListeners();
   }
-} as AlChildHoverVisibleComponent);
+});

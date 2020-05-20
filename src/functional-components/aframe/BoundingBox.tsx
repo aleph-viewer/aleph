@@ -51,6 +51,7 @@ export const BoundingBox: FunctionalComponent<BoundingBoxProps> = (
 
         return (
           <a-entity
+            data-raycastable
             position={ThreeUtils.vector3ToString(position)}
             al-bounding-box={`
               scale: ${ThreeUtils.vector3ToString(size)};
@@ -61,33 +62,31 @@ export const BoundingBox: FunctionalComponent<BoundingBoxProps> = (
               graphEnabled: ${graphEnabled};
               vrEnabled: ${vrEnabled};
             `}
-            class="collidable"
+            ref={ref => cb(ref)}
+          />
+        );
+      } else if (displayMode === DisplayMode.SLICES) {
+        position = targetEntity.object3D.position
+          .clone()
+          .add(Utils.getGeometryCenter(meshGeom));
+
+        return (
+          <a-entity
+            position={ThreeUtils.vector3ToString(position)}
+            al-bounding-box={`
+              scale: ${ThreeUtils.vector3ToString(size)};
+              color: ${color};
+              enabled: ${boundingBoxEnabled};
+            `}
             ref={ref => cb(ref)}
           />
         );
       } else {
-        switch (displayMode) {
-          case DisplayMode.MESH: {
-            if (boundingBox.intersectsBox(meshGeom.boundingBox)) {
-              // Check if mesh intersects bounding box; if it does apply the offset
-              const offset = meshGeom.boundingSphere.center.clone();
-              position = targetEntity.object3D.position.clone().add(offset);
-            } else {
-              position = targetEntity.object3D.position.clone();
-            }
-            break;
-          }
-          case DisplayMode.SLICES: {
-            position = targetEntity.object3D.position
-              .clone()
-              .add(Utils.getGeometryCenter(meshGeom));
-            break;
-          }
-          default: {
-            break;
-          }
-        }
-
+        const center = boundingBox.getCenter(new THREE.Vector3());
+        position = new THREE.Vector3();
+        position.x -= targetEntity.object3D.position.x - center.x;
+        position.y -= targetEntity.object3D.position.y - center.y;
+        position.z -= targetEntity.object3D.position.z - center.z;
         return (
           <a-entity
             position={ThreeUtils.vector3ToString(position)}

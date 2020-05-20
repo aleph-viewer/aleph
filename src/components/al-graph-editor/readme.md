@@ -7,13 +7,16 @@
 
 ## Properties
 
-| Property   | Attribute  | Description | Type                   | Default     |
-| ---------- | ---------- | ----------- | ---------------------- | ----------- |
-| `angles`   | --         |             | `Map<string, AlAngle>` | `null`      |
-| `edges`    | --         |             | `Map<string, AlEdge>`  | `null`      |
-| `node`     | --         |             | `[string, AlNode]`     | `undefined` |
-| `nodes`    | --         |             | `Map<string, AlNode>`  | `null`      |
-| `selected` | `selected` |             | `string`               | `null`      |
+| Property       | Attribute       | Description | Type                                | Default     |
+| -------------- | --------------- | ----------- | ----------------------------------- | ----------- |
+| `angles`       | --              |             | `Map<string, AlAngle>`              | `null`      |
+| `edges`        | --              |             | `Map<string, AlEdge>`               | `null`      |
+| `graphEnabled` | `graph-enabled` |             | `boolean`                           | `undefined` |
+| `graphVisible` | `graph-visible` |             | `boolean`                           | `undefined` |
+| `node`         | --              |             | `[string, AlNode]`                  | `undefined` |
+| `nodes`        | --              |             | `Map<string, AlNode>`               | `null`      |
+| `selected`     | `selected`      |             | `string`                            | `null`      |
+| `units`        | `units`         |             | `Units.METERS \| Units.MILLIMETERS` | `undefined` |
 
 
 ## Dependencies
@@ -24,6 +27,7 @@
 
 ### Depends on
 
+- [al-graph-settings](..\al-graph-settings)
 - [al-node-list](..\al-node-list)
 - ion-item-divider
 - [al-node-editor](..\al-node-editor)
@@ -33,15 +37,18 @@
 ### Graph
 ```mermaid
 graph TD;
+  al-graph-editor --> al-graph-settings
   al-graph-editor --> al-node-list
   al-graph-editor --> ion-item-divider
   al-graph-editor --> al-node-editor
   al-graph-editor --> al-edge-editor
   al-graph-editor --> al-angle-editor
-  al-node-list --> ion-list
-  al-node-list --> ion-item
+  al-graph-settings --> ion-item
+  al-graph-settings --> ion-toggle
   ion-item --> ion-icon
   ion-item --> ion-ripple-effect
+  al-node-list --> ion-list
+  al-node-list --> ion-item
   al-node-editor --> ion-item
   al-node-editor --> ion-input
   al-node-editor --> ion-textarea

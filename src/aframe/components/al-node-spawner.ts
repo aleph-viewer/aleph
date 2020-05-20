@@ -1,41 +1,18 @@
-import { ThreeUtils } from "../../utils";
-import { AlGraphEvents } from "../../utils/GraphUtils";
-import { BaseComponent } from "./BaseComponent";
-
-interface AlNodeSpawnerState {
-  left: boolean;
-  intersecting: boolean;
-}
-
-export class AlNodeSpawnerEvents {
-  public static VALID_TARGET: string = "al-valid-target";
-  public static ADD_NODE: string = "al-add-node";
-}
-
-interface AlNodeSpawnerComponent extends BaseComponent {
-  canvasMouseDown(event: MouseEvent): void;
-  canvasMouseUp(event: MouseEvent): void;
-  pointerOver(event: CustomEvent): void;
-  pointerOut(event: CustomEvent): void;
-  elClick(event: CustomEvent): void;
-  pointerDown(event: CustomEvent): void;
-  pointerUp(event: CustomEvent): void;
-}
-
-export default AFRAME.registerComponent("al-node-spawner", {
+AFRAME.registerComponent("al-node-spawner", {
   schema: {
     graphEnabled: { type: "boolean" },
+    minFrameMS: { type: "number", default: 15 },
     vrEnabled: { type: "boolean" }
   },
 
-  init(): void {
+  init() {
     this.bindMethods();
     this.addEventListeners();
 
     this.state = {
       left: false,
       intersecting: false
-    } as AlNodeSpawnerState;
+    };
   },
 
   bindMethods() {
@@ -102,46 +79,39 @@ export default AFRAME.registerComponent("al-node-spawner", {
     this.el.removeEventListener("mouseup", this.pointerUp);
   },
 
-  canvasMouseDown(event: MouseEvent) {
+  canvasMouseDown(event) {
     this.state.left = event.button === 0;
   },
 
-  canvasMouseUp(_event: MouseEvent) {
-    ThreeUtils.waitOneFrame(() => {
+  canvasMouseUp(_event) {
+    setTimeout(() => {
       this.state.left = false;
-    });
+    }, this.data.minFrameMS);
   },
 
-  pointerOver(_event: CustomEvent) {
+  pointerOver(_event) {
     this.state.intersecting = true;
-    this.el.sceneEl.emit(
-      AlNodeSpawnerEvents.VALID_TARGET,
-      { valid: true },
-      false
-    );
+    this.el.sceneEl.emit("al-valid-target", { valid: true }, false);
   },
 
-  pointerOut(_event: CustomEvent) {
+  pointerOut(_event) {
     this.state.intersecting = false;
-    this.el.sceneEl.emit(
-      AlNodeSpawnerEvents.VALID_TARGET,
-      { valid: false },
-      false
-    );
+    this.el.sceneEl.emit("al-valid-target", { valid: false }, false);
   },
 
-  pointerDown(_event: CustomEvent) {
+  pointerDown(_event) {
     if (this.data.graphEnabled) {
-      this.el.sceneEl.emit(AlGraphEvents.POINTER_DOWN, {}, false);
+      this.el.sceneEl.emit("al-graph-pointer-down", {}, false);
     }
   },
 
-  pointerUp(_event: CustomEvent) {
+  pointerUp(_event) {
     if (this.data.graphEnabled) {
-      this.el.sceneEl.emit(AlGraphEvents.POINTER_UP, {}, false);
+      this.el.sceneEl.emit("al-graph-pointer-up", {}, false);
     }
   },
 
+<<<<<<< HEAD:src/aframe/components/AlNodeSpawnerComponent.ts
   elClick(event: CustomEvent) {
     if ((this.state.left || this.data.vrEnabled) && this.data.graphEnabled) {
       this.el.sceneEl.emit(
@@ -149,10 +119,15 @@ export default AFRAME.registerComponent("al-node-spawner", {
         { aframeEvent: event },
         false
       );
+=======
+  elClick(event) {
+    if (this.state.left && this.data.graphEnabled) {
+      this.el.sceneEl.emit("al-add-node", { aframeEvent: event }, false);
+>>>>>>> master:src/aframe/components/al-node-spawner.ts
     }
   },
 
-  remove(): void {
+  remove() {
     this.removeEventListeners();
   }
-} as AlNodeSpawnerComponent);
+});

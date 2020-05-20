@@ -36,7 +36,7 @@ const CANVAS_HOVER_CLASS = "a-mouse-cursor-hover";
  * @member {Element} intersectedEl - Currently-intersected entity. Used to keep track to
  *         emit events when unintersecting.
  */
-export default AFRAME.registerComponent("al-cursor", {
+AFRAME.registerComponent("al-cursor", {
   dependencies: ["raycaster"],
 
   schema: {

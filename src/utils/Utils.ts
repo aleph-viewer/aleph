@@ -1,5 +1,4 @@
-import { Mesh } from "three";
-import { ThreeUtils } from ".";
+// import { Mesh } from "three";
 import { Constants } from "../Constants";
 import { AlCamera, AlNode } from "../interfaces";
 
@@ -54,25 +53,54 @@ export class Utils {
     return geom.boundingSphere.center;
   }
 
-  public static getCameraStateFromMesh(mesh: Mesh): AlCamera {
-    let meshCenter: THREE.Vector3;
-    let initialPosition: THREE.Vector3;
-    let sceneDistance: number;
-
+  public static getCameraStateFromMesh(
+    mesh: THREE.Mesh,
+    zoomFactor: number,
+    fov: number
+  ): AlCamera {
     if (mesh) {
       const geom = mesh.geometry;
-      meshCenter = this.getGeometryCenter(geom);
-      sceneDistance =
-        (Constants.zoomFactor * geom.boundingSphere.radius) /
-        Math.tan((Constants.camera.fov * Math.PI) / 180);
+      const meshCenter: THREE.Vector3 = this.getGeometryCenter(geom);
+      const sceneDistance: number =
+        (zoomFactor * geom.boundingSphere.radius) /
+        Math.tan((fov * Math.PI) / 180);
 
-      initialPosition = new THREE.Vector3();
-      initialPosition.copy(meshCenter);
-      initialPosition.z += sceneDistance;
+      const position: THREE.Vector3 = new THREE.Vector3();
+      position.copy(meshCenter);
+      position.z += sceneDistance;
 
       return {
         target: meshCenter,
-        position: initialPosition
+        position
+      } as AlCamera;
+    }
+
+    return null;
+  }
+
+  public static getCameraStateFromModel(
+    model: THREE.Object3D,
+    zoomFactor: number,
+    fov: number
+  ): AlCamera {
+    if (model) {
+      const box = Utils.getBoundingBox(model);
+      const sphere: THREE.Sphere = new THREE.Sphere();
+      box.getBoundingSphere(sphere);
+
+      const sceneDistance: number =
+        (zoomFactor * sphere.radius) / Math.tan((fov * Math.PI) / 180);
+
+      const center: THREE.Vector3 = new THREE.Vector3();
+      box.getCenter(center);
+
+      const position: THREE.Vector3 = new THREE.Vector3();
+      position.y = center.y;
+      position.z += sceneDistance;
+
+      return {
+        target: center,
+        position
       } as AlCamera;
     }
 
@@ -89,7 +117,7 @@ export class Utils {
     }
 
     const pos: THREE.Vector3 = new THREE.Vector3();
-    pos.copy(ThreeUtils.stringToVector3(node.position));
+    pos.copy(AFRAME.utils.coordinates.parse(node.position) as THREE.Vector3);
 
     // (Position -> Target)
     const dir: THREE.Vector3 = pos

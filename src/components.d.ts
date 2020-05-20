@@ -75,9 +75,17 @@ export namespace Components {
   interface AlGraphEditor {
     'angles': Map<string, AlAngle> | null;
     'edges': Map<string, AlEdge> | null;
+    'graphEnabled': boolean;
+    'graphVisible': boolean;
     'node': [string, AlNode];
     'nodes': Map<string, AlNode> | null;
     'selected': string | null;
+    'units': Units;
+  }
+  interface AlGraphSettings {
+    'graphEnabled': boolean;
+    'graphVisible': boolean;
+    'units': Units;
   }
   interface AlNodeEditor {
     'node': [string, AlNode];
@@ -87,17 +95,12 @@ export namespace Components {
     'selected': string | null;
   }
   interface AlSettings {
-    'boundingBoxEnabled': boolean;
-    'controlsType': ControlsType;
     'displayMode': DisplayMode;
-    'graphEnabled': boolean;
-    'graphVisible': boolean;
     'orientation': Orientation;
     'slicesBrightness': number;
     'slicesContrast': number;
     'slicesIndex': number;
     'slicesMaxIndex': number;
-    'units': Units;
     'volumeBrightness': number;
     'volumeContrast': number;
     'volumeSteps': number;
@@ -122,6 +125,10 @@ export namespace Components {
   interface AlUrlPicker {
     'url': string | null;
     'urls': Map<string, string> | null;
+  }
+  interface AlViewControls {
+    'boundingBoxEnabled': boolean;
+    'controlsType': ControlsType;
   }
   interface AlViewer {
     'clearGraph': () => Promise<void>;
@@ -191,6 +198,12 @@ declare global {
     new (): HTMLAlGraphEditorElement;
   };
 
+  interface HTMLAlGraphSettingsElement extends Components.AlGraphSettings, HTMLStencilElement {}
+  var HTMLAlGraphSettingsElement: {
+    prototype: HTMLAlGraphSettingsElement;
+    new (): HTMLAlGraphSettingsElement;
+  };
+
   interface HTMLAlNodeEditorElement extends Components.AlNodeEditor, HTMLStencilElement {}
   var HTMLAlNodeEditorElement: {
     prototype: HTMLAlNodeEditorElement;
@@ -221,6 +234,12 @@ declare global {
     new (): HTMLAlUrlPickerElement;
   };
 
+  interface HTMLAlViewControlsElement extends Components.AlViewControls, HTMLStencilElement {}
+  var HTMLAlViewControlsElement: {
+    prototype: HTMLAlViewControlsElement;
+    new (): HTMLAlViewControlsElement;
+  };
+
   interface HTMLAlViewerElement extends Components.AlViewer, HTMLStencilElement {}
   var HTMLAlViewerElement: {
     prototype: HTMLAlViewerElement;
@@ -232,11 +251,13 @@ declare global {
     'al-control-panel': HTMLAlControlPanelElement;
     'al-edge-editor': HTMLAlEdgeEditorElement;
     'al-graph-editor': HTMLAlGraphEditorElement;
+    'al-graph-settings': HTMLAlGraphSettingsElement;
     'al-node-editor': HTMLAlNodeEditorElement;
     'al-node-list': HTMLAlNodeListElement;
     'al-settings': HTMLAlSettingsElement;
     'al-tabs': HTMLAlTabsElement;
     'al-url-picker': HTMLAlUrlPickerElement;
+    'al-view-controls': HTMLAlViewControlsElement;
     'al-viewer': HTMLAlViewerElement;
   }
 }
@@ -287,9 +308,19 @@ declare namespace LocalJSX {
   interface AlGraphEditor extends JSXBase.HTMLAttributes<HTMLAlGraphEditorElement> {
     'angles'?: Map<string, AlAngle> | null;
     'edges'?: Map<string, AlEdge> | null;
+    'graphEnabled'?: boolean;
+    'graphVisible'?: boolean;
     'node'?: [string, AlNode];
     'nodes'?: Map<string, AlNode> | null;
     'selected'?: string | null;
+    'units'?: Units;
+  }
+  interface AlGraphSettings extends JSXBase.HTMLAttributes<HTMLAlGraphSettingsElement> {
+    'graphEnabled'?: boolean;
+    'graphVisible'?: boolean;
+    'onGraphEnabledChanged'?: (event: CustomEvent<any>) => void;
+    'onUnitsChanged'?: (event: CustomEvent<any>) => void;
+    'units'?: Units;
   }
   interface AlNodeEditor extends JSXBase.HTMLAttributes<HTMLAlNodeEditorElement> {
     'node'?: [string, AlNode];
@@ -302,21 +333,12 @@ declare namespace LocalJSX {
     'selected'?: string | null;
   }
   interface AlSettings extends JSXBase.HTMLAttributes<HTMLAlSettingsElement> {
-    'boundingBoxEnabled'?: boolean;
-    'controlsType'?: ControlsType;
     'displayMode'?: DisplayMode;
-    'graphEnabled'?: boolean;
-    'graphVisible'?: boolean;
-    'onBoundingBoxEnabledChanged'?: (event: CustomEvent<any>) => void;
-    'onControlsTypeChanged'?: (event: CustomEvent<any>) => void;
     'onDisplayModeChanged'?: (event: CustomEvent<any>) => void;
-    'onGraphEnabledChanged'?: (event: CustomEvent<any>) => void;
     'onOrientationChanged'?: (event: CustomEvent<any>) => void;
-    'onRecenter'?: (event: CustomEvent<any>) => void;
     'onSlicesBrightnessChanged'?: (event: CustomEvent<any>) => void;
     'onSlicesContrastChanged'?: (event: CustomEvent<any>) => void;
     'onSlicesIndexChanged'?: (event: CustomEvent<any>) => void;
-    'onUnitsChanged'?: (event: CustomEvent<any>) => void;
     'onVolumeBrightnessChanged'?: (event: CustomEvent<any>) => void;
     'onVolumeContrastChanged'?: (event: CustomEvent<any>) => void;
     'onVolumeStepsChanged'?: (event: CustomEvent<any>) => void;
@@ -326,7 +348,6 @@ declare namespace LocalJSX {
     'slicesContrast'?: number;
     'slicesIndex'?: number;
     'slicesMaxIndex'?: number;
-    'units'?: Units;
     'volumeBrightness'?: number;
     'volumeContrast'?: number;
     'volumeSteps'?: number;
@@ -351,6 +372,13 @@ declare namespace LocalJSX {
     'url'?: string | null;
     'urls'?: Map<string, string> | null;
   }
+  interface AlViewControls extends JSXBase.HTMLAttributes<HTMLAlViewControlsElement> {
+    'boundingBoxEnabled'?: boolean;
+    'controlsType'?: ControlsType;
+    'onBoundingBoxEnabledChanged'?: (event: CustomEvent<any>) => void;
+    'onControlsTypeChanged'?: (event: CustomEvent<any>) => void;
+    'onRecenter'?: (event: CustomEvent<any>) => void;
+  }
   interface AlViewer extends JSXBase.HTMLAttributes<HTMLAlViewerElement> {
     'dracoDecoderPath'?: string | null;
     'envMapPath'?: string | null;
@@ -373,11 +401,13 @@ declare namespace LocalJSX {
     'al-control-panel': AlControlPanel;
     'al-edge-editor': AlEdgeEditor;
     'al-graph-editor': AlGraphEditor;
+    'al-graph-settings': AlGraphSettings;
     'al-node-editor': AlNodeEditor;
     'al-node-list': AlNodeList;
     'al-settings': AlSettings;
     'al-tabs': AlTabs;
     'al-url-picker': AlUrlPicker;
+    'al-view-controls': AlViewControls;
     'al-viewer': AlViewer;
   }
 }

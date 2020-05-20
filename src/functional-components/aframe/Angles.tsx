@@ -162,7 +162,7 @@ export const Angles: FunctionalComponent<AnglesProps> = (
               />
             </a-entity>
             <a-entity
-              class="collidable"
+              data-raycastable
               id={angleId}
               position={centralNode.position}
               al-angle={`

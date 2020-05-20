@@ -77,14 +77,14 @@ export const Nodes: FunctionalComponent<NodesProps> = (
               visible={`${selected === nodeId}`}
               id={`${nodeId}-label`}
               al-background={`
-                  text: ${node.title};
-                  boundingRadius: ${fontSize * boundingSphereRadius};
+                text: ${node.title};
+                boundingRadius: ${fontSize * boundingSphereRadius};
               `}
               scale={` ${entityScale} ${entityScale} ${entityScale};`}
             />
           </a-entity>
           <a-entity
-            class="collidable"
+            data-raycastable
             id={nodeId}
             position={node.position}
             al-node={`

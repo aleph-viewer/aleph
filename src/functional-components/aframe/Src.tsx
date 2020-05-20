@@ -44,7 +44,7 @@ export const Src: FunctionalComponent<SrcProps> = (
         case DisplayMode.MESH: {
           return (
             <a-entity
-              class="collidable"
+              data-raycastable
               al-node-spawner={`
                 graphEnabled: ${graphEnabled};
                 vrEnabled: ${vrEnabled};
@@ -66,7 +66,7 @@ export const Src: FunctionalComponent<SrcProps> = (
           return (
             <a-entity
               id="target-entity"
-              class="collidable"
+              data-raycastable
               al-node-spawner={`
                 graphEnabled: ${graphEnabled};
                 vrEnabled: ${vrEnabled};

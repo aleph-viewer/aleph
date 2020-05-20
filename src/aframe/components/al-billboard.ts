@@ -1,18 +1,12 @@
-import { Constants } from "../../Constants";
-import { ControlsType } from "../../enums";
 import { ThreeUtils } from "../../utils";
-import { BaseComponent } from "./BaseComponent";
 
-interface AlBillboardComponent extends BaseComponent {
-  tickFunction(): void;
-}
-
-export default AFRAME.registerComponent("al-billboard", {
+AFRAME.registerComponent("al-billboard", {
   schema: {
-    controlsType: { type: "string", default: ControlsType.ORBIT },
     cameraPosition: { type: "string" },
-    worldPosition: { type: "string" },
-    cameraTarget: { type: "string", default: "0 0 0" }
+    cameraTarget: { type: "string", default: "0 0 0" },
+    controlsType: { type: "string", default: "orbit" },
+    minFrameMS: { type: "number", default: 15 },
+    worldPosition: { type: "string" }
   },
 
   init() {
@@ -20,24 +14,24 @@ export default AFRAME.registerComponent("al-billboard", {
     this.addEventListeners();
     this.tickFunction = AFRAME.utils.throttle(
       this.tickFunction,
-      Constants.minFrameMS,
+      this.data.minFrameMS,
       this
     );
   },
 
   // tslint:disable-next-line: no-empty
-  bindMethods(): void {},
+  bindMethods() {},
 
   // tslint:disable-next-line: no-empty
-  addEventListeners(): void {},
+  addEventListeners() {},
 
   // tslint:disable-next-line: no-empty
-  removeEventListeners(): void {},
+  removeEventListeners() {},
 
   // tslint:disable-next-line: no-empty
   tickFunction() {
-    const camera = this.el.sceneEl.camera as THREE.PerspectiveCamera;
-    const object = this.el.object3D as THREE.Object3D;
+    const camera = this.el.sceneEl.camera;
+    const object = this.el.object3D;
     const worldPosition = ThreeUtils.stringToVector3(this.data.worldPosition);
     const cameraPosition = ThreeUtils.stringToVector3(this.data.cameraPosition);
 
@@ -54,7 +48,7 @@ export default AFRAME.registerComponent("al-billboard", {
     this.tickFunction();
   },
 
-  remove(): void {
+  remove() {
     this.removeEventListeners();
   }
-} as AlBillboardComponent);
+});

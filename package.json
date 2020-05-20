@@ -1,6 +1,6 @@
 {
   "name": "@universalviewer/aleph",
-  "version": "0.0.5",
+  "version": "0.0.11",
   "description": "Aleph",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -23,7 +23,7 @@
     "start:prod": "stencil build --serve",
     "test": "stencil test --spec --e2e",
     "test.watch": "stencil test --spec --e2e --watchAll",
-    "prepublishOnly": "npm run test && npm run build"
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "@edsilv/key-codes": "0.1.1",
@@ -32,7 +32,7 @@
     "redux": "^4.0.1",
     "redux-logger": "3.0.6",
     "redux-thunk": "2.3.0",
-    "three.meshline": "^1.2.0"
+    "threejs-meshline": "^2.0.11"
   },
   "devDependencies": {
     "@stencil/core": "1.3.0",
