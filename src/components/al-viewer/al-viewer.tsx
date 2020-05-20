@@ -1106,7 +1106,6 @@ export class Aleph {
       }
 
       if (newNode) {
-
         const previousSelected = this.selected;
         this._setNode([nodeId, newNode]);
 
