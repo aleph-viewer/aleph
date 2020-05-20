@@ -495,6 +495,7 @@ export class Aleph {
             volumeSteps={this.volumeSteps}
             volumeWindowCenter={this.volumeWindowCenter}
             volumeWindowWidth={this.volumeWindowWidth}
+            vrEnabled={this.vrEnabled}
           />
           <BoundingBox
             cb={ref => {
@@ -508,6 +509,7 @@ export class Aleph {
             mesh={this._getMesh()}
             srcLoaded={this.srcLoaded}
             targetEntity={this._targetEntity}
+            vrEnabled={this.vrEnabled}
           />
         </ModelContainer>
         <Nodes
