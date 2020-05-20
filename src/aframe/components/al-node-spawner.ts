@@ -111,19 +111,13 @@ AFRAME.registerComponent("al-node-spawner", {
     }
   },
 
-<<<<<<< HEAD:src/aframe/components/AlNodeSpawnerComponent.ts
   elClick(event: CustomEvent) {
     if ((this.state.left || this.data.vrEnabled) && this.data.graphEnabled) {
       this.el.sceneEl.emit(
-        AlNodeSpawnerEvents.ADD_NODE,
+        "al-add-node",
         { aframeEvent: event },
         false
       );
-=======
-  elClick(event) {
-    if (this.state.left && this.data.graphEnabled) {
-      this.el.sceneEl.emit("al-add-node", { aframeEvent: event }, false);
->>>>>>> master:src/aframe/components/al-node-spawner.ts
     }
   },
 
