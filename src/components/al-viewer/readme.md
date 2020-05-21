@@ -7,12 +7,13 @@
 
 ## Properties
 
-| Property           | Attribute            | Description | Type     | Default     |
-| ------------------ | -------------------- | ----------- | -------- | ----------- |
-| `dracoDecoderPath` | `draco-decoder-path` |             | `string` | `undefined` |
-| `envMapPath`       | `env-map-path`       |             | `string` | `undefined` |
-| `height`           | `height`             |             | `string` | `"480"`     |
-| `width`            | `width`              |             | `string` | `"640"`     |
+| Property           | Attribute            | Description | Type      | Default     |
+| ------------------ | -------------------- | ----------- | --------- | ----------- |
+| `dracoDecoderPath` | `draco-decoder-path` |             | `string`  | `undefined` |
+| `envMapPath`       | `env-map-path`       |             | `string`  | `undefined` |
+| `height`           | `height`             |             | `string`  | `"480"`     |
+| `vrEnabled`        | `vr-enabled`         |             | `boolean` | `false`     |
+| `width`            | `width`              |             | `string`  | `"640"`     |
 
 
 ## Events

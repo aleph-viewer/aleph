@@ -107,7 +107,8 @@ export class ThreeUtils {
     const p1 = end;
     let theta = p0.angleTo(p1);
     if (theta) {
-      theta = THREE.Math.clamp(theta, -0.99, 0.99);
+      // this has changed to THREE.MathUtils
+      theta = (THREE as any).Math.clamp(theta, -0.99, 0.99);
 
       const topP0 = Math.sin(1 - t) * theta;
       const topP1 = Math.sin(t * theta);

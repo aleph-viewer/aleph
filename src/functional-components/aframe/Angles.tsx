@@ -114,9 +114,11 @@ export const Angles: FunctionalComponent<AnglesProps> = (
         const scale = (node1.scale + node2.scale + centralNode.scale) / 3;
         textOffset.multiplyScalar(scale);
 
+        // this has changed to THREE.MathUtils
         const textV =
-          THREE.Math.radToDeg(angl).toFixed(Constants.unitsDecimalPlaces) +
-          " deg"; // todo: use i18n
+          (THREE as any).Math.radToDeg(angl).toFixed(
+            Constants.unitsDecimalPlaces
+          ) + " deg"; // todo: use i18n
 
         const frustrumDistance = ThreeUtils.getFrustrumSpaceDistance(
           camera,

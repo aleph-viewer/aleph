@@ -118,7 +118,8 @@ AFRAME.registerComponent("al-edge", {
     );
     const material = new THREE.MeshBasicMaterial();
     const mesh = new THREE.Mesh(geometry, material);
-    mesh.applyMatrix(this.getMatrix());
+    // use applyMatrix4 ?
+    (mesh as any).applyMatrix(this.getMatrix());
 
     this.state.geometry = geometry;
     this.state.material = material;

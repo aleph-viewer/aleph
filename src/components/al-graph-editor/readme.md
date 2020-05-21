@@ -23,16 +23,16 @@
 
 ### Used by
 
- - [al-control-panel](..\al-control-panel)
+ - [al-control-panel](../al-control-panel)
 
 ### Depends on
 
-- [al-graph-settings](..\al-graph-settings)
-- [al-node-list](..\al-node-list)
+- [al-graph-settings](../al-graph-settings)
+- [al-node-list](../al-node-list)
 - ion-item-divider
-- [al-node-editor](..\al-node-editor)
-- [al-edge-editor](..\al-edge-editor)
-- [al-angle-editor](..\al-angle-editor)
+- [al-node-editor](../al-node-editor)
+- [al-edge-editor](../al-edge-editor)
+- [al-angle-editor](../al-angle-editor)
 
 ### Graph
 ```mermaid

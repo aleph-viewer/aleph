@@ -42,7 +42,7 @@
 
 ### Used by
 
- - [al-control-panel](..\al-control-panel)
+ - [al-control-panel](../al-control-panel)
 
 ### Depends on
 

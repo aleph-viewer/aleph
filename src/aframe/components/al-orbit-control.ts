@@ -253,12 +253,20 @@ AFRAME.registerComponent("al-orbit-control", {
     controls.enableRotate = data.enableRotate;
     controls.enableZoom = data.enableZoom;
     controls.keyPanSpeed = data.keyPanSpeed;
-    controls.maxPolarAngle = THREE.Math.degToRad(data.maxPolarAngle);
-    controls.maxAzimuthAngle = THREE.Math.degToRad(data.maxAzimuthAngle);
+    // this has changed to THREE.MathUtils
+    controls.maxPolarAngle = (THREE as any).Math.degToRad(data.maxPolarAngle);
+    // this has changed to THREE.MathUtils
+    controls.maxAzimuthAngle = (THREE as any).Math.degToRad(
+      data.maxAzimuthAngle
+    );
     controls.maxDistance = data.maxDistance;
     controls.minDistance = data.minDistance;
-    controls.minPolarAngle = THREE.Math.degToRad(data.minPolarAngle);
-    controls.minAzimuthAngle = THREE.Math.degToRad(data.minAzimuthAngle);
+    // this has changed to THREE.MathUtils
+    controls.minPolarAngle = (THREE as any).Math.degToRad(data.minPolarAngle);
+    // this has changed to THREE.MathUtils
+    controls.minAzimuthAngle = (THREE as any).Math.degToRad(
+      data.minAzimuthAngle
+    );
     controls.panSpeed = data.panSpeed;
     controls.rotateSpeed = data.rotateSpeed;
     controls.screenSpacePanning = data.screenSpacePanning;
