@@ -10,6 +10,7 @@ export class Constants {
   public static lightIntensity = 0.5;
   public static maxAnimationSteps = 50;
   public static minLoadingMS = 500;
+  public static minNodeSize = 0.0001;
   public static movedEventName = "-moved";
   public static movingStepCount = 2;
   public static nodeSizeRatio = 100;
@@ -18,7 +19,7 @@ export class Constants {
   public static targetFrameTime = 1000 / 24; // 24 FPS
   public static titleIdName = "-title";
   public static topLayerRenderOrder = 999;
-  public static unitsDecimalPlaces = 2;
+  public static unitsDecimalPlaces = 6;
   public static zoomFactor = 3;
   public static volumeRaycastSensitivity = 0.05;
   public static volumeStepsDelay = 800;

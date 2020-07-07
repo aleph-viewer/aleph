@@ -22,8 +22,12 @@ AFRAME.registerComponent("al-node", {
 
     const data = this.data;
     const el = this.el;
-
     const camera = el.sceneEl.camera.el.object3DMap.camera;
+
+    if (data.scale < Constants.minNodeSize) {
+      data.scale = Constants.minNodeSize;
+    }
+
     const geometry = new THREE.SphereGeometry(data.scale, 16, 16);
     const material = new THREE.MeshBasicMaterial();
     const mesh = new THREE.Mesh(geometry, material);
