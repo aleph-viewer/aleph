@@ -65,6 +65,7 @@ export class Constants {
     minDistance: 0,
     minPolarAngle: 5,
     near: 0.05,
+    nearFactor: 0.9,
     orbitPanSpeed: 0.3,
     orbitRotateSpeed: 0.5,
     orbitZoomSpeed: 1,

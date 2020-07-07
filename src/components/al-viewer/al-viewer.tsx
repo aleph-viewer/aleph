@@ -102,6 +102,7 @@ export class Aleph {
   // tslint:disable-next-line: no-any
   private _loadedObject: any;
   private _scene: AScene;
+  private _sceneDistance: number;
   private _targetEntity: AEntity;
   private _validTarget: boolean;
   private _boundingEntity: AEntity;
@@ -454,6 +455,11 @@ export class Aleph {
   }
 
   private _renderScene() {
+    if (this.camera && this._getMesh()) {
+      console.log(Utils.getCameraNearFromSceneDistance(this._sceneDistance));
+      console.log(Utils.getCameraFarFromSceneDistance(this._sceneDistance));
+      console.log(this.camera.position);
+    }
     return (
       <Scene
         cb={ref => {
@@ -556,10 +562,16 @@ export class Aleph {
                   )}
                   dampingFactor={Constants.camera.dampingFactor}
                   enabled={this.controlsEnabled}
-                  far={Constants.camera.far}
+                  far={this._sceneDistance
+                    ? Utils.getCameraFarFromSceneDistance(this._sceneDistance)
+                    : Constants.camera.far
+                  }
                   fov={Constants.camera.fov}
                   graphEnabled={this.graphEnabled}
-                  near={Constants.camera.near}
+                  near={this._sceneDistance
+                    ? Utils.getCameraNearFromSceneDistance(this._sceneDistance)
+                    : Constants.camera.near
+                  }
                   panSpeed={Constants.camera.panSpeed}
                   rotateSpeed={Constants.camera.trackballRotateSpeed}
                   screenHeight={this._scene ? this._scene.canvas.height : 0}
@@ -591,14 +603,20 @@ export class Aleph {
                   )}
                   dampingFactor={Constants.camera.dampingFactor}
                   enabled={this.controlsEnabled}
-                  far={Constants.camera.far}
+                  far={this._sceneDistance
+                    ? Utils.getCameraFarFromSceneDistance(this._sceneDistance)
+                    : Constants.camera.far
+                  }
                   fov={Constants.camera.fov}
                   graphEnabled={this.graphEnabled}
                   maxPolarAngle={Constants.camera.maxPolarAngle}
                   minDistance={Constants.camera.minDistance}
                   minPolarAngle={Constants.camera.minPolarAngle}
                   panSpeed={Constants.camera.orbitPanSpeed}
-                  near={Constants.camera.near}
+                  near={this._sceneDistance
+                    ? Utils.getCameraNearFromSceneDistance(this._sceneDistance)
+                    : Constants.camera.near
+                  }
                   rotateSpeed={Constants.camera.orbitRotateSpeed}
                   zoomSpeed={Constants.camera.orbitZoomSpeed}
                 />
@@ -768,8 +786,7 @@ export class Aleph {
   ): void {
     const defaultCamera: AlCamera = Utils.getCameraStateFromMesh(
       this._getMesh(),
-      Constants.zoomFactor,
-      Constants.fov
+      this._sceneDistance
     );
 
     const animationEnd = {
@@ -847,8 +864,7 @@ export class Aleph {
   private _recenter(): void {
     const cameraState: AlCamera = Utils.getCameraStateFromMesh(
       this._getMesh(),
-      Constants.zoomFactor,
-      Constants.fov
+      this._sceneDistance
     );
 
     const animationStart = {
@@ -990,10 +1006,14 @@ export class Aleph {
       this._boundingSphereRadius = this._boundingBox.getBoundingSphere(
         sphere
       ).radius;
-      cameraState = Utils.getCameraStateFromModel(
+      this._sceneDistance = Utils.getSceneDistanceFromModel(
         this._loadedObject.model,
         Constants.zoomFactor,
         Constants.fov
+      );
+      cameraState = Utils.getCameraStateFromModel(
+        this._loadedObject.model,
+        this._sceneDistance
       );
     } else {
       // there's no model, use the mesh
@@ -1003,10 +1023,14 @@ export class Aleph {
       mesh.geometry.computeBoundingBox();
       this._boundingBox = Utils.getBoundingBox(mesh);
       this._boundingSphereRadius = mesh.geometry.boundingSphere.radius;
-      cameraState = Utils.getCameraStateFromMesh(
+      this._sceneDistance = Utils.getSceneDistanceFromMesh(
         mesh,
         Constants.zoomFactor,
         Constants.fov
+      );
+      cameraState = Utils.getCameraStateFromMesh(
+        mesh,
+        this._sceneDistance,
       );
     }
 
