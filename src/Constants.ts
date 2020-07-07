@@ -61,6 +61,7 @@ export class Constants {
     dampingFactor: 0.25,
     far: 10000,
     fov: Constants.fov,
+    maxDistance: 8000,
     maxPolarAngle: 175,
     minDistance: 0,
     minPolarAngle: 5,

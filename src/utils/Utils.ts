@@ -151,13 +151,13 @@ export class Utils {
     return camPos;
   }
 
-  public static getCameraNearFromSceneDistance(
+  public static getNearFromSceneDistance(
     sceneDistance: number
   ): number {
     return sceneDistance * (1.0 - Constants.camera.nearFactor);
   }
 
-  public static getCameraFarFromSceneDistance(
+  public static getFarFromSceneDistance(
     sceneDistance: number
   ): number {
     return sceneDistance * 100;

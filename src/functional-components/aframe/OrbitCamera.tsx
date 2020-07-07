@@ -9,6 +9,7 @@ interface OrbitCameraProps extends FunctionalComponentProps {
   far: number;
   fov: number;
   graphEnabled: boolean;
+  maxDistance: number,
   maxPolarAngle: number;
   minDistance: number;
   minPolarAngle: number;
@@ -29,6 +30,7 @@ export const OrbitCamera: FunctionalComponent<OrbitCameraProps> = (
     far,
     fov,
     graphEnabled,
+    maxDistance,
     maxPolarAngle,
     minDistance,
     minPolarAngle,
@@ -51,9 +53,10 @@ export const OrbitCamera: FunctionalComponent<OrbitCameraProps> = (
           raycaster="objects: [data-raycastable]"
           al-cursor="rayOrigin: mouse"
           al-orbit-control={`
-            minPolarAngle: ${minPolarAngle};
-            maxPolarAngle: ${maxPolarAngle};
             minDistance: ${minDistance};
+            minPolarAngle: ${minPolarAngle};
+            maxDistance: ${maxDistance};
+            maxPolarAngle: ${maxPolarAngle};
             screenSpacePanning: true;
             rotateSpeed: ${rotateSpeed};
             zoomSpeed: ${zoomSpeed};
@@ -78,9 +81,10 @@ export const OrbitCamera: FunctionalComponent<OrbitCameraProps> = (
           far={far}
           id="mainCamera"
           al-orbit-control={`
-            minPolarAngle: ${minPolarAngle};
-            maxPolarAngle: ${maxPolarAngle};
             minDistance: ${minDistance};
+            minPolarAngle: ${minPolarAngle};
+            maxDistance: ${maxDistance};
+            maxPolarAngle: ${maxPolarAngle};
             screenSpacePanning: true;
             rotateSpeed: ${rotateSpeed};
             zoomSpeed: ${zoomSpeed};

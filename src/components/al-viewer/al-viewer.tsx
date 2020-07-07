@@ -455,11 +455,6 @@ export class Aleph {
   }
 
   private _renderScene() {
-    if (this.camera && this._getMesh()) {
-      console.log(Utils.getCameraNearFromSceneDistance(this._sceneDistance));
-      console.log(Utils.getCameraFarFromSceneDistance(this._sceneDistance));
-      console.log(this.camera.position);
-    }
     return (
       <Scene
         cb={ref => {
@@ -563,13 +558,17 @@ export class Aleph {
                   dampingFactor={Constants.camera.dampingFactor}
                   enabled={this.controlsEnabled}
                   far={this._sceneDistance
-                    ? Utils.getCameraFarFromSceneDistance(this._sceneDistance)
+                    ? Utils.getFarFromSceneDistance(this._sceneDistance)
                     : Constants.camera.far
                   }
                   fov={Constants.camera.fov}
                   graphEnabled={this.graphEnabled}
+                  maxDistance={this._sceneDistance
+                    ? Utils.getFarFromSceneDistance(this._sceneDistance)
+                    : Constants.camera.far
+                  }
                   near={this._sceneDistance
-                    ? Utils.getCameraNearFromSceneDistance(this._sceneDistance)
+                    ? Utils.getNearFromSceneDistance(this._sceneDistance)
                     : Constants.camera.near
                   }
                   panSpeed={Constants.camera.panSpeed}
@@ -604,17 +603,22 @@ export class Aleph {
                   dampingFactor={Constants.camera.dampingFactor}
                   enabled={this.controlsEnabled}
                   far={this._sceneDistance
-                    ? Utils.getCameraFarFromSceneDistance(this._sceneDistance)
+                    ? Utils.getFarFromSceneDistance(this._sceneDistance)
                     : Constants.camera.far
                   }
                   fov={Constants.camera.fov}
                   graphEnabled={this.graphEnabled}
+                  maxDistance={
+                    this._sceneDistance
+                    ? Utils.getFarFromSceneDistance(this._sceneDistance)
+                    : Constants.camera.maxDistance
+                  }
                   maxPolarAngle={Constants.camera.maxPolarAngle}
                   minDistance={Constants.camera.minDistance}
                   minPolarAngle={Constants.camera.minPolarAngle}
                   panSpeed={Constants.camera.orbitPanSpeed}
                   near={this._sceneDistance
-                    ? Utils.getCameraNearFromSceneDistance(this._sceneDistance)
+                    ? Utils.getNearFromSceneDistance(this._sceneDistance)
                     : Constants.camera.near
                   }
                   rotateSpeed={Constants.camera.orbitRotateSpeed}

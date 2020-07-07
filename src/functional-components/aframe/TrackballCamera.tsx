@@ -9,6 +9,7 @@ interface TrackballCameraProps extends FunctionalComponentProps {
   far: number;
   fov: number;
   graphEnabled: boolean;
+  maxDistance: number;
   near: number;
   panSpeed: number;
   rotateSpeed: number;
@@ -28,6 +29,7 @@ export const TrackballCamera: FunctionalComponent<TrackballCameraProps> = (
     far,
     fov,
     graphEnabled,
+    maxDistance,
     near,
     panSpeed,
     rotateSpeed,
@@ -56,6 +58,7 @@ export const TrackballCamera: FunctionalComponent<TrackballCameraProps> = (
             rotateSpeed: ${rotateSpeed};
             zoomSpeed: ${zoomSpeed};
             panSpeed: ${panSpeed};
+            maxDistance: ${maxDistance};
             dynamicDampingFactor: ${dampingFactor};
             controlTarget: ${controlTarget};
             controlPosition: ${controlPosition};
@@ -82,6 +85,7 @@ export const TrackballCamera: FunctionalComponent<TrackballCameraProps> = (
             rotateSpeed: ${rotateSpeed};
             zoomSpeed: ${zoomSpeed};
             panSpeed: ${panSpeed};
+            maxDistance: ${maxDistance};
             dynamicDampingFactor: ${dampingFactor};
             controlTarget: ${controlTarget};
             controlPosition: ${controlPosition};
