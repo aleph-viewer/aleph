@@ -154,13 +154,21 @@ export class Utils {
   public static getNearFromSceneDistance(
     sceneDistance: number
   ): number {
-    return sceneDistance * (1.0 - Constants.camera.nearFactor);
+    if (sceneDistance) {
+      return sceneDistance * (1.0 - Constants.camera.nearFactor);
+    } else {
+      return null;
+    }
   }
 
   public static getFarFromSceneDistance(
     sceneDistance: number
   ): number {
-    return sceneDistance * 100;
+    if (sceneDistance) {
+      return sceneDistance * 100;
+    } else {
+      return null;
+    }
   }
 
   public static getBoundingBox(obj: THREE.Object3D): THREE.Box3 {

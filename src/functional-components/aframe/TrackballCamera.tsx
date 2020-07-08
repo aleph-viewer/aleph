@@ -2,6 +2,7 @@ import { FunctionalComponent, h } from "@stencil/core";
 
 interface TrackballCameraProps extends FunctionalComponentProps {
   animating: boolean;
+  aspect: number;
   controlPosition: string;
   controlTarget: string;
   dampingFactor: number;
@@ -21,6 +22,7 @@ interface TrackballCameraProps extends FunctionalComponentProps {
 export const TrackballCamera: FunctionalComponent<TrackballCameraProps> = (
   {
     animating,
+    aspect,
     cb,
     controlPosition,
     controlTarget,
@@ -42,9 +44,10 @@ export const TrackballCamera: FunctionalComponent<TrackballCameraProps> = (
   (() => {
     if (graphEnabled) {
       return (
-        <a-camera
+        <al-a-camera
           fov={fov}
           near={near}
+          aspect={aspect}
           look-controls="enabled: false"
           far={far}
           id="mainCamera"
@@ -71,9 +74,10 @@ export const TrackballCamera: FunctionalComponent<TrackballCameraProps> = (
       );
     } else {
       return (
-        <a-camera
+        <al-a-camera
           fov={fov}
           near={near}
+          aspect={aspect}
           look-controls="enabled: false"
           far={far}
           id="mainCamera"

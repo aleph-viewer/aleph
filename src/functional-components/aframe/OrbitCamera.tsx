@@ -2,6 +2,7 @@ import { FunctionalComponent, h } from "@stencil/core";
 
 interface OrbitCameraProps extends FunctionalComponentProps {
   animating: boolean;
+  aspect: number;
   controlPosition: string;
   controlTarget: string;
   dampingFactor: number;
@@ -22,6 +23,7 @@ interface OrbitCameraProps extends FunctionalComponentProps {
 export const OrbitCamera: FunctionalComponent<OrbitCameraProps> = (
   {
     animating,
+    aspect,
     cb,
     controlPosition,
     controlTarget,
@@ -44,9 +46,10 @@ export const OrbitCamera: FunctionalComponent<OrbitCameraProps> = (
   (() => {
     if (graphEnabled) {
       return (
-        <a-camera
+        <al-a-camera
           fov={fov}
           near={near}
+          aspect={aspect}
           look-controls="enabled: false"
           far={far}
           id="mainCamera"
@@ -74,9 +77,10 @@ export const OrbitCamera: FunctionalComponent<OrbitCameraProps> = (
       );
     } else {
       return (
-        <a-camera
+        <al-a-camera
           fov={fov}
           near={near}
+          aspect={aspect}
           look-controls="enabled: false"
           far={far}
           id="mainCamera"

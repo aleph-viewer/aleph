@@ -61,6 +61,7 @@ import {
   appSetMaterial,
   appSetNode,
   appSetOrientation,
+  appSetSceneDistance,
   appSetSlicesIndex,
   appSetSlicesMaxIndex,
   appSetSrc,
@@ -102,7 +103,6 @@ export class Aleph {
   // tslint:disable-next-line: no-any
   private _loadedObject: any;
   private _scene: AScene;
-  private _sceneDistance: number;
   private _targetEntity: AEntity;
   private _validTarget: boolean;
   private _boundingEntity: AEntity;
@@ -137,6 +137,7 @@ export class Aleph {
   public appSetMaterial: Action;
   public appSetNode: Action;
   public appSetOrientation: Action;
+  public appSetSceneDistance: Action;
   public appSetSlicesIndex: Action;
   public appSetSlicesMaxIndex: Action;
   public appSetSrc: Action;
@@ -162,6 +163,7 @@ export class Aleph {
   @State() public optionsEnabled: boolean;
   @State() public optionsVisible: boolean;
   @State() public orientation: Orientation;
+  @State() public sceneDistance: number;
   @State() public selected: string;
   @State() public slicesIndex: number;
   @State() public slicesMaxIndex: number;
@@ -286,6 +288,11 @@ export class Aleph {
   }
 
   @Method()
+  public async setSceneDistance(distance: number): Promise<void> {
+    this._setSceneDistance(distance);
+  }
+
+  @Method()
   public async setSlicesIndex(index: number): Promise<void> {
     this._setSlicesIndex(index);
   }
@@ -342,6 +349,7 @@ export class Aleph {
           nodes,
           orientation,
           selected,
+          sceneDistance,
           slicesIndex,
           slicesMaxIndex,
           src,
@@ -366,6 +374,7 @@ export class Aleph {
         nodes,
         orientation,
         selected,
+        sceneDistance,
         slicesIndex,
         slicesMaxIndex,
         src,
@@ -398,6 +407,7 @@ export class Aleph {
       appSetMaterial,
       appSetNode,
       appSetOrientation,
+      appSetSceneDistance,
       appSetSlicesIndex,
       appSetSlicesMaxIndex,
       appSetSrc,
@@ -545,6 +555,11 @@ export class Aleph {
                       ? this.camera.animating
                       : false
                   }
+                  aspect={
+                    this._scene
+                      ? this._scene.offsetWidth / this._scene.offsetHeight
+                      : null
+                  }
                   controlPosition={ThreeUtils.vector3ToString(
                     this.camera
                       ? this.camera.position
@@ -557,19 +572,22 @@ export class Aleph {
                   )}
                   dampingFactor={Constants.camera.dampingFactor}
                   enabled={this.controlsEnabled}
-                  far={this._sceneDistance
-                    ? Utils.getFarFromSceneDistance(this._sceneDistance)
-                    : Constants.camera.far
+                  far={
+                    this.sceneDistance
+                      ? Utils.getFarFromSceneDistance(this.sceneDistance)
+                      : Constants.camera.far
                   }
                   fov={Constants.camera.fov}
                   graphEnabled={this.graphEnabled}
-                  maxDistance={this._sceneDistance
-                    ? Utils.getFarFromSceneDistance(this._sceneDistance)
-                    : Constants.camera.far
+                  maxDistance={
+                    this.sceneDistance
+                      ? Utils.getFarFromSceneDistance(this.sceneDistance)
+                      : Constants.camera.maxDistance
                   }
-                  near={this._sceneDistance
-                    ? Utils.getNearFromSceneDistance(this._sceneDistance)
-                    : Constants.camera.near
+                  near={
+                    this.sceneDistance
+                      ? Utils.getNearFromSceneDistance(this.sceneDistance)
+                      : Constants.camera.near
                   }
                   panSpeed={Constants.camera.panSpeed}
                   rotateSpeed={Constants.camera.trackballRotateSpeed}
@@ -590,6 +608,11 @@ export class Aleph {
                       ? this.camera.animating
                       : false
                   }
+                  aspect={
+                    this._scene
+                      ? this._scene.offsetWidth / this._scene.offsetHeight
+                      : null
+                  }
                   controlPosition={ThreeUtils.vector3ToString(
                     this.camera
                       ? this.camera.position
@@ -602,24 +625,26 @@ export class Aleph {
                   )}
                   dampingFactor={Constants.camera.dampingFactor}
                   enabled={this.controlsEnabled}
-                  far={this._sceneDistance
-                    ? Utils.getFarFromSceneDistance(this._sceneDistance)
-                    : Constants.camera.far
+                  far={
+                    this.sceneDistance
+                      ? Utils.getFarFromSceneDistance(this.sceneDistance)
+                      : Constants.camera.far
                   }
                   fov={Constants.camera.fov}
                   graphEnabled={this.graphEnabled}
                   maxDistance={
-                    this._sceneDistance
-                    ? Utils.getFarFromSceneDistance(this._sceneDistance)
-                    : Constants.camera.maxDistance
+                    this.sceneDistance
+                      ? Utils.getFarFromSceneDistance(this.sceneDistance)
+                      : Constants.camera.maxDistance
                   }
                   maxPolarAngle={Constants.camera.maxPolarAngle}
                   minDistance={Constants.camera.minDistance}
                   minPolarAngle={Constants.camera.minPolarAngle}
                   panSpeed={Constants.camera.orbitPanSpeed}
-                  near={this._sceneDistance
-                    ? Utils.getNearFromSceneDistance(this._sceneDistance)
-                    : Constants.camera.near
+                  near={
+                    this.sceneDistance
+                      ? Utils.getNearFromSceneDistance(this.sceneDistance)
+                      : Constants.camera.near
                   }
                   rotateSpeed={Constants.camera.orbitRotateSpeed}
                   zoomSpeed={Constants.camera.orbitZoomSpeed}
@@ -790,7 +815,7 @@ export class Aleph {
   ): void {
     const defaultCamera: AlCamera = Utils.getCameraStateFromMesh(
       this._getMesh(),
-      this._sceneDistance
+      this.sceneDistance
     );
 
     const animationEnd = {
@@ -868,7 +893,7 @@ export class Aleph {
   private _recenter(): void {
     const cameraState: AlCamera = Utils.getCameraStateFromMesh(
       this._getMesh(),
-      this._sceneDistance
+      this.sceneDistance
     );
 
     const animationStart = {
@@ -932,6 +957,11 @@ export class Aleph {
 
   private _setOrientation(orientation: Orientation): void {
     this.appSetOrientation(orientation);
+    this._stateChanged();
+  }
+
+  private _setSceneDistance(distance: number): void {
+    this.appSetSceneDistance(distance);
     this._stateChanged();
   }
 
@@ -1000,6 +1030,7 @@ export class Aleph {
     this._loadedObject = ev.detail;
 
     let cameraState: AlCamera;
+    let sceneDistance: number;
 
     // if it's a gltf scene, there will be a _loadedObject.model
     // use this to get the bounding box.
@@ -1010,14 +1041,14 @@ export class Aleph {
       this._boundingSphereRadius = this._boundingBox.getBoundingSphere(
         sphere
       ).radius;
-      this._sceneDistance = Utils.getSceneDistanceFromModel(
+      sceneDistance = Utils.getSceneDistanceFromModel(
         this._loadedObject.model,
         Constants.zoomFactor,
         Constants.fov
       );
       cameraState = Utils.getCameraStateFromModel(
         this._loadedObject.model,
-        this._sceneDistance
+        sceneDistance
       );
     } else {
       // there's no model, use the mesh
@@ -1027,15 +1058,19 @@ export class Aleph {
       mesh.geometry.computeBoundingBox();
       this._boundingBox = Utils.getBoundingBox(mesh);
       this._boundingSphereRadius = mesh.geometry.boundingSphere.radius;
-      this._sceneDistance = Utils.getSceneDistanceFromMesh(
+      sceneDistance = Utils.getSceneDistanceFromMesh(
         mesh,
         Constants.zoomFactor,
         Constants.fov
       );
       cameraState = Utils.getCameraStateFromMesh(
         mesh,
-        this._sceneDistance,
+        sceneDistance
       );
+    }
+
+    if (sceneDistance) {
+      this.appSetSceneDistance(sceneDistance);
     }
 
     if (cameraState) {
