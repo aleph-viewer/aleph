@@ -15,6 +15,7 @@ import "./components/al-render-order";
 import "./components/al-render-overlaid";
 import "./components/al-trackball-control";
 import "./components/al-volume";
+import "./primitives/al-a-camera";
 
 export const AlGltfModelEvents = {
   LOADED: "al-model-loaded",
