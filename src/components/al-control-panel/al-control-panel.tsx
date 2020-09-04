@@ -56,8 +56,6 @@ export class AlSettings {
     if (this.nodes && this.edges && this.angles) {
       const nodes: Array<[string, AlNode]> = Array.from(this.nodes);
 
-      console.log("graph");
-
       const graph = {
         nodes: nodes.map((n: [string, AlNode]) => {
           const id: string = n[0];
@@ -65,7 +63,9 @@ export class AlSettings {
           return [
             id,
             {
-              normal: node.normal ? ThreeUtils.normaliseStringVector3(node.normal) : new THREE.Vector3(),
+              normal: node.normal
+                ? ThreeUtils.normaliseStringVector3(node.normal)
+                : new THREE.Vector3(),
               position: ThreeUtils.normaliseStringVector3(node.position),
               scale: ThreeUtils.normaliseNumber(node.scale),
               targetId: node.targetId,
