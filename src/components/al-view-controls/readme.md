@@ -15,11 +15,11 @@
 
 ## Events
 
-| Event                       | Description | Type               |
-| --------------------------- | ----------- | ------------------ |
-| `boundingBoxEnabledChanged` |             | `CustomEvent<any>` |
-| `controlsTypeChanged`       |             | `CustomEvent<any>` |
-| `recenter`                  |             | `CustomEvent<any>` |
+| Event                      | Description | Type               |
+| -------------------------- | ----------- | ------------------ |
+| `boundingBoxEnabledChange` |             | `CustomEvent<any>` |
+| `controlsTypeChange`       |             | `CustomEvent<any>` |
+| `recenter`                 |             | `CustomEvent<any>` |
 
 
 ## CSS Custom Properties

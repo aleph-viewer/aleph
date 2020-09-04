@@ -15,9 +15,9 @@
 
 ## Events
 
-| Event        | Description | Type               |
-| ------------ | ----------- | ------------------ |
-| `urlChanged` |             | `CustomEvent<any>` |
+| Event       | Description | Type               |
+| ----------- | ----------- | ------------------ |
+| `urlChange` |             | `CustomEvent<any>` |
 
 
 ## Dependencies

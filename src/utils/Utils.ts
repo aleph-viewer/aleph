@@ -62,7 +62,7 @@ export class Utils {
       const sphere = mesh.geometry.boundingSphere;
       return (zoomFactor * sphere.radius) / Math.tan((fov * Math.PI) / 180);
     }
-    
+
     return null;
   }
 
@@ -151,9 +151,7 @@ export class Utils {
     return camPos;
   }
 
-  public static getNearFromSceneDistance(
-    sceneDistance: number
-  ): number {
+  public static getNearFromSceneDistance(sceneDistance: number): number {
     if (sceneDistance) {
       return sceneDistance * (1.0 - Constants.camera.nearFactor);
     } else {
@@ -161,9 +159,7 @@ export class Utils {
     }
   }
 
-  public static getFarFromSceneDistance(
-    sceneDistance: number
-  ): number {
+  public static getFarFromSceneDistance(sceneDistance: number): number {
     if (sceneDistance) {
       return sceneDistance * 100;
     } else {

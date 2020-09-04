@@ -23,17 +23,17 @@
 
 ## Events
 
-| Event                           | Description | Type               |
-| ------------------------------- | ----------- | ------------------ |
-| `displayModeChanged`            |             | `CustomEvent<any>` |
-| `orientationChanged`            |             | `CustomEvent<any>` |
-| `slicesBrightnessChanged`       |             | `CustomEvent<any>` |
-| `slicesContrastChanged`         |             | `CustomEvent<any>` |
-| `slicesIndexChanged`            |             | `CustomEvent<any>` |
-| `volumeBrightnessChanged`       |             | `CustomEvent<any>` |
-| `volumeContrastChanged`         |             | `CustomEvent<any>` |
-| `volumeStepsChanged`            |             | `CustomEvent<any>` |
-| `volumeStepsHighEnabledChanged` |             | `CustomEvent<any>` |
+| Event                          | Description | Type               |
+| ------------------------------ | ----------- | ------------------ |
+| `displayModeChange`            |             | `CustomEvent<any>` |
+| `orientationChange`            |             | `CustomEvent<any>` |
+| `slicesBrightnessChange`       |             | `CustomEvent<any>` |
+| `slicesContrastChange`         |             | `CustomEvent<any>` |
+| `slicesIndexChange`            |             | `CustomEvent<any>` |
+| `volumeBrightnessChange`       |             | `CustomEvent<any>` |
+| `volumeContrastChange`         |             | `CustomEvent<any>` |
+| `volumeStepsChange`            |             | `CustomEvent<any>` |
+| `volumeStepsHighEnabledChange` |             | `CustomEvent<any>` |
 
 
 ## CSS Custom Properties

@@ -16,10 +16,10 @@
 
 ## Events
 
-| Event                 | Description | Type               |
-| --------------------- | ----------- | ------------------ |
-| `graphEnabledChanged` |             | `CustomEvent<any>` |
-| `unitsChanged`        |             | `CustomEvent<any>` |
+| Event                | Description | Type               |
+| -------------------- | ----------- | ------------------ |
+| `graphEnabledChange` |             | `CustomEvent<any>` |
+| `unitsChange`        |             | `CustomEvent<any>` |
 
 
 ## CSS Custom Properties

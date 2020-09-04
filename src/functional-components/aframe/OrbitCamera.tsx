@@ -10,7 +10,7 @@ interface OrbitCameraProps extends FunctionalComponentProps {
   far: number;
   fov: number;
   graphEnabled: boolean;
-  maxDistance: number,
+  maxDistance: number;
   maxPolarAngle: number;
   minDistance: number;
   minPolarAngle: number;

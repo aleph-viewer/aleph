@@ -17,10 +17,10 @@
 
 ## Events
 
-| Event     | Description                                                                                    | Type               |
-| --------- | ---------------------------------------------------------------------------------------------- | ------------------ |
-| `changed` | Fires whenever the internal state changes passing an object describing the state.              | `CustomEvent<any>` |
-| `loaded`  | Fires when an object is loaded passing either the object or a stackhelper for volumetric data. | `CustomEvent<any>` |
+| Event    | Description                                                                                    | Type               |
+| -------- | ---------------------------------------------------------------------------------------------- | ------------------ |
+| `change` | Fires whenever the internal state changes passing an object describing the state.              | `CustomEvent<any>` |
+| `loaded` | Fires when an object is loaded passing either the object or a stackhelper for volumetric data. | `CustomEvent<any>` |
 
 
 ## Methods
@@ -196,6 +196,16 @@ Type: `Promise<void>`
 
 
 ### `setOrientation(orientation: Orientation) => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `setSceneDistance(distance: number) => Promise<void>`
 
 
 

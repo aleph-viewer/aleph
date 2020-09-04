@@ -15,9 +15,9 @@
 
 ## Events
 
-| Event             | Description | Type               |
-| ----------------- | ----------- | ------------------ |
-| `selectedChanged` |             | `CustomEvent<any>` |
+| Event            | Description | Type               |
+| ---------------- | ----------- | ------------------ |
+| `selectedChange` |             | `CustomEvent<any>` |
 
 
 ## Dependencies
