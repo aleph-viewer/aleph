@@ -53,19 +53,44 @@ export class Utils {
     return geom.boundingSphere.center;
   }
 
-  public static getCameraStateFromMesh(
+  public static getSceneDistanceFromMesh(
     mesh: THREE.Mesh,
     zoomFactor: number,
     fov: number
+  ): number {
+    if (mesh) {
+      const sphere = mesh.geometry.boundingSphere;
+      return (zoomFactor * sphere.radius) / Math.tan((fov * Math.PI) / 180);
+    }
+    
+    return null;
+  }
+
+  public static getSceneDistanceFromModel(
+    model: THREE.Object3D,
+    zoomFactor: number,
+    fov: number
+  ): number {
+    if (model) {
+      const box = Utils.getBoundingBox(model);
+      const sphere: THREE.Sphere = new THREE.Sphere();
+      box.getBoundingSphere(sphere);
+
+      return (zoomFactor * sphere.radius) / Math.tan((fov * Math.PI) / 180);
+    }
+
+    return null;
+  }
+
+  public static getCameraStateFromMesh(
+    mesh: THREE.Mesh,
+    sceneDistance: number
   ): AlCamera {
     if (mesh) {
       const geom = mesh.geometry;
       const meshCenter: THREE.Vector3 = this.getGeometryCenter(geom);
-      const sceneDistance: number =
-        (zoomFactor * geom.boundingSphere.radius) /
-        Math.tan((fov * Math.PI) / 180);
-
       const position: THREE.Vector3 = new THREE.Vector3();
+
       position.copy(meshCenter);
       position.z += sceneDistance;
 
@@ -80,17 +105,10 @@ export class Utils {
 
   public static getCameraStateFromModel(
     model: THREE.Object3D,
-    zoomFactor: number,
-    fov: number
+    sceneDistance: number
   ): AlCamera {
     if (model) {
       const box = Utils.getBoundingBox(model);
-      const sphere: THREE.Sphere = new THREE.Sphere();
-      box.getBoundingSphere(sphere);
-
-      const sceneDistance: number =
-        (zoomFactor * sphere.radius) / Math.tan((fov * Math.PI) / 180);
-
       const center: THREE.Vector3 = new THREE.Vector3();
       box.getCenter(center);
 
@@ -131,6 +149,26 @@ export class Utils {
     camPos.add(dir.clone().multiplyScalar(radius * Constants.zoomFactor));
 
     return camPos;
+  }
+
+  public static getNearFromSceneDistance(
+    sceneDistance: number
+  ): number {
+    if (sceneDistance) {
+      return sceneDistance * (1.0 - Constants.camera.nearFactor);
+    } else {
+      return null;
+    }
+  }
+
+  public static getFarFromSceneDistance(
+    sceneDistance: number
+  ): number {
+    if (sceneDistance) {
+      return sceneDistance * 100;
+    } else {
+      return null;
+    }
   }
 
   public static getBoundingBox(obj: THREE.Object3D): THREE.Box3 {

@@ -34,6 +34,7 @@ export type ActionTypes =
   | AppSetMaterialAction
   | AppSetNodeAction
   | AppSetOrientationAction
+  | AppSetSceneDistanceAction
   | AppSetSlicesIndexAction
   | AppSetSlicesMaxIndexAction
   | AppSetSrcAction
@@ -66,6 +67,7 @@ export enum TypeKeys {
   APP_SET_NODE = "APP_SET_NODE",
   APP_SET_NODES_ENABLED = "APP_SET_NODES_ENABLED",
   APP_SET_ORIENTATION = "APP_SET_ORIENTATION",
+  APP_SET_SCENE_DISTANCE = "APP_SET_SCENE_DISTANCE",
   APP_SET_SLICES_INDEX = "APP_SET_SLICES_INDEX",
   APP_SET_SLICES_MAX_INDEX = "APP_SET_SLICES_MAX_INDEX",
   APP_SET_SLICES_WINDOW_CENTER = "APP_SET_SLICES_WINDOW_CENTER",
@@ -387,6 +389,21 @@ export const appSetOrientation = (payload: Orientation) => async (
 ) => {
   return dispatch({
     type: TypeKeys.APP_SET_ORIENTATION,
+    payload
+  });
+};
+
+export interface AppSetSceneDistanceAction {
+  type: TypeKeys.APP_SET_SCENE_DISTANCE;
+  payload: number;
+}
+
+export const appSetSceneDistance = (payload: number) => async (
+  dispatch,
+  _getState
+) => {
+  return dispatch({
+    type: TypeKeys.APP_SET_SCENE_DISTANCE,
     payload
   });
 };

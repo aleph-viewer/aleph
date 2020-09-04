@@ -10,6 +10,7 @@ export class Constants {
   public static lightIntensity = 0.5;
   public static maxAnimationSteps = 50;
   public static minLoadingMS = 500;
+  public static minNodeSize = 0.0001;
   public static movedEventName = "-moved";
   public static movingStepCount = 2;
   public static nodeSizeRatio = 100;
@@ -18,7 +19,7 @@ export class Constants {
   public static targetFrameTime = 1000 / 24; // 24 FPS
   public static titleIdName = "-title";
   public static topLayerRenderOrder = 999;
-  public static unitsDecimalPlaces = 2;
+  public static unitsDecimalPlaces = 6;
   public static zoomFactor = 3;
   public static volumeRaycastSensitivity = 0.05;
   public static volumeStepsDelay = 800;
@@ -50,7 +51,7 @@ export class Constants {
 
   public static lights = {
     ambientLightColor: 0xd0d0d0,
-    ambientLightIntensity: 0.5,
+    ambientLightIntensity: 0.25,
     directionalLight1Color: 0xffffff,
     directionalLight1Intensity: 0.75,
     directionalLight2Color: 0x002958,
@@ -61,10 +62,12 @@ export class Constants {
     dampingFactor: 0.25,
     far: 10000,
     fov: Constants.fov,
+    maxDistance: 8000,
     maxPolarAngle: 175,
     minDistance: 0,
     minPolarAngle: 5,
     near: 0.05,
+    nearFactor: 0.9,
     orbitPanSpeed: 0.3,
     orbitRotateSpeed: 0.5,
     orbitZoomSpeed: 1,

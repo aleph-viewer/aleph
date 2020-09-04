@@ -269,6 +269,12 @@ export const app = (
         boundingBoxEnabled: action.payload
       };
     }
+    case TypeKeys.APP_SET_SCENE_DISTANCE: {
+      return {
+        ...state,
+        sceneDistance: action.payload
+      };
+    }
     //#endregion
     //#region volumes
     case TypeKeys.APP_SET_SLICES_INDEX: {
