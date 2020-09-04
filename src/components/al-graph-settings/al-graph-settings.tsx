@@ -11,8 +11,8 @@ import { ContentStrings } from "./ContentStrings";
 export class AlSettings {
   private _contentStrings: ContentStrings = i18n;
 
-  @Event() public unitsChanged: EventEmitter;
-  @Event() public graphEnabledChanged: EventEmitter;
+  @Event() public unitsChange: EventEmitter;
+  @Event() public graphEnabledChange: EventEmitter;
 
   @Prop({ mutable: true }) public graphEnabled: boolean;
   @Prop({ mutable: true }) public graphVisible: boolean;
@@ -20,12 +20,12 @@ export class AlSettings {
 
   private _graphEnabled(enabled: boolean) {
     this.graphEnabled = enabled;
-    this.graphEnabledChanged.emit(enabled);
+    this.graphEnabledChange.emit(enabled);
   }
 
   private _units(units: Units) {
     this.units = units;
-    this.unitsChanged.emit(this.units);
+    this.unitsChange.emit(this.units);
   }
 
   public renderGraphEnabled() {

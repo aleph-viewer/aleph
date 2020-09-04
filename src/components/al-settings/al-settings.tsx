@@ -13,15 +13,15 @@ import { ContentStrings } from "./ContentStrings";
 export class AlSettings {
   private _contentStrings: ContentStrings = i18n;
 
-  @Event() public displayModeChanged: EventEmitter;
-  @Event() public orientationChanged: EventEmitter;
-  @Event() public slicesIndexChanged: EventEmitter;
-  @Event() public slicesBrightnessChanged: EventEmitter;
-  @Event() public slicesContrastChanged: EventEmitter;
-  @Event() public volumeBrightnessChanged: EventEmitter;
-  @Event() public volumeContrastChanged: EventEmitter;
-  @Event() public volumeStepsChanged: EventEmitter;
-  @Event() public volumeStepsHighEnabledChanged: EventEmitter;
+  @Event() public displayModeChange: EventEmitter;
+  @Event() public orientationChange: EventEmitter;
+  @Event() public slicesIndexChange: EventEmitter;
+  @Event() public slicesBrightnessChange: EventEmitter;
+  @Event() public slicesContrastChange: EventEmitter;
+  @Event() public volumeBrightnessChange: EventEmitter;
+  @Event() public volumeContrastChange: EventEmitter;
+  @Event() public volumeStepsChange: EventEmitter;
+  @Event() public volumeStepsHighEnabledChange: EventEmitter;
 
   @Prop({ mutable: true }) public displayMode: DisplayMode;
   @Prop({ mutable: true }) public orientation: Orientation;
@@ -36,43 +36,43 @@ export class AlSettings {
 
   private _displayMode(displayMode: DisplayMode) {
     this.displayMode = displayMode;
-    this.displayModeChanged.emit(displayMode);
+    this.displayModeChange.emit(displayMode);
   }
 
   private _orientation(orientation: Orientation) {
     this.orientation = orientation;
-    this.orientationChanged.emit(orientation);
+    this.orientationChange.emit(orientation);
   }
 
   private _slicesIndex(index: number) {
     this.slicesIndex = index;
-    this.slicesIndexChanged.emit(index);
+    this.slicesIndexChange.emit(index);
   }
 
   private _slicesBrightness(brightness: number) {
     this.slicesBrightness = brightness;
-    this.slicesBrightnessChanged.emit(brightness);
+    this.slicesBrightnessChange.emit(brightness);
   }
 
   private _slicesContrast(contrast: number) {
     this.slicesContrast = contrast;
-    this.slicesContrastChanged.emit(contrast);
+    this.slicesContrastChange.emit(contrast);
   }
 
   private _volumeBrightness(brightness: number) {
     this.volumeBrightness = brightness;
-    this.volumeBrightnessChanged.emit(brightness);
+    this.volumeBrightnessChange.emit(brightness);
   }
 
   private _volumeContrast(contrast: number) {
     this.volumeContrast = contrast;
-    this.volumeContrastChanged.emit(contrast);
+    this.volumeContrastChange.emit(contrast);
   }
 
   private _volumeSteps(steps: number) {
     steps = Math.round(steps * 10) / 10; // 1 decimal place.
     this.volumeSteps = steps;
-    this.volumeStepsChanged.emit(steps);
+    this.volumeStepsChange.emit(steps);
   }
 
   private _volumeStepsHighEnabled(enabled: boolean) {

@@ -313,7 +313,7 @@ export class Aleph {
 
   //#region events
   /** Fires whenever the internal state changes passing an object describing the state. */
-  @Event() public changed: EventEmitter;
+  @Event() public change: EventEmitter;
 
   /** Fires when an object is loaded passing either the object or a stackhelper for volumetric data. */
   @Event() public loaded: EventEmitter;
@@ -716,7 +716,7 @@ export class Aleph {
   }
 
   private _stateChanged(): void {
-    this.changed.emit(this.store.getState().app);
+    this.change.emit(this.store.getState().app);
   }
 
   private _setGraph(graph: AlGraph): void {

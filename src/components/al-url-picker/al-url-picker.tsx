@@ -7,7 +7,7 @@ import RefreshIcon from "../../assets/svg/refresh.svg";
   shadow: true
 })
 export class AlUrlPicker {
-  @Event() public urlChanged: EventEmitter;
+  @Event() public urlChange: EventEmitter;
 
   @Prop({ mutable: true }) public urls: Map<string, string> | null = null;
   @Prop({ mutable: true }) public url: string | null = null;
@@ -24,7 +24,7 @@ export class AlUrlPicker {
               value={this.url}
               interface="popover"
               placeholder=""
-              onIonChange={e => this.urlChanged.emit(e.detail.value)}
+              onIonChange={e => this.urlChange.emit(e.detail.value)}
             >
               {Array.from(this.urls).map(([url, title]) => {
                 return (
@@ -49,7 +49,7 @@ export class AlUrlPicker {
               id="submit"
               size="small"
               type="submit"
-              onClick={() => this.urlChanged.emit(this._input.value)}
+              onClick={() => this.urlChange.emit(this._input.value)}
             >
               <ion-icon src={RefreshIcon} />
               &nbsp;Load

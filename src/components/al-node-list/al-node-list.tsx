@@ -11,7 +11,7 @@ import { ContentStrings } from "./ContentStrings";
 export class AlNodeList {
   private _contentStrings: ContentStrings = i18n;
 
-  @Event() public selectedChanged: EventEmitter;
+  @Event() public selectedChange: EventEmitter;
 
   @Prop({ mutable: true }) public nodes: Map<string, AlNode> | null = null;
   @Prop({ mutable: true }) public selected: string | null = null;
@@ -32,7 +32,7 @@ export class AlNodeList {
             return (
               <ion-item
                 data-selected={this.selected === nodeId ? true : false}
-                onClick={() => this.selectedChanged.emit(nodeId)}
+                onClick={() => this.selectedChange.emit(nodeId)}
               >
                 {node.title}
               </ion-item>

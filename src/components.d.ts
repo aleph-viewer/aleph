@@ -317,8 +317,8 @@ declare namespace LocalJSX {
   interface AlGraphSettings extends JSXBase.HTMLAttributes<HTMLAlGraphSettingsElement> {
     'graphEnabled'?: boolean;
     'graphVisible'?: boolean;
-    'onGraphEnabledChanged'?: (event: CustomEvent<any>) => void;
-    'onUnitsChanged'?: (event: CustomEvent<any>) => void;
+    'onGraphEnabledChange'?: (event: CustomEvent<any>) => void;
+    'onUnitsChange'?: (event: CustomEvent<any>) => void;
     'units'?: Units;
   }
   interface AlNodeEditor extends JSXBase.HTMLAttributes<HTMLAlNodeEditorElement> {
@@ -328,20 +328,20 @@ declare namespace LocalJSX {
   }
   interface AlNodeList extends JSXBase.HTMLAttributes<HTMLAlNodeListElement> {
     'nodes'?: Map<string, AlNode> | null;
-    'onSelectedChanged'?: (event: CustomEvent<any>) => void;
+    'onSelectedChange'?: (event: CustomEvent<any>) => void;
     'selected'?: string | null;
   }
   interface AlSettings extends JSXBase.HTMLAttributes<HTMLAlSettingsElement> {
     'displayMode'?: DisplayMode;
-    'onDisplayModeChanged'?: (event: CustomEvent<any>) => void;
-    'onOrientationChanged'?: (event: CustomEvent<any>) => void;
-    'onSlicesBrightnessChanged'?: (event: CustomEvent<any>) => void;
-    'onSlicesContrastChanged'?: (event: CustomEvent<any>) => void;
-    'onSlicesIndexChanged'?: (event: CustomEvent<any>) => void;
-    'onVolumeBrightnessChanged'?: (event: CustomEvent<any>) => void;
-    'onVolumeContrastChanged'?: (event: CustomEvent<any>) => void;
-    'onVolumeStepsChanged'?: (event: CustomEvent<any>) => void;
-    'onVolumeStepsHighEnabledChanged'?: (event: CustomEvent<any>) => void;
+    'onDisplayModeChange'?: (event: CustomEvent<any>) => void;
+    'onOrientationChange'?: (event: CustomEvent<any>) => void;
+    'onSlicesBrightnessChange'?: (event: CustomEvent<any>) => void;
+    'onSlicesContrastChange'?: (event: CustomEvent<any>) => void;
+    'onSlicesIndexChange'?: (event: CustomEvent<any>) => void;
+    'onVolumeBrightnessChange'?: (event: CustomEvent<any>) => void;
+    'onVolumeContrastChange'?: (event: CustomEvent<any>) => void;
+    'onVolumeStepsChange'?: (event: CustomEvent<any>) => void;
+    'onVolumeStepsHighEnabledChange'?: (event: CustomEvent<any>) => void;
     'orientation'?: Orientation;
     'slicesBrightness'?: number;
     'slicesContrast'?: number;
@@ -367,15 +367,15 @@ declare namespace LocalJSX {
     }>) => void;
   }
   interface AlUrlPicker extends JSXBase.HTMLAttributes<HTMLAlUrlPickerElement> {
-    'onUrlChanged'?: (event: CustomEvent<any>) => void;
+    'onUrlChange'?: (event: CustomEvent<any>) => void;
     'url'?: string | null;
     'urls'?: Map<string, string> | null;
   }
   interface AlViewControls extends JSXBase.HTMLAttributes<HTMLAlViewControlsElement> {
     'boundingBoxEnabled'?: boolean;
     'controlsType'?: ControlsType;
-    'onBoundingBoxEnabledChanged'?: (event: CustomEvent<any>) => void;
-    'onControlsTypeChanged'?: (event: CustomEvent<any>) => void;
+    'onBoundingBoxEnabledChange'?: (event: CustomEvent<any>) => void;
+    'onControlsTypeChange'?: (event: CustomEvent<any>) => void;
     'onRecenter'?: (event: CustomEvent<any>) => void;
   }
   interface AlViewer extends JSXBase.HTMLAttributes<HTMLAlViewerElement> {
@@ -385,7 +385,7 @@ declare namespace LocalJSX {
     /**
     * Fires whenever the internal state changes passing an object describing the state.
     */
-    'onChanged'?: (event: CustomEvent<any>) => void;
+    'onChange'?: (event: CustomEvent<any>) => void;
     /**
     * Fires when an object is loaded passing either the object or a stackhelper for volumetric data.
     */

@@ -186,9 +186,9 @@
         });
 
         alViewer.addEventListener(
-          "changed",
+          "change",
           function(e) {
-            // update everything except src (this can't be changed from within al-viewer)
+            // update everything except src (this can't be change from within al-viewer)
             nextState(Object.assign({}, e.detail, {
               src: prevState.src
             }));
@@ -197,7 +197,7 @@
         );
 
         alControlPanel.addEventListener(
-          "boundingBoxEnabledChanged",
+          "boundingBoxEnabledChange",
           function(e) {
             alViewer.setBoundingBoxEnabled(e.detail);
           },
@@ -205,7 +205,7 @@
         );
 
         alControlPanel.addEventListener(
-          "controlsTypeChanged",
+          "controlsTypeChange",
           function(e) {
             alViewer.setControlsType(e.detail);
           },
@@ -237,7 +237,7 @@
         );
 
         alControlPanel.addEventListener(
-          "displayModeChanged",
+          "displayModeChange",
           function(e) {
             alViewer.setDisplayMode(e.detail);
           },
@@ -245,7 +245,7 @@
         );
 
         alControlPanel.addEventListener(
-          "graphEnabledChanged",
+          "graphEnabledChange",
           function(e) {
             alViewer.setGraphEnabled(e.detail);
           },
@@ -253,7 +253,7 @@
         );
 
         alControlPanel.addEventListener(
-          "materialChanged",
+          "materialChange",
           function(e) {
             alViewer.setMaterial(e.detail);
           },
@@ -261,7 +261,7 @@
         );
 
         alControlPanel.addEventListener(
-          "orientationChanged",
+          "orientationChange",
           function(e) {
             alViewer.setOrientation(e.detail);
           },
@@ -297,7 +297,7 @@
         );
 
         alControlPanel.addEventListener(
-          "selectedChanged",
+          "selectedChange",
           function(e) {
             alViewer.selectNode(e.detail);
           },
@@ -305,7 +305,7 @@
         );
 
         alControlPanel.addEventListener(
-          "slicesIndexChanged",
+          "slicesIndexChange",
           function(e) {
             alViewer.setSlicesIndex(e.detail);
           },
@@ -313,7 +313,7 @@
         );
 
         alControlPanel.addEventListener(
-          "slicesBrightnessChanged",
+          "slicesBrightnessChange",
           function(e) {
             alViewer.setVolumeBrightness(e.detail);
           },
@@ -321,7 +321,7 @@
         );
 
         alControlPanel.addEventListener(
-          "slicesContrastChanged",
+          "slicesContrastChange",
           function(e) {
             alViewer.setVolumeContrast(e.detail);
           },
@@ -337,7 +337,7 @@
         );
 
         alControlPanel.addEventListener(
-          "unitsChanged",
+          "unitsChange",
           function(e) {
             alViewer.setUnits(e.detail);
           },
@@ -345,7 +345,7 @@
         );
 
         alControlPanel.addEventListener(
-          "urlChanged",
+          "urlChange",
           function(e) {
             nextState({
               src: e.detail
@@ -355,7 +355,7 @@
         );
 
         alControlPanel.addEventListener(
-          "volumeStepsChanged",
+          "volumeStepsChange",
           function(e) {
             alViewer.setVolumeSteps(e.detail);
           },
@@ -363,7 +363,7 @@
         );
 
         alControlPanel.addEventListener(
-          "volumeBrightnessChanged",
+          "volumeBrightnessChange",
           function(e) {
             alViewer.setVolumeBrightness(e.detail);
           },
@@ -371,7 +371,7 @@
         );
 
         alControlPanel.addEventListener(
-          "volumeContrastChanged",
+          "volumeContrastChange",
           function(e) {
             alViewer.setVolumeContrast(e.detail);
           },

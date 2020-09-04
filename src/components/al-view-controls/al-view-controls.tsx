@@ -16,8 +16,8 @@ import { ContentStrings } from "./ContentStrings";
 export class AlSettings {
   private _contentStrings: ContentStrings = i18n;
 
-  @Event() public boundingBoxEnabledChanged: EventEmitter;
-  @Event() public controlsTypeChanged: EventEmitter;
+  @Event() public boundingBoxEnabledChange: EventEmitter;
+  @Event() public controlsTypeChange: EventEmitter;
   @Event() public recenter: EventEmitter;
 
   @Prop({ mutable: true }) public boundingBoxEnabled: boolean;
@@ -25,12 +25,12 @@ export class AlSettings {
 
   private _boundingBoxEnabled(enabled: boolean) {
     this.boundingBoxEnabled = enabled;
-    this.boundingBoxEnabledChanged.emit(enabled);
+    this.boundingBoxEnabledChange.emit(enabled);
   }
 
   private _controlsType(controlsType: ControlsType) {
     this.controlsType = controlsType;
-    this.controlsTypeChanged.emit(controlsType);
+    this.controlsTypeChange.emit(controlsType);
   }
 
   private _switchBoundingBoxEnabled() {
