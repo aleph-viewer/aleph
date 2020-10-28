@@ -524,8 +524,9 @@ export class Aleph {
           controlsType={this.controlsType}
           displayMode={this.displayMode}
           edges={this.edges}
+          edgeMinSize={Constants.edgeMinSize}
           edgeSize={Constants.edgeSize}
-          fontSize={Constants.fontSizeSmall}
+          fontSize={Constants.fontSizeMedium}
           nodes={this.nodes}
           selected={this.selected}
           units={this.units}
@@ -537,8 +538,9 @@ export class Aleph {
           cameraPosition={this.camera ? this.camera.position : null}
           controlsType={this.controlsType}
           edges={this.edges}
+          edgeMinSize={Constants.edgeMinSize}
           edgeSize={Constants.edgeSize}
-          fontSize={Constants.fontSizeSmall}
+          fontSize={Constants.fontSizeMedium}
           nodes={this.nodes}
           selected={this.selected}
         />
@@ -1162,7 +1164,7 @@ export class Aleph {
         newNode = {
           targetId: this.src,
           position: ThreeUtils.vector3ToString(intersection.point),
-          scale: this._boundingSphereRadius / Constants.nodeSizeRatio,
+          scale: this._boundingSphereRadius * Constants.nodeSize,
           normal: ThreeUtils.vector3ToString(intersection.face.normal),
           title: nodeId
         };
@@ -1199,7 +1201,7 @@ export class Aleph {
           newNode = {
             targetId: this.src,
             position: ThreeUtils.vector3ToString(hitPosition),
-            scale: this._boundingSphereRadius / Constants.nodeSizeRatio,
+            scale: this._boundingSphereRadius * Constants.nodeSize,
             title: nodeId
           };
         }

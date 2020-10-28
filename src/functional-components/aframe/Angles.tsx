@@ -11,6 +11,7 @@ interface AnglesProps extends FunctionalComponentProps {
   cameraPosition: THREE.Vector3;
   controlsType: ControlsType;
   edges: Map<string, AlEdge>;
+  edgeMinSize: number;
   edgeSize: number;
   fontSize: number;
   nodes: Map<string, AlNode>;
@@ -25,6 +26,7 @@ export const Angles: FunctionalComponent<AnglesProps> = (
     cameraPosition,
     controlsType,
     edges,
+    edgeMinSize,
     edgeSize,
     fontSize,
     nodes,
@@ -66,7 +68,7 @@ export const Angles: FunctionalComponent<AnglesProps> = (
           node1 = nodes.get(edge1.node1Id);
           node2 = nodes.get(edge2.node1Id);
         }
-        const radius = boundingSphereRadius * edgeSize;
+        const radius = ( (boundingSphereRadius * edgeSize) > edgeMinSize ) ? (boundingSphereRadius * edgeSize) : edgeMinSize;
         const node1Pos = ThreeUtils.stringToVector3(node1.position);
         const node2Pos = ThreeUtils.stringToVector3(node2.position);
         const centralPos = ThreeUtils.stringToVector3(centralNode.position);
@@ -114,9 +116,10 @@ export const Angles: FunctionalComponent<AnglesProps> = (
         const scale = (node1.scale + node2.scale + centralNode.scale) / 3;
         textOffset.multiplyScalar(scale);
 
+        const degreeNum = THREE.Math.radToDeg(angl).toFixed(Constants.textUnitsDecimalPlaces);
         const textV =
-          THREE.Math.radToDeg(angl).toFixed(Constants.unitsDecimalPlaces) +
-          " deg"; // todo: use i18n
+          degreeNum + " " + 
+          ( (degreeNum == 1.0) ? "degree" : "degrees"); // todo: use i18n
 
         const frustrumDistance = ThreeUtils.getFrustrumSpaceDistance(
           camera,
@@ -124,7 +127,9 @@ export const Angles: FunctionalComponent<AnglesProps> = (
           cameraPosition
         );
 
-        const entityScale =
+        const entityScale = 1;
+
+        const textEntityScale =
           (frustrumDistance / boundingSphereRadius) *
           Constants.frustrumScaleFactor;
 
@@ -149,11 +154,12 @@ export const Angles: FunctionalComponent<AnglesProps> = (
                   align: center;
                   baseline: bottom;
                   anchor: center;
-                  width: ${fontSize * boundingSphereRadius}
+                  width: ${fontSize * boundingSphereRadius};
+                  zOffset: ${0.0000001};
                 `}
                 position={ThreeUtils.vector3ToString(textOffset)}
                 visible={`${selected === angleId}`}
-                scale={` ${entityScale} ${entityScale} ${entityScale};`}
+                scale={` ${textEntityScale} ${textEntityScale} ${textEntityScale};`}
                 al-background={`
                     text: ${textV};
                     boundingRadius: ${fontSize * boundingSphereRadius};

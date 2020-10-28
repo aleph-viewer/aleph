@@ -12,6 +12,7 @@ interface EdgesProps extends FunctionalComponentProps {
   displayMode: DisplayMode;
   edges: Map<string, AlEdge>;
   edgeSize: number;
+  edgeMinSize: number;
   fontSize: number;
   nodes: Map<string, AlNode>;
   selected: string;
@@ -27,11 +28,11 @@ const convertUnits = (
     // if in mesh mode, units are always meters by default
     switch (units) {
       case Units.METERS: {
-        return dist.toFixed(Constants.unitsDecimalPlaces) + units;
+        return dist.toFixed(Constants.textUnitsDecimalPlaces) + " " + units;
       }
       case Units.MILLIMETERS: {
         // convert m to mm
-        return (dist / 0.001).toFixed(Constants.unitsDecimalPlaces) + units;
+        return (dist / 0.001).toFixed(Constants.textUnitsDecimalPlaces) + " " + units;
       }
       default: {
         break;
@@ -42,10 +43,10 @@ const convertUnits = (
     switch (units) {
       case Units.METERS: {
         // convert mm to m
-        return (dist / 1000.0).toFixed(Constants.unitsDecimalPlaces) + units;
+        return (dist / 1000.0).toFixed(Constants.textUnitsDecimalPlaces) + " " + units;
       }
       case Units.MILLIMETERS: {
-        return dist.toFixed(Constants.unitsDecimalPlaces) + units;
+        return dist.toFixed(Constants.textUnitsDecimalPlaces) + " " + units;
       }
       default: {
         break;
@@ -64,6 +65,7 @@ export const Edges: FunctionalComponent<EdgesProps> = (
     edges,
     edgeSize,
     fontSize,
+    edgeMinSize,
     nodes,
     selected,
     units
@@ -87,7 +89,7 @@ export const Edges: FunctionalComponent<EdgesProps> = (
 
         const textOffset: THREE.Vector3 = new THREE.Vector3(0, 2.5, 0);
         const scale = (node1.scale + node2.scale) / 2;
-        const radius = boundingSphereRadius * edgeSize;
+        const radius = ( (boundingSphereRadius * edgeSize) > edgeMinSize ) ? (boundingSphereRadius * edgeSize) : edgeMinSize;
         textOffset.multiplyScalar(scale);
 
         const textV = convertUnits(dist, displayMode, units);
@@ -98,8 +100,14 @@ export const Edges: FunctionalComponent<EdgesProps> = (
           cameraPosition
         );
 
-        const entityScale =
-          (frustrumDistance / boundingSphereRadius) *
+        // Previous method: scaling nodes relative to view
+        // const entityScale =
+        //   (frustrumDistance / boundingSphereRadius) *
+        //   Constants.frustrumScaleFactor;
+        // New method: nodes are consistent (using scale determined by Constants edgeSize)
+        const entityScale = 1;
+
+        const textEntityScale = (frustrumDistance / boundingSphereRadius) *
           Constants.frustrumScaleFactor;
 
         return (
@@ -123,16 +131,17 @@ export const Edges: FunctionalComponent<EdgesProps> = (
                   align: center;
                   baseline: bottom;
                   anchor: center;
-                  width: ${fontSize * boundingSphereRadius}
+                  width: ${fontSize * boundingSphereRadius};
+                  zOffset: ${0.0000001};
                 `}
                 position={ThreeUtils.vector3ToString(textOffset)}
+                al-render-overlaid
                 visible={`${selected === edgeId}`}
-                scale={` ${entityScale} ${entityScale} ${entityScale};`}
                 al-background={`
                   text: ${textV};
                   boundingRadius: ${fontSize * boundingSphereRadius};
                 `}
-                al-render-overlaid
+                scale={` ${textEntityScale} ${textEntityScale} ${textEntityScale};`}
               />
             </a-entity>
             <a-entity

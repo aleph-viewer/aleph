@@ -36,8 +36,15 @@ export const Nodes: FunctionalComponent<NodesProps> = (
         ThreeUtils.stringToVector3(node.position),
         cameraPosition
       );
-      const entityScale =
-        (frustrumDistance / boundingSphereRadius) *
+
+      // Previous method: scaling nodes relative to view
+      // const entityScale =
+      //   (frustrumDistance / boundingSphereRadius) *
+      //   Constants.frustrumScaleFactor;
+      // New method: nodes are consistent (using scale determined by Constants nodeSize)
+      const entityScale = 1;
+
+      const textEntityScale = (frustrumDistance / boundingSphereRadius) *
         Constants.frustrumScaleFactor;
 
       const textOffset: THREE.Vector3 = new THREE.Vector3(
@@ -80,7 +87,7 @@ export const Nodes: FunctionalComponent<NodesProps> = (
                   text: ${node.title};
                   boundingRadius: ${fontSize * boundingSphereRadius};
               `}
-              scale={` ${entityScale} ${entityScale} ${entityScale};`}
+              scale={` ${textEntityScale} ${textEntityScale} ${textEntityScale};`}
             />
           </a-entity>
           <a-entity

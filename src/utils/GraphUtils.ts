@@ -19,18 +19,18 @@ export class GraphUtils {
       return Math.max.apply(
         Math,
         Array.from(entries).map(([id]) => {
-          return Number(id.split("-")[1]);
+          return Number(id.split(" ")[1]);
         })
       );
     }
 
-    return -1;
+    return 0;
   }
 
   public static getNextId(
     type: AlGraphEntryType,
     entries: Map<string, AlGraphEntry>
   ): string {
-    return type + "-" + Number(this.getEntryWithHighestId(entries) + 1);
+    return type.charAt(0).toUpperCase() + type.slice(1) + " " + Number(this.getEntryWithHighestId(entries) + 1);
   }
 }
