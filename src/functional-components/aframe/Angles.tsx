@@ -119,7 +119,7 @@ export const Angles: FunctionalComponent<AnglesProps> = (
         const degreeNum = THREE.Math.radToDeg(angl).toFixed(Constants.textUnitsDecimalPlaces);
         const textV =
           degreeNum + " " + 
-          ( (degreeNum == 1.0) ? "degree" : "degrees"); // todo: use i18n
+          ( ( parseInt(degreeNum) == 1.0 ) ? "degree" : "degrees"); // todo: use i18n
 
         const frustrumDistance = ThreeUtils.getFrustrumSpaceDistance(
           camera,
