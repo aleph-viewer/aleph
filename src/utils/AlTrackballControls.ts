@@ -164,7 +164,7 @@ export class AlTrackballControls extends THREE.EventDispatcher {
     this.domElement.addEventListener("wheel", this._mouseWheel, {
       capture: false,
       once: false,
-      passive: true
+      passive: false
     });
 
     this.domElement.addEventListener("touchstart", this._touchStart, {
@@ -261,6 +261,10 @@ export class AlTrackballControls extends THREE.EventDispatcher {
     if (this.enabled === false || this.noZoom === true) {
       return;
     }
+
+    event.preventDefault();
+    event.stopPropagation();
+
     switch (event.deltaMode) {
       case 2:
         // Zoom in pages
