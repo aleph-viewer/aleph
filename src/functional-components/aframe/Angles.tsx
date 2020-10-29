@@ -68,7 +68,10 @@ export const Angles: FunctionalComponent<AnglesProps> = (
           node1 = nodes.get(edge1.node1Id);
           node2 = nodes.get(edge2.node1Id);
         }
-        const radius = ( (boundingSphereRadius * edgeSize) > edgeMinSize ) ? (boundingSphereRadius * edgeSize) : edgeMinSize;
+        const radius =
+          boundingSphereRadius * edgeSize > edgeMinSize
+            ? boundingSphereRadius * edgeSize
+            : edgeMinSize;
         const node1Pos = ThreeUtils.stringToVector3(node1.position);
         const node2Pos = ThreeUtils.stringToVector3(node2.position);
         const centralPos = ThreeUtils.stringToVector3(centralNode.position);
@@ -116,10 +119,11 @@ export const Angles: FunctionalComponent<AnglesProps> = (
         const scale = (node1.scale + node2.scale + centralNode.scale) / 3;
         textOffset.multiplyScalar(scale);
 
-        const degreeNum = THREE.Math.radToDeg(angl).toFixed(Constants.textUnitsDecimalPlaces);
+        const degreeNum = THREE.Math.radToDeg(angl).toFixed(
+          Constants.textUnitsDecimalPlaces
+        );
         const textV =
-          degreeNum + " " + 
-          ( ( parseInt(degreeNum) == 1.0 ) ? "degree" : "degrees"); // todo: use i18n
+          degreeNum + " " + (parseInt(degreeNum) == 1.0 ? "degree" : "degrees"); // todo: use i18n
 
         const frustrumDistance = ThreeUtils.getFrustrumSpaceDistance(
           camera,

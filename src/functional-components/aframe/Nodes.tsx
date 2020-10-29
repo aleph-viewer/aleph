@@ -44,7 +44,8 @@ export const Nodes: FunctionalComponent<NodesProps> = (
       // New method: nodes are consistent (using scale determined by Constants nodeSize)
       const entityScale = 1;
 
-      const textEntityScale = (frustrumDistance / boundingSphereRadius) *
+      const textEntityScale =
+        (frustrumDistance / boundingSphereRadius) *
         Constants.frustrumScaleFactor;
 
       const textOffset: THREE.Vector3 = new THREE.Vector3(

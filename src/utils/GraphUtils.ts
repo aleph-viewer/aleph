@@ -31,6 +31,11 @@ export class GraphUtils {
     type: AlGraphEntryType,
     entries: Map<string, AlGraphEntry>
   ): string {
-    return type.charAt(0).toUpperCase() + type.slice(1) + " " + Number(this.getEntryWithHighestId(entries) + 1);
+    return (
+      type.charAt(0).toUpperCase() +
+      type.slice(1) +
+      " " +
+      Number(this.getEntryWithHighestId(entries) + 1)
+    );
   }
 }

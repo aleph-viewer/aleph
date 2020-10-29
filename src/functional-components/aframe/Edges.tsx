@@ -32,7 +32,9 @@ const convertUnits = (
       }
       case Units.MILLIMETERS: {
         // convert m to mm
-        return (dist / 0.001).toFixed(Constants.textUnitsDecimalPlaces) + " " + units;
+        return (
+          (dist / 0.001).toFixed(Constants.textUnitsDecimalPlaces) + " " + units
+        );
       }
       default: {
         break;
@@ -43,7 +45,11 @@ const convertUnits = (
     switch (units) {
       case Units.METERS: {
         // convert mm to m
-        return (dist / 1000.0).toFixed(Constants.textUnitsDecimalPlaces) + " " + units;
+        return (
+          (dist / 1000.0).toFixed(Constants.textUnitsDecimalPlaces) +
+          " " +
+          units
+        );
       }
       case Units.MILLIMETERS: {
         return dist.toFixed(Constants.textUnitsDecimalPlaces) + " " + units;
@@ -89,7 +95,10 @@ export const Edges: FunctionalComponent<EdgesProps> = (
 
         const textOffset: THREE.Vector3 = new THREE.Vector3(0, 2.5, 0);
         const scale = (node1.scale + node2.scale) / 2;
-        const radius = ( (boundingSphereRadius * edgeSize) > edgeMinSize ) ? (boundingSphereRadius * edgeSize) : edgeMinSize;
+        const radius =
+          boundingSphereRadius * edgeSize > edgeMinSize
+            ? boundingSphereRadius * edgeSize
+            : edgeMinSize;
         textOffset.multiplyScalar(scale);
 
         const textV = convertUnits(dist, displayMode, units);
@@ -107,7 +116,8 @@ export const Edges: FunctionalComponent<EdgesProps> = (
         // New method: nodes are consistent (using scale determined by Constants edgeSize)
         const entityScale = 1;
 
-        const textEntityScale = (frustrumDistance / boundingSphereRadius) *
+        const textEntityScale =
+          (frustrumDistance / boundingSphereRadius) *
           Constants.frustrumScaleFactor;
 
         return (

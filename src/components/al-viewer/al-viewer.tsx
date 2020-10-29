@@ -1065,10 +1065,7 @@ export class Aleph {
         Constants.zoomFactor,
         Constants.fov
       );
-      cameraState = Utils.getCameraStateFromMesh(
-        mesh,
-        sceneDistance
-      );
+      cameraState = Utils.getCameraStateFromMesh(mesh, sceneDistance);
     }
 
     if (sceneDistance) {

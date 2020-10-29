@@ -41,17 +41,17 @@
 ### Depends on
 
 - ion-app
-- [al-tabs](..\al-tabs)
+- [al-tabs](../al-tabs)
 - ion-tab-bar
 - ion-tab-button
 - ion-icon
 - ion-label
 - ion-tab
-- [al-view-controls](..\al-view-controls)
-- [al-url-picker](..\al-url-picker)
-- [al-settings](..\al-settings)
-- [al-graph-editor](..\al-graph-editor)
-- [al-console](..\al-console)
+- [al-view-controls](../al-view-controls)
+- [al-url-picker](../al-url-picker)
+- [al-settings](../al-settings)
+- [al-graph-editor](../al-graph-editor)
+- [al-console](../al-console)
 
 ### Graph
 ```mermaid
