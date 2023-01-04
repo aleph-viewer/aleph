@@ -20,6 +20,7 @@ export const getInitialState = () => {
     edges: new Map<string, AlEdge>(),
     material: Material.DEFAULT,
     nodes: new Map<string, AlNode>(),
+    nodeLabelsAlwaysVisible: false,
     graphEnabled: false,
     orientation: Orientation.CORONAL,
     selected: null,
@@ -267,6 +268,12 @@ export const app = (
       return {
         ...state,
         boundingBoxEnabled: action.payload
+      };
+    }
+    case TypeKeys.APP_SET_NODE_LABELS_ALWAYS_VISIBLE: {
+      return {
+        ...state,
+        nodeLabelsAlwaysVisible: action.payload
       };
     }
     case TypeKeys.APP_SET_SCENE_DISTANCE: {

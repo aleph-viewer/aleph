@@ -32,6 +32,7 @@ export type ActionTypes =
   | AppSetEdgeAction
   | AppSetGraphEnabledAction
   | AppSetMaterialAction
+  | AppSetNodeLabelsAlwaysVisibleAction
   | AppSetNodeAction
   | AppSetOrientationAction
   | AppSetSceneDistanceAction
@@ -66,6 +67,7 @@ export enum TypeKeys {
   APP_SET_MATERIAL = "APP_SET_MATERIAL",
   APP_SET_NODE = "APP_SET_NODE",
   APP_SET_NODES_ENABLED = "APP_SET_NODES_ENABLED",
+  APP_SET_NODE_LABELS_ALWAYS_VISIBLE = "APP_SET_NODE_LABELS_ALWAYS_VISIBLE",
   APP_SET_ORIENTATION = "APP_SET_ORIENTATION",
   APP_SET_SCENE_DISTANCE = "APP_SET_SCENE_DISTANCE",
   APP_SET_SLICES_INDEX = "APP_SET_SLICES_INDEX",
@@ -358,6 +360,21 @@ export const appSetMaterial = (payload: Material) => async (
 ) => {
   return dispatch({
     type: TypeKeys.APP_SET_MATERIAL,
+    payload
+  });
+};
+
+export interface AppSetNodeLabelsAlwaysVisibleAction {
+  type: TypeKeys.APP_SET_NODE_LABELS_ALWAYS_VISIBLE;
+  payload: boolean;
+}
+
+export const appSetNodeLabelsAlwaysVisible = (payload: boolean) => async (
+  dispatch,
+  _getState
+) => {
+  return dispatch({
+    type: TypeKeys.APP_SET_NODE_LABELS_ALWAYS_VISIBLE,
     payload
   });
 };

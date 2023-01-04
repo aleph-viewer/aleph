@@ -154,6 +154,7 @@ export namespace Components {
     'setGraphEnabled': (enabled: boolean) => Promise<void>;
     'setMaterial': (material: Material) => Promise<void>;
     'setNode': (node: [string, AlNode]) => Promise<void>;
+    'setNodeLabelsAlwaysVisible': (visible: boolean) => Promise<void>;
     'setOrientation': (orientation: Orientation) => Promise<void>;
     'setSceneDistance': (distance: number) => Promise<void>;
     'setSlicesIndex': (index: number) => Promise<void>;

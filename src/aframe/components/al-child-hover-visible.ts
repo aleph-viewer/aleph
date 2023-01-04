@@ -1,6 +1,7 @@
 AFRAME.registerComponent("al-child-hover-visible", {
   schema: {
-    minFrameMS: { type: "number", default: 15 }
+    minFrameMS: { type: "number", default: 15 },
+    nodeLabelsAlwaysVisible: { type: "boolean", default: false }
   },
 
   init() {
@@ -57,7 +58,7 @@ AFRAME.registerComponent("al-child-hover-visible", {
       const obj3d: THREE.Object3D = firstChild.object3D;
 
       // show/hide label
-      if (this.hovered) {
+      if (this.hovered || this.data.nodeLabelsAlwaysVisible) {
         obj3d.visible = true;
       } else {
         obj3d.visible = false;

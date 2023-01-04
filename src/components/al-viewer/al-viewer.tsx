@@ -60,6 +60,7 @@ import {
   appSetGraphEnabled,
   appSetMaterial,
   appSetNode,
+  appSetNodeLabelsAlwaysVisible,
   appSetOrientation,
   appSetSceneDistance,
   appSetSlicesIndex,
@@ -136,6 +137,7 @@ export class Aleph {
   public appSetGraphEnabled: Action;
   public appSetMaterial: Action;
   public appSetNode: Action;
+  public appSetNodeLabelsAlwaysVisible: Action;
   public appSetOrientation: Action;
   public appSetSceneDistance: Action;
   public appSetSlicesIndex: Action;
@@ -159,6 +161,7 @@ export class Aleph {
   @State() public graphEnabled: boolean;
   @State() public material: Material;
   @State() public nodes: Map<string, AlNode>;
+  @State() public nodeLabelsAlwaysVisible: boolean;
   @State() public nodesVisible: boolean;
   @State() public optionsEnabled: boolean;
   @State() public optionsVisible: boolean;
@@ -283,6 +286,11 @@ export class Aleph {
   }
 
   @Method()
+  public async setNodeLabelsAlwaysVisible(visible: boolean): Promise<void> {
+    this._setNodeLabelsAlwaysVisible(visible);
+  }
+
+  @Method()
   public async setOrientation(orientation: Orientation): Promise<void> {
     this._setOrientation(orientation);
   }
@@ -347,6 +355,7 @@ export class Aleph {
           graphEnabled,
           material,
           nodes,
+          nodeLabelsAlwaysVisible,
           orientation,
           selected,
           sceneDistance,
@@ -372,6 +381,7 @@ export class Aleph {
         graphEnabled,
         material,
         nodes,
+        nodeLabelsAlwaysVisible,
         orientation,
         selected,
         sceneDistance,
@@ -406,6 +416,7 @@ export class Aleph {
       appSetGraphEnabled,
       appSetMaterial,
       appSetNode,
+      appSetNodeLabelsAlwaysVisible,
       appSetOrientation,
       appSetSceneDistance,
       appSetSlicesIndex,
@@ -515,6 +526,7 @@ export class Aleph {
           fontSize={Constants.fontSizeMedium}
           graphEnabled={this.graphEnabled}
           nodes={this.nodes}
+          nodeLabelsAlwaysVisible={this.nodeLabelsAlwaysVisible}
           selected={this.selected}
         />
         <Edges
@@ -954,6 +966,11 @@ export class Aleph {
 
   private _setMaterial(material: Material): void {
     this.appSetMaterial(material);
+    this._stateChanged();
+  }
+
+  private _setNodeLabelsAlwaysVisible(visible: boolean): void {
+    this.appSetNodeLabelsAlwaysVisible(visible);
     this._stateChanged();
   }
 

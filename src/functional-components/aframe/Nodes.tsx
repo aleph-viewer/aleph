@@ -12,6 +12,7 @@ interface NodesProps extends FunctionalComponentProps {
   fontSize: number;
   graphEnabled: boolean;
   nodes: Map<string, AlNode>;
+  nodeLabelsAlwaysVisible: boolean;
   selected: string;
 }
 
@@ -24,6 +25,7 @@ export const Nodes: FunctionalComponent<NodesProps> = (
     fontSize,
     graphEnabled,
     nodes,
+    nodeLabelsAlwaysVisible,
     selected
   },
   _children
@@ -56,7 +58,7 @@ export const Nodes: FunctionalComponent<NodesProps> = (
       textOffset.multiplyScalar(node.scale);
 
       return (
-        <a-entity al-child-hover-visible id={nodeId + "-parent"}>
+        <a-entity al-child-hover-visible={`nodeLabelsAlwaysVisible: ${nodeLabelsAlwaysVisible === true}`} id={nodeId + "-parent"}>
           <a-entity
             position={node.position}
             id={nodeId + "-title-anchor"}
