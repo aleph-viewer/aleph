@@ -195,6 +195,16 @@ Type: `Promise<void>`
 
 
 
+### `setNodeLabelsAlwaysVisible(visible: boolean) => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `setOrientation(orientation: Orientation) => Promise<void>`
 
 

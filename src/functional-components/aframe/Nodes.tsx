@@ -58,7 +58,11 @@ export const Nodes: FunctionalComponent<NodesProps> = (
       textOffset.multiplyScalar(node.scale);
 
       return (
-        <a-entity al-child-hover-visible={`nodeLabelsAlwaysVisible: ${nodeLabelsAlwaysVisible === true}`} id={nodeId + "-parent"}>
+        <a-entity
+          al-child-hover-visible={`nodeLabelsAlwaysVisible: ${nodeLabelsAlwaysVisible ===
+            true}`}
+          id={nodeId + "-parent"}
+        >
           <a-entity
             position={node.position}
             id={nodeId + "-title-anchor"}
