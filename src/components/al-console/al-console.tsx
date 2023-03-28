@@ -38,7 +38,6 @@ export class AlConsole {
             rows={10}
             required
             onIonChange={e => (this.graph = e.detail.value)}
-            maxlength={5000}
             ref={el => (this._graph = el)}
           />
         </ion-item>
